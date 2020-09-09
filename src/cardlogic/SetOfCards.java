@@ -34,7 +34,10 @@ public class SetOfCards {
 	{
 		this(false);
 	}
-	
+
+	public int size() {
+		return cards.size();
+	}
 	Card drawTopCard() {
 
 		return this.cards.remove(0);
