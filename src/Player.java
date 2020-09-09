@@ -19,5 +19,19 @@ public class Player {
     public void setName(String name) {
         this.name = name;
     }
+    public int getHandSize() {
+        return hand.size();
+    }
+    /* getcard
+    setcard
+     */
+    public int getScore() {
+        return this.score;
+    }
+    public void evaluateScore(int value) { //subtract or add score in case of loss or win
+        score += value;
+    }
+
+
 
 }
