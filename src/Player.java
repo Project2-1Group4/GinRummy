@@ -1,16 +1,17 @@
 import cardlogic.Card;
+import cardlogic.SetOfCards;
 
 import java.util.ArrayList;
 
 public class Player {
     private String name;
-    private ArrayList<Card> hand;
+    private SetOfCards hand;
     private int score;
 
     public Player(String name) {
         this.name = name;
-        hand = new ArrayList<Card>();
-        score = 0;
+        this.hand = new SetOfCards();
+        this.score = 0;
     }
 
     public String getName() {

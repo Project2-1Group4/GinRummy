@@ -1,6 +1,6 @@
 package cardlogic;
 
-public class Card {
+public class Card implements Comparable {
 	
 	enum SUITS{
 		SPADES,
@@ -11,6 +11,8 @@ public class Card {
 	
 	private SUITS suit;
 	private int value;
+	
+	//final SUITS suitList = {
 	
 	/*
 	 * J = 11
@@ -35,6 +37,7 @@ public class Card {
 	public SUITS getSuit() {
 		return suit;
 	}
+	
 
 	public void setSuit(SUITS suit) {
 		this.suit = suit;
@@ -54,6 +57,11 @@ public class Card {
 		} else {
 			return this.value;
 		}
+	}
+
+	@Override
+	public int compareTo(Object arg0) {
+		return this.value - ((Card)arg0).getValue();
 	}
 	
 	
