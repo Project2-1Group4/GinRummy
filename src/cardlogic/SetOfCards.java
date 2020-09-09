@@ -10,7 +10,6 @@ public class SetOfCards {
 	
 	List<Card> cards;
 	
-	
 	SetOfCards(boolean deck){
 		
 		if (deck) {
@@ -36,7 +35,6 @@ public class SetOfCards {
 	}
 	
 	Card drawTopCard() {
-
 		return this.cards.remove(0);
 	}
 	
@@ -44,7 +42,16 @@ public class SetOfCards {
 		this.cards.add(card);
 	}
 	
-	void sortBySuits() {
+	public Card getCard(int ind) {
+		return this.cards.get(ind);
+	}
+	
+	public boolean discardCard(Card aCard) {
+		return this.cards.remove(aCard);
+	}
+	
+	
+	public void sortBySuits() {
 		
 		List<Card> resList = new ArrayList<>();
 		
@@ -69,11 +76,15 @@ public class SetOfCards {
 		
 	}
 	
-	void sortByValue() {
+	public int getCardSetSize() {
+		return this.cards.size();
+	}
+	
+	public void sortByValue() {
 		Collections.sort(this.cards);
 	}
 	
-	void shuffleCards() {
+	public void shuffleCards() {
 		Collections.shuffle(this.cards);
 	}
 	

@@ -2,7 +2,7 @@ package cardlogic;
 
 public class Card implements Comparable {
 	
-	enum SUITS{
+	public enum SUITS{
 		SPADES,
 		CLOVERS,
 		HEARTS,
