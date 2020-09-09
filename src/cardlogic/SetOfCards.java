@@ -27,11 +27,13 @@ public class SetOfCards {
 		
 	}
 	
-	SetOfCards(){
+	SetOfCards()
+	{
 		this(false);
 	}
 	
 	Card drawTopCard() {
+
 		return this.cards.remove(0);
 	}
 	
