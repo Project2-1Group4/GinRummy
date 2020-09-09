@@ -30,7 +30,7 @@ public class SetOfCards {
 		
 	}
 	
-	SetOfCards()
+	public SetOfCards()
 	{
 		this(false);
 	}
