@@ -1,16 +1,18 @@
 package cardlogic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import cardlogic.Card.SUITS;
+import gameHandling.Player;
 
 public class SetOfCards {
 	
 	List<Card> cards;
 	
-	SetOfCards(boolean deck){
+	public SetOfCards(boolean deck){
 		
 		if (deck) {
 			this.cards = new ArrayList<>();
@@ -61,10 +63,22 @@ public class SetOfCards {
 		for(SUITS aSuit : SUITS.values()) {
 			List<Card> tempList = new ArrayList<>();
 			
-			for(Card aCard : this.cards) {
+			/*
+			for(int i=0;i<this.cards.size();i++) {
+				Card aCard = this.cards.get(i);
+				
 				if (aCard.getSuit() == aSuit) {
 					tempList.add(aCard);
 					this.cards.remove(aCard);
+				}
+				
+			}*/
+			
+			
+			for(Card aCard : this.cards) {
+				if (aCard.getSuit() == aSuit) {
+					tempList.add(aCard);
+					//this.cards.remove(aCard);
 				}
 				
 			}
@@ -90,6 +104,27 @@ public class SetOfCards {
 	public void shuffleCards() {
 		Collections.shuffle(this.cards);
 	}
+	
+	public String toString() {
+		return Arrays.toString(this.cards.toArray());
+	}
+	
+	//TESTING
+	/*
+	public static void main(String[] args) {
+		SetOfCards deck = new SetOfCards(true);
+		
+		Player aPlayer = new Player(deck);
+		
+		List<List<Card>> runs = aPlayer.findRuns();
+		
+		List<List<Card>> sets = aPlayer.findSets();
+		
+		deck.shuffleCards();
+		
+		System.out.println("hey");
+		
+	}*/
 	
 
 }

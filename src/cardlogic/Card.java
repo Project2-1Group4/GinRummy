@@ -64,5 +64,9 @@ public class Card implements Comparable {
 		return this.value - ((Card)arg0).getValue();
 	}
 	
+	public String toString() {
+		return this.suit + Integer.toString(value);
+	}
+	
 	
 }

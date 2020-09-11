@@ -1,3 +1,4 @@
+package gameHandling;
 import cardlogic.Card;
 import cardlogic.Card.SUITS;
 import cardlogic.SetOfCards;
@@ -11,9 +12,17 @@ public class Player {
     private int score;
 
     public Player(String name) {
-        this.name = name;
-        this.hand = new SetOfCards();
-        this.score = 0;
+        this(name, new SetOfCards());
+    }
+    
+    public Player(SetOfCards cards) {
+    	this("player",cards);
+    }
+    
+    public Player(String name, SetOfCards cards) {
+    	this.name = name;
+    	this.hand = cards;
+    	this.score = 0;
     }
 
     public String getName() {
@@ -50,7 +59,7 @@ public class Player {
                     int startPoint = i-count-1;
                     List<Card> tempList = new ArrayList<>();
 
-                    for(int j=0; j<count;j++) {
+                    for(int j=0; j<count+1;j++) {
                         tempList.add(this.hand.getCard(j+startPoint));
                     }
 
@@ -87,6 +96,10 @@ public class Player {
     public void evaluateScore(int value) { //subtract or add score in case of loss or win
         score += value;
     }
+    
+    public void setHand(SetOfCards cards) {
+    	this.hand = cards;
+    }
 
 
 
@@ -110,7 +123,7 @@ public class Player {
                     int startPoint = i-count-1;
                     List<Card> tempList = new ArrayList<>();
 
-                    for(int j=0; j<count;j++) {
+                    for(int j=0; j<count+1;j++) {
                         tempList.add(this.hand.getCard(j+startPoint));
                     }
 
@@ -132,7 +145,7 @@ public class Player {
                     int startPoint = i-count-1;
                     List<Card> tempList = new ArrayList<>();
 
-                    for(int j=0; j<count;j++) {
+                    for(int j=0; j<count+1;j++) {
                         tempList.add(this.hand.getCard(j+startPoint));
                     }
 
@@ -156,4 +169,20 @@ public class Player {
         }
 
     }
+    
+    public static void main(String[] args) {
+		SetOfCards deck = new SetOfCards(true);
+		
+		Player aPlayer = new Player(deck);
+		
+		List<List<Card>> runs = aPlayer.findRuns();
+		
+		List<List<Card>> sets = aPlayer.findSets();
+		
+		deck.shuffleCards();
+		
+		//System.out.println("hey");
+		
+	}
+    
 }
