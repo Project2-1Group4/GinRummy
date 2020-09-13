@@ -108,6 +108,17 @@ public class SetOfCards {
 	public String toString() {
 		return Arrays.toString(this.cards.toArray());
 	}
+
+	// Hand out card for each player
+	public SetOfCards handOutCard(int numberOdCard) {
+		SetOfCards deck = new SetOfCards(true);
+		deck.shuffleCards();
+		SetOfCards setCard = new SetOfCards();
+		for (int i = 0; i < numberOdCard; i++ ){
+			setCard.addCard(deck.getCard(i));
+		}
+		return setCard;
+	}
 	
 	//TESTING
 	/*
