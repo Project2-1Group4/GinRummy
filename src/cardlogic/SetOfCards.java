@@ -110,7 +110,7 @@ public class SetOfCards {
 	}
 
 	// Hand out card for each player
-	public SetOfCards handOutCard(int numberOdCard) {
+	public static SetOfCards handOutCard(int numberOdCard) {
 		SetOfCards deck = new SetOfCards(true);
 		deck.shuffleCards();
 		SetOfCards setCard = new SetOfCards();

@@ -173,7 +173,7 @@ public class Player {
     public static void main(String[] args) {
 		SetOfCards deck = new SetOfCards(true);
 		
-		Player aPlayer = new Player(deck);
+		Player aPlayer = new Player("player",SetOfCards.handOutCard(10));
 		
 		List<List<Card>> runs = aPlayer.findRuns();
 		
@@ -181,7 +181,7 @@ public class Player {
 		
 		deck.shuffleCards();
 		
-		//System.out.println("hey");
+		System.out.println(aPlayer.hand);
 		
 	}
     
