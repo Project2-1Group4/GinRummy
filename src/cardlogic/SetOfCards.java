@@ -54,7 +54,8 @@ public class SetOfCards {
 	public boolean discardCard(Card aCard) {
 		return this.cards.remove(aCard);
 	}
-	
+
+	public void removeCard() {this.cards.remove(0);}
 	
 	public void sortBySuits() {
 		
@@ -110,12 +111,12 @@ public class SetOfCards {
 	}
 
 	// Hand out card for each player
-	public static SetOfCards handOutCard(int numberOdCard) {
-		SetOfCards deck = new SetOfCards(true);
+	public static SetOfCards handOutCard(int numberOdCard, SetOfCards deck) {
 		deck.shuffleCards();
 		SetOfCards setCard = new SetOfCards();
-		for (int i = 0; i < numberOdCard; i++ ){
-			setCard.addCard(deck.getCard(i));
+		for (int i = 0; i < numberOdCard; i++ ) {
+			setCard.addCard(deck.getCard(0));
+			deck.removeCard();
 		}
 		return setCard;
 	}

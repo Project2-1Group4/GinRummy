@@ -56,16 +56,18 @@ public class Player {
                 // So what we're going to do is go ahead and store all of the previous cards in the listList
 
                 if(count >= 2) {
+                    /*
                     int startPoint = i-count-1;
                     List<Card> tempList = new ArrayList<>();
 
                     for(int j=0; j<count+1;j++) {
                         tempList.add(this.hand.getCard(j+startPoint));
                     }
+                     */
+
+                    List<Card> tempList = getSetOrRun(i, count);
 
                     listList.add(tempList);
-
-
                 }
 
                 prev = aCard.getValue();
@@ -81,6 +83,83 @@ public class Player {
             return listList;
         }
 
+    }
+
+    public List<List<Card>> findRuns(){
+        this.hand.sortBySuits();
+
+        List<List<Card>> listList = new ArrayList<List<Card>>();
+
+        SUITS prevSuit = null;
+        int prevVal = 0;
+        int count = 0;
+
+        for(int i=0; i<this.hand.getCardSetSize(); i++) {
+            Card aCard = this.hand.getCard(i);
+
+            if(aCard.getSuit() != prevSuit) {
+
+                // I use this if statement like 3 times, I should probably make it a method
+                // TODO: Clean up code and make this a separate method. DONE
+                if(count >= 2) {
+                   /*
+                    int startPoint = i-count-1;
+                    List<Card> tempList1 = new ArrayList<>();
+
+                    for(int j=0; j<count+1;j++) {
+                        tempList1.add(this.hand.getCard(j+startPoint));
+                    }
+                    */
+
+                    List<Card> tempList = getSetOrRun(i, count);
+
+                    listList.add(tempList);
+                }
+
+
+                prevSuit = aCard.getSuit();
+                prevVal = aCard.getValue();
+                count = 0;
+                continue;
+            }
+
+            if( (aCard.getValue()-prevVal) == 1 ) {
+                count++;
+            } else {
+
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i, count);
+
+                    listList.add(tempList);
+
+
+                }
+
+
+                count = 0;
+            }
+
+            prevVal = aCard.getValue();
+
+        }
+
+        if(listList.size() == 0) {
+            return null;
+        } else {
+            return listList;
+        }
+
+    }
+
+    public List<Card> getSetOrRun(int index, int count) {
+        int startPoint = index - count - 1;
+        List<Card> tempList = new ArrayList<>();
+
+        for (int j=0; j<count+1; j++) {
+            tempList.add(this.hand.getCard(j + startPoint));
+        }
+        return tempList;
     }
 
     public int getHandSize() {
@@ -103,83 +182,19 @@ public class Player {
 
 
 
-    public List<List<Card>> findRuns(){
-        this.hand.sortBySuits();
 
-        List<List<Card>> listList = new ArrayList<List<Card>>();
-
-        SUITS prevSuit = null;
-        int prevVal = 0;
-        int count = 0;
-
-        for(int i=0; i<this.hand.getCardSetSize(); i++) {
-            Card aCard = this.hand.getCard(i);
-
-            if(aCard.getSuit() != prevSuit) {
-
-                // I use this if statement like 3 times, I should probably make it a method
-                // TODO: Clean up code and make this a separate method
-                if(count >= 2) {
-                    int startPoint = i-count-1;
-                    List<Card> tempList = new ArrayList<>();
-
-                    for(int j=0; j<count+1;j++) {
-                        tempList.add(this.hand.getCard(j+startPoint));
-                    }
-
-                    listList.add(tempList);
-                }
-
-
-                prevSuit = aCard.getSuit();
-                prevVal = aCard.getValue();
-                count = 0;
-                continue;
-            }
-
-            if( (aCard.getValue()-prevVal) == 1 ) {
-                count++;
-            } else {
-
-                if(count >= 2) {
-                    int startPoint = i-count-1;
-                    List<Card> tempList = new ArrayList<>();
-
-                    for(int j=0; j<count+1;j++) {
-                        tempList.add(this.hand.getCard(j+startPoint));
-                    }
-
-                    listList.add(tempList);
-
-
-                }
-
-
-                count = 0;
-            }
-
-            prevVal = aCard.getValue();
-
-        }
-
-        if(listList.size() == 0) {
-            return null;
-        } else {
-            return listList;
-        }
-
-    }
     
     public static void main(String[] args) {
 		SetOfCards deck = new SetOfCards(true);
 		
-		Player aPlayer = new Player("player",SetOfCards.handOutCard(10));
+		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
+		aPlayer.hand.sortByValue();
 		
-		List<List<Card>> runs = aPlayer.findRuns();
+		//List<List<Card>> runs = aPlayer.findRuns();
 		
-		List<List<Card>> sets = aPlayer.findSets();
+		//List<List<Card>> sets = aPlayer.findSets();
 		
-		deck.shuffleCards();
+		//deck.shuffleCards();
 		
 		System.out.println(aPlayer.hand);
 		
