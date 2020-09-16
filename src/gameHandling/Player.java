@@ -32,6 +32,14 @@ public class Player {
         this.name = name;
     }
 
+    public static int scoreInRunOrSet(List<Card> listCard) {
+        int score = 0;
+        for (int i = 0; i < listCard.size(); i++) {
+            score = score + listCard.get(i).getValue();
+        }
+        return score;
+    }
+
     public List<List<Card>> findSets(){
         List<List<Card>> listList = new ArrayList<List<Card>>();
 
@@ -123,7 +131,7 @@ public class Player {
                 continue;
             }
 
-            if( (aCard.getValue()-prevVal) == 1 ) {
+            if((aCard.getValue()-prevVal) == 1 ) {
                 count++;
             } else {
 
@@ -162,6 +170,43 @@ public class Player {
         return tempList;
     }
 
+    //This method is to decide whether a card should be in a run or set if any run and set has one mutual card
+    /*Need to be improved
+        For example: a run contains two cards that are in 2 separated sets or vice versa
+     */
+    public static void compareScore(List<List<Card>> listRuns, List<List<Card>> listSets) {
+
+        for (int i = 0; i < listRuns.size(); i++) {
+            List<Card> listRun = listRuns.get(i);
+
+            int scoreRun = scoreInRunOrSet(listRun);
+
+            for (int j = 0; j < listRun.size(); j++) {
+
+                for (int ii = 0; ii < listSets.size(); ii++) {
+                    List<Card> listSet = listSets.get(ii);
+                    int scoreSet = scoreInRunOrSet(listSet);
+
+                    for (int jj = 0; jj < listSet.size(); jj++) {
+                        if (listRun.get(j).equals(listSet.get(jj))) {
+                            if (scoreRun >= scoreSet) {
+                                listSets.remove(ii);
+                            }
+                            else {
+                                listRuns.remove(i);
+                            }
+                            break;
+                        }
+                        else
+                            continue;
+                    }
+                }
+            }
+        }
+
+
+    }
+
     public int getHandSize() {
         return hand.size();
     }
@@ -186,17 +231,25 @@ public class Player {
     
     public static void main(String[] args) {
 		SetOfCards deck = new SetOfCards(true);
+        deck.shuffleCards();
 		
-		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
+		Player aPlayer = new Player("player",SetOfCards.handOutCard(20, deck));
 		aPlayer.hand.sortByValue();
 		
-		//List<List<Card>> runs = aPlayer.findRuns();
-		
-		//List<List<Card>> sets = aPlayer.findSets();
-		
-		//deck.shuffleCards();
-		
-		System.out.println(aPlayer.hand);
+		List<List<Card>> runs = aPlayer.findRuns();
+        System.out.println(runs);
+
+		List<List<Card>> sets = aPlayer.findSets();
+        System.out.println(sets);
+
+        compareScore(runs, sets);
+
+        System.out.println(runs);
+        System.out.println(sets);
+        System.out.println(aPlayer.hand);
+        //System.out.println(aPlayer.hand.getCard(1).getSuit());
+
+
 		
 	}
     

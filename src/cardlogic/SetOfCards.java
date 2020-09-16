@@ -93,6 +93,7 @@ public class SetOfCards {
 		
 		
 	}
+
 	
 	public int getCardSetSize() {
 		return this.cards.size();

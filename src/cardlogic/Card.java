@@ -37,7 +37,8 @@ public class Card implements Comparable {
 	public SUITS getSuit() {
 		return suit;
 	}
-	
+
+
 
 	public void setSuit(SUITS suit) {
 		this.suit = suit;
@@ -67,6 +68,9 @@ public class Card implements Comparable {
 	public String toString() {
 		return this.suit + Integer.toString(value);
 	}
-	
+
+	public boolean equals(Card card) {
+		return (this.value == card.value && this.suit.equals(card.suit));
+	}
 	
 }
