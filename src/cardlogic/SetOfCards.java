@@ -12,6 +12,11 @@ public class SetOfCards {
 	
 	List<Card> cards;
 	
+	/*
+	 * Assumption is being done that top of deck is the last card in the pile
+	 * And bottom is index 0
+	 */
+	
 	public SetOfCards(boolean deck){
 		
 		if (deck) {
@@ -39,11 +44,12 @@ public class SetOfCards {
 	public int size() {
 		return cards.size();
 	}
-	Card drawTopCard() {
-		return this.cards.remove(0);
+	
+	public Card drawTopCard() {
+		return this.cards.remove(this.cards.size()-1);
 	}
 	
-	void addCard(Card card) {
+	public void addCard(Card card) {
 		this.cards.add(card);
 	}
 	
@@ -116,8 +122,8 @@ public class SetOfCards {
 		deck.shuffleCards();
 		SetOfCards setCard = new SetOfCards();
 		for (int i = 0; i < numberOdCard; i++ ) {
-			setCard.addCard(deck.getCard(0));
-			deck.removeCard();
+			setCard.addCard(deck.drawTopCard());
+			//deck.removeCard();
 		}
 		return setCard;
 	}

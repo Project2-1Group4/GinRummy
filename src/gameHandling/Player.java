@@ -35,7 +35,11 @@ public class Player {
     public static int scoreInRunOrSet(List<Card> listCard) {
         int score = 0;
         for (int i = 0; i < listCard.size(); i++) {
-            score = score + listCard.get(i).getValue();
+            /*
+             * It should be ginRummy value, as normal value makes
+             * K=13, and stuff like that. Which is not desired
+             */
+        	score = score + listCard.get(i).getValue();
         }
         return score;
     }
@@ -223,6 +227,15 @@ public class Player {
     
     public void setHand(SetOfCards cards) {
     	this.hand = cards;
+    }
+    
+    
+    /*
+     *  Finds the score of a given hand
+     *  Needs to be modified to receive which cards are already in a run or a set
+     */
+    void scoreHand() {
+    	
     }
 
 
