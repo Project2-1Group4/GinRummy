@@ -233,6 +233,7 @@ public class Player {
     /*
      *  Finds the score of a given hand
      *  Needs to be modified to receive which cards are already in a run or a set
+     *  This should kinda find deadwood.
      */
     void scoreHand() {
     	
