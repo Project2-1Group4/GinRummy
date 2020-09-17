@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="core/src"/>
+	<classpathentry kind="src" path="desktop/src"/>
+	<classpathentry kind="src" path="html/src"/>
+	<classpathentry kind="lib" path="core/build/libs/core-1.0.jar"/>
+	<classpathentry kind="lib" path="gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="lib" path="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.10/79d9ad27bd5e3eb18c9ade61d3a27d7237695d53/gdx-1.9.10.jar" sourcepath="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.10/37e7ec91522313dabc753c72196dd665ea4a9332/gdx-1.9.10-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-box2d/1.9.10/d68a7a3484d47529a8d23cd467579eb098b38a9e/gdx-box2d-1.9.10.jar" sourcepath="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-box2d/1.9.10/384a26163490e0dca4e3a1c00d4ae6284d785da5/gdx-box2d-1.9.10-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.10/8f88abd43500d94c486d25f04d642318da72773a/gdx-backend-lwjgl-1.9.10.jar" sourcepath="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.10/bc819db135041daf18548095a4224fdf91128d4c/gdx-backend-lwjgl-1.9.10-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-gwt/1.9.10/7b74576b9a4d066fef47bf5cd974fad020b4c102/gdx-backend-gwt-1.9.10.jar" sourcepath="C:/Users/lolco/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-gwt/1.9.10/ecf255c8aa48330e643f7df53ac860ee92c9dae2/gdx-backend-gwt-1.9.10-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="core/build/classes/java/main"/>
 </classpath>
