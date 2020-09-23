@@ -72,6 +72,16 @@ public class SetOfCards {
 	public boolean discardCard(Card aCard) {
 		return this.cards.remove(aCard);
 	}
+	
+	public static int scoreGinRummy(List<Card> cardSet) {
+		int totScore = 0;
+		
+		for(Card aCard:cardSet) {
+			totScore+=aCard.getGinRummyValue();
+		}
+		return totScore;
+		
+	}
 
 	public void removeCard() {this.cards.remove(0);}
 	
@@ -110,6 +120,14 @@ public class SetOfCards {
 		this.cards = resList;
 		
 		
+	}
+	
+	/*
+	 * TODO: Bugtest this small method to make sure the equals method isn't going to screw me over
+	 */
+	
+	public boolean contains(Card aCard) {
+		return this.cards.contains(aCard);
 	}
 
 	
