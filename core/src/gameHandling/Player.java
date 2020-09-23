@@ -210,6 +210,25 @@ public class Player {
 
 
     }
+    
+    /*
+     * Somehow another method will take care of finding the optimal combination of runs and melds
+     * This method will just remove those cards, and then return a list with the remaining deadwood
+     */
+    
+    public List<Card> findDeadwood(List<Card> cardsInMelds){
+    	
+    	List<Card> deadwood = new ArrayList<Card>();
+    	
+    	for(Card aCard:cardsInMelds) {
+    		if(!this.hand.contains(aCard)) {
+    			deadwood.add(aCard);
+    		}
+    	}
+    	
+    	return deadwood;
+    	
+    }
 
     public int getHandSize() {
         return hand.size();
@@ -233,9 +252,30 @@ public class Player {
     /*
      *  Finds the score of a given hand
      *  Needs to be modified to receive which cards are already in a run or a set
-     *  This should kinda find deadwood.
+     *  I'm currently doing it internally, so there should be no problems with that
      */
     void scoreHand() {
+    	List<List<Card>> runs = this.findRuns();
+    	List<List<Card>> sets = this.findSets();
+    	
+    	this.compareScore(runs, sets);
+    	
+    	List<Card> resultingCards = new ArrayList<Card>();
+    	
+    	for(List<Card> aRun:runs) {
+    		resultingCards.addAll(aRun);
+    	}
+    	
+    	for(List<Card> aSet:sets) {
+    		resultingCards.addAll(aSet);
+    	}
+    	
+    	List<Card> deadwood = this.findDeadwood(resultingCards);
+    	
+    	//TODO: Extra method that'll take care of scoring the deadwood
+    	// I also need to find a way to take the deadwood out in some capacity
+    	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
+    	
     	
     }
     
