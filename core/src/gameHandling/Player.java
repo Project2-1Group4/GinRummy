@@ -238,10 +238,54 @@ public class Player {
     void scoreHand() {
     	
     }
-
-
-
-
+    
+    /*
+     * Some method that has listeners and stuff
+     * It'll add the card to the player's hand, and then ask them to discard a card
+     * If the returned card is the given card, then there's no changes
+     * 
+     * For now, I'm just returning the given card
+     * So the game will always discard the given card
+     * 
+     * TODO: Add the listeners
+     * 
+     */
+    public Card chooseCardToDiscard(Card aCard) {
+    	
+    	return aCard;
+    }
+    
+    
+    /*
+     * Listener to get whether to get the deck or from the discard pile
+     * 
+     * If false:
+     * 	then the player chose the deck
+     * if true:
+     * 	player chose the card from the discard pile
+     * 
+     * Currently the player only chooses from the deck
+     * 
+     * TODO: Add the listeners for the game
+     * 
+     */
+    
+    public boolean chooseDeckOrPile() {
+    	return false;
+    }
+    
+    /*
+     * Listener to get whether the player chose to knock or not
+     * 
+     * If false:
+     * 	Player didn't knock, so goes on
+     * If true:
+     * 	Player knocked, so cards are down and next phase of game happens
+     */
+    
+    public boolean chooseToKnock() {
+    	return false;
+    }
     
     public static void main(String[] args) {
 		SetOfCards deck = new SetOfCards(true);
