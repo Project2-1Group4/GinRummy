@@ -253,8 +253,9 @@ public class Player {
      *  Finds the score of a given hand
      *  Needs to be modified to receive which cards are already in a run or a set
      *  I'm currently doing it internally, so there should be no problems with that
+     *  TODO: Modify method so that the bonuses can be added at the end of a turn
      */
-    void scoreHand() {
+    public int scoreHand() {
     	List<List<Card>> runs = this.findRuns();
     	List<List<Card>> sets = this.findSets();
     	
@@ -272,10 +273,13 @@ public class Player {
     	
     	List<Card> deadwood = this.findDeadwood(resultingCards);
     	
-    	//TODO: Extra method that'll take care of scoring the deadwood
     	// I also need to find a way to take the deadwood out in some capacity
     	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
+    	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
     	
+    	int score = SetOfCards.scoreGinRummy(deadwood);
+    	
+    	return score;
     	
     }
     
