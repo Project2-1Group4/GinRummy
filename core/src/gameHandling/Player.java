@@ -39,7 +39,7 @@ public class Player {
              * It should be ginRummy value, as normal value makes
              * K=13, and stuff like that. Which is not desired
              */
-        	score = score + listCard.get(i).getValue();
+        	score = score + listCard.get(i).getGinRummyValue();
         }
         return score;
     }
