@@ -6,13 +6,11 @@ import java.util.Collections;
 import java.util.List;
 
 import cardlogic.Card.SUITS;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import gameHandling.Player;
 
 public class SetOfCards {
 	
 	List<Card> cards;
-	TextureAtlas atlas;
 	
 	/*
 	 * Assumption is being done that top of deck is the last card in the pile
@@ -20,23 +18,13 @@ public class SetOfCards {
 	 */
 	
 	public SetOfCards(boolean deck){
-		atlas = new TextureAtlas("carddeck.atlas");
+		
 		if (deck) {
 			this.cards = new ArrayList<>();
-
-			String suit = "clubs";
+			
 			for(int i=0; i<4; i++) {
 				for(int j=1;j<14;j++) {
-					if(i == 0) {
-						suit = "spades";
-					} else if (i ==1){
-						suit = "clubs";
-					} else if (i == 2) {
-						suit = "hearts";
-					} else if (i == 3) {
-						suit = "diamonds";
-					}
-					this.cards.add(new Card(i,j, atlas.createSprite("back", 1), atlas.createSprite(suit, j)));
+					this.cards.add(new Card(i,j));
 				}
 			}
 			
@@ -46,6 +34,14 @@ public class SetOfCards {
 			this.cards = new ArrayList<>();
 		}
 		
+	}
+
+	public List<Card> toList(){
+		return this.cards;
+	}
+
+	public void fromList(List<Card> cards){
+		this.cards = cards;
 	}
 	
 	public SetOfCards()
@@ -71,16 +67,6 @@ public class SetOfCards {
 	
 	public boolean discardCard(Card aCard) {
 		return this.cards.remove(aCard);
-	}
-	
-	public static int scoreGinRummy(List<Card> cardSet) {
-		int totScore = 0;
-		
-		for(Card aCard:cardSet) {
-			totScore+=aCard.getGinRummyValue();
-		}
-		return totScore;
-		
 	}
 
 	public void removeCard() {this.cards.remove(0);}
@@ -128,16 +114,11 @@ public class SetOfCards {
 		
 		
 	}
-	
-	/*
-	 * TODO: Bugtest this small method to make sure the equals method isn't going to screw me over
-	 */
-	
-	public boolean contains(Card aCard) {
-		return this.cards.contains(aCard);
+
+	public boolean contains(Card card) {
+		return (this.cards.contains(card));
 	}
 
-	
 	public int getCardSetSize() {
 		return this.cards.size();
 	}
@@ -160,7 +141,6 @@ public class SetOfCards {
 		SetOfCards setCard = new SetOfCards();
 		for (int i = 0; i < numberOdCard; i++ ) {
 			setCard.addCard(deck.drawTopCard());
-			//deck.removeCard();
 		}
 		return setCard;
 	}

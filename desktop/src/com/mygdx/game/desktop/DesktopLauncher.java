@@ -1,3 +1,4 @@
+/*
 package com.mygdx.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -10,3 +11,5 @@ public class DesktopLauncher {
 		new LwjglApplication(new GinRummy(), config);
 	}
 }
+
+ */

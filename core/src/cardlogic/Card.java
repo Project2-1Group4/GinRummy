@@ -1,8 +1,5 @@
 package cardlogic;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-
 public class Card implements Comparable {
 	
 	public enum SUITS{
@@ -14,13 +11,8 @@ public class Card implements Comparable {
 	
 	private SUITS suit;
 	private int value;
-	private final Sprite front;
-	private final Sprite back;
-	private boolean turned;
-
-	public final static float CARD_WIDTH = 1f;
-	public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
-
+	
+	//final SUITS suitList = {
 	
 	/*
 	 * J = 11
@@ -28,7 +20,7 @@ public class Card implements Comparable {
 	 * K = 13
 	 */
 	
-	public Card(int suit, int value, Sprite back, Sprite front) {
+	public Card(int suit, int value) {
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
@@ -40,15 +32,13 @@ public class Card implements Comparable {
 		}
 		
 		this.setValue(value);
-		this.back = back;
-		this.front = front;
-		back.setSize(CARD_WIDTH, CARD_HEIGHT);
-		front.setSize(CARD_WIDTH, CARD_HEIGHT);
 	}
 
 	public SUITS getSuit() {
 		return suit;
 	}
+
+
 
 	public void setSuit(SUITS suit) {
 		this.suit = suit;
@@ -60,23 +50,6 @@ public class Card implements Comparable {
 
 	public void setValue(int value) {
 		this.value = value;
-	}
-
-	// set position of card in field
-	public void setPosition(float x, float y) {
-		front.setPosition(x - 0.5f * front.getWidth(), y - 0.5f * front.getHeight());
-		back.setPosition(x - 0.5f * back.getWidth(), y - 0.5f * back.getHeight());
-	}
-
-	public void turn() {
-		turned = !turned;
-	}
-
-	public void draw(Batch batch) {
-		if (turned)
-			back.draw(batch);
-		else
-			front.draw(batch);
 	}
 	
 	public int getGinRummyValue() {
@@ -98,6 +71,12 @@ public class Card implements Comparable {
 
 	public boolean equals(Card card) {
 		return (this.value == card.value && this.suit.equals(card.suit));
+	}
+
+	public static void main(String[] args) {
+		Card c = new Card(2,13);
+		System.out.println(c);
+		System.out.println(c.getValue());
 	}
 	
 }

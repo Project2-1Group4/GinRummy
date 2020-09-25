@@ -1,30 +1,33 @@
 package gameHandling;
+
 import cardlogic.Card;
-import cardlogic.Card.SUITS;
 import cardlogic.SetOfCards;
 
 import java.util.*;
 
-public class Player {
+public class PlayerOne {
     private String name;
     private SetOfCards hand;
     private int score;
 
+    private int bestValueCombination;
+    private List<List<Card>> bestCombination;
 
 
 
-    public Player(String name) {
+
+    public PlayerOne(String name) {
         this(name, new SetOfCards());
     }
-    
-    public Player(SetOfCards cards) {
-    	this("player",cards);
+
+    public PlayerOne(SetOfCards cards) {
+        this("player",cards);
     }
-    
-    public Player(String name, SetOfCards cards) {
-    	this.name = name;
-    	this.hand = cards;
-    	this.score = 0;
+
+    public PlayerOne(String name, SetOfCards cards) {
+        this.name = name;
+        this.hand = cards;
+        this.score = 0;
     }
 
     public String getName() {
@@ -34,177 +37,111 @@ public class Player {
         this.name = name;
     }
 
-    public void bestCombination() {
-        List<List<Card>> listSets = this.findSets();
-        List<List<Card>> listRuns = this.findRuns();
+    public void recursiveSearch(List<Card> sequence, List<List<Card>> removed){
+        // have a loop over the set permutations
 
-        HashMap<Integer[], Card> mutualCards = this.getMutualCards(listSets, listRuns);
+            // inside the loop remove the current permutation (set) form a deep copy of the sequence (not a reference)
 
-
-        HashMap<Integer, List<Integer>> dependOnSets = new HashMap<>(); //index set: {setIndex, setIndex,setIndex}
-
-
-
-        for (Map.Entry<Integer[], Card> entry : mutualCards.entrySet()) {
-            int runIndex = entry.getKey()[0];
-            int setIndex = entry.getKey()[1];
-
-            if(dependOnSets.containsKey(runIndex)){
-                dependOnSets.get(runIndex).add(setIndex);
-
-            }else {
-                List<Integer> setIndices = new ArrayList<>();
-                setIndices.add(setIndex);
-                dependOnSets.put(runIndex, setIndices);
-            }
-        }
-
-        //sort for good messure
-        for(Map.Entry<Integer,List<Integer>> entry: dependOnSets.entrySet()){
-            Collections.sort(entry.getValue());
-        }
+            //make sure that you can remove the set (if you cant remove the set it's not a valid final sequence, since you would remove too little cards)
+            //so you skip those.
+            //add the permutation to a deep copy of the removed (newRemoved)
 
 
-        //extend dependance
-        List<Integer> mergedKeys = new ArrayList<>();
-        HashMap<Integer, List<Integer>> dependOnRuns = new HashMap<>(); //index set: {runIndex, runIndex, runIndex}
-
-
-
-        for(Map.Entry<Integer, List<Integer>> dependence: dependOnSets.entrySet()){
-            for(Map.Entry<Integer, List<Integer>> dependenceInnerLoop: dependOnSets.entrySet()){
-                List<Integer> setTarget =dependence.getValue();
-
-                int targetKey = dependenceInnerLoop.getKey();
-
-                if(setTarget.equals(dependenceInnerLoop.getValue()) && dependence.getKey() != dependenceInnerLoop.getKey()){
-
-                    if(dependOnRuns.containsKey(dependence.getKey())){
-                        dependOnRuns.get(dependence.getKey()).add(targetKey);
-
-                    }else{
-                        if(!mergedKeys.contains(dependence.getKey())){
-                            mergedKeys.add(targetKey);
-                        }
-
-                        ArrayList<Integer> runs = new ArrayList<>();
-                        runs.add(targetKey);
-                        dependOnRuns.put(dependence.getKey(),runs);
-                    }
-
-                }
-            }
-
-        }
-
-
-        //loop over everything and remove merged ones
-        for(int i = 0; i < mergedKeys.size(); i++){
-            dependOnRuns.remove(mergedKeys.get(i));
-            dependOnSets.remove(mergedKeys.get(i));
-        }
-
-        //debug
-        //sets
-        System.out.println("\n");
-
-        System.out.println("Chosen after sets!!!");
-        for(Map.Entry<Integer, List<Integer>> sets: dependOnSets.entrySet()){
-            System.out.println("run: " + sets.getKey() + " influence on sets : " + sets.getValue());
-
-        }
-        //runs
-        System.out.println("Chosen after runs!!");
-        for(Map.Entry<Integer, List<Integer>> runs: dependOnRuns.entrySet()){
-            System.out.println("run: " + runs.getKey() + " influence on runs : " + runs.getValue());
-
-        }
-
-        //deep copy runs and sets
-
-        List<List<Card>> listSetsNew = this.findSets();
-        List<List<Card>> listRunsNew = this.findRuns();
-
-
-        //finalizing
-        if(!dependOnSets.isEmpty()){
-
-            for(Integer key:dependOnSets.keySet()) {
-                int runsSum = 0;
-                int setSum = 0;
-                //calc length of (run) key
-                runsSum += valueInRunOrSet(listRuns.get(key));
-
-                //calc length of dependent runs
-                if (!dependOnRuns.isEmpty()) {
-                    for (Integer index : dependOnRuns.get(key)) {
-                        runsSum += valueInRunOrSet(listRuns.get(index));
-                    }
-                }
-
-                //calc length of related sets
-                if (!dependOnSets.isEmpty()) {
-                    for (Integer index : dependOnSets.get(key)) {
-                        setSum += valueInRunOrSet(listSets.get(index));
-                    }
-                }
-                //compare
-                System.out.println("runSum: " +  runsSum);
-                System.out.println("setSum: "+ setSum);
-
-                if(runsSum < setSum){
-                    if(listRuns.get(key).size() <= 3){
-                        listRunsNew.remove(listRuns.get(key));
-                    }else{
-                        //remove one card have to compensate for being in the middle (and if at the edges have to just remove 1 card)
-
-                    }
-
-                    if(!dependOnRuns.isEmpty()){
-                        for(Integer index : dependOnRuns.get(key)) {
-                            if(listRuns.get(index).size() <= 3){
-                                listRunsNew.remove(listRuns.get(index));
-                            }else{
-                                //remove one card have to compensate for being in the middle (and if at the edges have to just remove 1 card)
-
-
-
-                            }
-
-                        }
-                    }
-
-                }else{
-                    for (Integer index : dependOnSets.get(key)) {
-                        if (listSets.get(index).size() <= 3) {
-                            listSetsNew.remove(listSets.get(index));
-                        }else{
-
-
-                            Card c = mutualCards.get(new Integer[] {index,key});
-                            System.out.println("card: " + c);
-                            listSets.get(index).remove(c);
-
-                        }
-                    }
-                }
-            }
-            System.out.println("Chosen card: ");
-            System.out.println(listRunsNew);
-            System.out.println(listSetsNew);
-        }
+            //calculate the value; value = sum_of_values(removed) + sum_of_values(this.findruns(sequence))
+            //update the best value and best value combination if you get a higher value then that.
+            //call the recursiveSearch again with the new sequence and new removed.
+            //Note: (make also sure that there is in the loop at least one empty sequence, that doesnt remove anything)
+        List<List<Card>> setPermutation = this.getPermutation(this.findSets(this.hand));
 
 
     }
 
+    public void bestCombination() {
+        this.bestValueCombination = 0;
+        this.bestCombination = new ArrayList<>();
+        System.out.println("Sets: "+ getPermutation(this.findSets(this.hand))); //make permutations and make 4,4,4,4 => into 4,4,4 and 4,4,4,4 ; ToDo list
+        System.out.println("Runs: " + this.findRuns(this.hand));
 
+        List<List<Card>> removed = new ArrayList<>();
+        this.recursiveSearch(this.hand.toList(), removed);
+
+    }
+
+    public List<List<Card>> getPermutation(List<List<Card>> listSets) {
+        List<List<Card>> permutation = new ArrayList<>();
+        int index = 0;
+        for (int i = 0; i < listSets.size(); i++) {
+            if (listSets.get(i).size()>3) {
+
+                for (int j = 0; j < 4; j++) {
+                    List<Card> set = new ArrayList<>();
+                    for (int ii = 0; ii < 4; ii++) {
+
+                        set.add(listSets.get(i).get(ii));
+                    }
+
+                    permutation.add(set);
+                    this.remove(permutation.get(index), j);
+                    //System.out.println(permutation.get(index));
+                    index++;
+                }
+            }
+        }
+        listSets.addAll(permutation);
+        return listSets;
+    }
+
+    public void remove(List<Card> card, int i) {
+        card.remove(i);
+    }
 
     public static int valueInRunOrSet(List<Card> listCard) {
         int score = 0;
         for (int i = 0; i < listCard.size(); i++) {
-        	score = score + listCard.get(i).getGinRummyValue();
+            score = score + listCard.get(i).getGinRummyValue();
         }
         return score;
+    }
+
+    public List<List<Card>> findSets(SetOfCards handOfCards){
+        List<List<Card>> listList = new ArrayList<List<Card>>();
+
+        handOfCards.sortByValue();
+
+        int prev = 0;
+
+        int count = 0;
+
+        for(int i=0; i<handOfCards.getCardSetSize();i++) {
+            Card aCard = handOfCards.getCard(i);
+
+            if(aCard.getValue() == prev) {
+                count++;
+            } else {
+
+                // TODO: Bugtest this thingy, cause the logic is rather wonky for me
+
+
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i, count);
+
+                    listList.add(tempList);
+                }
+
+                prev = aCard.getValue();
+                count = 0;
+            }
+
+
+        }
+
+        if(listList.size() == 0) {
+            return null;
+        } else {
+            return listList;
+        }
+
     }
 
     public List<List<Card>> findSets(){
@@ -231,6 +168,14 @@ public class Player {
                 // So what we're going to do is go ahead and store all of the previous cards in the listList
 
                 if(count >= 2) {
+                    /*
+                    int startPoint = i-count-1;
+                    List<Card> tempList = new ArrayList<>();
+
+                    for(int j=0; j<count+1;j++) {
+                        tempList.add(this.hand.getCard(j+startPoint));
+                    }
+                     */
 
                     List<Card> tempList = getSetOrRun(i, count);
 
@@ -251,13 +196,64 @@ public class Player {
         }
 
     }
+    public List<List<Card>> findRuns(SetOfCards handOfCards){
+        handOfCards.sortBySuits();
+
+        List<List<Card>> listList = new ArrayList<List<Card>>();
+
+        Card.SUITS prevSuit = null;
+        int prevVal = 0;
+        int count = 0;
+
+        for(int i=0; i<handOfCards.getCardSetSize(); i++) {
+            Card aCard = handOfCards.getCard(i);
+
+            if(aCard.getSuit() != prevSuit) {
+                // TODO: Clean up code and make this a separate method. DONE
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i, count);
+
+                    listList.add(tempList);
+                }
+
+                prevSuit = aCard.getSuit();
+                prevVal = aCard.getValue();
+                count = 0;
+                continue;
+            }
+
+            if((aCard.getValue()-prevVal) == 1 ) {
+                count++;
+            } else {
+
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i, count);
+
+                    listList.add(tempList);
+
+                }
+
+                count = 0;
+            }
+            prevVal = aCard.getValue();
+        }
+
+        if(listList.size() == 0) {
+            return null;
+        } else {
+            return listList;
+        }
+
+    }
 
     public List<List<Card>> findRuns(){
         this.hand.sortBySuits();
 
         List<List<Card>> listList = new ArrayList<List<Card>>();
 
-        SUITS prevSuit = null;
+        Card.SUITS prevSuit = null;
         int prevVal = 0;
         int count = 0;
 
@@ -344,8 +340,6 @@ public class Player {
         return mutualCard;
     }
 
-
-
     //This method is to decide whether a card should be in a run or set if any run and set has one mutual card
     /*Need to be improved
       For example: a run contains two cards that are in 2 separated sets or vice versa
@@ -382,24 +376,24 @@ public class Player {
 
 
     }
-    
+
     /*
      * Somehow another method will take care of finding the optimal combination of runs and melds
      * This method will just remove those cards, and then return a list with the remaining deadwood
      */
-    
+
     public List<Card> findDeadwood(List<Card> cardsInMelds){
-    	
-    	List<Card> deadwood = new ArrayList<Card>();
-    	
-    	for(Card aCard:cardsInMelds) {
-    		if(!this.hand.contains(aCard)) {
-    			deadwood.add(aCard);
-    		}
-    	}
-    	
-    	return deadwood;
-    	
+
+        List<Card> deadwood = new ArrayList<Card>();
+
+        for(Card aCard:cardsInMelds) {
+            if(!this.hand.contains(aCard)) {
+                deadwood.add(aCard);
+            }
+        }
+
+        return deadwood;
+
     }
 
     public int getHandSize() {
@@ -415,12 +409,12 @@ public class Player {
     public void evaluateScore(int value) { //subtract or add score in case of loss or win
         score += value;
     }
-    
+
     public void setHand(SetOfCards cards) {
-    	this.hand = cards;
+        this.hand = cards;
     }
-    
-    
+
+
     /*
      *  Finds the score of a given hand
      *  Needs to be modified to receive which cards are already in a run or a set
@@ -428,94 +422,99 @@ public class Player {
      *  TODO: Modify method so that the bonuses can be added at the end of a turn
      */
     public int scoreHand() {
-    	List<List<Card>> runs = this.findRuns();
-    	List<List<Card>> sets = this.findSets();
-    	
-    	this.compareScore(runs, sets);
-    	
-    	List<Card> resultingCards = new ArrayList<Card>();
-    	
-    	for(List<Card> aRun:runs) {
-    		resultingCards.addAll(aRun);
-    	}
-    	
-    	for(List<Card> aSet:sets) {
-    		resultingCards.addAll(aSet);
-    	}
-    	
-    	List<Card> deadwood = this.findDeadwood(resultingCards);
-    	
-    	// I also need to find a way to take the deadwood out in some capacity
-    	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
-    	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
-    	
-    	//int score = SetOfCards.scoreGinRummy(deadwood);
-    	
-    	return score;
-    	
+        List<List<Card>> runs = this.findRuns();
+        List<List<Card>> sets = this.findSets();
+
+        this.compareScore(runs, sets);
+
+        List<Card> resultingCards = new ArrayList<Card>();
+
+        for(List<Card> aRun:runs) {
+            resultingCards.addAll(aRun);
+        }
+
+        for(List<Card> aSet:sets) {
+            resultingCards.addAll(aSet);
+        }
+
+        List<Card> deadwood = this.findDeadwood(resultingCards);
+
+        // I also need to find a way to take the deadwood out in some capacity
+        // As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
+        // TODO: Modify this so that the player that didn't knock can lose some of the deadwood
+
+        //int score = SetOfCards.scoreGinRummy(deadwood);
+
+        return score;
+
     }
-    
+
     /*
      * Some method that has listeners and stuff
      * It'll add the card to the player's hand, and then ask them to discard a card
      * If the returned card is the given card, then there's no changes
-     * 
+     *
      * For now, I'm just returning the given card
      * So the game will always discard the given card
-     * 
+     *
      * TODO: Add the listeners
-     * 
+     *
      */
     public Card chooseCardToDiscard(Card aCard) {
-    	
-    	return aCard;
+
+        return aCard;
     }
-    
-    
+
+
     /*
      * Listener to get whether to get the deck or from the discard pile
-     * 
+     *
      * If false:
      * 	then the player chose the deck
      * if true:
      * 	player chose the card from the discard pile
-     * 
+     *
      * Currently the player only chooses from the deck
-     * 
+     *
      * TODO: Add the listeners for the game
-     * 
+     *
      */
-    
+
     public boolean chooseDeckOrPile() {
-    	return false;
+        return false;
     }
-    
+
     /*
      * Listener to get whether the player chose to knock or not
-     * 
+     *
      * If false:
      * 	Player didn't knock, so goes on
      * If true:
      * 	Player knocked, so cards are down and next phase of game happens
      */
-    
+
     public boolean chooseToKnock() {
-    	return false;
+        return false;
     }
-    
+
     public static void main(String[] args) {
-		SetOfCards deck = new SetOfCards(true);
+        SetOfCards deck = new SetOfCards(true);
         deck.shuffleCards();
-		
-		Player aPlayer = new Player("player",SetOfCards.handOutCard(20, deck));
-		//aPlayer.hand.sortBySuitAndValue();
+
+        PlayerOne aPlayer = new PlayerOne("player",SetOfCards.handOutCard(20, deck));
+        //aPlayer.hand.sortBySuitAndValue();
         //System.out.println(aPlayer.hand);
 
-		List<List<Card>> runs = aPlayer.findRuns();
+        List<List<Card>> runs = aPlayer.findRuns();
         System.out.println("runs: \n " + runs);
 
-		List<List<Card>> sets = aPlayer.findSets();
+        List<List<Card>> sets = aPlayer.findSets();
         System.out.println("sets: \n" + sets);
+
+        /*
+        aPlayer.getPermutation(sets);
+        System.out.println("sets: \n" + sets);
+         */
 
         //compareScore(runs, sets);
 
@@ -527,7 +526,8 @@ public class Player {
         aPlayer.bestCombination();
 
 
-		
-	}
-    
+
+    }
+
+
 }

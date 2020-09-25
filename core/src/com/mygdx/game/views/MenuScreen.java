@@ -1,3 +1,4 @@
+
 package com.mygdx.game.views;
 
 import com.badlogic.gdx.Gdx;
@@ -99,3 +100,4 @@ public class MenuScreen implements Screen{
         // TODO Auto-generated method stub
     }
 }
+

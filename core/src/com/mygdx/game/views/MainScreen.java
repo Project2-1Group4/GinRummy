@@ -1,3 +1,4 @@
+/*
 package com.mygdx.game.views;
 
 import cardlogic.Card;
@@ -166,4 +167,7 @@ public class MainScreen implements Screen{
         spriteBatch.dispose();
         atlas.dispose();
     }
+
+
 }
+*/

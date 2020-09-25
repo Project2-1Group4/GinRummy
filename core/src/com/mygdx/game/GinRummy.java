@@ -1,3 +1,4 @@
+
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
@@ -49,3 +50,5 @@ public class GinRummy extends Game {
 
 	}
 }
+
+
