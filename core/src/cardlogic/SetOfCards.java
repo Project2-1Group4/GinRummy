@@ -82,6 +82,31 @@ public class SetOfCards {
 		return totScore;
 		
 	}
+	
+	public static boolean findIfCardMakesMeld(Card aCard, List<Card> setOrRun) {
+		return findIfCardMakesRun(aCard, setOrRun)||findIfCardMakesSet(aCard,setOrRun);
+	}
+	
+	/*
+	 * So the idea is that the difference between the first and last card in a run has to be one
+	 * For the card to be valid in the run
+	 * But! This can be at the beginning or end of the run
+	 * So I try to take that into account
+	 */
+	
+	public static boolean findIfCardMakesRun(Card aCard, List<Card> run) {
+		boolean temp1 = Math.abs(aCard.getValue()-run.get(0).getValue())==1;
+		boolean temp2 = Math.abs(aCard.getValue()-run.get(run.size()-1).getValue())==1;
+		return temp1||temp2;
+	}
+	
+	/*
+	 * This method assumes that the given list is a set
+	 * So the card just has to have the same value as one of the cards in the set
+	 */
+	public static boolean findIfCardMakesSet(Card aCard, List<Card> set) {
+		return aCard.getValue() == set.get(0).getValue();
+	}
 
 	public void removeCard() {this.cards.remove(0);}
 	
