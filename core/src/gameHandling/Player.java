@@ -211,24 +211,7 @@ public class Player {
 
     }
     
-    /*
-     * Somehow another method will take care of finding the optimal combination of runs and melds
-     * This method will just remove those cards, and then return a list with the remaining deadwood
-     */
     
-    public List<Card> findDeadwood(List<Card> cardsInMelds){
-    	
-    	List<Card> deadwood = new ArrayList<Card>();
-    	
-    	for(Card aCard:cardsInMelds) {
-    		if(!this.hand.contains(aCard)) {
-    			deadwood.add(aCard);
-    		}
-    	}
-    	
-    	return deadwood;
-    	
-    }
 
     public int getHandSize() {
         return hand.size();
@@ -248,6 +231,10 @@ public class Player {
     	this.hand = cards;
     }
     
+    public void addPoints(int points) {
+    	this.score += points;
+    }
+    
     
     /*
      *  Finds the score of a given hand
@@ -256,32 +243,98 @@ public class Player {
      *  TODO: Modify method so that the bonuses can be added at the end of a turn
      */
     public int scoreHand() {
-    	List<List<Card>> runs = this.findRuns();
-    	List<List<Card>> sets = this.findSets();
     	
-    	this.compareScore(runs, sets);
     	
-    	List<Card> resultingCards = new ArrayList<Card>();
+    	List<List<Card>> resultingCards = this.getMelds();
     	
-    	for(List<Card> aRun:runs) {
-    		resultingCards.addAll(aRun);
-    	}
+    	List<Card> deadwood = this.getDeadwood(resultingCards);
     	
-    	for(List<Card> aSet:sets) {
-    		resultingCards.addAll(aSet);
-    	}
-    	
-    	List<Card> deadwood = this.findDeadwood(resultingCards);
-    	
-    	// I also need to find a way to take the deadwood out in some capacity
-    	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
-    	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
+    	// Deadwood shouldn't be taken out, it's done separately
+    	// Done like this because going gin affects this, so having them separately is important
+    	// 
     	
     	int score = SetOfCards.scoreGinRummy(deadwood);
     	
     	return score;
     	
     }
+    
+    
+    /*
+     * Idea of this method is that it'll find those cards that are now part of the deadwood
+     * Done so that the cards can be later used, be it to add them to other runs or to get stuff done
+     */
+    public List<Card> findDeadwood(){
+    	
+    	List<List<Card>> resultingCards = this.getMelds();
+    	
+    	return this.getDeadwood(resultingCards);	
+    }
+    
+    /*
+     * Somehow another method will take care of finding the optimal combination of runs and melds
+     * This method will just remove those cards, and then return a list with the remaining deadwood
+     */
+    
+    public List<Card> findDeadwood(List<Card> cardsInMelds){
+    	
+    	List<Card> deadwood = new ArrayList<Card>();
+    	
+    	for(Card aCard:cardsInMelds) {
+    		if(!this.hand.contains(aCard)) {
+    			deadwood.add(aCard);
+    		}
+    	}
+    	
+    	return deadwood;
+    	
+    }
+    
+    /*
+     * This method is more than all used internally
+     * Idea was to overload this guy with findDeadwood, but due to garbage java treatment of generics this happened
+     */
+    
+    public List<Card> getDeadwood(List<List<Card>> cardsInMelds){
+    	
+    	List<Card> usedCards = new ArrayList<Card>();
+    	
+    	for(List<Card> melds:cardsInMelds) {
+    		usedCards.addAll(melds);
+    	}
+    	
+    	return this.findDeadwood(usedCards);
+    	
+    }
+    
+    
+    /*
+     * Idea is that this method will find the melds in the given player's hand
+     * It'll return the melds in a list of lists
+     */
+    public List<List<Card>> getMelds(){
+    	List<List<Card>> runs = this.findRuns();
+    	List<List<Card>> sets = this.findSets();
+    	
+    	/*
+    	 * Here I'm assuming the compareScore method removes any overlap, and gives us the highest value combination of runs and sets
+    	 * TODO: Bugtest this idea
+    	 */
+    	this.compareScore(runs, sets);
+    	
+    	List<List<Card>> resultingCards = new ArrayList<List<Card>>();
+    	
+    	for(List<Card> aRun:runs) {
+    		resultingCards.add(aRun);
+    	}
+    	
+    	for(List<Card> aSet:sets) {
+    		resultingCards.add(aSet);
+    	}
+    	
+    	return resultingCards;
+    }
+    
     
     /*
      * Some method that has listeners and stuff
