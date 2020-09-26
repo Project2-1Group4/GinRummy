@@ -10,7 +10,7 @@ public class Player {
     private SetOfCards hand;
     private int score;
 
-    private int bestValueCombination; //get the sum value of the set of card (not gin rummy value)
+    private int bestValueCombination; //get the sum value of the set of card 
     private List<List<Card>> bestCombination;
     private List<List<Card>> permutations;
     private List<Card> deadWood;
