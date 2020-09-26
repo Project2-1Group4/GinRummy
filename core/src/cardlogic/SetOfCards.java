@@ -70,13 +70,6 @@ public class SetOfCards {
 	}
 
 	public void removeCard() {this.cards.remove(0);}
-	public List<Card> toList(){
-		return this.cards;
-	}
-
-	public void fromList(List<Card> cards){
-		this.cards = cards;
-	}
 	
 	public void sortBySuits() {
 		
