@@ -10,7 +10,7 @@ public class Player {
     private SetOfCards hand;
     private int score;
 
-    private int bestValueCombination;
+    private int bestValueCombination; //get the sum value of the set of card (not gin rummy value)
     private List<List<Card>> bestCombination;
     private List<List<Card>> permutations;
     private List<Card> deadWood;
@@ -110,7 +110,7 @@ public class Player {
         //run recursion
         this.recursiveSearch(this.hand.toList(), removed);
 
-        System.out.println(this.bestCombination);
+        System.out.println("runs and sets chosen: "+this.bestCombination);
         System.out.println(this.bestValueCombination);
     }
 
@@ -362,7 +362,7 @@ public class Player {
     	for (List<Card> card : this.bestCombination) {
     	    if (handCard.containsAll(card)) {
     	        this.deadWood.removeAll(copyList(card));
-                System.out.println("copy: "+this.deadWood);
+                //System.out.println("copy: "+this.deadWood);
             }
         }
     	return this.deadWood;
@@ -394,8 +394,10 @@ public class Player {
      *  I'm currently doing it internally, so there should be no problems with that
      *  TODO: Modify method so that the bonuses can be added at the end of a turn
      */
-    /*
+
+
     public int scoreHand() {
+    /*
     	List<List<Card>> runs = this.findRuns();
     	List<List<Card>> sets = this.findSets();
     	
@@ -412,6 +414,8 @@ public class Player {
     	}
     	
     	List<Card> deadwood = this.findDeadwood(resultingCards);
+
+     */
     	
     	// I also need to find a way to take the deadwood out in some capacity
     	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
@@ -423,7 +427,7 @@ public class Player {
     	
     }
 
-     */
+
     
     /*
      * Some method that has listeners and stuff
@@ -477,7 +481,7 @@ public class Player {
 		SetOfCards deck = new SetOfCards(true);
         deck.shuffleCards();
 		
-		Player aPlayer = new Player("player",SetOfCards.handOutCard(20, deck));
+		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
 		//aPlayer.hand.sortBySuitAndValue();
         //System.out.println(aPlayer.hand);
 
@@ -489,9 +493,11 @@ public class Player {
 
         System.out.println("hand: "+ aPlayer.hand + "\n");
 
-        aPlayer.bestCombination();
+        //aPlayer.bestCombination();
 
         System.out.println("deadwood: "+aPlayer.findDeadwood());
+
+        int deadWoodValue = SetOfCards.getDeadWoodValue(aPlayer.deadWood);
 
 		
 	}

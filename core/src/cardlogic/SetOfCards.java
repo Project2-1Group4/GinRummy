@@ -16,7 +16,7 @@ public class SetOfCards {
 	 * Assumption is being done that top of deck is the last card in the pile
 	 * And bottom is index 0
 	 */
-	
+
 	public SetOfCards(boolean deck){
 		
 		if (deck) {
@@ -122,6 +122,15 @@ public class SetOfCards {
 	
 	public void shuffleCards() {
 		Collections.shuffle(this.cards);
+	}
+
+	public static int getDeadWoodValue(List<Card> listCards){
+		int value = 0;
+		for (Card card: listCards) {
+			value += card.getGinRummyValue();
+		}
+		System.out.println(value);
+		return value;
 	}
 	
 	public String toString() {
