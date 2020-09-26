@@ -357,7 +357,7 @@ public class Player {
     	List<Card> handCard = this.hand.toList();
         this.deadWood = copyList(handCard);
         //System.out.println("Raw deadwoood: "+deadWood);
-    	this.bestCombination();
+    	this.bestCombination(); //this is use to get the card in melds, the variable bestComination will save those list cards
 
     	for (List<Card> card : this.bestCombination) {
     	    if (handCard.containsAll(card)) {
