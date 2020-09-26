@@ -123,15 +123,6 @@ public class SetOfCards {
 	public void shuffleCards() {
 		Collections.shuffle(this.cards);
 	}
-
-	public static int getDeadWoodValue(List<Card> listCards){
-		int value = 0;
-		for (Card card: listCards) {
-			value += card.getGinRummyValue();
-		}
-		System.out.println(value);
-		return value;
-	}
 	
 	public String toString() {
 		return Arrays.toString(this.cards.toArray());

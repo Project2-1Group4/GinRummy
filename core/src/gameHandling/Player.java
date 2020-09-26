@@ -117,7 +117,7 @@ public class Player {
     public int valueOfLists(List<List<Card>> cards){
         int sumValue = 0;
         for(List<Card> list:cards){
-            sumValue += valueInRunOrSet(list);
+            sumValue += valueInList(list);
         }
         return sumValue;
     }
@@ -158,7 +158,7 @@ public class Player {
         return newCard;
     }
 
-    public static int valueInRunOrSet(List<Card> listCard) {
+    public static int valueInList(List<Card> listCard) {
         int score = 0;
         for (int i = 0; i < listCard.size(); i++) {
         	score = score + listCard.get(i).getGinRummyValue();
@@ -357,7 +357,7 @@ public class Player {
     	List<Card> handCard = this.hand.toList();
         this.deadWood = copyList(handCard);
         //System.out.println("Raw deadwoood: "+deadWood);
-    	this.bestCombination();
+    	//this.bestCombination();
 
     	for (List<Card> card : this.bestCombination) {
     	    if (handCard.containsAll(card)) {
@@ -493,12 +493,13 @@ public class Player {
 
         System.out.println("hand: "+ aPlayer.hand + "\n");
 
-        //aPlayer.bestCombination();
+        aPlayer.bestCombination();
 
         System.out.println("deadwood: "+aPlayer.findDeadwood());
 
-        int deadWoodValue = SetOfCards.getDeadWoodValue(aPlayer.deadWood);
+        int deadWoodValue = Player.valueInList(aPlayer.deadWood);
 
+        System.out.println("Value of deadwood set: "+deadWoodValue);
 		
 	}
     
