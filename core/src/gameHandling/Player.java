@@ -13,7 +13,7 @@ public class Player {
     private int bestValueCombination;
     private List<List<Card>> bestCombination;
     private List<List<Card>> permutations;
-
+    private List<Card> deadWood;
 
     public Player(String name) {
         this(name, new SetOfCards());
@@ -353,18 +353,19 @@ public class Player {
      */
     
     public List<Card> findDeadwood(){
-    	List<Card> deadWood = new ArrayList<>();
+
     	List<Card> handCard = this.hand.toList();
+        this.deadWood = copyList(handCard);
+        //System.out.println("Raw deadwoood: "+deadWood);
     	this.bestCombination();
-    	for (List<Card> card : this.bestCombination) {
-            deadWood.addAll(copyList(card));
-        }
+
     	for (List<Card> card : this.bestCombination) {
     	    if (handCard.containsAll(card)) {
-    	        deadWood.removeAll(card);
+    	        this.deadWood.removeAll(copyList(card));
+                System.out.println("copy: "+this.deadWood);
             }
         }
-    	return deadWood;
+    	return this.deadWood;
     	
     }
 
@@ -490,6 +491,7 @@ public class Player {
 
         aPlayer.bestCombination();
 
+        System.out.println("deadwood: "+aPlayer.findDeadwood());
 
 		
 	}
