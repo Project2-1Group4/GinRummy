@@ -11,6 +11,7 @@ public class Card implements Comparable {
 	
 	private SUITS suit;
 	private int value;
+	private String nameCard;
 	
 	//final SUITS suitList = {
 	
@@ -32,13 +33,15 @@ public class Card implements Comparable {
 		}
 		
 		this.setValue(value);
+		this.nameCard = Integer.toString(value) + this.suit;
 	}
 
+	public String getNameCard() {
+		return this.nameCard;
+	}
 	public SUITS getSuit() {
 		return suit;
 	}
-
-
 
 	public void setSuit(SUITS suit) {
 		this.suit = suit;
@@ -64,9 +67,10 @@ public class Card implements Comparable {
 	public int compareTo(Object arg0) {
 		return this.value - ((Card)arg0).getValue();
 	}
+
 	
 	public String toString() {
-		return this.suit + Integer.toString(value);
+		return Integer.toString(value)+this.suit;
 	}
 
 	public boolean equals(Card card) {
