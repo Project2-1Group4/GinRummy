@@ -352,17 +352,19 @@ public class Player {
      * This method will just remove those cards, and then return a list with the remaining deadwood
      */
     
-    public List<Card> findDeadwood(List<Card> cardsInMelds){
-    	
-    	List<Card> deadwood = new ArrayList<Card>();
-    	
-    	for(Card aCard:cardsInMelds) {
-    		if(!this.hand.contains(aCard)) {
-    			deadwood.add(aCard);
-    		}
-    	}
-    	
-    	return deadwood;
+    public List<Card> findDeadwood(){
+    	List<Card> deadWood = new ArrayList<>();
+    	List<Card> handCard = this.hand.toList();
+    	this.bestCombination();
+    	for (List<Card> card : this.bestCombination) {
+            deadWood.addAll(copyList(card));
+        }
+    	for (List<Card> card : this.bestCombination) {
+    	    if (handCard.containsAll(card)) {
+    	        deadWood.removeAll(card);
+            }
+        }
+    	return deadWood;
     	
     }
 
