@@ -9,11 +9,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -32,13 +36,14 @@ public class MainScreen implements Screen{
     private CardGame model;
     private SpriteBatch batch;
     private Texture background;
+    private ModelBatch modelBatch;
+
 
     SetOfCards deck;
     SetOfCards cardsPlayer1;
     SetOfCards cardsPlayer2;
     Card current;
 
-    SpriteBatch spriteBatch;
     TextureAtlas atlas;
 
     //OrthographicCamera cam;
@@ -61,6 +66,8 @@ public class MainScreen implements Screen{
 
     @Override
     public void show() {
+        modelBatch= new ModelBatch();
+
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -69,7 +76,7 @@ public class MainScreen implements Screen{
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("pokerTable2.jpg"));
 
-        spriteBatch = new SpriteBatch();
+
         atlas = new TextureAtlas("carddeck.atlas");
 
         cardsPlayer1 = new SetOfCards(false);
@@ -88,7 +95,7 @@ public class MainScreen implements Screen{
 
         // top card of pile
         current = deck.drawTopCard();
-        current.setPosition(-1,0);
+        current.worldTransform.translate(-1,0,0);
         current.turn();
 
         cam3D = new PerspectiveCamera();
@@ -99,36 +106,37 @@ public class MainScreen implements Screen{
 
     public void createCard(float x, float y, SetOfCards cards){
         Card card = deck.drawTopCard();
-        card.setPosition(x,y);
+        card.worldTransform.translate(x,y,0);
         cards.addCard(card);
     }
 
     @Override
     public void render(float delta) {
+        final float delta1 = Math.min(1/30f, Gdx.graphics.getDeltaTime());
         Gdx.gl.glClearColor( 1f, 1f, 1f, 1f );
-        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
+        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
-        batch.draw(background, 0,0);
+        batch.draw(background,0,0);
         batch.end();
 
+        current.worldTransform.rotate(Vector3.Y, 90 * delta1);
         // rendering cards in field
-        spriteBatch.begin();
+        modelBatch.begin(cam3D);
         for (int i = 0; i< cardsPlayer1.getCardSetSize(); i++){
-            cardsPlayer1.getCard(i).draw(spriteBatch);
+            modelBatch.render(cardsPlayer1.getCard(i));
         }
 
         for (int i = 0; i< cardsPlayer2.getCardSetSize(); i++){
-            cardsPlayer2.getCard(i).draw(spriteBatch);
+            modelBatch.render(cardsPlayer2.getCard(i));
         }
 
-        current.draw(spriteBatch);
+        modelBatch.render(current);
 
-        spriteBatch.end();
+        modelBatch.end();
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
 
-        spriteBatch.setProjectionMatrix(cam3D.combined);
         camController.update();
     }
 
@@ -164,8 +172,9 @@ public class MainScreen implements Screen{
 
     @Override
     public void dispose() {
-        spriteBatch.dispose();
+        modelBatch.dispose();
         atlas.dispose();
+
     }
 
 
