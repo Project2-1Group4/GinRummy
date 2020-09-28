@@ -1,13 +1,23 @@
 package cardlogic;
 
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.model.MeshPart;
+import com.badlogic.gdx.math.Matrix4;
 
 import static com.mygdx.game.views.MainScreen.CARD_HEIGHT;
 import static com.mygdx.game.views.MainScreen.CARD_WIDTH;
 
-public class Card implements Comparable {
-	
+public class Card extends Renderable implements Comparable {
+
 	public enum SUITS{
 		SPADES,
 		CLOVERS,
@@ -33,7 +43,7 @@ public class Card implements Comparable {
 	 * K = 13
 	 */
 	
-	public Card(int suit, int value,Sprite back, Sprite front) {
+	public Card(int suit, int value,Sprite back, Sprite front)  {
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
@@ -47,9 +57,32 @@ public class Card implements Comparable {
 		this.setValue(value);
 		this.back = back;
 		this.front = front;
+
 		back.setSize(CARD_WIDTH, CARD_HEIGHT);
 		front.setSize(CARD_WIDTH, CARD_HEIGHT);
+
+		front.setPosition(-front.getWidth() * 0.5f, -front.getHeight() * 0.5f);
+		back.setPosition(-back.getWidth() * 0.5f, -back.getHeight() * 0.5f);
+
 		this.nameCard = Integer.toString(value) + this.suit;
+
+		material = new Material(
+				TextureAttribute.createDiffuse(front.getTexture()),
+				new BlendingAttribute(false, 1f),
+				FloatAttribute.createAlphaTest(0.5f)
+		);
+
+		float[] vertices = convert(front.getVertices(), back.getVertices());
+		short[] indices = new short[] {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+
+
+		meshPart.mesh = new Mesh(true, 8, 12, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
+		meshPart.mesh.setVertices(vertices);
+		meshPart.mesh.setIndices(indices);
+		meshPart.offset = 0;
+		meshPart.size = meshPart.mesh.getNumIndices();
+		meshPart.primitiveType = GL20.GL_TRIANGLES;
+		meshPart.update();
 	}
 
 	private void setSuit(SUITS spades) {
@@ -62,11 +95,25 @@ public class Card implements Comparable {
 	}
 
 
-	public void setPosition(float x, float y) {
+/*	public void setPosition(float x, float y) {
 		front.setPosition(x - 0.5f * front.getWidth(), y - 0.5f * front.getHeight());
 		back.setPosition(x - 0.5f * back.getWidth(), y - 0.5f * back.getHeight());
 	}
+*/
+	private static float[] convert(float[] front, float[] back) {
 
+		return new float[]{
+				front[Batch.X2], front[Batch.Y2], 0, 0, 0, 1, front[Batch.U2], front[Batch.V2],
+				front[Batch.X1], front[Batch.Y1], 0, 0, 0, 1, front[Batch.U1], front[Batch.V1],
+				front[Batch.X4], front[Batch.Y4], 0, 0, 0, 1, front[Batch.U4], front[Batch.V4],
+				front[Batch.X3], front[Batch.Y3], 0, 0, 0, 1, front[Batch.U3], front[Batch.V3],
+
+				back[Batch.X1], back[Batch.Y1], 0, 0, 0, -1, back[Batch.U1], back[Batch.V1],
+				back[Batch.X2], back[Batch.Y2], 0, 0, 0, -1, back[Batch.U2], back[Batch.V2],
+				back[Batch.X3], back[Batch.Y3], 0, 0, 0, -1, back[Batch.U3], back[Batch.V3],
+				back[Batch.X4], back[Batch.Y4], 0, 0, 0, -1, back[Batch.U4], back[Batch.V4]};
+	}
+		
 	public void turn() {
 			turned = !turned;
 		}
@@ -85,9 +132,6 @@ public class Card implements Comparable {
 	public SUITS getSuit() {
 		return suit;
 	}
-
-
-
 
 	
 	public int getGinRummyValue() {
