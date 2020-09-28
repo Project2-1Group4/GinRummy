@@ -347,6 +347,11 @@ public class Player {
     }
 
     
+    /*
+     * I'm not sure if I'm understanding this method correctly, but it seems to find the deadwood somehow
+     * The part that makes me unsure is the copyList() method, as I don't know how it reaches the hand
+     * That and the fact that best combination is stored inside the class, there's something in there that makes me unsure
+     */
     
     public List<Card> findDeadwood(){
 
@@ -417,13 +422,20 @@ public class Player {
     /*
      * Idea of this method is that it'll find those cards that are now part of the deadwood
      * Done so that the cards can be later used, be it to add them to other runs or to get stuff done
+     * 
+     * 
+     * THIS IS THE OLD DEADWOOD METHOD, TRUC ADDED A NEW ONE
+     * TODO: Check code and make sure this method isn't needed and that everything's good
+     * 
      */
+    
+    /*
     public List<Card> findDeadwood(){
     	
     	List<List<Card>> resultingCards = this.getMelds();
     	
     	return this.getDeadwood(resultingCards);	
-    }
+    }*/
     
     /*
      * Somehow another method will take care of finding the optimal combination of runs and melds
@@ -465,28 +477,17 @@ public class Player {
     /*
      * Idea is that this method will find the melds in the given player's hand
      * It'll return the melds in a list of lists
+     * 
+     * 
+     * NEW INFO:
+     * I'm pretty sure the method's useless now due to the findBestCombinations method done by Truc
+     * I added some changes to make sure the older code works, but there's definitely some updating needed inside
+     * TODO: Check code for inconsistencys and speed
+     * 
      */
     public List<List<Card>> getMelds(){
-    	List<List<Card>> runs = this.findRuns();
-    	List<List<Card>> sets = this.findSets();
-    	
-    	/*
-    	 * Here I'm assuming the compareScore method removes any overlap, and gives us the highest value combination of runs and sets
-    	 * TODO: Bugtest this idea
-    	 */
-    	this.compareScore(runs, sets);
-    	
-    	List<List<Card>> resultingCards = new ArrayList<List<Card>>();
-    	
-    	for(List<Card> aRun:runs) {
-    		resultingCards.add(aRun);
-    	}
-    	
-    	for(List<Card> aSet:sets) {
-    		resultingCards.add(aSet);
-    	}
-    	
-    	return resultingCards;
+    	this.bestCombination();
+    	return this.bestCombination;
     }
 
 
