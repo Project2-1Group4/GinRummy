@@ -1,3 +1,4 @@
+
 package com.mygdx.game.views;
 
 import com.badlogic.gdx.Gdx;
@@ -110,3 +111,4 @@ public class LoadingScreen implements Screen{
         stage.dispose();
     }
 }
+
