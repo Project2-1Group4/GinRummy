@@ -1,5 +1,11 @@
 package cardlogic;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+import static com.mygdx.game.views.MainScreen.CARD_HEIGHT;
+import static com.mygdx.game.views.MainScreen.CARD_WIDTH;
+
 public class Card implements Comparable {
 	
 	public enum SUITS{
@@ -12,6 +18,12 @@ public class Card implements Comparable {
 	private SUITS suit;
 	private int value;
 	private String nameCard;
+	private final Sprite front;
+	private final Sprite back;
+	private boolean turned;
+
+	public final static float CARD_WIDTH = 1f;
+	public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
 	
 	//final SUITS suitList = {
 	
@@ -21,7 +33,7 @@ public class Card implements Comparable {
 	 * K = 13
 	 */
 	
-	public Card(int suit, int value) {
+	public Card(int suit, int value,Sprite back, Sprite front) {
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
@@ -33,8 +45,39 @@ public class Card implements Comparable {
 		}
 		
 		this.setValue(value);
+		this.back = back;
+		this.front = front;
+		back.setSize(CARD_WIDTH, CARD_HEIGHT);
+		front.setSize(CARD_WIDTH, CARD_HEIGHT);
 		this.nameCard = Integer.toString(value) + this.suit;
 	}
+
+	private void setSuit(SUITS spades) {
+	}
+	public int getValue() {
+		return value;
+	}
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+
+	public void setPosition(float x, float y) {
+		front.setPosition(x - 0.5f * front.getWidth(), y - 0.5f * front.getHeight());
+		back.setPosition(x - 0.5f * back.getWidth(), y - 0.5f * back.getHeight());
+	}
+
+	public void turn() {
+			turned = !turned;
+		}
+
+	public void draw(Batch batch) {
+			if (turned)
+				back.draw(batch);
+			else
+				front.draw(batch);
+		}
+
 
 	public String getNameCard() {
 		return this.nameCard;
@@ -43,17 +86,9 @@ public class Card implements Comparable {
 		return suit;
 	}
 
-	public void setSuit(SUITS suit) {
-		this.suit = suit;
-	}
 
-	public int getValue() {
-		return value;
-	}
 
-	public void setValue(int value) {
-		this.value = value;
-	}
+
 	
 	public int getGinRummyValue() {
 		if (this.value>10) {
@@ -77,10 +112,6 @@ public class Card implements Comparable {
 		return (this.value == card.value && this.suit.equals(card.suit));
 	}
 
-	public static void main(String[] args) {
-		Card c = new Card(2,13);
-		System.out.println(c);
-		System.out.println(c.getValue());
-	}
+
 	
 }

@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
+import cardlogic.Card.SUITS;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import gameHandling.Player;
 import cardlogic.Card.SUITS;
 import gameHandling.Player;
 
 public class SetOfCards {
 	
 	List<Card> cards;
+	TextureAtlas atlas;
 	
 	/*
 	 * Assumption is being done that top of deck is the last card in the pile
@@ -18,13 +21,23 @@ public class SetOfCards {
 	 */
 
 	public SetOfCards(boolean deck){
-		
+		atlas = new TextureAtlas("carddeck.atlas");
 		if (deck) {
+			String suit = "clubs";
 			this.cards = new ArrayList<>();
 			
 			for(int i=0; i<4; i++) {
 				for(int j=1;j<14;j++) {
-					this.cards.add(new Card(i,j));
+					if(i == 0) {
+						suit = "spades";
+					} else if (i ==1){
+						suit = "clubs";
+					} else if (i == 2) {
+						suit = "hearts";
+					} else if (i == 3) {
+						suit = "diamonds";
+					}
+					this.cards.add(new Card(i,j, atlas.createSprite("back", 1), atlas.createSprite(suit, j)));
 				}
 			}
 			
