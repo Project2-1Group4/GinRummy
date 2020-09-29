@@ -12,6 +12,8 @@ public class ActualGame {
 	Player p2;
 	SetOfCards deck;
 	
+	boolean setEnd = false;
+	
 	/*
 	 * This can probably just be made into a card that's held here, it doesn't matter
 	 */
@@ -33,6 +35,7 @@ public class ActualGame {
 	
 	int undercutBonus = 25;
 	int ginBonus = 25;
+	int pointObjective = 100;
 	
 	public ActualGame() {
 		this.deck = new SetOfCards(true);
@@ -50,23 +53,42 @@ public class ActualGame {
 	}
 	
 	/*
-	 * This method should just be a while loop that does this:
-	 * 	While (no one has won game)
-	 * 		Play new round
-	 * 	
-	 * 	Display (somehow) who won the game
-	 * 
-	 * TODO: Implement this loop
+	 * The winning player is returned
+	 * I'm assuming ties aren't possible in each game
+	 * And I'm not calculating things like line bonus, or shutout bonus, stuff like that
 	 */
 	
-	void playGame() {
+	Player playGame() {
+		
+		
+		
+		boolean gameFinished = false;
+		
+		while(!gameFinished) {
+			this.firstRound();
+			
+			boolean newRound = true;
+			
+			while(newRound) {
+				newRound = this.playerTurn();
+			}
+			
+			gameFinished = this.gameFinishCalculate();
+			
+		}
+		
+		/*
+		 * So just return the winner here somehow
+		 */
+		
+		return this.winningPlayer();
 		
 	}
 	
 	/*
 	 * Due to the way the decision is made on who should draw the first card and stuff
 	 * First round is a separate method
-	 * 
+	 * Dealer is inverted in this method
 	 */
 	void firstRound() {
 		/*
@@ -114,11 +136,13 @@ public class ActualGame {
 		
 	}
 	
+	
 	/*
-	 * Needs to have a method to go into a different phase if someone knocks
+	 * Returns true if there should be a new round
+	 * Returns false if the round is finished and there should be a new set
 	 */
 	
-	void playerTurn() {
+	boolean playerTurn() {
 		
 		// pTurn is the active player's turn
 		// pWait is the other player
@@ -176,43 +200,51 @@ public class ActualGame {
 				 * TODO: Modify this so that round end and new round start are done properly.
 				 */
 				
-				this.roundEnd();
-				
-				
 			} else {
 				List<List<Card>> pTurns_melds = pTurn.getMelds();
 				
 				int pWaitVal = layOff(pWait, pTurns_melds);
 				
+				/*
+				 * Here we calculate who has the lowest score, before deciding who gets the points
+				 */
+				
+				if(pWaitVal<=pTurnsVal) {
+					// Here's where the undercut happens
+					pWait.addPoints(pTurnsVal-pWaitVal+this.undercutBonus);
+					
+				} else {
+					pTurn.addPoints(pWaitVal-pTurnsVal);
+				}
+				
 			}
 			
-			
+			return this.setEnd;
 			
 			
 			// TODO: If there's no deadwood on the knocking player, pWait can't remove their deadwood
-			
-			
 			
 		}
 		
 		
 		if(this.deck.size() == 2) {
-			this.newRound();
+			//this.newRound();
 			
 			// TODO: Make sure that the round is actually finished properly
 			// I'm pretty sure it's wrong with how it's going from one to the other method
 			// But for now this works as placeholder code
-			return;
+			return this.setEnd;
 		}
 		
 		
-		// Just a way to flip around who the player is at the end of a round
-		this.player = !this.player;
+		
+		return this.roundEnd();
 	}
 	
 	/*
 	 * Removing the deadwood from the player that did not knock
 	 * Can be done automatically
+	 * Returns the score of the remaining cards
 	 */
 	static int layOff(Player pWait, List<List<Card>> pTurnsMelds) {
 		
@@ -321,14 +353,35 @@ public class ActualGame {
 	}
 	
 	/*
-	 * Method to be used after every round to add up the points and check whether the game's over
+	 * After every round to check if there's a new round incoming or if a player knocked, smthng like that
+	 * TODO: Implement method
+	 */
+	
+	boolean roundEnd() {
+		this.player = !this.player;
+		return true;
+	}
+	
+	/*
+	 * Method to be used after every set to add up the points and check whether the game's over
+	 * Will return true if there's another round to play, if not it'll return false
 	 * TODO: Actually implement the method
 	 */
-	void roundEnd() {
+	
+	boolean gameFinishCalculate() {
+		this.player = !this.player;
+		
+		if((this.p1.getScore() >= this.pointObjective) || (this.p2.getScore() >= this.pointObjective)) {
+			return true;
+		} else {
+			return false;
+		}
 		
 	}
 	
 	// TODO: add a way of alternating who the first and second player are
+	// I don't think that's necessary now that I think about it
+	// This just resets the deck and both player's hands
 	void newRound() {
 		this.deck = new SetOfCards(true);
 		p1.setHand(SetOfCards.handOutCard(10, this.deck));
@@ -336,5 +389,18 @@ public class ActualGame {
 		
 	}
 	
-
+	/*
+	 * Returns whoever is the winning player
+	 * In this case, I'm always assuming it's the one with the highest score
+	 */
+	
+	Player winningPlayer() {
+		if(this.p1.scoreHand()>this.p2.scoreHand()) {
+			return p1;
+		} else {
+			return p2;
+		}
+		
+	}
+	
 }
