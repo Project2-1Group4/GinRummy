@@ -26,6 +26,8 @@ public class Card extends Renderable implements Comparable {
 	private int value;
 	private String nameCard;
 
+	private TextureAtlas atlas;
+
 	/*
 	These two guys were originally final, I changed them to not be
 	Done so that some of the refactoring for bug testing could be implemented
@@ -61,7 +63,9 @@ public class Card extends Renderable implements Comparable {
 	}
 
 	public void addVisualInfo(){
-		TextureAtlas atlas = new TextureAtlas("carddeck.atlas");
+		if(this.atlas == null){
+			atlas = new TextureAtlas();
+		}
 		Sprite back = atlas.createSprite("back", 1);
 
 		String suit = null;
