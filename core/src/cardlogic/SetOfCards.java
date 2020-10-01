@@ -32,31 +32,23 @@ public class SetOfCards {
 		this.cards = new ArrayList<>();
 
 		if (deck) {
-
 			for(int i=0; i<4; i++) {
-
 				for(int j=1;j<14;j++) {
 					this.cards.add(new Card(i,j));
 				}
-
 			}
-
 			Collections.shuffle(this.cards);
-
 		} else {
 
 		}
-
 		if(visual){
 			for(Card aCard: this.cards){
 				aCard.addVisualInfo();
 			}
-
 		}
-
 	}
 
-
+// useless
 	public SetOfCards(boolean deck){
 		atlas = new TextureAtlas("carddeck.atlas");
 		if (deck) {
