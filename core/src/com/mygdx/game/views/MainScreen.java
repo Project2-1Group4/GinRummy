@@ -76,7 +76,11 @@ public class MainScreen implements Screen{
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("pokerTable2.jpg"));
 
-
+        /*
+        Seriously, why is this texture atlas used so many times in so many different parts
+        I don't think it needs to be initiallized so many times.
+        At the very least it shouldn't affect SetOfCards so directly
+         */
         atlas = new TextureAtlas("carddeck.atlas");
 
         cardsPlayer1 = new SetOfCards(false);

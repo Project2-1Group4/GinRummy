@@ -1,14 +1,13 @@
 package cardlogic;
 
+import cardlogic.Card.SUITS;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import gameHandling.Player;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import cardlogic.Card.SUITS;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import gameHandling.Player;
-import cardlogic.Card.SUITS;
-import gameHandling.Player;
 
 public class SetOfCards {
 	
@@ -20,12 +19,57 @@ public class SetOfCards {
 	 * And bottom is index 0
 	 */
 
+
+	/*
+	Alternate set of cards made in order to test internal logic,
+	As the texture atlas seemed to require extra stuff and was an annoyance for testing
+	if int = 0, then it's a deck and for testing
+	if int = 1, then it's visual
+	if int = anything else, then it's a hand
+	 */
+
+	public SetOfCards(boolean deck, boolean visual){
+		this.cards = new ArrayList<>();
+
+		if (deck) {
+
+			for(int i=0; i<4; i++) {
+
+				for(int j=1;j<14;j++) {
+					this.cards.add(new Card(i,j));
+				}
+
+			}
+
+			Collections.shuffle(this.cards);
+
+		} else {
+
+		}
+
+		if(visual){
+			for(Card aCard: this.cards){
+				aCard.addVisualInfo();
+			}
+
+		}
+
+	}
+
+
 	public SetOfCards(boolean deck){
 		atlas = new TextureAtlas("carddeck.atlas");
 		if (deck) {
 			String suit = "clubs";
 			this.cards = new ArrayList<>();
-			
+
+			/*
+				What's the point of adding the suits as strings?
+				We already have the enums and we define the suits through an int as well
+				I don't really see what extra info this brings in
+				TODO: Ask about this and see if they can be refactored
+			 */
+
 			for(int i=0; i<4; i++) {
 				for(int j=1;j<14;j++) {
 					if(i == 0) {
@@ -37,6 +81,14 @@ public class SetOfCards {
 					} else if (i == 3) {
 						suit = "diamonds";
 					}
+
+					/*
+					The create sprites absolutely feel like they should be cleaned up
+					The methods rely on information that is already contained in i and j
+					The constructor for the card could probably do without the createSprite methods
+					TODO: Ask about this stuff and check if it can be refactored
+					 */
+
 					this.cards.add(new Card(i,j, atlas.createSprite("back", 1), atlas.createSprite(suit, j)));
 				}
 			}
@@ -59,7 +111,7 @@ public class SetOfCards {
 	
 	public SetOfCards()
 	{
-		this(false);
+		this(false,false);
 	}
 
 	public int size() {
@@ -187,9 +239,9 @@ public class SetOfCards {
 	}
 	
 	//TESTING
-	/*
+
 	public static void main(String[] args) {
-		SetOfCards deck = new SetOfCards(true);
+		SetOfCards deck = new SetOfCards();
 		
 		Player aPlayer = new Player(deck);
 		
@@ -201,7 +253,7 @@ public class SetOfCards {
 		
 		System.out.println("hey");
 		
-	}*/
+	}
 	
 
 }

@@ -5,16 +5,12 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.model.MeshPart;
-import com.badlogic.gdx.math.Matrix4;
-
-import static com.mygdx.game.views.MainScreen.CARD_HEIGHT;
-import static com.mygdx.game.views.MainScreen.CARD_WIDTH;
 
 public class Card extends Renderable implements Comparable {
 
@@ -26,10 +22,17 @@ public class Card extends Renderable implements Comparable {
 	}
 	
 	private SUITS suit;
+	//private int suitInt;
 	private int value;
 	private String nameCard;
-	private final Sprite front;
-	private final Sprite back;
+
+	/*
+	These two guys were originally final, I changed them to not be
+	Done so that some of the refactoring for bug testing could be implemented
+	 */
+
+	private Sprite front;
+	private Sprite back;
 	private boolean turned;
 
 	public final static float CARD_WIDTH = 1f;
@@ -42,8 +45,8 @@ public class Card extends Renderable implements Comparable {
 	 * Q = 12
 	 * K = 13
 	 */
-	
-	public Card(int suit, int value,Sprite back, Sprite front)  {
+
+	public Card(int suit, int value){
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
@@ -53,8 +56,27 @@ public class Card extends Renderable implements Comparable {
 		} else if (suit == 3) {
 			this.setSuit(SUITS.DIAMONDS);
 		}
-		
+
 		this.setValue(value);
+	}
+
+	public void addVisualInfo(){
+		TextureAtlas atlas = new TextureAtlas("carddeck.atlas");
+		Sprite back = atlas.createSprite("back", 1);
+
+		String suit = null;
+		if(this.suit == SUITS.SPADES) {
+			suit = "spades";
+		} else if (this.suit == SUITS.CLOVERS){
+			suit = "clubs";
+		} else if (this.suit == SUITS.HEARTS) {
+			suit = "hearts";
+		} else if (this.suit == SUITS.DIAMONDS) {
+			suit = "diamonds";
+		}
+
+		Sprite front = atlas.createSprite(suit, this.value);
+
 		this.back = back;
 		this.front = front;
 
@@ -64,6 +86,42 @@ public class Card extends Renderable implements Comparable {
 		front.setPosition(-front.getWidth() * 0.5f, -front.getHeight() * 0.5f);
 		back.setPosition(-back.getWidth() * 0.5f, -back.getHeight() * 0.5f);
 
+		// Why do we need nameCard? The toString method already does this thing
+		this.nameCard = Integer.toString(value) + this.suit;
+
+		material = new Material(
+				TextureAttribute.createDiffuse(front.getTexture()),
+				new BlendingAttribute(false, 1f),
+				FloatAttribute.createAlphaTest(0.5f)
+		);
+
+		float[] vertices = convert(front.getVertices(), back.getVertices());
+		short[] indices = new short[] {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+
+
+		meshPart.mesh = new Mesh(true, 8, 12, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
+		meshPart.mesh.setVertices(vertices);
+		meshPart.mesh.setIndices(indices);
+		meshPart.offset = 0;
+		meshPart.size = meshPart.mesh.getNumIndices();
+		meshPart.primitiveType = GL20.GL_TRIANGLES;
+		meshPart.update();
+
+	}
+	
+	public Card(int suit, int value,Sprite back, Sprite front)  {
+		this(suit,value);
+
+		this.back = back;
+		this.front = front;
+
+		back.setSize(CARD_WIDTH, CARD_HEIGHT);
+		front.setSize(CARD_WIDTH, CARD_HEIGHT);
+
+		front.setPosition(-front.getWidth() * 0.5f, -front.getHeight() * 0.5f);
+		back.setPosition(-back.getWidth() * 0.5f, -back.getHeight() * 0.5f);
+
+		// Why do we need nameCard? The toString method already does this thing
 		this.nameCard = Integer.toString(value) + this.suit;
 
 		material = new Material(

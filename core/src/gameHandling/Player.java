@@ -1,19 +1,21 @@
 package gameHandling;
+
 import cardlogic.Card;
 import cardlogic.Card.SUITS;
 import cardlogic.SetOfCards;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
     private String name;
-    private SetOfCards hand;
+    public SetOfCards hand;
     private int score;
 
     private int bestValueCombination; //get the sum value of the set of card 
     private List<List<Card>> bestCombination;
     private List<List<Card>> permutations;
-    private List<Card> deadWood;
+    public List<Card> deadWood;
 
     public Player(String name) {
         this(name, new SetOfCards());
@@ -536,13 +538,31 @@ public class Player {
      * If true:
      * 	Player knocked, so cards are down and next phase of game happens
      */
-    
+
+
     public boolean chooseToKnock() {
     	return false;
     }
-    
+
+
     public static void main(String[] args) {
-		SetOfCards deck = new SetOfCards(true);
+        /*
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        new LwjglApplication(new GinRummy(), config);
+         */
+
+        /*
+        GinRummy test = new GinRummy();
+
+        //test.create();
+
+        MenuScreen mScreen = new MenuScreen(test);
+        LoadingScreen lScreen = new LoadingScreen(test);
+        MainScreen mainScreen = new MainScreen(test);
+
+         */
+
+        SetOfCards deck = new SetOfCards(true, false);
         deck.shuffleCards();
 		
 		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
