@@ -147,8 +147,12 @@ public class Card extends Renderable implements Comparable {
 		meshPart.update();
 	}
 
-	private void setSuit(SUITS spades) {
+
+
+	void setSuit(SUITS aSuit){
+		this.suit = aSuit;
 	}
+
 	public int getValue() {
 		return value;
 	}

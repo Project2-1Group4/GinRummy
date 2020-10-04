@@ -29,6 +29,10 @@ public class Player {
     	this.name = name;
     	this.hand = cards;
     	this.score = 0;
+
+    	// TODO: Add a method so that the default constructor already scores the hand
+        // TODO: Add this method as well whenever a card is drawn
+    	this.scoreHand();
     }
 
     public String getName() {
@@ -415,7 +419,8 @@ public class Player {
     	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
     	
     	int score = SetOfCards.scoreGinRummy(deadwood);
-    	
+    	this.score = score;
+
     	return score;
     	
     }
@@ -568,6 +573,7 @@ public class Player {
 		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
 		//aPlayer.hand.sortBySuitAndValue();
         //System.out.println(aPlayer.hand);
+        deck.sortBySuits();
 
 		List<List<Card>> runs = aPlayer.findRuns();
         System.out.println("runs: \n " + runs);
