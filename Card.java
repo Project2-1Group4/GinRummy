@@ -123,12 +123,8 @@ public class Card extends Actor implements Comparable {
 
 	}
 
-
-
-	void setSuit(SUITS aSuit){
-		this.suit = aSuit;
+	private void setSuit(SUITS spades) {
 	}
-
 	public int getValue() {
 		return value;
 	}

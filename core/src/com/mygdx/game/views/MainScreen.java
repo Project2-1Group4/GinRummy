@@ -2,6 +2,7 @@
 package com.mygdx.game.views;
 
 import cardlogic.Card;
+import cardlogic.CardBatch;
 import cardlogic.SetOfCards;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,17 +14,23 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.CardGame;
@@ -33,16 +40,18 @@ public class MainScreen implements Screen{
 
     private GinRummy parent;
     private Stage stage;
-    private CardGame model;
     private SpriteBatch batch;
     private Texture background;
     private ModelBatch modelBatch;
 
 
-    SetOfCards deck;
-    SetOfCards cardsPlayer1;
-    SetOfCards cardsPlayer2;
-    Card current;
+    private SetOfCards deck;
+    //private SetOfCards cardsPlayer1;
+   // private SetOfCards cardsPlayer2;
+    private Card tempCurrent;
+    private CardBatch cardsPlayer1;
+    private CardBatch cardsPlayer2;
+    private CardBatch current;
 
     TextureAtlas atlas;
 
@@ -61,7 +70,7 @@ public class MainScreen implements Screen{
         Gdx.input.setInputProcessor(stage);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-        model = new CardGame();
+
     }
 
     @Override
@@ -82,10 +91,17 @@ public class MainScreen implements Screen{
         At the very least it shouldn't affect SetOfCards so directly
          */
         atlas = new TextureAtlas("carddeck.atlas");
-
+        Material material = new Material(TextureAttribute.createDiffuse(atlas.getTextures().first()),
+                new BlendingAttribute(false, 1f), FloatAttribute.createAlphaTest(0.5f));
+        cardsPlayer1 = new CardBatch(material, false);
+        cardsPlayer2 = new CardBatch(material, false);
+        /*
         cardsPlayer1 = new SetOfCards(false);
         cardsPlayer2 = new SetOfCards(false);
+
+         */
         deck = new SetOfCards(true);
+        current = new CardBatch(material, false);
 
         // creating handout cards for player 1
         for(int i = 0; i<10; i++){
@@ -98,9 +114,11 @@ public class MainScreen implements Screen{
         }
 
         // top card of pile
-        current = deck.drawTopCard();
-        current.worldTransform.translate(-1,0,0);
-        current.turn();
+
+        tempCurrent = deck.drawTopCard();
+        tempCurrent.transform.translate(-1,0,0);
+        tempCurrent.turn();
+        current.addCard(tempCurrent);
 
         cam3D = new PerspectiveCamera();
         camController = new CameraInputController(cam3D);
@@ -108,9 +126,11 @@ public class MainScreen implements Screen{
     }
 
 
-    public void createCard(float x, float y, SetOfCards cards){
+    public void createCard(float x, float y, CardBatch cards){
         Card card = deck.drawTopCard();
-        card.worldTransform.translate(x,y,0);
+        card.transform.translate(x,y,0);
+        card.setPointX(x);
+        card.setPointY(y);
         cards.addCard(card);
     }
 
@@ -123,10 +143,10 @@ public class MainScreen implements Screen{
         batch.draw(background,0,0);
         batch.end();
 
-        current.worldTransform.rotate(Vector3.Y, 90 * delta1);
+        tempCurrent.transform.rotate(Vector3.Y, 90 * delta1);
         // rendering cards in field
         modelBatch.begin(cam3D);
-        for (int i = 0; i< cardsPlayer1.getCardSetSize(); i++){
+        /*for (int i = 0; i< cardsPlayer1.getCardSetSize(); i++){
             modelBatch.render(cardsPlayer1.getCard(i));
         }
 
@@ -134,6 +154,10 @@ public class MainScreen implements Screen{
             modelBatch.render(cardsPlayer2.getCard(i));
         }
 
+         */
+
+        modelBatch.render(cardsPlayer1);
+        modelBatch.render(cardsPlayer2);
         modelBatch.render(current);
 
         modelBatch.end();
@@ -142,6 +166,27 @@ public class MainScreen implements Screen{
         stage.draw();
 
         camController.update();
+
+        Vector3 touchPoint = new Vector3();
+
+        if (Gdx.input.justTouched()) {
+            cam3D.project(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            Card temp = cardsPlayer1.getCard(0);
+            System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
+            if(touchPoint.x >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y <= temp.getPointY() + 0.5 * CARD_HEIGHT){
+                System.out.println("Yeah it worked!");
+            }
+            /*for(int i = 0; i< cardsPlayer1.size(); i++){
+                Card temp = cardsPlayer1.getCard(i);
+                if (temp.getOriginX() touchPoint.x, touchPoint.y) {
+                    System.out.print(cardsPlayer1.getCard(i));
+            }
+
+            }
+
+             */
+
+        }
     }
 
     @Override
