@@ -26,15 +26,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.CardGame;
 import com.mygdx.game.GinRummy;
+
+import javax.swing.event.ChangeEvent;
 
 public class MainScreen implements Screen{
 
@@ -49,6 +49,8 @@ public class MainScreen implements Screen{
     //private SetOfCards cardsPlayer1;
    // private SetOfCards cardsPlayer2;
     private Card tempCurrent;
+    private Card discardFirst;
+    private CardBatch discardPile;
     private CardBatch cardsPlayer1;
     private CardBatch cardsPlayer2;
     private CardBatch current;
@@ -95,13 +97,12 @@ public class MainScreen implements Screen{
                 new BlendingAttribute(false, 1f), FloatAttribute.createAlphaTest(0.5f));
         cardsPlayer1 = new CardBatch(material, false);
         cardsPlayer2 = new CardBatch(material, false);
-        /*
-        cardsPlayer1 = new SetOfCards(false);
-        cardsPlayer2 = new SetOfCards(false);
 
-         */
+
         deck = new SetOfCards(true);
         current = new CardBatch(material, false);
+        discardPile = new CardBatch(material, false);
+
 
         // creating handout cards for player 1
         for(int i = 0; i<10; i++){
@@ -114,11 +115,22 @@ public class MainScreen implements Screen{
         }
 
         // top card of pile
+        discardFirst = deck.drawTopCard();
+        discardFirst.transform.translate(0.5f,0,0);
+        discardFirst.setPointX(0.5f);
+        discardFirst.setPointY(0);
+        discardPile.addCard(discardFirst);
+
+
 
         tempCurrent = deck.drawTopCard();
         tempCurrent.transform.translate(-1,0,0);
+        tempCurrent.setPointX(-1);
+        tempCurrent.setPointY(0);
         tempCurrent.turn();
         current.addCard(tempCurrent);
+
+
 
         cam3D = new PerspectiveCamera();
         camController = new CameraInputController(cam3D);
@@ -146,19 +158,11 @@ public class MainScreen implements Screen{
         tempCurrent.transform.rotate(Vector3.Y, 90 * delta1);
         // rendering cards in field
         modelBatch.begin(cam3D);
-        /*for (int i = 0; i< cardsPlayer1.getCardSetSize(); i++){
-            modelBatch.render(cardsPlayer1.getCard(i));
-        }
-
-        for (int i = 0; i< cardsPlayer2.getCardSetSize(); i++){
-            modelBatch.render(cardsPlayer2.getCard(i));
-        }
-
-         */
 
         modelBatch.render(cardsPlayer1);
         modelBatch.render(cardsPlayer2);
         modelBatch.render(current);
+        modelBatch.render(discardPile);
 
         modelBatch.end();
 
@@ -170,21 +174,27 @@ public class MainScreen implements Screen{
         Vector3 touchPoint = new Vector3();
 
         if (Gdx.input.justTouched()) {
-            cam3D.project(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            Card temp = cardsPlayer1.getCard(0);
-            System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
-            if(touchPoint.x >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y <= temp.getPointY() + 0.5 * CARD_HEIGHT){
-                System.out.println("Yeah it worked!");
-            }
-            /*for(int i = 0; i< cardsPlayer1.size(); i++){
+            cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            for(int i =0;i<cardsPlayer1.size(); i++) {
                 Card temp = cardsPlayer1.getCard(i);
-                if (temp.getOriginX() touchPoint.x, touchPoint.y) {
-                    System.out.print(cardsPlayer1.getCard(i));
+                if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
+                    System.out.println("Card "+ temp.getValue());
+                }
+            }
+            for(int i =0;i<cardsPlayer2.size(); i++) {
+                Card temp = cardsPlayer2.getCard(i);
+                if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
+                    System.out.println("Card "+ temp.getValue());
+                }
             }
 
+            if(touchPoint.x * 7.59 >= tempCurrent.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= tempCurrent.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= tempCurrent.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= tempCurrent.getPointY() + 0.5 * CARD_HEIGHT) {
+                System.out.println("Card " + tempCurrent.getValue());
             }
-
-             */
+            if(touchPoint.x * 7.59 >= discardFirst.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardFirst.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardFirst.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardFirst.getPointY() + 0.5 * CARD_HEIGHT) {
+                System.out.println("Card " + discardFirst.getValue());
+            }
+            System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
 
         }
     }
