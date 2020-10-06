@@ -2,6 +2,7 @@ package gameHandling;
 
 import cardlogic.Card;
 import cardlogic.Card.SUITS;
+import cardlogic.CardBatch;
 import cardlogic.SetOfCards;
 
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ public class Player {
     private List<List<Card>> permutations;
     public List<Card> deadWood;
 
-    public Player(String name) {
-        this(name, new SetOfCards());
+    public Player(String name, CardBatch hand) {
+        this.name = name;
+        this.hand = hand;
+
     }
     
     public Player(SetOfCards cards) {
