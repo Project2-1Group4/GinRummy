@@ -91,15 +91,35 @@ public class MainScreen implements Screen{
         background = new Texture(Gdx.files.internal("pokerTable2.jpg"));
 
         TextButton knockButton = new TextButton("KNOCK", skin);
-
-        table.row().pad(10, 400, 10, 0);
-        table.add(knockButton).fillX().uniformX();
+        knockButton.setTransform(true);
+        knockButton.setScale(0.75f);
         knockButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("end of game");
+
             }
         });
+
+        Label label1 = new Label("Player 1: " + parent.name1, skin);
+        Label label2 = new Label( "Player2: " + parent.name2, skin);
+        Label label3 = new Label("Score", skin);
+        Label label4 = new Label("Score", skin);
+
+        stage.addActor(label1);
+        label1.setFontScale(2);
+        label1.setPosition(70,430);
+        stage.addActor(knockButton);
+        knockButton.setPosition(400, 220);
+        stage.addActor(label2);
+        label2.setFontScale(2);
+        label2.setPosition(70,140);
+        stage.addActor(label3);
+        label3.setFontScale(1.5f);
+        label3.setPosition(420, 265);
+        stage.addActor(label4);
+        label4.setFontScale(1.5f);
+        label4.setPosition(420, 200);
 
         /*
         Seriously, why is this texture atlas used so many times in so many different parts
@@ -138,11 +158,13 @@ public class MainScreen implements Screen{
 
 
         tempCurrent = deck.drawTopCard();
-        tempCurrent.transform.translate(-1,0,0);
-        tempCurrent.setPointX(-1);
+        tempCurrent.transform.translate(-2f,0,0);
+        tempCurrent.setPointX(-2);
         tempCurrent.setPointY(0);
         tempCurrent.turn();
         current.addCard(tempCurrent);
+
+
 
 
 
@@ -150,7 +172,7 @@ public class MainScreen implements Screen{
         camController = new CameraInputController(cam3D);
         Gdx.input.setInputProcessor(camController);
 
-        game = new ActualGame("Tim", "Tessa", cardsPlayer1, cardsPlayer2, deck, discardPile);
+        game = new ActualGame(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
     }
 
 
@@ -171,7 +193,8 @@ public class MainScreen implements Screen{
         batch.draw(background,0,0);
         batch.end();
 
-        //tempCurrent.transform.rotate(Vector3.Y, 90 * delta1);
+        //tempCurrent.transform.rotate(Vector3.Y, 180 * delta1 );
+        tempCurrent.transform.setToRotation(-4,0, 0, 180);
         // rendering cards in field
         modelBatch.begin(cam3D);
 
@@ -220,11 +243,11 @@ public class MainScreen implements Screen{
                 Card tempCard = discardPile.getCard(discardPile.size() -1);
                 if(game.player){
                     cardsPlayer1.addCard(tempCard);
-                    setLocation(tempCard, 5, -3);
+                    setLocation(tempCard, 5, 3);
                 }
                 else{
                     cardsPlayer2.addCard(tempCard);
-                    setLocation(tempCard, 5, 3);
+                    setLocation(tempCard, 5, -3);
                 }
                 // vul aan!
             }

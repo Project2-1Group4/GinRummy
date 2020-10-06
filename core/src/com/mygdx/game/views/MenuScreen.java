@@ -41,10 +41,12 @@ public class MenuScreen implements Screen{
 
         Label label1 = new Label("Player 1: ", skin);
         label1.setFontScale(2.5f);
-        TextField name1 = new TextField("", skin);
+        final TextField name1 = new TextField("", skin);
+        stage.addActor(name1);
         Label label2 = new Label("Player 2: ", skin);
         label2.setFontScale(2.5f);
-        TextField name2 = new TextField("", skin);
+        final TextField name2 = new TextField("", skin);
+        stage.addActor(name2);
         TextButton playButton = new TextButton("PLAY!", skin);
 
         table.add(label1).fillX().uniformX();
@@ -58,6 +60,8 @@ public class MenuScreen implements Screen{
         playButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                parent.name1 = name1.getText();
+                parent.name2 = name2.getText();
                 parent.changeScreen(GinRummy.APPLICATION);
             }
         });
