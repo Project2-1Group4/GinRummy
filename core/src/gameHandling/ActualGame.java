@@ -4,7 +4,14 @@ import java.util.Collections;
 import java.util.List;
 
 import cardlogic.Card;
+import cardlogic.CardBatch;
 import cardlogic.SetOfCards;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.mygdx.game.views.MainScreen;
 
 public class ActualGame {
 	
@@ -51,7 +58,19 @@ public class ActualGame {
 		this.dealer = true;
 		
 	}
-	
+
+	public ActualGame(String name1,String name2, CardBatch cardsPlayer1, CardBatch cardsPlayer2, SetOfCards deck, CardBatch discardPile) {
+
+		this.deck = deck;
+
+		this.p1 = new Player(name1, cardsPlayer1);
+
+		this.p2 = new Player(name2, cardsPlayer2);
+
+		this.pile = discardPile;
+
+		this.dealer = true;
+	}
 	/*
 	 * The winning player is returned
 	 * I'm assuming ties aren't possible in each game
