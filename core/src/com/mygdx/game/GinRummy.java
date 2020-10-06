@@ -17,6 +17,8 @@ public class GinRummy extends Game {
 
 	public final static int MENU = 0;
 	public final static int APPLICATION = 2;
+	public String name1;
+	public String name2;
 
 	
 	@Override
