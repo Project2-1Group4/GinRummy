@@ -48,19 +48,17 @@ public class Gamev2 {
         }
 
         if(deckOrPile){
-
             aPlayer.addCard(this.deck.drawTopCard());
         } else {
             aPlayer.addCard(this.pile.drawTopCard());
         }
 
-
-        this.player = !this.player;
         return true;
     }
 
     public void addCardToDiscard(Card aCard){
         this.pile.addCard(aCard);
+        this.player = !this.player;
     }
 
 
@@ -70,7 +68,7 @@ public class Gamev2 {
         Player pWait;
 
         /*
-        Because I change the player everytime a card is dealt, that means the player who knocked
+        Because I change the player everytime a card is discarded, that means the player who knocked
         Is the one that's not the current player
          */
 
@@ -129,7 +127,7 @@ public class Gamev2 {
     There might be some problems due to how the round restart interacts with the rest of the game
      */
 
-    void newRound(){
+    void newRound(CardBatch deck, CardBatch pile, CardBatch p1hand, CardBatch p2hand){
         this.dealer = !this.dealer;
 
         /*
@@ -137,6 +135,12 @@ public class Gamev2 {
         Deck, Discard Pile, and the player's hands
         But I wanna talk it out to make sure this method interacts properly with the rest
          */
+
+        this.deck = deck;
+        this.pile = pile;
+
+        this.player1.hand = p1hand;
+        this.player2.hand = p2hand;
 
     }
 
