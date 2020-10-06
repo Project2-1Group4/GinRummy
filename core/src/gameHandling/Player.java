@@ -552,6 +552,10 @@ public class Player {
     	return false;
     }
 
+    public void addCard(Card aCard){
+        this.hand.addCard(aCard);
+    }
+
 
     public static void main(String[] args) {
         /*
