@@ -2,7 +2,6 @@ package cardlogic;
 
 import cardlogic.Card.SUITS;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import gameHandling.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -232,6 +231,7 @@ public class SetOfCards {
 	
 	//TESTING
 
+	/*
 	public static void main(String[] args) {
 		SetOfCards deck = new SetOfCards();
 		
@@ -245,7 +245,7 @@ public class SetOfCards {
 		
 		System.out.println("hey");
 		
-	}
+	}*/
 	
 
 }

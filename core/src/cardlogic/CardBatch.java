@@ -16,8 +16,12 @@ public class CardBatch extends SetOfCards implements RenderableProvider, Disposa
     Mesh mesh;
     MeshBuilder meshBuilder;
 
+    Material material;
+
     public CardBatch(Material material, boolean constructor){
         super(constructor, true);
+
+
         final int maxNumberOfCards = 52;
         final int maxNumberOfVertices = maxNumberOfCards * 8;
         final int maxNumberOfIndices = maxNumberOfCards * 12;
@@ -27,6 +31,15 @@ public class CardBatch extends SetOfCards implements RenderableProvider, Disposa
         renderable = new Renderable();
         renderable.material = material;
 
+    }
+
+    public static CardBatch handOutCard(int numberOdCard, CardBatch deck) {
+        deck.shuffleCards();
+        CardBatch setCard = new CardBatch(deck.material, false);
+        for (int i = 0; i < numberOdCard; i++ ) {
+            setCard.addCard(deck.drawTopCard());
+        }
+        return setCard;
     }
 
     @Override
