@@ -14,8 +14,15 @@ public class Gamev2 {
     CardBatch deck;
     CardBatch pile;
 
-    public boolean dealer;
-    public boolean player;
+    boolean dealer;
+
+    /*
+    If boolean is true, it's player 1's turn
+    If false, it's player 2's turn
+     */
+
+
+    boolean player;
 
     int undercutBonus = 25;
     int ginBonus = 25;
@@ -58,6 +65,12 @@ public class Gamev2 {
     }
 
     public void addCardToDiscard(Card aCard){
+        if(this.player){
+            player1.hand.discardCard(aCard);
+        } else {
+            player2.hand.discardCard(aCard);
+        }
+
         this.pile.addCard(aCard);
         this.player = !this.player;
     }
