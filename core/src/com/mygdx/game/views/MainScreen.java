@@ -58,8 +58,8 @@ public class MainScreen implements Screen{
     private CardBatch cardsPlayer2;
     private CardBatch current;
 
-    TextureAtlas atlas;
-
+    private TextureAtlas atlas;
+    private Material material;
     //OrthographicCamera cam;
     CameraInputController camController;
     PerspectiveCamera cam3D;
@@ -95,18 +95,27 @@ public class MainScreen implements Screen{
         TextButton knockButton = new TextButton("KNOCK", skin);
         knockButton.setTransform(true);
         knockButton.setScale(0.75f);
-        knockButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("end of game");
 
-            }
-        });
+
+
+
+        /*
+        Seriously, why is this texture atlas used so many times in so many different parts
+        I don't think it needs to be initiallized so many times.
+        At the very least it shouldn't affect SetOfCards so directly
+         */
+        atlas = new TextureAtlas("carddeck.atlas");
+        material = new Material(TextureAttribute.createDiffuse(atlas.getTextures().first()),
+                new BlendingAttribute(false, 1f), FloatAttribute.createAlphaTest(0.5f));
+        cardsNewRound();
+
+
+        game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
 
         Label label1 = new Label("Player 1: " + parent.name1, skin);
         Label label2 = new Label( "Player2: " + parent.name2, skin);
-        Label label3 = new Label("Score", skin);
-        Label label4 = new Label("Score", skin);
+        Label label3 = new Label("Score = " + game.player1.getScore(), skin);
+        Label label4 = new Label("Score = " + game.player2.getScore(), skin);
 
         stage.addActor(label1);
         label1.setFontScale(2);
@@ -123,18 +132,27 @@ public class MainScreen implements Screen{
         label4.setFontScale(1.5f);
         label4.setPosition(420, 200);
 
-        /*
-        Seriously, why is this texture atlas used so many times in so many different parts
-        I don't think it needs to be initiallized so many times.
-        At the very least it shouldn't affect SetOfCards so directly
-         */
-        atlas = new TextureAtlas("carddeck.atlas");
-        Material material = new Material(TextureAttribute.createDiffuse(atlas.getTextures().first()),
-                new BlendingAttribute(false, 1f), FloatAttribute.createAlphaTest(0.5f));
-        cardsPlayer1 = new CardBatch(material, false);
+        knockButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("end of game");
+                game.player1.addPoints(20);
+               boolean newRound = game.knock();
+               if(newRound) {
+                   cardsNewRound();
+               }
+               else {
+                   parent.changeScreen(GinRummy.END);
+               }
+            }
+        });
+        cam3D = new PerspectiveCamera();
+        camController = new CameraInputController(cam3D);
+        Gdx.input.setInputProcessor(camController);
+    }
+    public void cardsNewRound() {cardsPlayer1 = new CardBatch(material, false);
+
         cardsPlayer2 = new CardBatch(material, false);
-
-
         deck = new CardBatch(material, true);
         current = new CardBatch(material, false);
         discardPile = new CardBatch(material, false);
@@ -163,17 +181,7 @@ public class MainScreen implements Screen{
             deck.getCard(i).transform.translate(-2f,0,0);
             deck.getCard(i).setPointX(-2);
             deck.getCard(i).setPointY(0);
-        }
-
-
-
-        cam3D = new PerspectiveCamera();
-        camController = new CameraInputController(cam3D);
-        Gdx.input.setInputProcessor(camController);
-
-        game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
-    }
-
+        }}
 
     public void createCard(float x, float y, CardBatch cards){
         Card card = deck.drawTopCard();
@@ -210,55 +218,80 @@ public class MainScreen implements Screen{
         camController.update();
 
         Vector3 touchPoint = new Vector3();
+        boolean active = false;
 
         if (Gdx.input.justTouched()) {
+            active = true;
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             for(int i =0;i<cardsPlayer1.size(); i++) {
                 Card temp = cardsPlayer1.getCard(i);
                 float posX = temp.getPointX();
                 float posY = temp.getPointY();
-                System.out.println(posX + "and " + posY);
+
                 if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
                     System.out.println("Card "+ temp.getValue());
-                    game.addCardToDiscard(temp);
+                    System.out.println(posX + "and " + posY);
+
                     setLocation(temp, 0.5f, 0);
-                    if(game.player){
-                        setLocation(cardsPlayer1.getCard(cardsPlayer1.size()-1), posX, posY);
-                    }
-                    else{
-                        setLocation(cardsPlayer2.getCard(cardsPlayer1.size()-1), posX, posY);
-                    }
+                    game.addCardToDiscard(temp);
+                    setLocation(cardsPlayer1.getCard(cardsPlayer1.size()-1), posX, posY);
+
+                    System.out.print("card "+ cardsPlayer1.getCard(cardsPlayer1.size()-1));
+                    System.out.print("player 1");
+                    active = false;
                 }
             }
             for(int i =0;i<cardsPlayer2.size(); i++) {
                 Card temp = cardsPlayer2.getCard(i);
+                float posX = temp.getPointX();
+                float posY = temp.getPointY();
                 if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
                     System.out.println("Card "+ temp.getValue());
-                    game.addCardToDiscard(temp);
+
+                    System.out.println(posX + "and " + posY);
                     setLocation(temp, 0.5f, 0);
+                    game.addCardToDiscard(temp);
+                    System.out.println(posX + "and new" + posY);
+                    setLocation(cardsPlayer2.getCard(cardsPlayer2.size()-1), posX, posY);
+
+                    System.out.print("card "+ cardsPlayer2.getCard(cardsPlayer2.size()-1));
+                    System.out.print("player 2");
+                    active = false;
+
                 }
             }
 
             if(touchPoint.x * 7.59 >= deck.getCard(deck.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= deck.getCard(deck.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= deck.getCard(deck.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= deck.getCard(deck.size()-1).getPointY() + 0.5 * CARD_HEIGHT) {
                 Card temp = deck.getCard(deck.size()-1);
+
                 game.drawCard(true);
                 if(game.player){
                     setLocation(temp, 5, 3);
+                    temp.setPointX(5);
+                    temp.setPointY(3);
                 }
                 else{
                     setLocation(temp, 5, -3);
+                    temp.setPointX(5);
+                    temp.setPointY(-3);
                 }
+                System.out.print("Deck");
             }
-            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT) {
+            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT && active) {
 
                 Card temp = discardPile.getCard(discardPile.size() -1);
                 game.drawCard(false);
                 if(game.player){
                     setLocation(temp, 5, 3);
+                    temp.setPointX(5);
+                    temp.setPointY(3);
                 }
                 else{
                     setLocation(temp, 5, -3);
+                    temp.setPointX(5);
+                    temp.setPointY(-3);
                 }
+                System.out.print("discard");
 
 
                 // vul aan!
