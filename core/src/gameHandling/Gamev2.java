@@ -22,7 +22,7 @@ public class Gamev2 {
      */
 
 
-    boolean player;
+    public boolean player;
 
     int undercutBonus = 25;
     int ginBonus = 25;
