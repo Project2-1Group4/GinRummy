@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Gamev2 {
 
-    Player player1;
-    Player player2;
+    public Player player1;
+    public Player player2;
     CardBatch deck;
     CardBatch pile;
 
