@@ -4,6 +4,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.mygdx.game.views.EndScreen;
 import com.mygdx.game.views.LoadingScreen;
 import com.mygdx.game.views.MainScreen;
 import com.mygdx.game.views.MenuScreen;
@@ -13,9 +14,10 @@ public class GinRummy extends Game {
 	private LoadingScreen loadingScreen;
 	private MenuScreen menuScreen;
 	private MainScreen mainScreen;
-
+	private EndScreen endScreen;
 
 	public final static int MENU = 0;
+	public final static int END = 1;
 	public final static int APPLICATION = 2;
 	public String name1;
 	public String name2;
@@ -44,6 +46,11 @@ public class GinRummy extends Game {
 				if(mainScreen == null) mainScreen = new MainScreen(this);
 				this.setScreen(mainScreen);
 				break;
+			case END:
+				if(endScreen == null) endScreen = new EndScreen(this);
+				this.setScreen(endScreen);
+				break;
+
 		}
 	}
 	
