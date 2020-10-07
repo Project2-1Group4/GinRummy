@@ -14,8 +14,8 @@ public class Gamev2 {
     CardBatch deck;
     CardBatch pile;
 
-    boolean dealer;
-    boolean player;
+    public boolean dealer;
+    public boolean player;
 
     int undercutBonus = 25;
     int ginBonus = 25;
@@ -35,7 +35,8 @@ public class Gamev2 {
         this.player = false;
     }
 
-    boolean drawCard(boolean deckOrPile){
+    // true if deck
+    public boolean drawCard(boolean deckOrPile){
         if(deck.size() <=2) {
             return false;
         }
