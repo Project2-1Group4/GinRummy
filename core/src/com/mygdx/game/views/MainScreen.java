@@ -34,6 +34,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.CardGame;
 import com.mygdx.game.GinRummy;
 import gameHandling.ActualGame;
+import gameHandling.Gamev2;
 
 import javax.swing.event.ChangeEvent;
 
@@ -46,7 +47,8 @@ public class MainScreen implements Screen{
     private ModelBatch modelBatch;
 
 
-    private SetOfCards deck;
+    private CardBatch deck;
+
     //private SetOfCards cardsPlayer1;
    // private SetOfCards cardsPlayer2;
     private Card tempCurrent;
@@ -62,7 +64,7 @@ public class MainScreen implements Screen{
     CameraInputController camController;
     PerspectiveCamera cam3D;
 
-    private ActualGame game;
+    private Gamev2 game;
 
     public final static float CARD_WIDTH = 1f;
     public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
@@ -133,7 +135,7 @@ public class MainScreen implements Screen{
         cardsPlayer2 = new CardBatch(material, false);
 
 
-        deck = new SetOfCards(true);
+        deck = new CardBatch(material, true);
         current = new CardBatch(material, false);
         discardPile = new CardBatch(material, false);
 
@@ -157,14 +159,9 @@ public class MainScreen implements Screen{
 
 
 
-        tempCurrent = deck.drawTopCard();
-        tempCurrent.transform.translate(-2f,0,0);
-        tempCurrent.setPointX(-2);
-        tempCurrent.setPointY(0);
-        tempCurrent.turn();
-        current.addCard(tempCurrent);
-
-
+        for(int i= 0; i < deck.size(); i++){
+            deck.getCard(i).transform.translate(-2f,0,0);
+        }
 
 
 
@@ -172,7 +169,7 @@ public class MainScreen implements Screen{
         camController = new CameraInputController(cam3D);
         Gdx.input.setInputProcessor(camController);
 
-        game = new ActualGame(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
+        //game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
     }
 
 
@@ -194,14 +191,14 @@ public class MainScreen implements Screen{
         batch.end();
 
         //tempCurrent.transform.rotate(Vector3.Y, 180 * delta1 );
-        tempCurrent.transform.setToRotation(-4,0, 0, 180);
+
         // rendering cards in field
         modelBatch.begin(cam3D);
 
         modelBatch.render(cardsPlayer1);
         modelBatch.render(cardsPlayer2);
-        modelBatch.render(current);
         modelBatch.render(discardPile);
+        modelBatch.render(deck);
 
         modelBatch.end();
 
@@ -211,8 +208,6 @@ public class MainScreen implements Screen{
         camController.update();
 
         Vector3 touchPoint = new Vector3();
-        float lastX = 0;
-        float lastY = 0;
 
         if (Gdx.input.justTouched()) {
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -235,13 +230,13 @@ public class MainScreen implements Screen{
                 }
             }
 
-            if(touchPoint.x * 7.59 >= tempCurrent.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= tempCurrent.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= tempCurrent.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= tempCurrent.getPointY() + 0.5 * CARD_HEIGHT) {
+            if(touchPoint.x * 7.59 >= deck.getCard(deck.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= deck.getCard(deck.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= deck.getCard(deck.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= deck.getCard(deck.size()-1).getPointY() + 0.5 * CARD_HEIGHT) {
                 System.out.println("Card " + tempCurrent.getValue());
             }
             if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT) {
                 System.out.println("Card " + discardFirst.getValue());
                 Card tempCard = discardPile.getCard(discardPile.size() -1);
-                if(game.player){
+                /*if(game.player){
                     cardsPlayer1.addCard(tempCard);
                     setLocation(tempCard, 5, 3);
                 }
@@ -249,6 +244,8 @@ public class MainScreen implements Screen{
                     cardsPlayer2.addCard(tempCard);
                     setLocation(tempCard, 5, -3);
                 }
+
+                 */
                 // vul aan!
             }
             System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
