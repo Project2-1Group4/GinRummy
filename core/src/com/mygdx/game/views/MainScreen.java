@@ -46,7 +46,8 @@ public class MainScreen implements Screen{
     private Texture background;
     private ModelBatch modelBatch;
 
-
+    private Label label3;
+    private Label label4;
     private CardBatch deck;
 
     //private SetOfCards cardsPlayer1;
@@ -95,10 +96,6 @@ public class MainScreen implements Screen{
         TextButton knockButton = new TextButton("KNOCK", skin);
         knockButton.setTransform(true);
         knockButton.setScale(0.75f);
-
-
-
-
         /*
         Seriously, why is this texture atlas used so many times in so many different parts
         I don't think it needs to be initiallized so many times.
@@ -114,8 +111,9 @@ public class MainScreen implements Screen{
 
         Label label1 = new Label("Player 1: " + parent.name1, skin);
         Label label2 = new Label( "Player2: " + parent.name2, skin);
-        Label label3 = new Label("Score = " + game.player1.getScore(), skin);
-        Label label4 = new Label("Score = " + game.player2.getScore(), skin);
+
+        label3 = new Label("Score = " + game.player1.getScore(), skin);
+        label4 = new Label("Score = " + game.player2.getScore(), skin);
 
         stage.addActor(label1);
         label1.setFontScale(2);
@@ -136,7 +134,7 @@ public class MainScreen implements Screen{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("end of game");
-                game.player1.addPoints(20);
+               game.player1.addPoints(20);
                boolean newRound = game.knock();
                if(newRound) {
                    cardsNewRound();
@@ -144,8 +142,10 @@ public class MainScreen implements Screen{
                else {
                    parent.changeScreen(GinRummy.END);
                }
+
             }
         });
+
         cam3D = new PerspectiveCamera();
         camController = new CameraInputController(cam3D);
         Gdx.input.setInputProcessor(camController);
@@ -223,6 +223,19 @@ public class MainScreen implements Screen{
         if (Gdx.input.justTouched()) {
             active = true;
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if(touchPoint.x >= 0.295 && touchPoint.x <= 0.48 && touchPoint.y >= -0.03 && touchPoint.y <= 0.027) {
+                System.out.println("end of round");
+                boolean newRound = game.knock();
+                if(newRound) {
+                    cardsNewRound();
+                    label3.setText("Score = " + game.player1.getScore());
+                    label4.setText("Score = " + game.player2.getScore());
+                }
+                else {
+                    parent.changeScreen(GinRummy.END);
+                }
+            }
+                ;
             for(int i =0;i<cardsPlayer1.size(); i++) {
                 Card temp = cardsPlayer1.getCard(i);
                 float posX = temp.getPointX();
