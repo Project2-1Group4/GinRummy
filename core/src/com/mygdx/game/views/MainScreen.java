@@ -161,6 +161,8 @@ public class MainScreen implements Screen{
 
         for(int i= 0; i < deck.size(); i++){
             deck.getCard(i).transform.translate(-2f,0,0);
+            deck.getCard(i).setPointX(-2);
+            deck.getCard(i).setPointY(0);
         }
 
 
@@ -169,7 +171,7 @@ public class MainScreen implements Screen{
         camController = new CameraInputController(cam3D);
         Gdx.input.setInputProcessor(camController);
 
-        //game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
+        game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
     }
 
 
@@ -213,39 +215,52 @@ public class MainScreen implements Screen{
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             for(int i =0;i<cardsPlayer1.size(); i++) {
                 Card temp = cardsPlayer1.getCard(i);
+                float posX = temp.getPointX();
+                float posY = temp.getPointY();
+                System.out.println(posX + "and " + posY);
                 if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
                     System.out.println("Card "+ temp.getValue());
-                    cardsPlayer1.discardCard(temp);
-                    discardPile.addCard(temp);
+                    game.addCardToDiscard(temp);
                     setLocation(temp, 0.5f, 0);
+                    if(game.player){
+                        setLocation(cardsPlayer1.getCard(cardsPlayer1.size()-1), posX, posY);
+                    }
+                    else{
+                        setLocation(cardsPlayer2.getCard(cardsPlayer1.size()-1), posX, posY);
+                    }
                 }
             }
             for(int i =0;i<cardsPlayer2.size(); i++) {
                 Card temp = cardsPlayer2.getCard(i);
                 if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
                     System.out.println("Card "+ temp.getValue());
-                    cardsPlayer2.discardCard(temp);
-                    discardPile.addCard(temp);
+                    game.addCardToDiscard(temp);
                     setLocation(temp, 0.5f, 0);
                 }
             }
 
             if(touchPoint.x * 7.59 >= deck.getCard(deck.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= deck.getCard(deck.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= deck.getCard(deck.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= deck.getCard(deck.size()-1).getPointY() + 0.5 * CARD_HEIGHT) {
-                System.out.println("Card " + tempCurrent.getValue());
-            }
-            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT) {
-                System.out.println("Card " + discardFirst.getValue());
-                Card tempCard = discardPile.getCard(discardPile.size() -1);
-                /*if(game.player){
-                    cardsPlayer1.addCard(tempCard);
-                    setLocation(tempCard, 5, 3);
+                Card temp = deck.getCard(deck.size()-1);
+                game.drawCard(true);
+                if(game.player){
+                    setLocation(temp, 5, 3);
                 }
                 else{
-                    cardsPlayer2.addCard(tempCard);
-                    setLocation(tempCard, 5, -3);
+                    setLocation(temp, 5, -3);
+                }
+            }
+            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT) {
+
+                Card temp = discardPile.getCard(discardPile.size() -1);
+                game.drawCard(false);
+                if(game.player){
+                    setLocation(temp, 5, 3);
+                }
+                else{
+                    setLocation(temp, 5, -3);
                 }
 
-                 */
+
                 // vul aan!
             }
             System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
