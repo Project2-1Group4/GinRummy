@@ -224,7 +224,7 @@ public class Player {
 
         }
 
-        System.out.println("listSet of "+this.name+" is: " + listList);
+        //System.out.println("listSet of "+this.name+" is: " + listList);
 
             return listList;
 
@@ -314,7 +314,7 @@ public class Player {
 
         }
 
-        System.out.println("listSet of "+this.name+" is: " + listList);
+        //System.out.println("listSet of "+this.name+" is: " + listList);
 
 
 
@@ -614,15 +614,12 @@ public class Player {
             hand.addCard(new Card(0,i));
         }
 
-        for (int i = 1; i <= 3; i++) {
-            hand.addCard(new Card(i,2));
+        for (int i = 0; i <= 3; i++) {
+            hand.addCard(new Card(i,12));
         }
 
 		Player aPlayer = new Player("player", hand);
         System.out.println(hand);
-
-        aPlayer.findSets();
-        aPlayer.findSets(aPlayer.hand);
 
 
 
@@ -632,11 +629,11 @@ public class Player {
 		List<List<Card>> runs = aPlayer.findRuns();
         System.out.println("runs: \n " + runs);
 
-		List<List<Card>> sets = aPlayer.findSets();
-        System.out.println("sets: \n" + sets);
+		//List<List<Card>> sets = aPlayer.findSets();
+        //System.out.println("sets: \n" + sets);
 
-        List<List<Card>> setss = aPlayer.findSets(hand);
-        System.out.println("setss: \n" + setss);
+        List<List<Card>> sets = aPlayer.findSets(hand);
+        System.out.println("setss: \n" + sets);
 
         System.out.println("hand: "+ aPlayer.hand + "\n");
 
@@ -648,6 +645,13 @@ public class Player {
 
         System.out.println("Value of deadwood set: "+deadWoodValue);
 
+        Player p2 = new Player("player 2", SetOfCards.handOutCard(20, deck));
+
+        System.out.println("runs: \n" + p2.findRuns(p2.hand));
+
+        System.out.println("sets: \n" + p2.findSets(p2.hand));
+
+        System.out.println("deadwood" + p2.findDeadwood());
 
 
 	}
