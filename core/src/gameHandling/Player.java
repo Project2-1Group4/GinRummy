@@ -454,7 +454,7 @@ public class Player {
     	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
     	
     	int score = SetOfCards.scoreGinRummy(deadwood);
-    	this.score = score;
+    	//this.score = score;
 
     	return score;
     	
