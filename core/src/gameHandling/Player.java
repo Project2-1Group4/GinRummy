@@ -14,7 +14,7 @@ public class Player {
     private int score;
 
     private int bestValueCombination; //get the sum value of the set of card 
-    private List<List<Card>> bestCombination;
+    public List<List<Card>> bestCombination;
     private List<List<Card>> permutations;
     public List<Card> deadWood;
 
@@ -120,7 +120,6 @@ public class Player {
         this.recursiveSearch(this.hand.toList(), removed);
 
         System.out.println("runs and sets chosen: "+this.bestCombination);
-        System.out.println(this.bestValueCombination);
     }
 
     public int valueOfLists(List<List<Card>> cards){
@@ -196,7 +195,7 @@ public class Player {
             if(aCard.getValue() == prev) {
                 count++;
 
-                if(count >= 2) {
+                if(count >= 2 && i == handOfCards.getCardSetSize()-1) {
 
                     List<Card> tempList = getSetOrRun(i+1, count);
 
@@ -262,6 +261,9 @@ public class Player {
                 currentRun = new ArrayList<>();
                 currentRun.add(handOfCards.getCard(i));
             }
+            if (i == handOfCards.getCardSetSize() - 1 && currentRun.size() >= 3) {
+                runs.add(currentRun);
+            }
 
 
         }
@@ -282,13 +284,14 @@ public class Player {
 
             if(aCard.getValue() == prev) {
                 count++;
-                if(count >= 2) {
+
+                if(count >= 2 && i == this.hand.getCardSetSize()-1) {
 
                     List<Card> tempList = getSetOrRun(i+1, count);
 
                     listList.add(tempList);
                 }
-            } else {
+            } else  {
 
                 // TODO: Bugtest this thingy, cause the logic is rather wonky for me
 
@@ -611,8 +614,8 @@ public class Player {
             hand.addCard(new Card(0,i));
         }
 
-        for (int i = 0; i <= 3; i++) {
-            hand.addCard(new Card(i,11));
+        for (int i = 1; i <= 3; i++) {
+            hand.addCard(new Card(i,2));
         }
 
 		Player aPlayer = new Player("player", hand);
@@ -622,18 +625,9 @@ public class Player {
         aPlayer.findSets(aPlayer.hand);
 
 
-        Player p2 = new Player("p", SetOfCards.handOutCard(20, deck));
-        System.out.println(p2.hand);
-        p2.findSets(p2.hand);
-        p2.findSets();
-
-
-		//aPlayer.hand.sortBySuitAndValue();
-        System.out.println(hand);
 
         System.out.println("permutation: " +aPlayer.getPermutation(aPlayer.findSets(hand)));
 
-        deck.sortBySuits();
 
 		List<List<Card>> runs = aPlayer.findRuns();
         System.out.println("runs: \n " + runs);

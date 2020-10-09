@@ -314,6 +314,10 @@ public class Gamev2 {
         Player p1 = new Player("Player 1",p1Deck);
         Player p2 = new Player("Player 2",p2Deck);
 
+
+        System.out.println("permutation: "+p1.getPermutation(p1.findSets(p1.hand)));
+        p1.bestCombination();
+        System.out.println("chosen "+p1.bestCombination);
         Gamev2 game = new Gamev2(p1,p2,deck,pile);
 
         game.knock();
