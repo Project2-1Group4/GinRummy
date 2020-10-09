@@ -143,6 +143,7 @@ public class Player {
                     //System.out.println(permutation.get(index))
                 }
             }
+
         }
         return listSets;
     }
@@ -362,27 +363,26 @@ public class Player {
      * That and the fact that best combination is stored inside the class, there's something in there that makes me unsure
      */
     
-    public List<Card> findDeadwood(){
+    public List<Card> findDeadwood() {
 
-    	List<Card> handCard = this.hand.toList();
+        List<Card> handCard = this.hand.toList();
         this.deadWood = copyList(handCard);
         //System.out.println("Raw deadwoood: "+deadWood);
-    	this.bestCombination();
+        this.bestCombination();
 
-    	if(this.bestCombination.size() == 0){
-    	    return this.deadWood;
-        }
-
-
-    	for (List<Card> card : this.bestCombination) {
-    	    for(Card aCard: card){
-    	        if(handCard.contains(aCard)){
-    	            this.deadWood.remove(aCard);
+        if (this.bestCombination.size() == 0) {
+            return this.deadWood;
+        } else {
+            for (List<Card> card : this.bestCombination) {
+                for (Card aCard : card) {
+                    if (handCard.contains(aCard)) {
+                        this.deadWood.remove(aCard);
+                    }
                 }
             }
+            return this.deadWood;
+
         }
-    	return this.deadWood;
-    	
     }
 
     public int getHandSize() {
@@ -594,10 +594,23 @@ public class Player {
 
         SetOfCards deck = new SetOfCards(true, false);
         deck.shuffleCards();
-		
-		Player aPlayer = new Player("player",SetOfCards.handOutCard(10, deck));
+		SetOfCards hand = new SetOfCards(false, false);
+        for (int i = 1; i < 10; i++) {
+            hand.addCard(new Card(1,i));
+        }
+
+        for (int i = 0; i < 3; i++) {
+            hand.addCard(new Card(i,13));
+        }
+
+		Player aPlayer = new Player("player", hand);
+
+
 		//aPlayer.hand.sortBySuitAndValue();
-        //System.out.println(aPlayer.hand);
+        System.out.println(hand);
+
+        System.out.println("permutation: " +aPlayer.getPermutation(aPlayer.findSets(hand)));
+
         deck.sortBySuits();
 
 		List<List<Card>> runs = aPlayer.findRuns();
@@ -605,6 +618,9 @@ public class Player {
 
 		List<List<Card>> sets = aPlayer.findSets();
         System.out.println("sets: \n" + sets);
+
+        List<List<Card>> setss = aPlayer.findSets(hand);
+        System.out.println("setss: \n" + setss);
 
         System.out.println("hand: "+ aPlayer.hand + "\n");
 
@@ -615,6 +631,8 @@ public class Player {
         int deadWoodValue = Player.valueInList(aPlayer.deadWood);
 
         System.out.println("Value of deadwood set: "+deadWoodValue);
+
+
 		
 	}
     
