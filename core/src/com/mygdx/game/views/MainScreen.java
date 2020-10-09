@@ -3,19 +3,14 @@ package com.mygdx.game.views;
 
 import cardlogic.Card;
 import cardlogic.CardBatch;
-import cardlogic.SetOfCards;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
@@ -24,19 +19,15 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.CardGame;
 import com.mygdx.game.GinRummy;
-import gameHandling.ActualGame;
 import gameHandling.Gamev2;
-
-import javax.swing.event.ChangeEvent;
 
 public class MainScreen implements Screen{
 
@@ -238,63 +229,65 @@ public class MainScreen implements Screen{
                     parent.changeScreen(GinRummy.END);
                 }
             }
-                ;
-            for(int i =0;i<cardsPlayer1.size(); i++) {
-                Card temp = cardsPlayer1.getCard(i);
-                float posX = temp.getPointX();
-                float posY = temp.getPointY();
+            if (this.game.player) {
+                for (int i = 0; i < cardsPlayer1.size(); i++) {
+                    Card temp = cardsPlayer1.getCard(i);
+                    float posX = temp.getPointX();
+                    float posY = temp.getPointY();
 
-                if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
-                    System.out.println("Card "+ temp.getValue());
-                    System.out.println(posX + "and " + posY);
+                    if (touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT && active) {
+                        System.out.println("Card " + temp.getValue());
+                        System.out.println(posX + "and " + posY);
 
-                    setLocation(temp, 0.5f, 0);
-                    game.addCardToDiscard(temp);
-                    setLocation(cardsPlayer1.getCard(cardsPlayer1.size()-1), posX, posY);
+                        setLocation(temp, 0.5f, 0);
+                        game.addCardToDiscard(temp);
+                        setLocation(cardsPlayer1.getCard(cardsPlayer1.size() - 1), posX, posY);
 
-                    System.out.print("card "+ cardsPlayer1.getCard(cardsPlayer1.size()-1));
-                    System.out.print("player 1");
+                        System.out.print("card " + cardsPlayer1.getCard(cardsPlayer1.size() - 1));
+                        System.out.print("player 1");
 
-                    for (int j = 0; j<cardsPlayer1.size(); j++){
-                        turnCardBack(cardsPlayer1.getCard(j));
+                        for (int j = 0; j < cardsPlayer1.size(); j++) {
+                            turnCardBack(cardsPlayer1.getCard(j));
+                        }
+
+                        for (int k = 0; k < cardsPlayer2.size(); k++) {
+                            turnCardFront(cardsPlayer2.getCard(k));
+                        }
+
+
+                        active = false;
+
                     }
-
-                    for (int k = 0; k<cardsPlayer2.size(); k++){
-                        turnCardFront(cardsPlayer2.getCard(k));
-                    }
-
-
-                    active = false;
-
                 }
-            }
-            for(int i =0;i<cardsPlayer2.size(); i++) {
-                Card temp = cardsPlayer2.getCard(i);
-                float posX = temp.getPointX();
-                float posY = temp.getPointY();
-                if(touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT) {
-                    System.out.println("Card "+ temp.getValue());
+            } else {
+                for (int i = 0; i < cardsPlayer2.size(); i++) {
+                    Card temp = cardsPlayer2.getCard(i);
+                    float posX = temp.getPointX();
+                    float posY = temp.getPointY();
+                    if (touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT && active) {
+                        System.out.println("Card " + temp.getValue());
 
-                    System.out.println(posX + "and " + posY);
-                    setLocation(temp, 0.5f, 0);
-                    game.addCardToDiscard(temp);
-                    System.out.println(posX + "and new" + posY);
-                    setLocation(cardsPlayer2.getCard(cardsPlayer2.size()-1), posX, posY);
+                        System.out.println(posX + "and " + posY);
+                        setLocation(temp, 0.5f, 0);
+                        game.addCardToDiscard(temp);
+                        System.out.println(posX + "and new" + posY);
+                        setLocation(cardsPlayer2.getCard(cardsPlayer2.size() - 1), posX, posY);
 
 
-                    System.out.print("card "+ cardsPlayer2.getCard(cardsPlayer2.size()-1));
-                    System.out.print("player 2");
+                        System.out.print("card " + cardsPlayer2.getCard(cardsPlayer2.size() - 1));
+                        System.out.print("player 2");
 
-                    for (int j = 0; j<cardsPlayer2.size(); j++){
-                        turnCardBack(cardsPlayer2.getCard(j));
+                        for (int j = 0; j < cardsPlayer2.size(); j++) {
+                            turnCardBack(cardsPlayer2.getCard(j));
+                        }
+                        for (int k = 0; k < cardsPlayer1.size(); k++) {
+                            turnCardFront(cardsPlayer1.getCard(k));
+                        }
+
+
+                        active = false;
+
                     }
-                    for (int k = 0; k<cardsPlayer1.size(); k++){
-                        turnCardFront(cardsPlayer1.getCard(k));
-                    }
-
-
-                    active = false;
-
                 }
             }
 
@@ -314,9 +307,9 @@ public class MainScreen implements Screen{
             }
             System.out.print(active);
             System.out.print(discardPile);
-            if(touchPoint.x * 7.59 >= discardPile.getCard(0).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(0).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(0).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(0).getPointY() + 0.5 * CARD_HEIGHT && active) {
+            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size()-1).getPointY() + 0.5 * CARD_HEIGHT && active) {
 
-                Card temp = discardPile.getCard(0);
+                Card temp = discardPile.getCard(discardPile.size()-1);
                 game.drawCard(false);
                 if(game.player){
                     setLocation(temp, 5, 3);
