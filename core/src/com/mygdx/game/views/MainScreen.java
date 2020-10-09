@@ -167,7 +167,9 @@ public class MainScreen implements Screen{
         for(int i = 0; i<10; i++){
             createCard((-5 + i),-3, cardsPlayer2);
         }
-
+        for (int i = 0; i<cardsPlayer1.size(); i++){
+            turnCardBack(cardsPlayer1.getCard(i));
+        }
         // top card of pile
         discardFirst = deck.drawTopCard();
         discardFirst.transform.translate(0.5f,0,0);
@@ -181,6 +183,7 @@ public class MainScreen implements Screen{
             deck.getCard(i).transform.translate(-2f,0,0);
             deck.getCard(i).setPointX(-2);
             deck.getCard(i).setPointY(0);
+            turnCardBack(deck.getCard(i));
         }}
 
     public void createCard(float x, float y, CardBatch cards){
@@ -251,7 +254,18 @@ public class MainScreen implements Screen{
 
                     System.out.print("card "+ cardsPlayer1.getCard(cardsPlayer1.size()-1));
                     System.out.print("player 1");
+
+                    for (int j = 0; j<cardsPlayer1.size(); j++){
+                        turnCardBack(cardsPlayer1.getCard(j));
+                    }
+
+                    for (int k = 0; k<cardsPlayer2.size(); k++){
+                        turnCardFront(cardsPlayer2.getCard(k));
+                    }
+
+
                     active = false;
+
                 }
             }
             for(int i =0;i<cardsPlayer2.size(); i++) {
@@ -267,8 +281,18 @@ public class MainScreen implements Screen{
                     System.out.println(posX + "and new" + posY);
                     setLocation(cardsPlayer2.getCard(cardsPlayer2.size()-1), posX, posY);
 
+
                     System.out.print("card "+ cardsPlayer2.getCard(cardsPlayer2.size()-1));
                     System.out.print("player 2");
+
+                    for (int j = 0; j<cardsPlayer2.size(); j++){
+                        turnCardBack(cardsPlayer2.getCard(j));
+                    }
+                    for (int k = 0; k<cardsPlayer1.size(); k++){
+                        turnCardFront(cardsPlayer1.getCard(k));
+                    }
+
+
                     active = false;
 
                 }
@@ -276,33 +300,29 @@ public class MainScreen implements Screen{
 
             if(touchPoint.x * 7.59 >= deck.getCard(deck.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= deck.getCard(deck.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= deck.getCard(deck.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= deck.getCard(deck.size()-1).getPointY() + 0.5 * CARD_HEIGHT) {
                 Card temp = deck.getCard(deck.size()-1);
-
+                turnCardFront(temp);
                 game.drawCard(true);
                 if(game.player){
                     setLocation(temp, 5, 3);
-                    temp.setPointX(5);
-                    temp.setPointY(3);
+
                 }
                 else{
                     setLocation(temp, 5, -3);
-                    temp.setPointX(5);
-                    temp.setPointY(-3);
+
                 }
                 System.out.print("Deck");
             }
-            if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size() -1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size() -1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size() -1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size() -1).getPointY() + 0.5 * CARD_HEIGHT && active) {
+            System.out.print(active);
+            System.out.print(discardPile);
+            if(touchPoint.x * 7.59 >= discardPile.getCard(0).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(0).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(0).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(0).getPointY() + 0.5 * CARD_HEIGHT && active) {
 
-                Card temp = discardPile.getCard(discardPile.size() -1);
+                Card temp = discardPile.getCard(0);
                 game.drawCard(false);
                 if(game.player){
                     setLocation(temp, 5, 3);
-                    temp.setPointX(5);
-                    temp.setPointY(3);
                 }
                 else{
                     setLocation(temp, 5, -3);
-                    temp.setPointX(5);
-                    temp.setPointY(-3);
                 }
                 System.out.print("discard");
 
@@ -313,6 +333,17 @@ public class MainScreen implements Screen{
 
         }
     }
+    public void turnCardBack (Card card){
+        float z = 0.5f * Math.abs(MathUtils.sinDeg(180));
+        card.transform.setToRotation(Vector3.Y, 180);
+        card.transform.trn(card.getPointX(), card.getPointY(), z);
+    }
+    public void turnCardFront (Card card){
+        float z = 0.5f * Math.abs(MathUtils.sinDeg(360));
+        card.transform.setToRotation(Vector3.Y, 360);
+        card.transform.trn(card.getPointX(), card.getPointY(), z);
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -334,6 +365,8 @@ public class MainScreen implements Screen{
         float moveY = endY - card.getPointY();
         System.out.println("moved:" + moveX + "and " + moveY);
         card.transform.translate(moveX, moveY, 0);
+        card.setPointX(endX);
+        card.setPointY(endY);
     }
 
 
