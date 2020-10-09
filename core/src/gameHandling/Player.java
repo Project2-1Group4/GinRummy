@@ -132,18 +132,20 @@ public class Player {
     }
 
     public List<List<Card>> getPermutation(List<List<Card>> listSets) {
-        for (int i = 0; i < listSets.size(); i++) {
-            if (listSets.get(i).size()>3) {
+        if (listSets.size() > 0) {
+            for (int i = 0; i < listSets.size(); i++) {
+                if (listSets.get(i).size() > 3) {
 
-                for (int j = 0; j < 4; j++) {
-                    List<Card> set = copyList(listSets.get(i));
+                    for (int j = 0; j < 4; j++) {
+                        List<Card> set = copyList(listSets.get(i));
 
-                    this.remove(set,j);
-                    listSets.add(i+1,set);
-                    //System.out.println(permutation.get(index))
+                        this.remove(set, j);
+                        listSets.add(i + 1, set);
+                        //System.out.println(permutation.get(index))
+                    }
                 }
-            }
 
+            }
         }
         return listSets;
     }
@@ -177,6 +179,7 @@ public class Player {
     }
 
     public List<List<Card>> findSets(SetOfCards handOfCards){
+
         List<List<Card>> listList = new ArrayList<List<Card>>();
 
         handOfCards.sortByValue();
@@ -190,10 +193,20 @@ public class Player {
 
             if(aCard.getValue() == prev) {
                 count++;
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i+1, count);
+
+                    listList.add(tempList);
+                }
             } else {
 
                 // TODO: Bugtest this thingy, cause the logic is rather wonky for me
 
+                // Okay, so the idea is that if there's a count>=2 then there's at least 3 cards in common
+                // We then find the index of the first card there, and add the n cards to the temp list
+                // Then save the templist into the listlist
+                // So what we're going to do is go ahead and store all of the previous cards in the listList
 
                 if(count >= 2) {
 
@@ -209,7 +222,10 @@ public class Player {
 
         }
 
-        return listList;
+        System.out.println("listSet of "+this.name+" is: " + listList);
+
+            return listList;
+
 
     }
 
@@ -263,6 +279,12 @@ public class Player {
 
             if(aCard.getValue() == prev) {
                 count++;
+                if(count >= 2) {
+
+                    List<Card> tempList = getSetOrRun(i+1, count);
+
+                    listList.add(tempList);
+                }
             } else {
 
                 // TODO: Bugtest this thingy, cause the logic is rather wonky for me
@@ -286,11 +308,12 @@ public class Player {
 
         }
 
-        if(listList.size() == 0) {
-            return null;
-        } else {
+        System.out.println("listSet of "+this.name+" is: " + listList);
+
+
+
             return listList;
-        }
+
 
     }
 
@@ -576,34 +599,30 @@ public class Player {
 
 
     public static void main(String[] args) {
-        /*
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        new LwjglApplication(new GinRummy(), config);
-         */
 
-        /*
-        GinRummy test = new GinRummy();
-
-        //test.create();
-
-        MenuScreen mScreen = new MenuScreen(test);
-        LoadingScreen lScreen = new LoadingScreen(test);
-        MainScreen mainScreen = new MainScreen(test);
-
-         */
 
         SetOfCards deck = new SetOfCards(true, false);
         deck.shuffleCards();
 		SetOfCards hand = new SetOfCards(false, false);
         for (int i = 1; i < 10; i++) {
-            hand.addCard(new Card(1,i));
+            hand.addCard(new Card(0,i));
         }
 
-        for (int i = 0; i < 3; i++) {
-            hand.addCard(new Card(i,13));
+        for (int i = 1; i <= 3; i++) {
+            hand.addCard(new Card(i,11));
         }
 
 		Player aPlayer = new Player("player", hand);
+        System.out.println(hand);
+
+        aPlayer.findSets();
+        aPlayer.findSets(aPlayer.hand);
+
+
+        Player p2 = new Player("p", SetOfCards.handOutCard(20, deck));
+        System.out.println(p2.hand);
+        p2.findSets(p2.hand);
+        p2.findSets();
 
 
 		//aPlayer.hand.sortBySuitAndValue();
@@ -633,7 +652,7 @@ public class Player {
         System.out.println("Value of deadwood set: "+deadWoodValue);
 
 
-		
+
 	}
     
 }
