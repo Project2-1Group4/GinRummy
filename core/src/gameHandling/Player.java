@@ -140,8 +140,10 @@ public class Player {
                         List<Card> set = copyList(listSets.get(i));
 
                         this.remove(set, j);
-                        listSets.add(i + 1, set);
-                        //System.out.println(permutation.get(index))
+                        if (!listSets.contains(set)) {
+                            listSets.add(i + 1, set);
+                            //System.out.println(permutation.get(index))
+                        }
                     }
                 }
 
@@ -193,6 +195,7 @@ public class Player {
 
             if(aCard.getValue() == prev) {
                 count++;
+
                 if(count >= 2) {
 
                     List<Card> tempList = getSetOrRun(i+1, count);
@@ -608,7 +611,7 @@ public class Player {
             hand.addCard(new Card(0,i));
         }
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 0; i <= 3; i++) {
             hand.addCard(new Card(i,11));
         }
 
