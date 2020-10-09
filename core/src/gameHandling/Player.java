@@ -367,12 +367,18 @@ public class Player {
     	List<Card> handCard = this.hand.toList();
         this.deadWood = copyList(handCard);
         //System.out.println("Raw deadwoood: "+deadWood);
-    	//this.bestCombination();
+    	this.bestCombination();
+
+    	if(this.bestCombination.size() == 0){
+    	    return this.deadWood;
+        }
+
 
     	for (List<Card> card : this.bestCombination) {
-    	    if (handCard.containsAll(card)) {
-    	        this.deadWood.removeAll(copyList(card));
-                //System.out.println("copy: "+this.deadWood);
+    	    for(Card aCard: card){
+    	        if(handCard.contains(aCard)){
+    	            this.deadWood.remove(aCard);
+                }
             }
         }
     	return this.deadWood;
@@ -455,10 +461,18 @@ public class Player {
     public List<Card> findDeadwood(List<Card> cardsInMelds){
     	
     	List<Card> deadwood = new ArrayList<Card>();
-    	
-    	for(Card aCard:cardsInMelds) {
-    		if(!this.hand.contains(aCard)) {
-    			deadwood.add(aCard);
+
+    	/*
+    	if(cardsInMelds.size() == 0){
+    	    deadwood.addAll(this.hand.toList());
+    	    return deadwood;
+        }*/
+
+    	deadwood.addAll(this.hand.toList());
+
+    	for(Card aCard: cardsInMelds) {
+    		if(deadwood.contains(aCard)) {
+    			deadwood.remove(aCard);
     		}
     	}
     	

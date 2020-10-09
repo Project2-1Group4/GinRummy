@@ -94,9 +94,9 @@ public class Gamev2 {
             pWait= this.player2;
         }
 
-        int pTurnsVal = pKnock.scoreHand();
+        int pKnockVal = pKnock.scoreHand();
 
-        if(pTurnsVal ==0) {
+        if(pKnockVal ==0) {
             int pWaitVal = pWait.scoreHand();
 
             pKnock.addPoints(pWaitVal+this.ginBonus);
@@ -108,12 +108,12 @@ public class Gamev2 {
 
             // Here we calculate who has the lowest score, before deciding who gets the points
 
-            if(pWaitVal<=pTurnsVal) {
+            if(pWaitVal<=pKnockVal) {
                 // Here's where the undercut happens
-                pWait.addPoints(pTurnsVal-pWaitVal+this.undercutBonus);
+                pWait.addPoints(pKnockVal-pWaitVal+this.undercutBonus);
 
             } else {
-                pKnock.addPoints(pWaitVal-pTurnsVal);
+                pKnock.addPoints(pWaitVal-pKnockVal);
             }
 
         }
