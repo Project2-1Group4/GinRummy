@@ -41,18 +41,15 @@ public class MainScreen implements Screen{
     private Label label4;
     private CardBatch deck;
 
-    //private SetOfCards cardsPlayer1;
-   // private SetOfCards cardsPlayer2;
-    private Card tempCurrent;
+    private int roundCount = 1;
     private Card discardFirst;
     private CardBatch discardPile;
     private CardBatch cardsPlayer1;
     private CardBatch cardsPlayer2;
-    private CardBatch current;
+
 
     private TextureAtlas atlas;
     private Material material;
-    //OrthographicCamera cam;
     CameraInputController camController;
     PerspectiveCamera cam3D;
 
@@ -87,6 +84,9 @@ public class MainScreen implements Screen{
         TextButton knockButton = new TextButton("KNOCK", skin);
         knockButton.setTransform(true);
         knockButton.setScale(0.75f);
+        TextButton passButton = new TextButton("PASS", skin);
+        passButton.setTransform(true);
+        passButton.setScale(0.75f);
         /*
         Seriously, why is this texture atlas used so many times in so many different parts
         I don't think it needs to be initiallized so many times.
@@ -109,8 +109,12 @@ public class MainScreen implements Screen{
         stage.addActor(label1);
         label1.setFontScale(2);
         label1.setPosition(70,430);
+
         stage.addActor(knockButton);
         knockButton.setPosition(400, 220);
+        stage.addActor(passButton);
+        passButton.setPosition(525, 220);
+
         stage.addActor(label2);
         label2.setFontScale(2);
         label2.setPosition(70,140);
@@ -121,31 +125,57 @@ public class MainScreen implements Screen{
         label4.setFontScale(1.5f);
         label4.setPosition(420, 200);
 
+        passButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.print("PASS");
+
+                if(game.player) {
+                    for (int j = 0; j < cardsPlayer1.size(); j++) {
+                        turnCardBack(cardsPlayer1.getCard(j));
+                    }
+
+                    for (int k = 0; k < cardsPlayer2.size(); k++) {
+                        turnCardFront(cardsPlayer2.getCard(k));
+                    }
+                }
+                else {
+                    for (int j = 0; j < cardsPlayer2.size(); j++) {
+                        turnCardBack(cardsPlayer2.getCard(j));
+                    }
+                    for (int k = 0; k < cardsPlayer1.size(); k++) {
+                        turnCardFront(cardsPlayer1.getCard(k));
+                    }
+                }
+                game.player = !game.player;
+            }
+        });
         knockButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("end of game");
-               game.player1.addPoints(20);
-               boolean newRound = game.knock();
-               if(newRound) {
-                   cardsNewRound();
-               }
-               else {
-                   parent.changeScreen(GinRummy.END);
-               }
+                System.out.println("end of round");
+                boolean newRound = game.knock();
+                if (newRound) {
+                    cardsNewRound();
+                    label3.setText("Score = " + game.player1.getScore());
+                    label4.setText("Score = " + game.player2.getScore());
+                    game.newRound(deck, discardPile, cardsPlayer1, cardsPlayer2);
+                } else {
+                    parent.changeScreen(GinRummy.END);
 
+                }
             }
         });
 
+
         cam3D = new PerspectiveCamera();
         camController = new CameraInputController(cam3D);
-        Gdx.input.setInputProcessor(camController);
+        //Gdx.input.setInputProcessor(camController);
     }
-    public void cardsNewRound() {cardsPlayer1 = new CardBatch(material, false);
-
+    public void cardsNewRound() {
+        cardsPlayer1 = new CardBatch(material, false);
         cardsPlayer2 = new CardBatch(material, false);
         deck = new CardBatch(material, true);
-        current = new CardBatch(material, false);
         discardPile = new CardBatch(material, false);
 
 
@@ -158,17 +188,24 @@ public class MainScreen implements Screen{
         for(int i = 0; i<10; i++){
             createCard((-5 + i),-3, cardsPlayer2);
         }
-        for (int i = 0; i<cardsPlayer1.size(); i++){
-            turnCardBack(cardsPlayer1.getCard(i));
+        if(roundCount%2 != 0) {
+            for (int i = 0; i < cardsPlayer1.size(); i++) {
+                turnCardBack(cardsPlayer1.getCard(i));
+            }
+
         }
+        else{
+            for (int i = 0; i < cardsPlayer2.size(); i++) {
+                turnCardBack(cardsPlayer2.getCard(i));
+            }
+        }
+        roundCount++;
         // top card of pile
         discardFirst = deck.drawTopCard();
         discardFirst.transform.translate(0.5f,0,0);
         discardFirst.setPointX(0.5f);
         discardFirst.setPointY(0);
         discardPile.addCard(discardFirst);
-
-
 
         for(int i= 0; i < deck.size(); i++){
             deck.getCard(i).transform.translate(-2f,0,0);
@@ -217,18 +254,6 @@ public class MainScreen implements Screen{
         if (Gdx.input.justTouched()) {
             active = true;
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(touchPoint.x >= 0.295 && touchPoint.x <= 0.48 && touchPoint.y >= -0.03 && touchPoint.y <= 0.027) {
-                System.out.println("end of round");
-                boolean newRound = game.knock();
-                if(newRound) {
-                    cardsNewRound();
-                    label3.setText("Score = " + game.player1.getScore());
-                    label4.setText("Score = " + game.player2.getScore());
-                }
-                else {
-                    parent.changeScreen(GinRummy.END);
-                }
-            }
             if (this.game.player) {
                 for (int i = 0; i < cardsPlayer1.size(); i++) {
                     Card temp = cardsPlayer1.getCard(i);
