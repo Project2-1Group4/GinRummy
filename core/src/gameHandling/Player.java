@@ -21,7 +21,7 @@ public class Player {
     public Player(String name, CardBatch hand) {
         this.name = name;
         this.hand = hand;
-
+        this.score = 0;
     }
     
     public Player(SetOfCards cards) {
@@ -568,6 +568,10 @@ public class Player {
 
     public void addCard(Card aCard){
         this.hand.addCard(aCard);
+    }
+
+    public String toString(){
+        return this.name + " has " + this.score;
     }
 
 

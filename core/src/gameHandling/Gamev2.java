@@ -11,8 +11,8 @@ public class Gamev2 {
 
     public Player player1;
     public Player player2;
-    CardBatch deck;
-    CardBatch pile;
+    SetOfCards deck;
+    SetOfCards pile;
 
     boolean dealer;
 
@@ -40,6 +40,14 @@ public class Gamev2 {
 
         this.dealer = true;
         this.player = false;
+    }
+
+    public Gamev2(Player p1, Player p2, SetOfCards deck, SetOfCards discard){
+        this.player1 = p1;
+        this.player2 = p2;
+        this.deck = deck;
+        this.pile = discard;
+
     }
 
     // true if deck
@@ -99,7 +107,8 @@ public class Gamev2 {
         if(pKnockVal ==0) {
             int pWaitVal = pWait.scoreHand();
 
-            pKnock.addPoints(pWaitVal+this.ginBonus);
+            int pointsToAdd = pWaitVal + this.ginBonus;
+            pKnock.addPoints(pointsToAdd);
 
         } else {
             List<List<Card>> pTurns_melds = pKnock.getMelds();
@@ -110,10 +119,12 @@ public class Gamev2 {
 
             if(pWaitVal<=pKnockVal) {
                 // Here's where the undercut happens
-                pWait.addPoints(pKnockVal-pWaitVal+this.undercutBonus);
+                int pointsToAdd = pKnockVal-pWaitVal + this.undercutBonus;
+                pWait.addPoints(pointsToAdd);
 
             } else {
-                pKnock.addPoints(pWaitVal-pKnockVal);
+                int pointsToAdd = pWaitVal-pKnockVal;
+                pKnock.addPoints(pointsToAdd);
             }
 
         }
@@ -211,12 +222,15 @@ public class Gamev2 {
                         if(aMeld.get(0).getValue()-toCheck.getValue() == 1) {
 
                             // Should add the card to check at the start
-                            aMeld.add(0,(pWaits_deadWood.remove(i)));
+
+                            aMeld.add(0,toCheck);
 
                         } else {
-                            aMeld.add(pWaits_deadWood.remove(i));
+                            aMeld.add(toCheck);
                         }
 
+
+                        pWaits_deadWood.remove(toCheck);
                         // The i-- is done to make sure no values are missed
                         // So we go back one index
                         i--;
@@ -240,21 +254,10 @@ public class Gamev2 {
                 if(SetOfCards.findIfCardMakesSet(toCheck, aMeld)) {
 
                     // This check is done to determine whether the card must be added to the start or end of the meld
+                    aMeld.add(toCheck);
+                    pWaits_deadWood.remove(toCheck);
 
-                    // This sort might be unnecessary, in theory the runs are already sorted
-                    // Still, done for safety 'cause I don't feel like bugtesting
-                    Collections.sort(aMeld);
 
-                    // If the card to check goes at the start fo the meld, then it'll be one less than the first card
-                    // TODO: Bug test to make sure that the melds are organized the way I think they are
-                    if(aMeld.get(0).getValue()-toCheck.getValue() == 1) {
-
-                        // Should add the card to check at the start
-                        aMeld.add(0,(pWaits_deadWood.remove(i)));
-
-                    } else {
-                        aMeld.add(pWaits_deadWood.remove(i));
-                    }
 
                     // The i-- is done to make sure no values are missed
                     // So we go back one index
@@ -269,6 +272,51 @@ public class Gamev2 {
         }
 
         return SetOfCards.scoreGinRummy(pWaits_deadWood);
+
+    }
+
+    public static void main(String[] args){
+
+        SetOfCards deck = new SetOfCards(true, false);
+        SetOfCards pile = new SetOfCards(false, false);
+
+        SetOfCards p1Deck = new SetOfCards(false, false);
+
+        for(int i =1; i<8; i++){
+            p1Deck.addCard(new Card(0,i+2));
+        }
+
+        p1Deck.addCard(new Card(1,13));
+        p1Deck.addCard(new Card(2,13));
+        p1Deck.addCard(new Card(3,13));
+
+        SetOfCards p2Deck = new SetOfCards(false, false);
+
+
+        p2Deck.addCard(new Card(0,11));
+        p2Deck.addCard(new Card(0,10));
+
+        p2Deck.addCard(new Card(0,13));
+
+        for(int i=1; i<8;i++){
+            p2Deck.addCard(new Card(1,i));
+        }
+
+        for(Card aCard: p1Deck.toList()){
+            deck.discardCard(aCard);
+        }
+
+        for(Card aCard: p2Deck.toList()){
+            deck.discardCard(aCard);
+        }
+
+
+        Player p1 = new Player("Player 1",p1Deck);
+        Player p2 = new Player("Player 2",p2Deck);
+
+        Gamev2 game = new Gamev2(p1,p2,deck,pile);
+
+        game.knock();
 
     }
 
