@@ -141,9 +141,9 @@ public class Gamev2 {
     There might be some problems due to how the round restart interacts with the rest of the game
      */
 
-    void newRound(CardBatch deck, CardBatch pile, CardBatch p1hand, CardBatch p2hand){
+    public void newRound(CardBatch deck, CardBatch pile, CardBatch p1hand, CardBatch p2hand){
         this.dealer = !this.dealer;
-
+        this.player = !this.dealer;
         /*
         At this point I need to restart the:
         Deck, Discard Pile, and the player's hands
