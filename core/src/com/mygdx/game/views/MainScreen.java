@@ -266,7 +266,10 @@ public class MainScreen implements Screen{
 
                         setLocation(temp, 0.5f, 0);
                         game.addCardToDiscard(temp);
-                        setLocation(cardsPlayer1.getCard(cardsPlayer1.size() - 1), posX, posY);
+                        if(posX != 5){
+                            setLocation(cardsPlayer1.getCard(cardsPlayer1.size() - 1), posX, posY);
+                        }
+
 
                         System.out.print("card " + cardsPlayer1.getCard(cardsPlayer1.size() - 1));
                         System.out.print("player 1");
@@ -296,8 +299,9 @@ public class MainScreen implements Screen{
                         setLocation(temp, 0.5f, 0);
                         game.addCardToDiscard(temp);
                         System.out.println(posX + "and new" + posY);
-                        setLocation(cardsPlayer2.getCard(cardsPlayer2.size() - 1), posX, posY);
-
+                        if(posX != 5){
+                            setLocation(cardsPlayer2.getCard(cardsPlayer2.size() - 1), posX, posY);
+                        }
 
                         System.out.print("card " + cardsPlayer2.getCard(cardsPlayer2.size() - 1));
                         System.out.print("player 2");
