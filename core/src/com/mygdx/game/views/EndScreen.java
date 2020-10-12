@@ -18,6 +18,7 @@ public class EndScreen implements Screen {
     private SpriteBatch batch;
     private Texture background;
 
+    // screen if game ended
     public EndScreen(GinRummy ginRummy){
         parent = ginRummy;
         stage = new Stage(new ScreenViewport());
@@ -30,7 +31,6 @@ public class EndScreen implements Screen {
     public void show() {
         Table table = new Table();
         table.setFillParent(true);
-        //table.setDebug(true);
         stage.addActor(table);
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
 
@@ -39,9 +39,14 @@ public class EndScreen implements Screen {
 
         Label label1 = new Label("End of game", skin);
         label1.setFontScale(2.5f);
+        Label winnerLabel = new Label( parent.winner + " has won!", skin);
+        winnerLabel.setFontScale(2.5f);
         TextButton exitButton = new TextButton("Exit", skin);
 
         table.add(label1).fillX().uniformX();
+        table.row();
+        table.add(winnerLabel).fillX().uniformX();
+        table.row();
         table.row();
         table.add(exitButton).fillX().uniformX();
 

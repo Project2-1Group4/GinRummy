@@ -23,6 +23,7 @@ public class LoadingScreen implements Screen{
     private SpriteBatch batch;
     private Texture background;
 
+    // start screen
     public LoadingScreen(GinRummy ginRummy){
         parent = ginRummy;
         stage = new Stage(new ScreenViewport());
@@ -33,26 +34,18 @@ public class LoadingScreen implements Screen{
 
     @Override
     public void show() {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
         Table table = new Table();
         table.setFillParent(true);
-        //table.setDebug(true);
         stage.addActor(table);
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
 
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("background.jpg"));
-        //TextureRegion region = new TextureRegion(background, 0, 0, w, h);
-        //background = new Texture(Gdx.files.internal("background.jpg"));
 
         TextButton newGame = new TextButton("New Game", skin);
         TextButton exit = new TextButton("Exit", skin);
         newGame.setTransform(true);
-       // newGame.setScale(2.0f);
         exit.setTransform(true);
-        //exit.setScale(2.0f);
-
 
         table.add(newGame).fillX().uniformX();
         table.row().pad(10, 0, 10, 0);
@@ -65,7 +58,6 @@ public class LoadingScreen implements Screen{
                 Gdx.app.exit();
             }
         });
-
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

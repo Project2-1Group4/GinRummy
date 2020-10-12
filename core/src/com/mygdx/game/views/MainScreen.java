@@ -59,7 +59,7 @@ public class MainScreen implements Screen{
     public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
     public final static float MINIMUM_VIEWPORT_SIZE = 10f;
 
-    // Constructor, connecting mainscreen to ginrummy parent class
+    // screen to play actual game
     public MainScreen(GinRummy ginRummy){
         parent = ginRummy;
         stage = new Stage(new ScreenViewport());
@@ -149,6 +149,7 @@ public class MainScreen implements Screen{
         knockButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                game.player1.addPoints(100);
                 boolean newRound = game.knock();
                 if (newRound) {
                     cardsNewRound();
@@ -156,6 +157,12 @@ public class MainScreen implements Screen{
                     label4.setText("Score = " + game.player2.getScore());
                     game.newRound(deck, discardPile, cardsPlayer1, cardsPlayer2);
                 } else {
+                    if(game.player1.getScore() > game.player2.getScore()){
+                        parent.winner = parent.name1;
+                    }
+                    else{
+                        parent.winner = parent.name2;
+                    }
                     parent.changeScreen(GinRummy.END);
                 }
             }
