@@ -39,19 +39,19 @@ public class MainScreen implements Screen{
 
     private Label label3;
     private Label label4;
-    private CardBatch deck;
 
     private int roundCount = 1;
     private Card discardFirst;
     private CardBatch discardPile;
     private CardBatch cardsPlayer1;
     private CardBatch cardsPlayer2;
+    private CardBatch deck;
 
 
     private TextureAtlas atlas;
     private Material material;
-    CameraInputController camController;
-    PerspectiveCamera cam3D;
+    private CameraInputController camController;
+    private PerspectiveCamera cam3D;
 
     private Gamev2 game;
 
@@ -59,7 +59,7 @@ public class MainScreen implements Screen{
     public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
     public final static float MINIMUM_VIEWPORT_SIZE = 10f;
 
-
+    // Constructor, connecting mainscreen to ginrummy parent class
     public MainScreen(GinRummy ginRummy){
         parent = ginRummy;
         stage = new Stage(new ScreenViewport());
@@ -69,6 +69,7 @@ public class MainScreen implements Screen{
 
     }
 
+    // create all visual information / objects
     @Override
     public void show() {
         modelBatch= new ModelBatch();
@@ -87,17 +88,14 @@ public class MainScreen implements Screen{
         TextButton passButton = new TextButton("PASS", skin);
         passButton.setTransform(true);
         passButton.setScale(0.75f);
-        /*
-        Seriously, why is this texture atlas used so many times in so many different parts
-        I don't think it needs to be initiallized so many times.
-        At the very least it shouldn't affect SetOfCards so directly
-         */
+
+        // load information needed for cards
         atlas = new TextureAtlas("carddeck.atlas");
         material = new Material(TextureAttribute.createDiffuse(atlas.getTextures().first()),
                 new BlendingAttribute(false, 1f), FloatAttribute.createAlphaTest(0.5f));
         cardsNewRound();
 
-
+        // initialize game (logic)
         game = new Gamev2(parent.name1, parent.name2, cardsPlayer1, cardsPlayer2, deck, discardPile);
 
         Label label1 = new Label("Player 1: " + parent.name1, skin);
@@ -128,13 +126,10 @@ public class MainScreen implements Screen{
         passButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.print("PASS");
-
                 if(game.player) {
                     for (int j = 0; j < cardsPlayer1.size(); j++) {
                         turnCardBack(cardsPlayer1.getCard(j));
                     }
-
                     for (int k = 0; k < cardsPlayer2.size(); k++) {
                         turnCardFront(cardsPlayer2.getCard(k));
                     }
@@ -150,10 +145,10 @@ public class MainScreen implements Screen{
                 game.player = !game.player;
             }
         });
+        // if player knocks, calculate score and if total score <100, start new round
         knockButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("end of round");
                 boolean newRound = game.knock();
                 if (newRound) {
                     cardsNewRound();
@@ -162,16 +157,15 @@ public class MainScreen implements Screen{
                     game.newRound(deck, discardPile, cardsPlayer1, cardsPlayer2);
                 } else {
                     parent.changeScreen(GinRummy.END);
-
                 }
             }
         });
 
-
         cam3D = new PerspectiveCamera();
         camController = new CameraInputController(cam3D);
-        //Gdx.input.setInputProcessor(camController);
     }
+
+    // generate cards for round, including deck, discard pile, hand for player 1 + 2
     public void cardsNewRound() {
         cardsPlayer1 = new CardBatch(material, false);
         cardsPlayer2 = new CardBatch(material, false);
@@ -179,20 +173,20 @@ public class MainScreen implements Screen{
         discardPile = new CardBatch(material, false);
 
 
-        // creating handout cards for player 1
+        // creating hand for player 1
         for(int i = 0; i<10; i++){
             createCard((-5 + i),3, cardsPlayer1);
         }
 
-        // creating handout cards for player 2
+        // creating hand for player 2
         for(int i = 0; i<10; i++){
             createCard((-5 + i),-3, cardsPlayer2);
         }
+        // turn cards for player which doesn't start
         if(roundCount%2 != 0) {
             for (int i = 0; i < cardsPlayer1.size(); i++) {
                 turnCardBack(cardsPlayer1.getCard(i));
             }
-
         }
         else{
             for (int i = 0; i < cardsPlayer2.size(); i++) {
@@ -200,7 +194,7 @@ public class MainScreen implements Screen{
             }
         }
         roundCount++;
-        // top card of pile
+
         discardFirst = deck.drawTopCard();
         discardFirst.transform.translate(0.5f,0,0);
         discardFirst.setPointX(0.5f);
@@ -224,14 +218,13 @@ public class MainScreen implements Screen{
 
     @Override
     public void render(float delta) {
-        final float delta1 = Math.min(1/30f, Gdx.graphics.getDeltaTime());
+
         Gdx.gl.glClearColor( 1f, 1f, 1f, 1f );
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         batch.draw(background,0,0);
         batch.end();
 
-        //tempCurrent.transform.rotate(Vector3.Y, 180 * delta1 );
 
         // rendering cards in field
         modelBatch.begin(cam3D);
@@ -249,53 +242,46 @@ public class MainScreen implements Screen{
         camController.update();
 
         Vector3 touchPoint = new Vector3();
-        boolean active = false;
+        // boolean so discarded card doesn't gets noticed as 'clicked' twice
+        boolean active;
 
         if (Gdx.input.justTouched()) {
             active = true;
             cam3D.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            // check which card has been clicked from player 1
             if (this.game.player) {
                 for (int i = 0; i < cardsPlayer1.size(); i++) {
                     Card temp = cardsPlayer1.getCard(i);
+                    // save old position for the new card to move to after discarding temp
                     float posX = temp.getPointX();
                     float posY = temp.getPointY();
 
                     if (touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT && active) {
-                        System.out.println("Card " + temp.getValue());
-                        System.out.println(posX + "and " + posY);
-
+                        // move to discard pile
                         setLocation(temp, 0.5f, 0);
                         game.addCardToDiscard(temp);
+                        // move new card to open spot
                         if(posX != 5){
                             setLocation(cardsPlayer1.getCard(cardsPlayer1.size() - 1), posX, posY);
                         }
 
-
-                        System.out.print("card " + cardsPlayer1.getCard(cardsPlayer1.size() - 1));
-                        System.out.print("player 1");
-
+                        // turn over: turn cards so other player can play
                         for (int j = 0; j < cardsPlayer1.size(); j++) {
                             turnCardBack(cardsPlayer1.getCard(j));
                         }
-
                         for (int k = 0; k < cardsPlayer2.size(); k++) {
                             turnCardFront(cardsPlayer2.getCard(k));
                         }
-
-
                         active = false;
-
                     }
                 }
             } else {
+                // check which card has been clicked from player 2
                 for (int i = 0; i < cardsPlayer2.size(); i++) {
                     Card temp = cardsPlayer2.getCard(i);
                     float posX = temp.getPointX();
                     float posY = temp.getPointY();
                     if (touchPoint.x * 7.59 >= temp.getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= temp.getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= temp.getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= temp.getPointY() + 0.5 * CARD_HEIGHT && active) {
-                        System.out.println("Card " + temp.getValue());
-
-                        System.out.println(posX + "and " + posY);
                         setLocation(temp, 0.5f, 0);
                         game.addCardToDiscard(temp);
                         System.out.println(posX + "and new" + posY);
@@ -303,41 +289,33 @@ public class MainScreen implements Screen{
                             setLocation(cardsPlayer2.getCard(cardsPlayer2.size() - 1), posX, posY);
                         }
 
-                        System.out.print("card " + cardsPlayer2.getCard(cardsPlayer2.size() - 1));
-                        System.out.print("player 2");
-
                         for (int j = 0; j < cardsPlayer2.size(); j++) {
                             turnCardBack(cardsPlayer2.getCard(j));
                         }
                         for (int k = 0; k < cardsPlayer1.size(); k++) {
                             turnCardFront(cardsPlayer1.getCard(k));
                         }
-
-
                         active = false;
-
                     }
                 }
             }
-
+            // check if player wants card from deck
             if(touchPoint.x * 7.59 >= deck.getCard(deck.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= deck.getCard(deck.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= deck.getCard(deck.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= deck.getCard(deck.size()-1).getPointY() + 0.5 * CARD_HEIGHT) {
+                // get card from top of pile
                 Card temp = deck.getCard(deck.size()-1);
                 turnCardFront(temp);
                 game.drawCard(true);
+                // if its player 1s turn, move card from discard pile to player 1 hand
                 if(game.player){
                     setLocation(temp, 5, 3);
-
                 }
+                // if its player 2 turn, move card from discard pile to player 2 hand
                 else{
                     setLocation(temp, 5, -3);
-
                 }
-                System.out.print("Deck");
             }
-            System.out.print(active);
-            System.out.print(discardPile);
+            // check if player wants card from discard pile
             if(touchPoint.x * 7.59 >= discardPile.getCard(discardPile.size()-1).getPointX() - 0.5 * CARD_WIDTH && touchPoint.x * 7.59 <= discardPile.getCard(discardPile.size()-1).getPointX() + 0.5 * CARD_WIDTH && touchPoint.y * 7.5 >= discardPile.getCard(discardPile.size()-1).getPointY() - 0.5 * CARD_HEIGHT && touchPoint.y * 7.5 <= discardPile.getCard(discardPile.size()-1).getPointY() + 0.5 * CARD_HEIGHT && active) {
-
                 Card temp = discardPile.getCard(discardPile.size()-1);
                 game.drawCard(false);
                 if(game.player){
@@ -346,20 +324,16 @@ public class MainScreen implements Screen{
                 else{
                     setLocation(temp, 5, -3);
                 }
-                System.out.print("discard");
-
-
-                // vul aan!
             }
-            System.out.println("click coordinates: " + touchPoint.x + "and " + touchPoint.y);
-
         }
     }
+
     public void turnCardBack (Card card){
         float z = 0.5f * Math.abs(MathUtils.sinDeg(180));
         card.transform.setToRotation(Vector3.Y, 180);
         card.transform.trn(card.getPointX(), card.getPointY(), z);
     }
+
     public void turnCardFront (Card card){
         float z = 0.5f * Math.abs(MathUtils.sinDeg(360));
         card.transform.setToRotation(Vector3.Y, 360);
@@ -382,15 +356,14 @@ public class MainScreen implements Screen{
         cam3D.update();
     }
 
+    // move card on field to new position (endX, endY)
     public void setLocation(Card card, float endX, float endY){
         float moveX = endX - card.getPointX();
         float moveY = endY - card.getPointY();
-        System.out.println("moved:" + moveX + "and " + moveY);
         card.transform.translate(moveX, moveY, 0);
         card.setPointX(endX);
         card.setPointY(endY);
     }
-
 
     @Override
     public void pause() {
@@ -411,9 +384,6 @@ public class MainScreen implements Screen{
     public void dispose() {
         modelBatch.dispose();
         atlas.dispose();
-
     }
-
-
 }
 
