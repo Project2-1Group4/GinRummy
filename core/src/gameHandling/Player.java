@@ -197,7 +197,7 @@ public class Player {
 
                 if(count >= 2 && i == handOfCards.getCardSetSize()-1) {
 
-                    List<Card> tempList = getSetOrRun(i+1, count);
+                    List<Card> tempList = getSetOrRun(i+1, count, handOfCards);
 
                     listList.add(tempList);
                 }
@@ -212,7 +212,7 @@ public class Player {
 
                 if(count >= 2) {
 
-                    List<Card> tempList = getSetOrRun(i, count);
+                    List<Card> tempList = getSetOrRun(i, count, handOfCards);
 
                     listList.add(tempList);
                 }
@@ -381,6 +381,16 @@ public class Player {
 
         for (int j=0; j<count+1; j++) {
             tempList.add(this.hand.getCard(j + startPoint));
+        }
+        return tempList;
+    }
+
+    public List<Card> getSetOrRun(int index, int count, SetOfCards cards) {
+        int startPoint = index - count - 1;
+        List<Card> tempList = new ArrayList<>();
+
+        for (int j=0; j<count+1; j++) {
+            tempList.add(cards.getCard(j + startPoint));
         }
         return tempList;
     }
@@ -610,6 +620,7 @@ public class Player {
         SetOfCards deck = new SetOfCards(true, false);
         deck.shuffleCards();
 		SetOfCards hand = new SetOfCards(false, false);
+
         for (int i = 1; i < 10; i++) {
             hand.addCard(new Card(0,i));
         }
@@ -621,9 +632,23 @@ public class Player {
 		Player aPlayer = new Player("player", hand);
         System.out.println(hand);
 
+        SetOfCards handy = new SetOfCards(false, false);
 
+        for (int i = 0; i <= 3; i++) {
+            handy.addCard(new Card(i,4));
+        }
 
-        System.out.println("permutation: " +aPlayer.getPermutation(aPlayer.findSets(hand)));
+        for (int i = 0; i < 3; i++) {
+            handy.addCard(new Card(i,3));
+        }
+
+       //Player ap = new Player("player1", handy);
+
+        System.out.println("handy: "+handy+"cc"+hand.getCard(0));
+
+      //  System.out.println("permutations: "+ap.getPermutation(ap.findSets(handy)));
+
+        System.out.println("permutation: " +aPlayer.getPermutation(aPlayer.findSets(handy)));
 
 
 		List<List<Card>> runs = aPlayer.findRuns();
