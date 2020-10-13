@@ -149,7 +149,6 @@ public class MainScreen implements Screen{
         knockButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.player1.addPoints(100);
                 boolean newRound = game.knock();
                 if (newRound) {
                     cardsNewRound();
