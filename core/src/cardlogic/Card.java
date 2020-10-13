@@ -28,17 +28,11 @@ public class Card extends Actor implements Comparable {
 	private String nameCard;
 	private TextureAtlas atlas;
 
-	/*
-	These two guys were originally final, I changed them to not be
-	Done so that some of the refactoring for bug testing could be implemented
-	 */
-
 	private Sprite front;
 	private Sprite back;
 	private boolean turned;
 
-
-
+	// location of card in field
 	private float pointX;
 	private float pointY;
 
@@ -48,8 +42,6 @@ public class Card extends Actor implements Comparable {
 
 	public final static float CARD_WIDTH = 1f;
 	public final static float CARD_HEIGHT = CARD_WIDTH * 277f / 200f;
-	
-	//final SUITS suitList = {
 	
 	/*
 	 * J = 11
@@ -75,7 +67,6 @@ public class Card extends Actor implements Comparable {
 		if(this.atlas == null){
 			atlas = new TextureAtlas("carddeck.atlas");
 		}
-
 		Sprite back = atlas.createSprite("back", 1);
 
 		String suit = null;
@@ -99,36 +90,16 @@ public class Card extends Actor implements Comparable {
 		front.setPosition(-front.getWidth() * 0.5f, -front.getHeight() * 0.5f);
 		back.setPosition(-back.getWidth() * 0.5f, -back.getHeight() * 0.5f);
 
-		// Why do we need nameCard? The toString method already does this thing
 		this.nameCard = Integer.toString(value) + this.suit;
 
 		vertices = convert(front.getVertices(), back.getVertices());
 		indices = new short[] {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
 
 	}
-	
-	public Card(int suit, int value,Sprite back, Sprite front)  {
-		this(suit,value);
-		assert(front.getTexture() == back.getTexture());
-
-		back.setSize(CARD_WIDTH, CARD_HEIGHT);
-		front.setSize(CARD_WIDTH, CARD_HEIGHT);
-
-		front.setPosition(-front.getWidth() * 0.5f, -front.getHeight() * 0.5f);
-		back.setPosition(-back.getWidth() * 0.5f, -back.getHeight() * 0.5f);
-
-		vertices = convert(front.getVertices(), back.getVertices());
-		indices = new short[] {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
-
-
-	}
-
-
 
 	void setSuit(SUITS aSuit){
 		this.suit = aSuit;
 	}
-
 	public int getValue() {
 		return value;
 	}
@@ -136,12 +107,6 @@ public class Card extends Actor implements Comparable {
 		this.value = value;
 	}
 
-
-/*	public void setPosition(float x, float y) {
-		front.setPosition(x - 0.5f * front.getWidth(), y - 0.5f * front.getHeight());
-		back.setPosition(x - 0.5f * back.getWidth(), y - 0.5f * back.getHeight());
-	}
-*/
 	private static float[] convert(float[] front, float[] back) {
 
 		return new float[]{
@@ -155,31 +120,10 @@ public class Card extends Actor implements Comparable {
 				back[Batch.X3], back[Batch.Y3], 0, 0, 0, -1, back[Batch.U3], back[Batch.V3],
 				back[Batch.X4], back[Batch.Y4], 0, 0, 0, -1, back[Batch.U4], back[Batch.V4]};
 	}
-		
-	public void turn() {
-			turned = !turned;
-		}
-
-	public void draw(Batch batch) {
-			if (turned)
-				back.draw(batch);
-			else
-				front.draw(batch);
-		}
-
-
-	public String getNameCard() {
-		return this.nameCard;
-	}
 
 	public SUITS getSuit() {
 		return suit;
 	}
-
-	public Sprite getFront(){
-		return front;
-	}
-
 	
 	public int getGinRummyValue() {
 		if (this.value>10) {
@@ -194,13 +138,8 @@ public class Card extends Actor implements Comparable {
 		return this.value - ((Card)arg0).getValue();
 	}
 
-	
 	public String toString() {
 		return Integer.toString(value)+this.suit;
-	}
-
-	public boolean equals(Card card) {
-		return (this.value == card.value && this.suit.equals(card.suit));
 	}
 
 	public float getPointX() {

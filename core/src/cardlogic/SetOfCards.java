@@ -20,11 +20,8 @@ public class SetOfCards {
 
 
 	/*
-	Alternate set of cards made in order to test internal logic,
-	As the texture atlas seemed to require extra stuff and was an annoyance for testing
-	if int = 0, then it's a deck and for testing
-	if int = 1, then it's visual
-	if int = anything else, then it's a hand
+	boolean deck is true if deck is created, for hand / discardpile will be false
+	boolean visual is true if we want to add all visual info to the cards, only false for testing
 	 */
 
 	public SetOfCards(boolean deck, boolean visual){
@@ -47,50 +44,6 @@ public class SetOfCards {
 		}
 	}
 
-// useless
-	public SetOfCards(boolean deck){
-		atlas = new TextureAtlas("carddeck.atlas");
-		if (deck) {
-			String suit = "clubs";
-			this.cards = new ArrayList<>();
-
-			/*
-				What's the point of adding the suits as strings?
-				We already have the enums and we define the suits through an int as well
-				I don't really see what extra info this brings in
-				TODO: Ask about this and see if they can be refactored
-			 */
-
-			for(int i=0; i<4; i++) {
-				for(int j=1;j<14;j++) {
-					if(i == 0) {
-						suit = "spades";
-					} else if (i ==1){
-						suit = "clubs";
-					} else if (i == 2) {
-						suit = "hearts";
-					} else if (i == 3) {
-						suit = "diamonds";
-					}
-
-					/*
-					The create sprites absolutely feel like they should be cleaned up
-					The methods rely on information that is already contained in i and j
-					The constructor for the card could probably do without the createSprite methods
-					TODO: Ask about this stuff and check if it can be refactored
-					 */
-
-					this.cards.add(new Card(i,j, atlas.createSprite("back", 1), atlas.createSprite(suit, j)));
-				}
-			}
-			
-			Collections.shuffle(this.cards);
-			
-		} else {
-			this.cards = new ArrayList<>();
-		}
-		
-	}
 
 	public List<Card> toList(){
 		return this.cards;
@@ -138,12 +91,11 @@ public class SetOfCards {
 	public static boolean findIfCardMakesMeld(Card aCard, List<Card> setOrRun) {
 		return findIfCardMakesRun(aCard, setOrRun)||findIfCardMakesSet(aCard,setOrRun);
 	}
-	
+
 	/*
 	 * So the idea is that the difference between the first and last card in a run has to be one
 	 * For the card to be valid in the run
 	 * But! This can be at the beginning or end of the run
-	 * So I try to take that into account
 	 */
 	
 	public static boolean findIfCardMakesRun(Card aCard, List<Card> run) {
@@ -159,8 +111,6 @@ public class SetOfCards {
 	public static boolean findIfCardMakesSet(Card aCard, List<Card> set) {
 		return aCard.getValue() == set.get(0).getValue();
 	}
-
-	public void removeCard() {this.cards.remove(0);}
 	
 	public void sortBySuits() {
 		
@@ -169,34 +119,15 @@ public class SetOfCards {
 		for(SUITS aSuit : SUITS.values()) {
 			List<Card> tempList = new ArrayList<>();
 			
-			/*
-			for(int i=0;i<this.cards.size();i++) {
-				Card aCard = this.cards.get(i);
-				
-				if (aCard.getSuit() == aSuit) {
-					tempList.add(aCard);
-					this.cards.remove(aCard);
-				}
-				
-			}*/
-			
-			
 			for(Card aCard : this.cards) {
 				if (aCard.getSuit() == aSuit) {
 					tempList.add(aCard);
-					//this.cards.remove(aCard);
 				}
-				
 			}
-			
 			Collections.sort(tempList);	
 			resList.addAll(tempList);
-			
 		}
-		
 		this.cards = resList;
-		
-		
 	}
 
 	public boolean contains(Card card) {
@@ -228,24 +159,5 @@ public class SetOfCards {
 		}
 		return setCard;
 	}
-	
-	//TESTING
-
-	/*
-	public static void main(String[] args) {
-		SetOfCards deck = new SetOfCards();
-		
-		Player aPlayer = new Player(deck);
-		
-		List<List<Card>> runs = aPlayer.findRuns();
-		
-		List<List<Card>> sets = aPlayer.findSets();
-		
-		deck.shuffleCards();
-		
-		System.out.println("hey");
-		
-	}*/
-	
 
 }
