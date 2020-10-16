@@ -21,8 +21,9 @@ public class GinRummy extends Game {
 	public final static int APPLICATION = 2;
 	public String name1;
 	public String name2;
+	public String winner;
 
-	
+	// class to take care of screens
 	@Override
 	public void create () {
 		loadingScreen = new LoadingScreen(this);
@@ -31,8 +32,6 @@ public class GinRummy extends Game {
 
 	@Override
 	public void render () {
-		//Gdx.gl.glClearColor(1, 0, 0, 1);
-		//Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		super.render();
 	}
 
@@ -56,11 +55,7 @@ public class GinRummy extends Game {
 	
 	@Override
 	public void dispose () {
-
 	}
-
-
-
 }
 
 

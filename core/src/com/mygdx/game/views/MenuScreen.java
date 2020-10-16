@@ -20,6 +20,7 @@ public class MenuScreen implements Screen{
     private SpriteBatch batch;
     private Texture background;
 
+    // screen to give names to player 1 and player 2
     public MenuScreen(GinRummy ginRummy){
         parent = ginRummy;
         stage = new Stage(new ScreenViewport());
@@ -32,7 +33,6 @@ public class MenuScreen implements Screen{
     public void show() {
         Table table = new Table();
         table.setFillParent(true);
-        //table.setDebug(true);
         stage.addActor(table);
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
 
