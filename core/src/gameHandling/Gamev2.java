@@ -282,19 +282,20 @@ public class Gamev2 {
 
         SetOfCards p1Deck = new SetOfCards(false, false);
 
-        for(int i =1; i<8; i++){
+        for(int i =1; i<7; i++){
             p1Deck.addCard(new Card(0,i+2));
         }
 
         p1Deck.addCard(new Card(1,13));
         p1Deck.addCard(new Card(2,13));
         p1Deck.addCard(new Card(3,13));
+        p1Deck.addCard(new Card(3,2));
 
         SetOfCards p2Deck = new SetOfCards(false, false);
 
-
-        p2Deck.addCard(new Card(0,11));
+        
         p2Deck.addCard(new Card(0,10));
+        p2Deck.addCard(new Card(0,9));
 
         p2Deck.addCard(new Card(0,13));
 
@@ -314,7 +315,7 @@ public class Gamev2 {
         Player p1 = new Player("Player 1",p1Deck);
         Player p2 = new Player("Player 2",p2Deck);
 
-
+        p2.bestCombination();
         System.out.println("permutation: "+p1.getPermutation(p1.findSets(p1.hand)));
         p1.bestCombination();
         System.out.println("chosen "+p1.bestCombination);

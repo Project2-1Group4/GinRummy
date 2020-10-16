@@ -36,6 +36,7 @@ public class Player {
     	// TODO: Add a method so that the default constructor already scores the hand
         // TODO: Add this method as well whenever a card is drawn
     	this.scoreHand();
+    	this.deadWood = this.findDeadwood();
     }
 
     public String getName() {
@@ -457,35 +458,12 @@ public class Player {
     	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
     	
     	int score = SetOfCards.scoreGinRummy(deadwood);
-    	//this.score = score;
 
     	return score;
     	
     }
     
     
-    /*
-     * Idea of this method is that it'll find those cards that are now part of the deadwood
-     * Done so that the cards can be later used, be it to add them to other runs or to get stuff done
-     * 
-     * 
-     * THIS IS THE OLD DEADWOOD METHOD, TRUC ADDED A NEW ONE
-     * TODO: Check code and make sure this method isn't needed and that everything's good
-     * 
-     */
-    
-    /*
-    public List<Card> findDeadwood(){
-    	
-    	List<List<Card>> resultingCards = this.getMelds();
-    	
-    	return this.getDeadwood(resultingCards);	
-    }*/
-    
-    /*
-     * Somehow another method will take care of finding the optimal combination of runs and melds
-     * This method will just remove those cards, and then return a list with the remaining deadwood
-     */
     
     public List<Card> findDeadwood(List<Card> cardsInMelds){
     	
