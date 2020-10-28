@@ -579,10 +579,6 @@ public class Player {
      */
 
 
-    public boolean chooseToKnock() {
-    	return false;
-    }
-
     public void addCard(Card aCard){
         this.hand.addCard(aCard);
     }

@@ -44,6 +44,10 @@ public class SetOfCards {
 		}
 	}
 
+	public SetOfCards(List<Card> someCards){
+		this.cards = someCards;
+	}
+
 
 	public List<Card> toList(){
 		return this.cards;
