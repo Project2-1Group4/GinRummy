@@ -69,6 +69,10 @@ public class SetOfCards {
 	public Card drawTopCard() {
 		return this.cards.remove(this.cards.size()-1);
 	}
+
+	public Card peekTopCard(){
+		return this.cards.get(this.cards.size()-1);
+	}
 	
 	public void addCard(Card card) {
 		this.cards.add(card);

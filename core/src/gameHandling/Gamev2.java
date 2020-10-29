@@ -50,6 +50,54 @@ public class Gamev2 {
 
     }
 
+    // Update to allow for the game to be played internally
+    // Update both player and GameV2 to allow the game to be played on "command line"-ish terms
+    // I'll probably change the return function in some way to display who won, and stuff like that
+    void playGame(){
+        boolean newRound = true;
+
+        this.firstRound();
+        while(newRound){
+
+            Player turnP = this.findCurrentPlayer();
+
+            boolean deckOrNot = turnP.chooseDeckOrPile(this.pile.peekTopCard());
+
+            Card discarded = turnP.chooseCardToDiscard(this.drawCardGame(deckOrNot));
+
+            this.pile.addCard(discarded);
+
+            if (turnP.chooseToKnock()){
+                newRound = this.knock();
+
+                if(newRound){
+                    // First round set up thingy goes here again to simulate the first round properly
+                    this.resetGame();
+                    
+                    this.firstRound();
+
+                }
+                
+            }
+
+        }
+
+    }
+
+
+    // TODO: make sure I'm properly changing around the dealer as well when a round ends.
+
+    Player findCurrentPlayer(){
+        this.player = !this.player;
+        
+        // It's inverted because the previous command kinda "resets" stuff
+        if(!this.player){
+            return this.player1;
+        } else {
+            return this.player2;
+        }
+    }
+
     // true if deck
     public boolean drawCard(boolean deckOrPile){
         if(deck.size() <=2) {
@@ -57,7 +105,10 @@ public class Gamev2 {
         }
 
         Player aPlayer;
-        if(this.player){
+
+        // Player is inverted whenever a card is drawn out
+        // So here its the opposite way around
+        if(!this.player){
             aPlayer = player1;
         } else {
             aPlayer = player2;
@@ -72,6 +123,66 @@ public class Gamev2 {
         return true;
     }
 
+    // Method checks out, should bug test later just in case
+    void firstRound() {
+		/*
+		 * Use the top card in the pile here
+		 */
+		
+		Card firstCard = this.pile.drawTopCard();
+		
+		Player dealer;
+		Player second;
+		
+		if(this.dealer) {
+			dealer = this.p1;
+			second = this.p2;
+		} else {
+			dealer = this.p2;
+			second = this.p1;
+		}
+		
+		// So the player is the person that wasn't dealing
+		this.player = !this.dealer;
+		
+		// Inverts dealer for the next game
+		this.dealer = !this.dealer;
+		
+		
+		Card thrownCard = second.chooseCardToDiscard(firstCard);
+		
+		if (thrownCard.equals(firstCard)) {
+			thrownCard = dealer.chooseCardToDiscard(firstCard);
+			
+			// Inverting the player
+			this.player = !this.player;
+			
+			// If both players pass then the non-dealing player has to draw from the stock pile
+			if(thrownCard.equals(firstCard)) {
+				thrownCard = second.chooseCardToDiscard(this.deck.drawTopCard());
+				
+				// Inverting the player again
+				this.player = !this.player;
+				
+			}
+			
+		}
+		
+	}
+
+    public Card drawCardGame(boolean deckOrPile){
+        if(deck.size()<= 2){
+            return null;
+        }
+
+        if(deckOrPile){
+            return this.deck.drawTopCard();
+        } else {
+            return this.pile.drawTopCard();
+        }
+
+    }
+
     public void addCardToDiscard(Card aCard){
         if(this.player){
             player1.hand.discardCard(aCard);
@@ -83,7 +194,10 @@ public class Gamev2 {
         this.player = !this.player;
     }
 
-
+    /*
+    If true then there's another round
+    Else game's done and winner can be calculated
+    */
     public boolean knock(){
 
         Player pKnock;
@@ -166,6 +280,20 @@ public class Gamev2 {
 
         this.player1.hand = p1hand;
         this.player2.hand = p2hand;
+
+    }
+
+    public void newRound(){
+        this.deck = new SetOfCards(true,false);
+        this.pile = new SetOfCards();
+
+        SetOfCards p1HandNew = SetOfCards.handOutCard(10, this.deck);
+        SetOfCards p2HandNew = SetOfCards.handOutCard(10, this.deck);
+
+        this.player1.hand = p1HandNew;
+        this.player2.hand = p2HandNew;
+
+        this.pile.addCard(deck.drawTopCard());
 
     }
 

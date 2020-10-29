@@ -546,8 +546,19 @@ public class Player {
      * 
      */
     public Card chooseCardToDiscard(Card aCard) {
-    	
     	return aCard;
+    }
+
+
+    /*
+    Gives the player the option to knock or no
+    If the player doesn't want to knock:
+        return false
+    If he wants to knock:
+        return true
+    */
+    public boolean chooseToKnock(){
+        return false;
     }
     
     
@@ -565,7 +576,7 @@ public class Player {
      * 
      */
     
-    public boolean chooseDeckOrPile() {
+    public boolean chooseDeckOrPile(Card pileTop) {
     	return false;
     }
     
