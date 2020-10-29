@@ -14,19 +14,41 @@ public class basicGreedy extends Player{
     }
 
     /*
+    Determines how many points the hand should have before the player knocks
+    Default is 10 'cause that's the minimum knock value according to general rules
+    */
+
+    int knockValue = 10;
+
+    /*
+    Because the round resets when there's two cards,
+    It might be beneficial to pre-emptively knock
+    This sets how many cards should be left in the deck before the knock
+    Default value is three so that the player can have a 'safety margin' for knocking
+    */
+
+    int cardsInDeckLimit = 3;
+
+    /*
     So the gist of it is that the method will look at the card in the discard pile
     It'll then evaluate if it can create a new hand that has a lower score than it's current hand
-    If the card can lower the current score:
-        return false
-    Else
-        return true
 
-    And if it returns true that means it should pick from the deck instead (as there's a chance something good is there)
+    If the card can lower the current score:
+        return true
+    Else
+        return false
+
+    And if it returns false that means it should pick from the deck instead (as there's a chance something good is there)
     */
 
     boolean evaluate(Card discardCard){
         
         return false;
+    }
+
+    // Not sure if it should have a variable, mainly the discardCard
+    void playTurn(){
+
     }
 
     /*
@@ -37,7 +59,7 @@ public class basicGreedy extends Player{
         Card theCard = null;
 
         // It's just a high number, doesn't really matter what it is
-        int lowestVal = 100000;
+        int lowestVal = -1;
 
         for(Card aCard : aHand){
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
@@ -48,8 +70,9 @@ public class basicGreedy extends Player{
             Player temp = new Player(new SetOfCards(aList));
             int resultingHand = temp.scoreHand();
 
-            if(resultingHand<lowestVal){
+            if(resultingHand>=lowestVal){
                 theCard = aCard;
+                lowestVal = resultingHand;
             }
 
 
