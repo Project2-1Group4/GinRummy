@@ -66,8 +66,8 @@ public class basicGreedy extends Player{
     public static Card chooseCardToDiscard(List<Card> aHand){
         Card theCard = null;
 
-        // It's just a high number, doesn't really matter what it is
-        int lowestVal = -1;
+        // It's just a low number, doesn't really matter what it is
+        int highestVal = -1;
 
         for(Card aCard : aHand){
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
@@ -78,9 +78,9 @@ public class basicGreedy extends Player{
             Player temp = new Player(new SetOfCards(aList));
             int resultingHand = temp.scoreHand();
 
-            if(resultingHand>=lowestVal){
+            if(resultingHand>=highestVal){
                 theCard = aCard;
-                lowestVal = resultingHand;
+                highestVal = resultingHand;
             }
 
 
