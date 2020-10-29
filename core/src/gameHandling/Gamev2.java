@@ -72,7 +72,7 @@ public class Gamev2 {
 
                 if(newRound){
                     // First round set up thingy goes here again to simulate the first round properly
-                    this.resetGame();
+                    this.newRound();
                     
                     this.firstRound();
 

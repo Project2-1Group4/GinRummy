@@ -42,21 +42,41 @@ public class basicGreedy extends Player{
     */
 
     boolean evaluate(Card discardCard){
-        SetOfCards current = hand;
-        current.remove(chooseCardToDiscard(current));
-        current.addCard(discardCard);
+        List<Card> current = this.hand.toList();
+        
+        current.add(discardCard);
         if(chooseCardToDiscard(current) == discardCard){
-            return false
+            return false;
         }
         else{
-            return true
+            return true;
         }
         
     }
 
-    // Not sure if it should have a variable, mainly the discardCard
-    void playTurn(){
-
+    public boolean ChooseDeckOrPile(Card aCard){
+    	return this.evaluate(aCard);        
+    }
+    
+    public Card chooseCardToDiscard(Card aCard) {
+    	List<Card> current = this.hand.toList();
+    	
+    	current.add(aCard);
+    	
+    	return chooseCardToDiscard(aCard);
+    	
+    }
+    
+    public boolean chooseToKnock() {
+    	int currentHand = this.scoreHand();
+    	
+    	if(currentHand <= this.knockValue) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    	
+    	
     }
 
     /*
