@@ -42,8 +42,16 @@ public class basicGreedy extends Player{
     */
 
     boolean evaluate(Card discardCard){
+        SetOfCards current = hand;
+        current.remove(chooseCardToDiscard(current));
+        current.addCard(discardCard);
+        if(chooseCardToDiscard(current) == discardCard){
+            return false
+        }
+        else{
+            return true
+        }
         
-        return false;
     }
 
     // Not sure if it should have a variable, mainly the discardCard
