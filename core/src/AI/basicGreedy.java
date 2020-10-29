@@ -17,16 +17,24 @@ public class basicGreedy extends Player{
     So the gist of it is that the method will look at the card in the discard pile
     It'll then evaluate if it can create a new hand that has a lower score than it's current hand
     If the card can lower the current score:
-        return false
-    Else
         return true
+    Else
+        return false
 
-    And if it returns true that means it should pick from the deck instead (as there's a chance something good is there)
+    And if it returns false that means it should pick from the deck instead (as there's a chance something good is there)
     */
 
     boolean evaluate(Card discardCard){
+        SetOfCards current = hand;
+        current.remove(chooseCardToDiscard(current));
+        current.addCard(discardCard);
+        if(chooseCardToDiscard(current) == discardCard){
+            return false
+        }
+        else{
+            return true
+        }
         
-        return false;
     }
 
     /*
