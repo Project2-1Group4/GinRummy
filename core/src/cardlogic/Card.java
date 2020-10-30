@@ -22,11 +22,11 @@ public class Card extends Actor implements Comparable {
 		HEARTS,
 		DIAMONDS
 	}
-	
+
+	private static TextureAtlas atlas = new TextureAtlas("carddeck.atlas");
 	private SUITS suit;
 	private int value;
 	private String nameCard;
-	private TextureAtlas atlas;
 
 	private Sprite front;
 	private Sprite back;
@@ -64,9 +64,6 @@ public class Card extends Actor implements Comparable {
 	}
 
 	public void addVisualInfo(){
-		if(this.atlas == null){
-			atlas = new TextureAtlas("carddeck.atlas");
-		}
 		Sprite back = atlas.createSprite("back", 1);
 
 		String suit = null;
