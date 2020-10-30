@@ -135,11 +135,11 @@ public class Gamev2 {
 		Player second;
 		
 		if(this.dealer) {
-			dealer = this.p1;
-			second = this.p2;
+			dealer = this.player1;
+			second = this.player2;
 		} else {
-			dealer = this.p2;
-			second = this.p1;
+			dealer = this.player2;
+			second = this.player1;
 		}
 		
 		// So the player is the person that wasn't dealing
