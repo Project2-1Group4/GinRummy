@@ -1,16 +1,8 @@
 package cardlogic;
 
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -23,7 +15,7 @@ public class Card extends Actor implements Comparable {
 		DIAMONDS
 	}
 
-	private static TextureAtlas atlas = new TextureAtlas("carddeck.atlas");
+	private static TextureAtlas atlas;
 	private SUITS suit;
 	private int value;
 	private String nameCard;
@@ -64,6 +56,10 @@ public class Card extends Actor implements Comparable {
 	}
 
 	public void addVisualInfo(){
+		if(atlas == null){
+			this.atlas = new TextureAtlas("carddeck.atlas");
+		}
+
 		Sprite back = atlas.createSprite("back", 1);
 
 		String suit = null;
