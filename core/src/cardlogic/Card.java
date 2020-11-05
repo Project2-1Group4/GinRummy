@@ -28,6 +28,8 @@ public class Card extends Actor implements Comparable {
 	private float pointX;
 	private float pointY;
 
+	private double prob = 1/41;
+
 	public float[] vertices;
 	public short[] indices;
 	public final Matrix4 transform = new Matrix4();
@@ -150,6 +152,10 @@ public class Card extends Actor implements Comparable {
 	public void setPointY(float pointY) {
 		this.pointY = pointY;
 	}
+
+	public double getProb() { return prob; }
+
+	public void setProb(double prob) { this.prob = prob; }
 
 
 	
