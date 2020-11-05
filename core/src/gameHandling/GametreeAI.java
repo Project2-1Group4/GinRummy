@@ -5,6 +5,7 @@ import cardlogic.SetOfCards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class GametreeAI {
     SetOfCards discardPile;
@@ -45,8 +46,137 @@ public class GametreeAI {
         return result;
     }
 
-    public void simulation (){
+    // boolean true if discard pile is chosen
+    // if true, top card of pile will be transfered after this method
+    public void simulationPick(SetOfCards discardPile, SetOfCards hand, SetOfCards deck, boolean pick){
+        SetOfCards currentpile = discardPile;
+        SetOfCards currenthand = hand;
+        SetOfCards currentdeck = deck;
+        boolean pileOrDeck = pick;
+        ArrayList<SetOfCards> possibilities = new ArrayList<>();
+        if(pileOrDeck){
+            Card chosen = discardPile.getCard((discardPile.size()-1));
+            for(int j = 0; j<deck.size(); j++){
+                // look if cards for set are in deck
+                if(deck.getCard(j).getValue() == chosen.getValue()){
+                    // cards with same value left in deck --> so not in hand current player or pile
+                    int leftInDeck1 = 4;
+                    // look through hand of AI, if this contains a card for set, prob of other cards increase
+                    for(int k = 0; k< currenthand.size(); k++){
+                        if(currenthand.getCard(k).getValue() == chosen.getValue()){
+                            leftInDeck1--;
+                        }
+                    }
+                    // look through pile, if this contains a card for set, prob of other cards increase
+                    for(int k = 0; k< currentpile.size(); k++){
+                        if(currentpile.getCard(k).getValue() == chosen.getValue()){
+                            leftInDeck1--;
+                        }
+                    }
+                    deck.getCard(j).setProb(1/(2*leftInDeck1));
+                }
+                // cards next to picked card for run
+                int leftInDeck2 = 2;
+                if(deck.getCard(j).getSuit() == chosen.getSuit() && deck.getCard(j).getValue() == chosen.getValue() +1){
+                    // if card is in AI hand, it won't be in other players hand so prob = 0
+                    for(int k = 0; k <currenthand.size(); k++){
+                        if(currenthand.getCard(k).getSuit() == chosen.getSuit() && currenthand.getCard(k).getValue() == chosen.getValue() + 1 ){
+                            leftInDeck2--;
+                            deck.getCard(j).setProb(0.001);
+                        }
+                    }
+                    // if card is in pile, it won't be in other players hand so prob = 0
+                    for(int k = 0; k <currentpile.size(); k++){
+                        if(currentpile.getCard(k).getSuit() == chosen.getSuit() && currentpile.getCard(k).getValue() == chosen.getValue() + 1 ){
+                            leftInDeck2--;
+                            deck.getCard(j).setProb(0.001);
+                        }
+                    }
+                }
+                if(deck.getCard(j).getSuit() == chosen.getSuit() && deck.getCard(j).getValue() == chosen.getValue() -1){
+                    for(int k = 0; k <currenthand.size(); k++){
+                        if(currenthand.getCard(k).getSuit() == chosen.getSuit() && currenthand.getCard(k).getValue() == chosen.getValue() - 1 ){
+                            leftInDeck2--;
+                            deck.getCard(j).setProb(0);
+                        }
+                    }
+                    for(int k = 0; k <currentpile.size(); k++){
+                        if(currentpile.getCard(k).getSuit() == chosen.getSuit() && currentpile.getCard(k).getValue() == chosen.getValue() - 1 ){
+                            leftInDeck2--;
+                            deck.getCard(j).setProb(0);
+                        }
+                    }
+                }
+                // if card is not in hand AI, give prob
+                if(deck.getCard(j).getSuit() == chosen.getSuit() && deck.getCard(j).getValue() == chosen.getValue() +1){
+                    if(leftInDeck2 == 2){
+                        deck.getCard(j).setProb(0.25);
+                    }
+                    if(leftInDeck2 ==1){
+                        if(deck.getCard(j).getProb() != 0){
+                            deck.getCard(j).setProb(0.5);
+                        }
+                    }
+                }
+                //if card is not in pile, give prob
+                if(deck.getCard(j).getSuit() == chosen.getSuit() && deck.getCard(j).getValue() == chosen.getValue() -1){
+                    if(leftInDeck2 == 2){
+                        deck.getCard(j).setProb(0.25);
+                    }
+                    if(leftInDeck2 ==1){
+                        if(deck.getCard(j).getProb() != 0){
+                            deck.getCard(j).setProb(0.5);
+                        }
+                    }
+                }
+            }
+            for(int i= 1; i<= 1000; i++){
+                SetOfCards handOpponent = new SetOfCards(false,false);
+                for(int j = 0; j < deck.size(); j++){
 
+                }
+            }
+        }
+        else{
+            Card notChosen = discardPile.getCard(discardPile.size()-1);
+            for(int j = 0; j< deck.size(); j++){
+                if(deck.getCard(j).getValue() == notChosen.getValue()){
+                    deck.getCard(j).setProb(0);
+                }
+                if(deck.getCard(j).getSuit() == notChosen.getSuit() && deck.getCard(j).getValue() == notChosen.getValue() +1){
+                    deck.getCard(j).setProb(0);
+                }
+                if(deck.getCard(j).getSuit() == notChosen.getSuit() && deck.getCard(j).getValue() == notChosen.getValue() -1){
+                    deck.getCard(j).setProb(0);
+                }
+            }
+            for(int i= 1; i<= 1000; i++){
+
+            }
+        }
+
+    }
+
+    // called after card from opponent is placed on discard pile
+    public void simulationDiscard(SetOfCards discardPile, SetOfCards hand, SetOfCards deck){
+        SetOfCards currentpile = discardPile;
+        SetOfCards currenthand = hand;
+        SetOfCards currentdeck = deck;
+        Card discarded = discardPile.getCard(discardPile.size()-1);
+        for(int j = 0; j<deck.size(); j++){
+            if(deck.getCard(j).getValue() == discarded.getValue()){
+                deck.getCard(j).setProb(0);
+            }
+            if(deck.getCard(j).getSuit() == discarded.getSuit() && deck.getCard(j).getValue() == discarded.getValue() +1){
+                deck.getCard(j).setProb(0);
+            }
+            if(deck.getCard(j).getSuit() == discarded.getSuit() && deck.getCard(j).getValue() == discarded.getValue() -1){
+                deck.getCard(j).setProb(0);
+            }
+        }
+        for(int i= 1; i<= 1000; i++){
+
+        }
     }
 
     public static Card chooseCardToDiscard(List<Card> aHand){
