@@ -5,11 +5,11 @@ import cardlogic.SetOfCards;
 
 public interface PlayerGameInteractions {
 	
-	public boolean chooseDeckOrPile(Card discardTop);
+	public Boolean chooseDeckOrPile(Card discardTop);
 	
 	public Card chooseCardToDiscard(Card drawnCard);
 	
-	public boolean chooseToKnock();
+	public Boolean chooseToKnock();
 	
 	public void checkTopOfDiscard(Card discardTop);
 	
