@@ -21,7 +21,7 @@ public class GametreeAI {
         for(int i = 0; i<hand.size(); i++){
            deck.discardCard(hand.getCard(i));
         }
-        for(int i = 0; i<discardPile.size(); i++){
+        for(int i = 0; i<discardPile.size(); i++) {
             deck.discardCard(discardPile.getCard(i));
         }
     }
@@ -187,14 +187,16 @@ public class GametreeAI {
 
         for(Card aCard : aHand){
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
-            List<Card> aList = new ArrayList<>(aHand);
+            //List<Card> aList = new ArrayList<>(aHand);
+            //deep copy aList (method is in Player class already)
+            List<Card> aList = Player.copyList(aHand);
             aList.remove(aCard);
 
             // This is garbage unnefficient, but I don't feel like adding a proper method now
             Player temp = new Player(new SetOfCards(aList));
             int resultingHand = temp.scoreHand();
 
-            if(resultingHand>=highestVal){
+            if(resultingHand <= highestVal){    //the result from scoreHand is counting deadwood value so it should be smaller than the previous step
                 theCard = aCard;
                 highestVal = resultingHand;
             }

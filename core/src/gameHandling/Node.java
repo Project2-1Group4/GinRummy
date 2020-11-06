@@ -2,8 +2,7 @@ package gameHandling;
 
 import cardlogic.SetOfCards;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Node {
     SetOfCards discardPile;
@@ -26,6 +25,7 @@ public class Node {
     public Node getParent() {
         return parent;
     }
+
     public Node addChild(Node child){
         child.setParent(this);
         this.children.add(child);
@@ -33,6 +33,16 @@ public class Node {
     }
     private void setParent(Node parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public String toString() {
+        return "node";
+    }
+
+    public static void main(String[] args) {
+        Node node = new Node(new SetOfCards(false, false), new SetOfCards(false, false), new SetOfCards(true, false));
+        System.out.println(node.parent);
     }
 
 }
