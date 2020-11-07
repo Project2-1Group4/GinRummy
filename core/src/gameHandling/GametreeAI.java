@@ -182,8 +182,10 @@ public class GametreeAI {
     public static Card chooseCardToDiscard(List<Card> aHand){
         Card theCard = null;
 
-        // It's just a low number, doesn't really matter what it is
-        int highestVal = -1;
+
+        // starting value of a hand
+        Player temp1 = new Player(new SetOfCards(aHand));
+        int highestVal = temp1.scoreHand();
 
         for(Card aCard : aHand){
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
