@@ -184,8 +184,7 @@ public class GametreeAI {
 
 
         // starting value of a hand
-        Player temp1 = new Player(new SetOfCards(aHand));
-        int highestVal = temp1.scoreHand();
+        int highestVal = Player.scoreHand(aHand);
 
         for(Card aCard : aHand){
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
@@ -195,8 +194,8 @@ public class GametreeAI {
             aList.remove(aCard);
 
             // This is garbage unnefficient, but I don't feel like adding a proper method now
-            Player temp = new Player(new SetOfCards(aList));
-            int resultingHand = temp.scoreHand();
+
+            int resultingHand = Player.scoreHand(aList);
 
             if(resultingHand <= highestVal){    //the result from scoreHand is counting deadwood value so it should be smaller than the previous step
                 theCard = aCard;
