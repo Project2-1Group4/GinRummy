@@ -215,4 +215,12 @@ public class GametreeAI {
         }
         return theCard;
     }
+
+
+    public static List<Card> choose10RandomCards(List<Card> totalCards){
+
+        return null;
+    }
+
+
 }
