@@ -218,9 +218,58 @@ public class GametreeAI {
 
 
     public static List<Card> choose10RandomCards(List<Card> totalCards){
+        List<Card> copyList = new ArrayList<>(totalCards);
 
-        return null;
+        List<Card> resultList = new ArrayList<>();
+
+        for(int i=0; i<10; i++){
+
+            Card toSave = pickRandomCard(copyList);
+
+            resultList.add(toSave);
+
+            // TODO: Check to make sure that this method doesn't affect the original list of cards
+            copyList.remove(toSave);
+
+        }
+
+        return resultList;
     }
 
+    public static double calcTotalProb(List<Card> setOfCards){
+        double val = 0;
+
+        for(Card aCard: setOfCards){
+            val+=aCard.getProb();
+        }
+        return val;
+
+    }
+
+    public static Card pickRandomCard(List<Card> setOfCard){
+        double val = calcTotalProb(setOfCard);
+
+        double objective = randomNumberGenerator(0,val);
+
+        double curVal = 0;
+        Card finCard = null;
+
+        for(Card aCard: setOfCard){
+            curVal += aCard.getProb();
+
+            if(curVal >= objective){
+                finCard = aCard;
+                break;
+            }
+
+        }
+
+        return finCard;
+
+    }
+
+    public static double randomNumberGenerator(double min, double max){
+        return (Math.random()*(max-min+1)+min);
+    }
 
 }
