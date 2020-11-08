@@ -34,26 +34,29 @@ public class GametreeAI {
     }
 
     public Node pickDiscard(SetOfCards current, SetOfCards discardPile){
-        SetOfCards copyCards = current;
-        SetOfCards copyDiscard = discardPile;
+        SetOfCards copyCards = new SetOfCards(current.toList());
+        SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
+
         copyCards.addCard(discardPile.getCard(discardPile.size()-1));
         copyDiscard.discardCard(discardPile.getCard(discardPile.size()-1));
+
         List<Card> copyList = copyCards.toList();
         Card discardCard = chooseCardToDiscard(copyList);
         copyCards.discardCard(discardCard);
         copyDiscard.addCard(discardCard);
-        Node result = new Node(copyDiscard,copyCards,deck);
+        Node result = new Node(copyDiscard, copyCards, deck);
         return result;
     }
 
     // boolean true if discard pile is chosen
     // if true, top card of pile will be transfered after this method
     public void simulationPick(SetOfCards discardPile, SetOfCards hand, SetOfCards deck, boolean pick){
-        SetOfCards currentpile = discardPile;
-        SetOfCards currenthand = hand;
-        SetOfCards currentdeck = deck;
+        SetOfCards currentpile = new SetOfCards(discardPile.toList());
+        SetOfCards currenthand = new SetOfCards(hand.toList());
+        SetOfCards currentdeck = new SetOfCards(deck.toList());
         boolean pileOrDeck = pick;
         ArrayList<SetOfCards> possibilities = new ArrayList<>();
+
         if(pileOrDeck){
             Card chosen = discardPile.getCard((discardPile.size()-1));
             for(int j = 0; j<deck.size(); j++){
@@ -73,6 +76,7 @@ public class GametreeAI {
                             leftInDeck1--;
                         }
                     }
+                    //Why here???
                     deck.getCard(j).setProb(1/(2*leftInDeck1));
                 }
                 // cards next to picked card for run
@@ -159,10 +163,12 @@ public class GametreeAI {
 
     // called after card from opponent is placed on discard pile
     public void simulationDiscard(SetOfCards discardPile, SetOfCards hand, SetOfCards deck){
-        SetOfCards currentpile = discardPile;
-        SetOfCards currenthand = hand;
-        SetOfCards currentdeck = deck;
+        SetOfCards currentpile = new SetOfCards(discardPile.toList());
+        SetOfCards currenthand = new SetOfCards(hand.toList());
+        SetOfCards currentdeck = new SetOfCards(deck.toList());
+
         Card discarded = discardPile.getCard(discardPile.size()-1);
+
         for(int j = 0; j<deck.size(); j++){
             if(deck.getCard(j).getValue() == discarded.getValue()){
                 deck.getCard(j).setProb(0);
@@ -197,6 +203,7 @@ public class GametreeAI {
 
             int resultingHand = Player.scoreHand(aList);
 
+            //we should consider the card that not in "potential melds" not in entire deadwood. Not sure we have this method already or not xD
             if(resultingHand <= highestVal){    //the result from scoreHand is counting deadwood value so it should be smaller than the previous step
                 theCard = aCard;
                 highestVal = resultingHand;
