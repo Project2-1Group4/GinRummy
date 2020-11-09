@@ -8,14 +8,16 @@ public class Node {
     SetOfCards discardPile;
     SetOfCards hand;
     SetOfCards deck;
+    SetOfCards opponentHand;
 
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards deck) {
+    public Node(SetOfCards pile, SetOfCards cards, SetOfCards deck, SetOfCards opponentHand) {
         this.discardPile = pile;
         this.hand = cards;
         this.deck = deck;
+        this.opponentHand = opponentHand;
     }
 
     public List<Node> getChildren() {
@@ -31,6 +33,7 @@ public class Node {
         this.children.add(child);
         return child;
     }
+
     private void setParent(Node parent) {
         this.parent = parent;
     }
@@ -41,8 +44,8 @@ public class Node {
     }
 
     public static void main(String[] args) {
-        Node node = new Node(new SetOfCards(false, false), new SetOfCards(false, false), new SetOfCards(true, false));
-        System.out.println(node.parent);
+        //Node node = new Node(new SetOfCards(false, false), new SetOfCards(false, false), new SetOfCards(true, false));
+        //System.out.println(node.parent);
     }
 
 }
