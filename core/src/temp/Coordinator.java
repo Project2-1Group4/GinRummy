@@ -13,9 +13,8 @@ import temp.Graphics.Graphics;
 /**
  * Handles coordination between actors||validator||executor||graphics
  */
-// Modifications would need to be done in validator, executor and coordinator (here)
-    //TODO automatic meld creation isn't good
-    //TODO automatic layoff isn't good
+//TODO automatic meld creation needs to make no errors
+//TODO automatic layoff needs to make no errors
 public class Coordinator implements Screen {
 
     private Graphics graphics;
