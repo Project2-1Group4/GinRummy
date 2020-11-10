@@ -149,6 +149,7 @@ public class GametreeAI {
             nodes.add(node);
             opponentHand = opponentHandBasis;
         }
+        return new ArrayList<Node>();
     }
 
 
