@@ -276,11 +276,12 @@ public class Executor {
         if (Validator.pickDeckOrDiscard(move, curState.isDeckEmpty(),
                 curState.isDiscardEmpty())) {
             if (move) {
+                curState.movesDone.add(new PickAction(curState.getActorNumber(), true,null));
                 curState.getActorState().handLayout.addUnusedCard(curState.pickDeckTop());
             } else {
+                curState.movesDone.add(new PickAction(curState.getActorNumber(), false,curState.peekDiscardTop()));
                 curState.getActorState().handLayout.addUnusedCard(curState.pickDiscardTop());
             }
-            curState.movesDone.add(new PickAction(curState.getActorNumber(),move));
             //TODO find better way do this
             curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
