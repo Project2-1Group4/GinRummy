@@ -11,4 +11,8 @@ public class Layoff {
         this.card = card;
         this.meld = meld;
     }
+
+    public String toString(){
+        return "Insert "+card+" in "+meld;
+    }
 }

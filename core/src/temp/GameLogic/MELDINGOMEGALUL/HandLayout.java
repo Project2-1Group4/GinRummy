@@ -124,13 +124,12 @@ public class HandLayout {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Value ").append(value).append(" with melds:\n");
-        for (Meld setOfMeld : setOfMelds) {
-            sb.append(" ").append(setOfMeld);
+        sb.append(setOfMelds.get(0));
+        for (int i=1;i<setOfMelds.size();i++) {
+            sb.append(" ").append(setOfMelds.get(i));
         }
         sb.append("\nDeadwood ").append(deadwood).append(" with cards:\n");
-        for (MyCard unusedCard : unusedCards) {
-            sb.append(" ").append(unusedCard);
-        }
+        sb.append(MyCard.toString(unusedCards));
         return sb.toString();
     }
 }

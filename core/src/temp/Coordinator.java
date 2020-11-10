@@ -13,8 +13,6 @@ import temp.Graphics.Graphics;
 /**
  * Handles coordination between actors||validator||executor||graphics
  */
-//TODO automatic meld creation needs to make no errors
-//TODO automatic layoff needs to make no errors
 public class Coordinator implements Screen {
 
     private Graphics graphics;
@@ -54,7 +52,6 @@ public class Coordinator implements Screen {
     private boolean newStep = true;
 
     private void oncePerStep() {
-        currentGameState.getActor().update(currentGameState);
         newStep = false;
     }
 
@@ -139,10 +136,7 @@ public class Coordinator implements Screen {
 
     private void layOff(GameActor curActor) {
         Layoff layOffs = curActor.layOff(currentGameState.getKnockerState().viewHandLayout().viewMelds());
-        if(layOffs!=null && layOffs.meld!=null){
-            Executor.layOff(layOffs, currentGameState);
-        }
-        if (layOffs!=null && layOffs.meld==null) {
+        if (layOffs!=null && Executor.layOff(layOffs,currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }

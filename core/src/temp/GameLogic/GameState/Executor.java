@@ -1,10 +1,7 @@
 package temp.GameLogic.GameState;
 
 import com.badlogic.gdx.Gdx;
-import temp.GameLogic.GameActions.DiscardAction;
-import temp.GameLogic.GameActions.KnockAction;
-import temp.GameLogic.GameActions.LayoffAction;
-import temp.GameLogic.GameActions.PickAction;
+import temp.GameLogic.GameActions.*;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Calculator;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -33,7 +30,7 @@ import java.util.Random;
  * except for update(), getWinner() and startNewRound()
  */
 public class Executor {
-    private static Integer seed =10;
+    private static Integer seed =null;
 
     /* GAME/ROUND INITIALISATION */
 
@@ -110,6 +107,7 @@ public class Executor {
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.actorStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
+            curState.actors.get(i).update(curState.actorStates.get(i).viewHandLayout());
         }
 
     }
@@ -184,7 +182,7 @@ public class Executor {
      * @param curState current game state
      */
     private static void knocked(int knocker, State curState) {
-        if (GameRules.print) System.out.println("Player "+curState.getActorNumber()+" knocked with "+curState.getActor().viewHandLayout());
+        if (GameRules.print) System.out.println("Player "+curState.getActorNumber()+" knocked with:\n"+curState.getActor().viewHandLayout()+"\n");
 
         curState.stepInTurn = State.StepInTurn.MeldConfirmation;
         curState.knocker = knocker;
@@ -260,6 +258,8 @@ public class Executor {
                 knocked(curState.getActorNumber(), curState);
             }
             curState.movesDone.add(new KnockAction(curState.getActorNumber(),move));
+            //TODO find better way do this
+            curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
         }
         return false;
@@ -275,13 +275,14 @@ public class Executor {
     public static boolean pickDeckOrDiscard(Boolean move, State curState) {
         if (Validator.pickDeckOrDiscard(move, curState.isDeckEmpty(),
                 curState.isDiscardEmpty())) {
-
             if (move) {
                 curState.getActorState().handLayout.addUnusedCard(curState.pickDeckTop());
             } else {
                 curState.getActorState().handLayout.addUnusedCard(curState.pickDiscardTop());
             }
             curState.movesDone.add(new PickAction(curState.getActorNumber(),move));
+            //TODO find better way do this
+            curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
         }
         return false;
@@ -301,9 +302,11 @@ public class Executor {
                 curState.addToDiscard(card);
             }else{
                 System.out.println("Executor.discardCard() ERROR ERROR ERROR"); // in case some weird error occurs
-                return false;
+                Gdx.app.exit();
             }
             curState.movesDone.add(new DiscardAction(curState.getActorNumber(),card));
+            //TODO find better way do this
+            curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
         }
         return false;
@@ -318,8 +321,10 @@ public class Executor {
      */
     public static boolean updateHandLayout(HandLayout handLayout, State curState) {
         if (Validator.confirmLayout(handLayout.deepCopy(), curState.getActorState().handLayout.deepCopy())) {
-            if(GameRules.print) System.out.println("Player "+curState.getActorNumber()+" confirmed handLayout");
             curState.getActorState().handLayout = handLayout.deepCopy();
+            curState.movesDone.add(new MeldConfirmationAction(curState.getActorNumber()));
+            //TODO find better way do this
+            curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
         }
         return false;
@@ -331,10 +336,16 @@ public class Executor {
      * @param layOff to be executed
      * @param curState current game state
      */
-    public static void layOff(Layoff layOff, State curState){
+    public static boolean layOff(Layoff layOff, State curState){
+
+        if(layOff.meld==null){
+            curState.movesDone.add(new LayoffAction(curState.getActorNumber(),null));
+            //TODO find better way do this
+            curState.getActor().update(curState.getActorState().viewHandLayout());
+            return true;
+        }
 
         if(Validator.layOff(layOff,curState.getKnockerState().viewMelds(),curState.getActorState().viewHand())){
-
             Integer index = Calculator.getMeld(layOff.meld,curState.getKnockerState().viewMelds());
             assert index != null;
 
@@ -342,8 +353,14 @@ public class Executor {
                 curState.getKnockerState().handLayout.addToMeld(index,layOff.card);
             }else {
                 System.out.println("Executor.layOff() ERROR ERROR ERROR");
+                Gdx.app.exit();
             }
             curState.movesDone.add(new LayoffAction(curState.getActorNumber(),layOff.card));
+            //TODO find better way do this
+            curState.getKnocker().update(curState.getKnockerState().viewHandLayout());
+            curState.getActor().update(curState.getActorState().viewHandLayout());
+            return false;
         }
+        return false;
     }
 }

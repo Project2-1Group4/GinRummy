@@ -1,5 +1,6 @@
 package temp.GameLogic.MELDINGOMEGALUL;
 
+import com.badlogic.gdx.Gdx;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class Calculator {
                         break;
                     }
                     System.out.println("Calculator.getBestMelds() ERROR ERROR ERROR");
+                    Gdx.app.exit();
                 }
             }
         }

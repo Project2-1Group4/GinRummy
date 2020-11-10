@@ -13,6 +13,11 @@ public class LayoffAction extends Action {
 
     @Override
     public String toString() {
-        return baseString()+" laid off "+card;
+        if(card!=null) {
+            return baseString() + " laid off " + card;
+        }
+        else{
+            return baseString() + " is done laying off.";
+        }
     }
 }

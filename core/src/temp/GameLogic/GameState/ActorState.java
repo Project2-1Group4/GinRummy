@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class ActorState {
 
-    protected int index;
     protected HandLayout handLayout;
 
     public ActorState() {

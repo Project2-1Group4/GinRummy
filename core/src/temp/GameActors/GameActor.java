@@ -78,9 +78,9 @@ public abstract class GameActor implements ActorInterface {
         return handLayout.viewMelds();
     }
 
-    public void update(State curState){
+    public void update(HandLayout realLayout){
 
-        allCards = curState.getActorState().viewHand();
+        allCards = realLayout.viewAllCards();
         handLayout = Calculator.getBestMelds(allCards);
     }
 }
