@@ -12,5 +12,15 @@ public abstract class Action {
     protected String baseString(){
         return "Player "+actorIndex;
     }
+
+    public boolean same(Action other){
+        if(this.getClass()==other.getClass()){
+            return specificSame(other);
+        }
+        return false;
+    }
+
+    protected abstract boolean specificSame(Action other);
+
     public abstract String toString();
 }

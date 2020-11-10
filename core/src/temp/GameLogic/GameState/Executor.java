@@ -5,10 +5,12 @@ import temp.GameLogic.GameActions.*;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Calculator;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.GameLogic.Validator;
+import temp.GameLogic.TreeExpander;
 import temp.GameRules;
 
+import javax.swing.plaf.IconUIResource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,7 +32,7 @@ import java.util.Random;
  * except for update(), getWinner() and startNewRound()
  */
 public class Executor {
-    private static Integer seed =null;
+    private static Integer seed =10;
 
     /* GAME/ROUND INITIALISATION */
 
@@ -107,7 +109,7 @@ public class Executor {
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.actorStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
-            curState.actors.get(i).update(curState.actorStates.get(i).viewHandLayout());
+            curState.actors.get(i).update(curState.actorStates.get(i).viewHandLayout(), i);
         }
 
     }
@@ -146,7 +148,9 @@ public class Executor {
     public static void nextStep(State curState) {
         if (GameRules.print) System.out.println(curState.viewLastAction());
 
-        if (curState.stepInTurn == State.StepInTurn.MeldConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
+        curState.getActor().update(curState.getActorState().viewHandLayout(),curState.getActorNumber());
+
+        if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
             getNextPlayer(curState);
             if (curState.knocker == curState.playerTurn) {
                 curState.stepInTurn = curState.stepInTurn.getNext();
@@ -184,7 +188,7 @@ public class Executor {
     private static void knocked(int knocker, State curState) {
         if (GameRules.print) System.out.println("Player "+curState.getActorNumber()+" knocked with:\n"+curState.getActor().viewHandLayout()+"\n");
 
-        curState.stepInTurn = State.StepInTurn.MeldConfirmation;
+        curState.stepInTurn = State.StepInTurn.LayoutConfirmation;
         curState.knocker = knocker;
     }
 
@@ -244,124 +248,118 @@ public class Executor {
 
     /*ACTOR UPDATE*/
 
-    /**
-     * Executes the knock or continue order given. Uses hand layout in actor. Not in game save.
-     *
-     * @param move     null if no move, true if knock, false if continue // Can be made into an enum
-     * @param curState current game state
-     * @return true if executed, false if not
-     */
-    public static boolean knockOrContinue(Boolean move, State curState) {
-        if (Validator.knockOrContinueMove(move, curState.getActor().viewHandLayout())) {
-            curState.getActorState().handLayout = curState.getActor().viewHandLayout();
-            if (move) {
-                knocked(curState.getActorNumber(), curState);
-            }
-            curState.movesDone.add(new KnockAction(curState.getActorNumber(),move));
-            //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Executes pick order given.
-     *
-     * @param move     null if no move (shouldn't happen), true if deck and false if discard pile // can be made into an enum
-     * @param curState current game state
-     * @return true if executed, false if not
-     */
-    public static boolean pickDeckOrDiscard(Boolean move, State curState) {
-        if (Validator.pickDeckOrDiscard(move, curState.isDeckEmpty(),
-                curState.isDiscardEmpty())) {
-            if (move) {
-                curState.movesDone.add(new PickAction(curState.getActorNumber(), true,null));
-                curState.getActorState().handLayout.addUnusedCard(curState.pickDeckTop());
-            } else {
-                curState.movesDone.add(new PickAction(curState.getActorNumber(), false,curState.peekDiscardTop()));
-                curState.getActorState().handLayout.addUnusedCard(curState.pickDiscardTop());
-            }
-            //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Removes card from current actor's hand and adds it to the discard pile.
-     *
-     * @param card     to discard
-     * @param curState current game state
-     * @return true if executed, false if not
-     */
-    public static boolean discardCard(MyCard card, State curState) {
-        if (Validator.discardCard(card, curState.getActor().viewHand())) {
-
-            if(curState.getActorState().removeCard(card)){
-                curState.addToDiscard(card);
-            }else{
-                System.out.println("Executor.discardCard() ERROR ERROR ERROR"); // in case some weird error occurs
-                Gdx.app.exit();
-            }
-            curState.movesDone.add(new DiscardAction(curState.getActorNumber(),card));
-            //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Saves hand layout in actor to game save if valid
-     *
-     * @param handLayout updated meldSet
-     * @param curState current game state
-     * @return true if executed, false if not
-     */
-    public static boolean updateHandLayout(HandLayout handLayout, State curState) {
-        if (Validator.confirmLayout(handLayout.deepCopy(), curState.getActorState().handLayout.deepCopy())) {
-            curState.getActorState().handLayout = handLayout.deepCopy();
-            curState.movesDone.add(new MeldConfirmationAction(curState.getActorNumber()));
-            //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Removes card from actor hand and adds to knock melds
-     *
-     * @param layOff to be executed
-     * @param curState current game state
-     */
-    public static boolean layOff(Layoff layOff, State curState){
-
-        if(layOff.meld==null){
-            curState.movesDone.add(new LayoffAction(curState.getActorNumber(),null));
-            //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
-            return true;
-        }
-
-        if(Validator.layOff(layOff,curState.getKnockerState().viewMelds(),curState.getActorState().viewHand())){
-            Integer index = Calculator.getMeld(layOff.meld,curState.getKnockerState().viewMelds());
-            assert index != null;
-
-            if(curState.getActorState().removeCard(layOff.card)){
-                curState.getKnockerState().handLayout.addToMeld(index,layOff.card);
-            }else {
-                System.out.println("Executor.layOff() ERROR ERROR ERROR");
-                Gdx.app.exit();
-            }
-            curState.movesDone.add(new LayoffAction(curState.getActorNumber(),layOff.card));
-            //TODO find better way do this
-            curState.getKnocker().update(curState.getKnockerState().viewHandLayout());
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+    public static boolean execute(Action action, State curState){
+        if(action==null){
             return false;
         }
+        List<? extends Action> possibleActions = TreeExpander.getPossibleActions(curState);
+        for (Action possibleAction : possibleActions) {
+            if(action.same(possibleAction)){
+                boolean executed = false;
+                if(action instanceof KnockAction){
+                    executed = knock((KnockAction)action,curState);
+                }
+                else if(action instanceof PickAction){
+                    executed = pick((PickAction)action,curState);
+                }
+                else if(action instanceof DiscardAction){
+                    executed = discard((DiscardAction)action,curState);
+                }
+                else if(action instanceof LayoutConfirmationAction){
+                    executed = layoutConfirmation((LayoutConfirmationAction)action,curState);
+                }
+                else if(action instanceof LayoffAction){
+                    executed = layoff((LayoffAction)action,curState);
+                }
+                else{
+                    System.out.println("Executor.execute() ERROR ERROR ERROR");
+                }
+                if(executed){
+                    curState.movesDone.add(action);
+                }
+                return executed;
+            }
+        }
+        if(GameRules.print) System.out.println("ACTION NOT AVAILABLE "+action);
+
         return false;
+    }
+
+    private static boolean knock(KnockAction action, State curState){
+        if(action.knock && action.viewLayout().getDeadwood()<=GameRules.minDeadwoodToKnock){
+            knocked(curState.getKnockerNumber(),curState);
+            return true;
+        }else if(!action.knock){
+            return true;
+        }
+        System.out.println("Executor.knock() ERROR ERROR ERROR");
+        return false;
+    }
+
+    private static boolean pick(PickAction action, State curState){
+        if(action.deck && !curState.isDeckEmpty()){
+            curState.getActorState().handLayout.addUnusedCard(curState.pickDeckTop());
+            return true;
+        }else if(!action.deck && !curState.isDiscardEmpty() && action.card.same(curState.peekDiscardTop())){
+            curState.getActorState().handLayout.addUnusedCard(curState.pickDiscardTop());
+            return true;
+        }
+        System.out.println("Executor.pick() ERROR ERROR ERROR");
+        return false;
+    }
+
+    private static boolean discard(DiscardAction action, State curState){
+        for (MyCard card : curState.getActorState().viewHand()) {
+            if(action.card.same(card) && curState.getActorState().removeCard(action.card)){
+                curState.addToDiscard(action.card);
+                return true;
+            }
+        }
+        System.out.println("Executor.discard() ERROR ERROR ERROR");
+        return false;
+    }
+
+    private static boolean layoutConfirmation(LayoutConfirmationAction action, State curState){
+        if(action.layout.isValid()){
+            int found = 0;
+            for (MyCard card : action.layout.viewAllCards()) {
+                for (MyCard myCard : curState.getActorState().viewHand()) {
+                    if(card.same(myCard)){
+                        found++;
+                        break;
+                    }
+                }
+            }
+            if(found==curState.getActorState().viewHand().size()){
+                curState.getActorState().handLayout = action.layout;
+                return true;
+            }
+        }
+        System.out.println("Executor.layoutConfirmation() ERROR ERROR ERROR");
+        return false;
+    }
+
+    private static boolean layoff(LayoffAction action, State curState){
+        if(action.meld==null){
+            return true;
+        }
+        boolean foundInUnused = false;
+        for (MyCard card : curState.getActorState().viewUnusedCards()) {
+            if(card.same(action.card)){
+                foundInUnused = true;
+                break;
+            }
+        }
+        if(foundInUnused) {
+            for (Meld meld : curState.getKnockerState().viewMelds()) {
+                if (meld.same(action.meld) && meld.isValidWith(action.card)) {
+                    meld.addCard(action.card);
+                    return true;
+                }
+            }
+        }
+        System.out.println("Executor.layoff() ERROR ERROR ERROR");
+        return false;
+
     }
 }

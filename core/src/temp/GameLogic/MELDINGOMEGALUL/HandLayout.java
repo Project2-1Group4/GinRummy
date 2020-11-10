@@ -108,12 +108,43 @@ public class HandLayout {
     }
 
     public List<Meld> viewMelds(){
-        return Meld.clone(setOfMelds);
+        return Meld.deepCopy(setOfMelds);
+    }
+
+    public boolean isValid(){
+        for (Meld setOfMeld : setOfMelds) {
+            if(!setOfMeld.isValid()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean same(HandLayout other){
+        int found =0;
+        for (MyCard unusedCard : unusedCards) {
+            for (MyCard card : other.unusedCards) {
+                if(unusedCard.same(card)){
+                    found++;
+                }
+            }
+        }
+        if(found!=unusedCards.size()){
+            return false;
+        }
+        for (Meld meld1 : setOfMelds) {
+            for (Meld meld2 : other.setOfMelds) {
+                if(!meld1.same(meld2)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public HandLayout deepCopy(){
         HandLayout m = new HandLayout();
-        m.setOfMelds = Meld.clone(setOfMelds);
+        m.setOfMelds = Meld.deepCopy(setOfMelds);
         m.unusedCards = new ArrayList<>(unusedCards);
         m.deadwood = this.deadwood;
         m.value = this.value;

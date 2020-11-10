@@ -1,24 +1,30 @@
 package temp.GameActors;
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.KnockAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MyCard;
+
+import java.util.List;
 
 public class MousePlayer extends GameActor {
     public MousePlayer(){
 
     }
+
     @Override
-    public Boolean knockOrContinue() {
+    public KnockAction knockOrContinue(List<KnockAction> actions) {
         return null;
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
+    public PickAction pickDeckOrDiscard(List<PickAction> actions) {
         return null;
     }
 
     @Override
-    public MyCard discardCard() {
+    public DiscardAction discardCard(List<DiscardAction> actions) {
         return null;
     }
 }

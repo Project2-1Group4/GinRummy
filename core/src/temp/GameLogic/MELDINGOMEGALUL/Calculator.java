@@ -45,13 +45,7 @@ public class Calculator {
         return points;
     }
 
-    /**
-     * Finds set of melds that has the highest value and lowest deadwood.
-     *
-     * @param cards list of cards to be considered
-     * @return list of melds that maximize actors hand value
-     */
-    public static HandLayout getBestMelds(List<MyCard> cards) {
+    public static List<HandLayout> getAllLayouts(List<MyCard> cards){
         int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
         for (MyCard card : cards) {
             hand[card.suit.index][card.rank.index] = 1;
@@ -62,7 +56,17 @@ public class Calculator {
         for (int i = 0; i < meldCombinations.size(); i++) {
             handLayouts.add(new HandLayout(copy(hand), meldCombinations.get(i)));
         }
+        return handLayouts;
+    }
 
+    /**
+     * Finds set of melds that has the highest value and lowest deadwood.
+     *
+     * @param cards list of cards to be considered
+     * @return list of melds that maximize actors hand value
+     */
+    public static HandLayout getBestMelds(List<MyCard> cards) {
+        List<HandLayout> handLayouts = getAllLayouts(cards);
         // To stop auto sorting of unused cards
         HandLayout bestMeld = getBestHandLayout(handLayouts);
         List<MyCard> unusedCards = bestMeld.viewUnusedCards();

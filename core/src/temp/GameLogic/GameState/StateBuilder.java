@@ -47,7 +47,7 @@ public class StateBuilder {
         secondsPerStep[0] = GameRules.knockOrContinueTime;
         secondsPerStep[1] = GameRules.DeckOrDiscardPileTime;
         secondsPerStep[2] = GameRules.DiscardTime;
-        secondsPerStep[3] = GameRules.MeldConfirmationTime;
+        secondsPerStep[3] = GameRules.LayoutConfirmationTime;
         secondsPerStep[4] = GameRules.LayOffTime;
     }
 

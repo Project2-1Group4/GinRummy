@@ -1,6 +1,9 @@
 package temp.GameActors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import temp.GameLogic.GameActions.LayoffAction;
+import temp.GameLogic.GameActions.LayoutConfirmationAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.GameState.ActorState;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.Layoff;
@@ -15,50 +18,33 @@ import java.util.List;
 
 public abstract class GameActor implements ActorInterface {
 
+    protected int actorIndex;
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
 
     public GameActor(){
     }
 
-    /**
-     * To allow all actors to get this feature
-     * Automatically creates best melds for given hand
-     */
-    public HandLayout getBestMelds() {
-        return Calculator.getBestMelds(allCards);
-    }
-
-    /**
-     * To allow all actors to get this feature
-     * Automatically lays the most cards off
-     *
-     * Shit show of a method. Dont feel like cleaning up
-     *
-     * @param knockerMelds list of melds of the player that knocked
-     * @return layoff object
-     */
-    public Layoff automaticLayoff(List<Meld> knockerMelds) {
-
-        List<MyCard> unusedCards = handLayout.viewUnusedCards();
-        // For all melds
-        for (Meld knockerMeld : knockerMelds) {
-            Integer index = Calculator.getFirstIndexThatFitsInMeld(unusedCards,knockerMeld);
-            if(index!=null){
-                return new Layoff(unusedCards.get(index),knockerMeld);
+    @Override
+    public LayoutConfirmationAction confirmLayout(List<LayoutConfirmationAction> actions) {
+        LayoutConfirmationAction bestLayout = null;
+        for (LayoutConfirmationAction action : actions) {
+            if(bestLayout==null){
+                bestLayout=action;
+            }
+            if(bestLayout.layout.getDeadwood()>action.layout.getDeadwood()){
+                bestLayout = action;
             }
         }
-        return new Layoff(null, null);
+        return bestLayout;
     }
 
     @Override
-    public HandLayout confirmMelds() {
-        return getBestMelds();
-    }
-
-    @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
-        return automaticLayoff(knockerMelds);
+    public LayoffAction layOff(List<LayoffAction> actions) {
+        if(actions.size()!=0){
+            return actions.get(0);
+        }
+        return null;
     }
 
     public void render(SpriteBatch batch, Style renderStyle) {
@@ -78,8 +64,8 @@ public abstract class GameActor implements ActorInterface {
         return handLayout.viewMelds();
     }
 
-    public void update(HandLayout realLayout){
-
+    public void update(HandLayout realLayout, int actorIndex){
+        this.actorIndex = actorIndex;
         allCards = realLayout.viewAllCards();
         handLayout = Calculator.getBestMelds(allCards);
     }

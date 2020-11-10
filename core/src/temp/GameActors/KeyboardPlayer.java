@@ -2,6 +2,7 @@ package temp.GameActors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import temp.GameLogic.GameActions.*;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -21,60 +22,84 @@ public class KeyboardPlayer extends GameActor {
     }
 
     @Override
-    public Boolean knockOrContinue() {
+    public KnockAction knockOrContinue(List<KnockAction> actions) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            return false;
+            for (KnockAction action : actions) {
+                if(!action.knock){
+                    return action;
+                }
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            return true;
+            for (KnockAction action : actions) {
+                if(action.knock){
+                    return action;
+                }
+            }
         }
         return null;
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
+    public PickAction pickDeckOrDiscard(List<PickAction> actions) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            return true;
+            for (PickAction action : actions) {
+                if(action.deck){
+                    return action;
+                }
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            return false;
+            for (PickAction action : actions) {
+                if(!action.deck){
+                    return action;
+                }
+            }
         }
         return null;
     }
 
     @Override
-    public MyCard discardCard() {
+    public DiscardAction discardCard(List<DiscardAction> actions) {
+        Integer index = null;
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            return viewHand().get(0);
+            index = 0;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            return viewHand().get(1);
+            index = 1;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            return viewHand().get(2);
+            index = 2;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            return viewHand().get(3);
+            index = 3;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            return viewHand().get(4);
+            index = 4;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            return viewHand().get(5);
+            index = 5;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            return viewHand().get(6);
+            index = 6;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
-            return viewHand().get(7);
+            index = 7;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            return viewHand().get(8);
+            index = 8;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            return viewHand().get(9);
+            index = 9;
+        }
+        if(index!=null){
+            for (DiscardAction action : actions) {
+                if(action.card.same(allCards.get(index))){
+                    return action;
+                }
+            }
         }
         return null;
     }
 
     @Override
-    public HandLayout confirmMelds() {
+    public LayoutConfirmationAction confirmLayout(List<LayoutConfirmationAction> actions) {
         return null;
     }
 
     @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
+    public LayoffAction layOff(List<LayoffAction> actions) {
         return null;
     }
 }

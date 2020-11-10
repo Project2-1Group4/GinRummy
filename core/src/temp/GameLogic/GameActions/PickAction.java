@@ -3,6 +3,7 @@ package temp.GameLogic.GameActions;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
 
+// IMMUTABLE
 public class PickAction extends Action {
     public final boolean deck;
     public final MyCard card;
@@ -10,6 +11,17 @@ public class PickAction extends Action {
         super(State.StepInTurn.Pick, actorIndex);
         this.deck = deck;
         this.card = card;
+    }
+
+    @Override
+    protected boolean specificSame(Action other) {
+        if(deck!=((PickAction)other).deck){
+            return false;
+        }
+        if(deck){
+            return true;
+        }
+        return card.same(((PickAction)other).card);
     }
 
     @Override

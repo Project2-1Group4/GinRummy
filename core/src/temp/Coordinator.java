@@ -1,22 +1,25 @@
 package temp;
 
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import temp.GameActors.ForceActor;
 import temp.GameActors.GameActor;
+import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.Executor;
-import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.TreeExpander;
 import temp.Graphics.Graphics;
+
+import java.util.List;
 
 /**
  * Handles coordination between actors||validator||executor||graphics
  */
-public class Coordinator implements Screen {
+public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
+
+    private boolean newStep = true;
 
     public Coordinator() {
         graphics = new Graphics();
@@ -49,97 +52,53 @@ public class Coordinator implements Screen {
         graphics.render(currentGameState);
     }
 
-    private boolean newStep = true;
-
     private void oncePerStep() {
         newStep = false;
     }
 
     private void handleTurn(GameActor curActor, State.StepInTurn step, boolean outOfTime) {
         if(GameRules.print) if(outOfTime) System.out.println("FORCE "+step.name());
+
+        Action action=null;
+        if(step == State.StepInTurn.EndOfRound){
+            EndOfRound();
+        }
+        else if(outOfTime){
+            action = act(new ForceActor(curActor),step);
+        }
+        else{
+            action = act(curActor,step);
+        }
+
+        if(action instanceof LayoffAction){
+            newStep = true;
+        }
+
+        if(Executor.execute(action,currentGameState)){
+            Executor.nextStep(currentGameState);
+            newStep = true;
+        }
+    }
+
+    private Action act(GameActor actor, State.StepInTurn step) {
+        List<? extends Action> possibleActions = TreeExpander.getPossibleActions(currentGameState);
         switch (step) {
             case KnockOrContinue:
-                if (outOfTime) {
-                    knockOrContinue(new ForceActor(curActor));
-                } else {
-                    knockOrContinue(curActor);
-                }
-                break;
+                return actor.knockOrContinue((List<KnockAction>) possibleActions);
             case Pick:
-                if (outOfTime) {
-                    pick(new ForceActor(curActor));
-                } else {
-                    pick(curActor);
-                }
-                break;
+                return actor.pickDeckOrDiscard((List<PickAction>) possibleActions);
             case Discard:
-                if (outOfTime) {
-                    discard(new ForceActor(curActor));
-                } else {
-                    discard(curActor);
-                }
-                break;
-            case MeldConfirmation:
-                if (outOfTime) {
-                    meldConfirmation(new ForceActor(curActor));
-                } else {
-                    meldConfirmation(curActor);
-                }
-                break;
+                return actor.discardCard((List<DiscardAction>) possibleActions);
+            case LayoutConfirmation:
+                return actor.confirmLayout((List<LayoutConfirmationAction>) possibleActions);
             case LayOff:
                 if (currentGameState.getKnocker().viewHandLayout().getDeadwood() == 0) {
                     Executor.endRound(currentGameState);
                     break;
                 }
-                if (outOfTime) {
-                    layOff(new ForceActor(curActor));
-                } else {
-                    layOff(curActor);
-                }
-                break;
-            case EndOfRound:
-                EndOfRound();
+                return actor.layOff((List<LayoffAction>) possibleActions);
         }
-    }
-
-    private void knockOrContinue(GameActor curActor) {
-        Boolean move = curActor.knockOrContinue();
-        if (move!=null && Executor.knockOrContinue(move, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
-        }
-    }
-
-    private void pick(GameActor curActor) {
-        Boolean move = curActor.pickDeckOrDiscard(currentGameState.isDeckEmpty(), currentGameState.peekDiscardTop());
-        if (move!=null && Executor.pickDeckOrDiscard(move, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
-        }
-    }
-
-    private void discard(GameActor curActor) {
-        MyCard cardToDiscard = curActor.discardCard();
-        if (cardToDiscard!=null && Executor.discardCard(cardToDiscard, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
-        }
-    }
-
-    private void meldConfirmation(GameActor curActor) {
-        HandLayout set = curActor.confirmMelds();
-        if (set!=null && Executor.updateHandLayout(set, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
-        }
-    }
-
-    private void layOff(GameActor curActor) {
-        Layoff layOffs = curActor.layOff(currentGameState.getKnockerState().viewHandLayout().viewMelds());
-        if (layOffs!=null && Executor.layOff(layOffs,currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
-        }
+        return null;
     }
 
     private void EndOfRound() {
@@ -151,21 +110,5 @@ public class Coordinator implements Screen {
     @Override
     public void resize(int width, int height) {
         graphics.resize(width, height);
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
-    }
-
-    @Override
-    public void dispose() {
     }
 }

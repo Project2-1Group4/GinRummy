@@ -142,7 +142,7 @@ public class State {
         KnockOrContinue("Knock or not?", 0),
         Pick("Deck or Discard pile?", 1),
         Discard("Pick a card to discard", 2),
-        MeldConfirmation("Confirm your melds", 3),
+        LayoutConfirmation("Confirm your melds", 3),
         LayOff("Layoff your deadwood cards in knocker melds", 4),
         EndOfRound("Round End", 5);
         public String question;
@@ -160,7 +160,7 @@ public class State {
                 return Discard;
             } else if (this == Discard) {
                 return KnockOrContinue;
-            } else if (this == MeldConfirmation) {
+            } else if (this == LayoutConfirmation) {
                 return LayOff;
             } else if (this == LayOff) {
                 return EndOfRound;

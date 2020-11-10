@@ -1,6 +1,9 @@
 package temp.GameActors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.KnockAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -41,30 +44,36 @@ public class ForceActor extends GameActor {
     }
 
     @Override
-    public Boolean knockOrContinue() {
-        if(onlyGin) {
-            return actor.handLayout.viewUnusedCards().size() == 0;
+    public KnockAction knockOrContinue(List<KnockAction> actions) {
+        if(actions.size()==0){
+            return null;
         }
-        return actor.handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
+        for (KnockAction action : actions) {
+            if(!action.knock){
+                return action;
+            }
+        }
+        return actions.get(0);
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
-        return !deckEmpty;
+    public PickAction pickDeckOrDiscard(List<PickAction> actions) {
+        if(actions.size()==0){
+            return null;
+        }
+        for (PickAction action : actions) {
+            if(action.deck){
+                return action;
+            }
+        }
+        return actions.get(0);
     }
 
     @Override
-    public HandLayout confirmMelds() {
-        return actor.getBestMelds();
-    }
-
-    @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
-        return actor.automaticLayoff(knockerMelds);
-    }
-
-    @Override
-    public MyCard discardCard() {
-        return actor.handLayout.viewUnusedCards().get(0);
+    public DiscardAction discardCard(List<DiscardAction> actions) {
+        if(actions.size()==0){
+            return null;
+        }
+        return actions.get(0);
     }
 }

@@ -1,6 +1,7 @@
 package temp.GameActors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import temp.GameLogic.GameActions.*;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -13,32 +14,15 @@ import java.util.List;
  * Can be moved to actor (maybe should because it's kinda useless)
  */
 public interface ActorInterface {
-    /**
-     * @return true if knock, false if continue, null if no decision
-     */
-    Boolean knockOrContinue();
 
-    /**
-     * @return true if deck, false if discard, null if no decision
-     */
-    Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard);
+    KnockAction knockOrContinue(List<KnockAction> actions);
 
-    /**
-     * @return true if confirmed, false if not done
-     */
-    HandLayout confirmMelds();
+    PickAction pickDeckOrDiscard(List<PickAction> actions);
 
+    DiscardAction discardCard(List<DiscardAction> actions);
 
-    /**
-     *  Layoff 1 card at a time because idk how to implement in another way
-     *
-      * @param knockerMelds melds of knocker
-     * @return null if nothing, layoff if card to layoff, layoff with only nulls
-     */
-    Layoff layOff(List<Meld> knockerMelds);
+    LayoutConfirmationAction confirmLayout(List<LayoutConfirmationAction> actions);
 
-    /**
-     * @return null if no card has been chosen, otherwise the card you want to discard
-     */
-    MyCard discardCard();
+    LayoffAction layOff(List<LayoffAction> actions);
+
 }
