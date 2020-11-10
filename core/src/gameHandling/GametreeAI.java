@@ -149,6 +149,7 @@ public class GametreeAI {
             nodes.add(node);
             opponentHand = opponentHandBasis;
         }
+        return nodes;
     }
 
 
@@ -160,7 +161,7 @@ public class GametreeAI {
 
         // if chosen card is Ace or King you only have 1 'neighbour' for run
         if(chosen.getValue() == 1 || chosen.getValue() == 13){
-            leftInUnknownSet = 1;
+            leftInUnknownRun = 1;
         }
         else{
             leftInUnknownRun = 2;
@@ -218,7 +219,7 @@ public class GametreeAI {
 
 
     public static List<Card> choose10RandomCards(List<Card> totalCards){
-        List<Card> copyList = new ArrayList<>(totalCards);
+        List<Card> copyList = Player.copyList(totalCards);
 
         List<Card> resultList = new ArrayList<>();
 
