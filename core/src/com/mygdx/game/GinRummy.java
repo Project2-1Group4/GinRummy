@@ -8,7 +8,6 @@ import com.mygdx.game.views.EndScreen;
 import com.mygdx.game.views.LoadingScreen;
 import com.mygdx.game.views.MainScreen;
 import com.mygdx.game.views.MenuScreen;
-import temp.Coordinator;
 
 public class GinRummy extends Game {
 
@@ -28,7 +27,7 @@ public class GinRummy extends Game {
 	@Override
 	public void create () {
 		loadingScreen = new LoadingScreen(this);
-		setScreen(new Coordinator());
+		setScreen(loadingScreen);
 	}
 
 	@Override
