@@ -146,8 +146,6 @@ public class Executor {
      * @param curState current game state
      */
     public static void nextStep(State curState) {
-        if (GameRules.print) System.out.println(curState.viewLastAction());
-
         curState.getActor().update(curState.getActorState().viewHandLayout(),curState.getActorNumber());
 
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
@@ -275,6 +273,7 @@ public class Executor {
                     System.out.println("Executor.execute() ERROR ERROR ERROR");
                 }
                 if(executed){
+                    if (GameRules.print) System.out.println(action);
                     curState.movesDone.add(action);
                 }
                 return executed;

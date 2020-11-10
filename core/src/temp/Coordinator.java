@@ -73,7 +73,6 @@ public class Coordinator extends ScreenAdapter {
         if(action instanceof LayoffAction){
             newStep = true;
         }
-
         if(Executor.execute(action,currentGameState)){
             Executor.nextStep(currentGameState);
             newStep = true;

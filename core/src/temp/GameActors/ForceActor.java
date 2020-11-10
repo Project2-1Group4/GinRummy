@@ -25,6 +25,9 @@ public class ForceActor extends GameActor {
     private GameActor actor;
 
     public ForceActor(GameActor actor) {
+        this.handLayout = actor.handLayout;
+        this.actorIndex = actor.actorIndex;
+        this.allCards = actor.allCards;
         this.actor = actor;
     }
 
@@ -48,12 +51,22 @@ public class ForceActor extends GameActor {
         if(actions.size()==0){
             return null;
         }
+        KnockAction contAct = null;
         for (KnockAction action : actions) {
-            if(!action.knock){
-                return action;
+            if(action.knock) {
+                if (onlyGin) {
+                    if (action.viewLayout().getDeadwood() == 0) {
+                        return action;
+                    }
+                } else {
+                    return action;
+                }
+            }
+            else{
+                contAct = action;
             }
         }
-        return actions.get(0);
+        return contAct;
     }
 
     @Override
@@ -74,6 +87,13 @@ public class ForceActor extends GameActor {
         if(actions.size()==0){
             return null;
         }
-        return actions.get(0);
+        for (MyCard card : handLayout.viewUnusedCards()) {
+            for (DiscardAction action : actions) {
+                if(action.card.same(card)){
+                    return action;
+                }
+            }
+        }
+        return null;
     }
 }

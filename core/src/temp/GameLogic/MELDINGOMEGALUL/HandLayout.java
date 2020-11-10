@@ -155,11 +155,14 @@ public class HandLayout {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Value ").append(value).append(" with melds:\n");
-        sb.append(setOfMelds.get(0));
-        for (int i=1;i<setOfMelds.size();i++) {
-            sb.append(" ").append(setOfMelds.get(i));
+        if (setOfMelds.size() != 0) {
+            sb.append(setOfMelds.get(0));
+            for (int i = 1; i < setOfMelds.size(); i++) {
+                sb.append(" ").append(setOfMelds.get(i));
+            }
+            sb.append("\n");
         }
-        sb.append("\nDeadwood ").append(deadwood).append(" with cards:\n");
+        sb.append("Deadwood ").append(deadwood).append(" with cards:\n");
         sb.append(MyCard.toString(unusedCards));
         return sb.toString();
     }
