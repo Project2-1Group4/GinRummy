@@ -3,6 +3,8 @@ package temp.GamePlayers;
 import cardlogic.SetOfCards;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -101,6 +103,10 @@ public abstract class GamePlayer implements PlayerInterface {
 
     @Override
     public void otherPlayerActed(Action action) {
-        System.out.println(action);
+        if(action instanceof PickAction){
+            otherPlayerPicked((PickAction)action);
+        }else if(action instanceof DiscardAction){
+            otherPlayerDiscarded((DiscardAction)action);
+        }
     }
 }

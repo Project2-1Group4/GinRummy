@@ -1,6 +1,8 @@
 package temp.GamePlayers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -75,5 +77,15 @@ public class ForcePlayer extends GamePlayer {
     @Override
     public MyCard discardCard() {
         return handLayout.viewUnusedCards().get(0);
+    }
+
+    @Override
+    public void otherPlayerDiscarded(DiscardAction discardAction) {
+
+    }
+
+    @Override
+    public void otherPlayerPicked(PickAction pickAction) {
+
     }
 }

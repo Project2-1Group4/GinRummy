@@ -1,5 +1,7 @@
 package temp.GamePlayers;
 
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MyCard;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
@@ -27,5 +29,15 @@ public class MousePlayer extends GamePlayer {
     @Override
     public MyCard discardCard() {
         return null;
+    }
+
+    @Override
+    public void otherPlayerDiscarded(DiscardAction discardAction) {
+
+    }
+
+    @Override
+    public void otherPlayerPicked(PickAction pickAction) {
+
     }
 }

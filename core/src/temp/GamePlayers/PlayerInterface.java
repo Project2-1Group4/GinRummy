@@ -1,6 +1,9 @@
 package temp.GamePlayers;
 
 import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.KnockAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -49,4 +52,8 @@ public interface PlayerInterface {
      * @param action feeds in every action done by other players
      */
     void otherPlayerActed(Action action);
+
+    void otherPlayerDiscarded(DiscardAction discardAction);
+
+    void otherPlayerPicked(PickAction pickAction);
 }

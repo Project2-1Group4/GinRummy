@@ -2,6 +2,8 @@ package temp.GamePlayers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -72,6 +74,16 @@ public class KeyboardPlayer extends GamePlayer {
             return viewHand().get(9);
         }
         return null;
+    }
+
+    @Override
+    public void otherPlayerDiscarded(DiscardAction discardAction) {
+
+    }
+
+    @Override
+    public void otherPlayerPicked(PickAction pickAction) {
+
     }
 
     @Override
