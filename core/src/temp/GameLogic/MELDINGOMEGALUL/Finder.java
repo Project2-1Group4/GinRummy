@@ -10,7 +10,7 @@ import java.util.Stack;
 /**
  * Mainly (Only) handles the knocking/gin part
  */
-public class Calculator {
+public class Finder {
 
     /**
      * Finds meldSet with lowest deadwood. If another player has the same deadwood as the knocker, knocker overpowers.
@@ -18,7 +18,7 @@ public class Calculator {
      * @param handLayouts best hands found
      * @return index of the winning hand
      */
-    public static int getLowestDeadwoodIndex(List<HandLayout> handLayouts, int knockerDeadwood) {
+    public static int findLowestDeadwoodIndex(List<HandLayout> handLayouts, int knockerDeadwood) {
         int lowestDeadwood = knockerDeadwood;
         int lowestDeadwoodIndex = 0;
         for (int i = 0; i < handLayouts.size(); i++) {
@@ -39,8 +39,8 @@ public class Calculator {
      */
     public static int getPointsToAdd(List<HandLayout> handLayouts, int winnerDeadwood) {
         int points = 0;
-        for (int i = 0; i < handLayouts.size(); i++) {
-            points += handLayouts.get(i).getDeadwood() - winnerDeadwood;
+        for (HandLayout handLayout : handLayouts) {
+            points += handLayout.getDeadwood() - winnerDeadwood;
         }
         return points;
     }
@@ -51,26 +51,26 @@ public class Calculator {
      * @param cards list of cards to be considered
      * @return list of melds that maximize actors hand value
      */
-    public static HandLayout getBestMelds(List<MyCard> cards) {
+    public static HandLayout findBestHandLayout(List<MyCard> cards) {
         int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
         for (MyCard card : cards) {
             hand[card.suit.index][card.rank.index] = 1;
         }
-        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
+        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<>(), hand, new ArrayList<>());
 
         List<HandLayout> handLayouts = new ArrayList<>();
-        for (int i = 0; i < meldCombinations.size(); i++) {
-            handLayouts.add(new HandLayout(copy(hand), meldCombinations.get(i)));
+        for (Stack<Meld> meldCombination : meldCombinations) {
+            handLayouts.add(new HandLayout(copy(hand), meldCombination));
         }
 
         // To stop auto sorting of unused cards
-        HandLayout bestMeld = getBestHandLayout(handLayouts);
-        List<MyCard> unusedCards = bestMeld.viewUnusedCards();
+        HandLayout bestLayout = findLowestDeadwoodLayout(handLayouts);
+        List<MyCard> unusedCards = bestLayout.viewUnusedCards();
         for (MyCard card : cards) {
             for (int i = 0; i < unusedCards.size(); i++) {
                 if(card.same(unusedCards.get(i))){
-                    if(bestMeld.removeUnusedCard(unusedCards.get(i))) {
-                        bestMeld.addUnusedCard(card);
+                    if(bestLayout.removeUnusedCard(unusedCards.get(i))) {
+                        bestLayout.addUnusedCard(card);
                         unusedCards.remove(i);
                         break;
                     }
@@ -79,7 +79,7 @@ public class Calculator {
                 }
             }
         }
-        return getBestHandLayout(handLayouts);
+        return findLowestDeadwoodLayout(handLayouts);
     }
 
     /**
@@ -89,12 +89,12 @@ public class Calculator {
      * @param meld you want to fit card in
      * @return null if none, otherwise index
      */
-    public static Integer getFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld){
+    public static Integer findFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld){
         if(meld.getType()== Meld.MeldType.Run){
-            return getCardIndexRun(cards,meld);
+            return findCardIndexRun(cards,meld);
         }
         else{
-            return getCardIndexSet(cards,meld);
+            return findCardIndexSet(cards,meld);
         }
     }
 
@@ -105,7 +105,7 @@ public class Calculator {
      * @param meld you want to fit card in
      * @return null if none, otherwise index
      */
-    private static Integer getCardIndexRun(List<MyCard> cards, Meld meld){
+    private static Integer findCardIndexRun(List<MyCard> cards, Meld meld){
         assert meld.getType()== Meld.MeldType.Run;
 
         MyCard.Suit runSuit = meld.viewMeld().get(0).suit;
@@ -132,7 +132,7 @@ public class Calculator {
      * @param meld you want to fit card in
      * @return null if none, otherwise index
      */
-    private static Integer getCardIndexSet(List<MyCard> cards, Meld meld){
+    private static Integer findCardIndexSet(List<MyCard> cards, Meld meld){
         assert meld.getType()== Meld.MeldType.Set;
 
         MyCard.Rank setRank = meld.viewMeld().get(0).rank;
@@ -153,19 +153,10 @@ public class Calculator {
      * @param melds list to find meld in
      * @return null if not found otherwise meld
      */
-    public static Integer getMeld(Meld toFind, List<Meld> melds){
+    public static Integer findMeldIndexIn(Meld toFind, List<Meld> melds){
 
         for (int i=0;i<melds.size(); i++) {
-            int cardsFound = 0;
-            for (MyCard meldC : melds.get(i).viewMeld()) {
-                for (MyCard toFindC : toFind.viewMeld()) {
-                    if(meldC.same(toFindC)){
-                        cardsFound++;
-                        break;
-                    }
-                }
-            }
-            if(cardsFound==melds.get(i).viewMeld().size()){
+            if(melds.get(i).same(toFind)){
                 return i;
             }
         }
@@ -178,7 +169,7 @@ public class Calculator {
      * @param handLayoutValues all values of set of melds considered
      * @return best hand found
      */
-    private static HandLayout getBestHandLayout(List<HandLayout> handLayoutValues) {
+    private static HandLayout findLowestDeadwoodLayout(List<HandLayout> handLayoutValues) {
         int index = 0;
         int maxVal = 0;
         int lowestDead = Integer.MAX_VALUE;

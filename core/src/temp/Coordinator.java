@@ -1,6 +1,6 @@
 package temp;
 
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import temp.GameActors.ForceActor;
 import temp.GameActors.GameActor;
 import temp.GameLogic.GameState.Executor;
@@ -13,10 +13,12 @@ import temp.Graphics.Graphics;
 /**
  * Handles coordination between actors||validator||executor||graphics
  */
-public class Coordinator implements Screen {
+public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
+
+    private boolean newStep = true;
 
     public Coordinator() {
         graphics = new Graphics();
@@ -49,12 +51,26 @@ public class Coordinator implements Screen {
         graphics.render(currentGameState);
     }
 
-    private boolean newStep = true;
+    @Override
+    public void resize(int width, int height) {
+        graphics.resize(width, height);
+    }
 
+    /**
+     * Gets called every time an actor makes a valid move
+     */
     private void oncePerStep() {
         newStep = false;
     }
 
+    /* GAME TURNS */
+    /**
+     *  Handles the main turn logic
+     *
+     * @param curActor actor that needs to make the move
+     * @param step turn in the actors turn round
+     * @param outOfTime true if you need to force a move
+     */
     private void handleTurn(GameActor curActor, State.StepInTurn step, boolean outOfTime) {
         if(GameRules.print) if(outOfTime) System.out.println("FORCE "+step.name());
         switch (step) {
@@ -79,11 +95,11 @@ public class Coordinator implements Screen {
                     discard(curActor);
                 }
                 break;
-            case MeldConfirmation:
+            case LayoutConfirmation:
                 if (outOfTime) {
-                    meldConfirmation(new ForceActor(curActor));
+                    layoutConfirmation(new ForceActor(curActor));
                 } else {
-                    meldConfirmation(curActor);
+                    layoutConfirmation(curActor);
                 }
                 break;
             case LayOff:
@@ -126,8 +142,8 @@ public class Coordinator implements Screen {
         }
     }
 
-    private void meldConfirmation(GameActor curActor) {
-        HandLayout set = curActor.confirmMelds();
+    private void layoutConfirmation(GameActor curActor) {
+        HandLayout set = curActor.confirmLayout();
         if (set!=null && Executor.updateHandLayout(set, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
@@ -135,37 +151,20 @@ public class Coordinator implements Screen {
     }
 
     private void layOff(GameActor curActor) {
-        Layoff layOffs = curActor.layOff(currentGameState.getKnockerState().viewHandLayout().viewMelds());
+        Layoff layOffs = curActor.layOff(currentGameState.getKnockerState().viewMelds());
         if (layOffs!=null && Executor.layOff(layOffs,currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }
     }
 
+    /**
+     * Only called once everything is done. The melds and the laying off.
+     * Assigns points and starts a new round
+     */
     private void EndOfRound() {
         Executor.assignPoints(currentGameState);
         currentGameState = Executor.startNewRound(500, currentGameState);
         newStep = true;
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        graphics.resize(width, height);
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
-    }
-
-    @Override
-    public void dispose() {
     }
 }

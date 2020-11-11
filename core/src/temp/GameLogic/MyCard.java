@@ -20,6 +20,7 @@ public class MyCard {
         this.rank = Rank.getRank(j);
     }
 
+    /* GETTERS */
     public boolean same(MyCard card) {
         return card.suit == this.suit && card.rank == this.rank;
     }
@@ -28,21 +29,7 @@ public class MyCard {
         return rank.ginValue;
     }
 
-    public MyCard clone(){
-        return new MyCard(suit,rank);
-    }
-    public String toString() {
-        return rank.name() + " Of " + suit.name();
-    }
-    public static String toString(List<MyCard> cards) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(cards.get(0));
-        for (int i = 1; i < cards.size(); i++) {
-            sb.append(" ").append(cards.get(i));
-        }
-        return sb.toString();
-    }
-
+    /* EXTRA */
     public enum Suit {
         Clubs("clubs", 0),
         Spades("spades", 1),
@@ -90,7 +77,26 @@ public class MyCard {
         }
     }
 
+    public MyCard clone(){
+        return new MyCard(suit,rank);
+    }
+
+    public String toString() {
+        return rank.name() + " Of " + suit.name();
+    }
+
+    public static String toString(List<MyCard> cards) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(cards.get(0));
+        for (int i = 1; i < cards.size(); i++) {
+            sb.append(" ").append(cards.get(i));
+        }
+        return sb.toString();
+    }
+
     /**
+     * Creates the basic game deck
+     *
      * @return prototype deck: 1 of each card.
      */
     public static List<MyCard> getBasicDeck() {

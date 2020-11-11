@@ -1,11 +1,9 @@
 package temp.GameLogic.GameState;
 
-import temp.GameLogic.MELDINGOMEGALUL.Calculator;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +18,7 @@ public class ActorState {
         handLayout = new HandLayout();
     }
 
+    /* SETTERS */
     protected boolean removeUnusedCard(MyCard card){
         return handLayout.removeUnusedCard(card);
     }
@@ -28,7 +27,7 @@ public class ActorState {
         return handLayout.removeCard(card);
     }
 
-    // Only viewing, no changing of the real internal state of actor without the use of the executor
+    /* GETTERS */ // Only viewing, no changing of the real internal state of actor without the use of package
     public List<MyCard> viewHand() {
         return handLayout.viewAllCards();
     }

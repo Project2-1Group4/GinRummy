@@ -44,7 +44,7 @@ class MeldCreator {
      * @param hand wanted to be evaluated
      * @return list of all possible melds of given hand. Uses duplicates
      */
-    protected static List<Meld> getAllPossibleMelds(int[][] hand) {
+    private static List<Meld> getAllPossibleMelds(int[][] hand) {
         List<Meld> melds = new ArrayList<>();
         for (int i = 0; i < hand.length; i++) {
             for (int j = 0; j < hand[i].length; j++) {

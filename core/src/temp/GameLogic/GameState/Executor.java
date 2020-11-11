@@ -3,7 +3,7 @@ package temp.GameLogic.GameState;
 import com.badlogic.gdx.Gdx;
 import temp.GameLogic.GameActions.*;
 import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.Calculator;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameLogic.Validator;
@@ -33,7 +33,6 @@ public class Executor {
     private static Integer seed =10;
 
     /* GAME/ROUND INITIALISATION */
-
     /**
      * Either creates a new game or starts a new round using the previous game (round)
      *
@@ -126,8 +125,7 @@ public class Executor {
 
     }
 
-    /* STATE UPDATE */
-
+    /* STATE UPDATING */
     /**
      * @param curState current game state
      * @param deltaT   time elapsed between now and previous render call
@@ -146,7 +144,7 @@ public class Executor {
     public static void nextStep(State curState) {
         if (GameRules.print) System.out.println(curState.viewLastAction());
 
-        if (curState.stepInTurn == State.StepInTurn.MeldConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
+        if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
             getNextPlayer(curState);
             if (curState.knocker == curState.playerTurn) {
                 curState.stepInTurn = curState.stepInTurn.getNext();
@@ -184,7 +182,7 @@ public class Executor {
     private static void knocked(int knocker, State curState) {
         if (GameRules.print) System.out.println("Player "+curState.getActorNumber()+" knocked with:\n"+curState.getActor().viewHandLayout()+"\n");
 
-        curState.stepInTurn = State.StepInTurn.MeldConfirmation;
+        curState.stepInTurn = State.StepInTurn.LayoutConfirmation;
         curState.knocker = knocker;
     }
 
@@ -211,7 +209,7 @@ public class Executor {
         for (ActorState actor : curState.actorStates) {
             handLayouts.add(actor.viewHandLayout());
         }
-        int pointsWon = Calculator.getPointsToAdd(handLayouts, curState.actors.get(winner).viewHandLayout().getDeadwood());
+        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.actors.get(winner).viewHandLayout().getDeadwood());
 
         if (winner == curState.knocker) {
             if(curState.getKnocker().viewHandLayout().getDeadwood() == 0){
@@ -239,11 +237,10 @@ public class Executor {
         for (ActorState actor : curState.actorStates) {
             handLayouts.add(actor.viewHandLayout());
         }
-        return Calculator.getLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood());
+        return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood());
     }
 
-    /*ACTOR UPDATE*/
-
+    /* TURN HANDLING */
     /**
      * Executes the knock or continue order given. Uses hand layout in actor. Not in game save.
      *
@@ -323,7 +320,7 @@ public class Executor {
     public static boolean updateHandLayout(HandLayout handLayout, State curState) {
         if (Validator.confirmLayout(handLayout.deepCopy(), curState.getActorState().handLayout.deepCopy())) {
             curState.getActorState().handLayout = handLayout.deepCopy();
-            curState.movesDone.add(new MeldConfirmationAction(curState.getActorNumber()));
+            curState.movesDone.add(new LayoutConfirmationAction(curState.getActorNumber()));
             //TODO find better way do this
             curState.getActor().update(curState.getActorState().viewHandLayout());
             return true;
@@ -347,7 +344,7 @@ public class Executor {
         }
 
         if(Validator.layOff(layOff,curState.getKnockerState().viewMelds(),curState.getActorState().viewHand())){
-            Integer index = Calculator.getMeld(layOff.meld,curState.getKnockerState().viewMelds());
+            Integer index = Finder.findMeldIndexIn(layOff.meld,curState.getKnockerState().viewMelds());
             assert index != null;
 
             if(curState.getActorState().removeCard(layOff.card)){

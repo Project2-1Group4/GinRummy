@@ -17,6 +17,7 @@ public class Meld {
         meld = new ArrayList<>();
     }
 
+    /* SETTERS */
     public void addCard(MyCard card) {
         value+= card.ginValue();
         meld.add(card);
@@ -34,6 +35,7 @@ public class Meld {
         type = meld.get(0).suit == meld.get(1).suit ? MeldType.Run : MeldType.Set;
     }
 
+    /* GETTERS */
     public int getValue(){
         return value;
     }
@@ -49,17 +51,48 @@ public class Meld {
         return type;
     }
 
-    public Meld clone(){
-        Meld m = new Meld();
-        m.type = this.type;
-        m.meld = new ArrayList<>(meld);
-        return m;
+    public boolean isValid(){
+        // If set
+        if (type == Meld.MeldType.Run) {
+            for (int i = 1; i < meld.size() - 1; i++) {
+                if (meld.get(i).suit != meld.get(i + 1).suit) {
+                    return false;
+                }
+            }
+        }
+        // Else run
+        else {
+            sortByRank();
+            for (int i = 1; i < meld.size() - 1; i++) {
+                if (meld.get(i).rank != meld.get(i + 1).rank &&
+                        meld.get(i).rank.value != meld.get(i + 1).rank.value + 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
+    public boolean isValidWith(MyCard card){
+        addCard(card);
+        boolean valid = isValid();
+        removeCard(card);
+        return valid;
+    }
 
-    /**
-     * Uses insertion sort
-     **/
+    public boolean same(Meld other){
+        int found = 0;
+        for (MyCard card : meld) {
+            for (MyCard myCard : other.meld) {
+                if(card.same(myCard)){
+                    found++;
+                }
+            }
+        }
+        return found == meld.size();
+    }
+
+    /* INSERTION SORT */
     public void sort() {
         sortByRank();
         sortBySuit();
@@ -91,6 +124,7 @@ public class Meld {
         }
     }
 
+    /* EXTRA */
     public enum MeldType {
         Set,
         Run
@@ -106,10 +140,17 @@ public class Meld {
         return sb.toString();
     }
 
-    public static List<Meld> clone(List<Meld> setOfMelds) {
+    public Meld deepCopy(){
+        Meld m = new Meld();
+        m.type = this.type;
+        m.meld = new ArrayList<>(meld);
+        return m;
+    }
+
+    public static List<Meld> deepCopy(List<Meld> setOfMelds) {
         List<Meld> melds = new ArrayList<>();
         for (Meld setOfMeld : setOfMelds) {
-            melds.add(setOfMeld.clone());
+            melds.add(setOfMeld.deepCopy());
         }
         return melds;
     }

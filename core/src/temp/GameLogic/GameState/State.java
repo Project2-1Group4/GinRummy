@@ -4,7 +4,6 @@ import temp.GameActors.GameActor;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -46,9 +45,7 @@ public class State {
 
     }
 
-    /*
-    GETTERS
-    */
+    /* GETTERS */
     public int getActorNumber() {
         return playerTurn;
     }
@@ -110,6 +107,7 @@ public class State {
         return turnInRound;
     }
 
+    //TODO haven't checked if this works
     public Stack<Action> viewActions(){
         return (Stack<Action>) movesDone.clone();
     }
@@ -118,10 +116,7 @@ public class State {
         return movesDone.peek();
     }
 
-    /*
-    SETTERS. ONLY ACCESSIBLE BY PACKAGE (Executor mainly)
-     */
-
+    /* SETTERS. ONLY ACCESSIBLE BY PACKAGE (Executor mainly) */
     protected MyCard pickDeckTop() {
         return deck.remove(deck.size() - 1);
     }
@@ -134,15 +129,12 @@ public class State {
         discardPile.add(card);
     }
 
-    /*
-    HELPER
-     */
-
+    /* EXTRA */
     public enum StepInTurn {
         KnockOrContinue("Knock or not?", 0),
         Pick("Deck or Discard pile?", 1),
         Discard("Pick a card to discard", 2),
-        MeldConfirmation("Confirm your melds", 3),
+        LayoutConfirmation("Confirm your melds", 3),
         LayOff("Layoff your deadwood cards in knocker melds", 4),
         EndOfRound("Round End", 5);
         public String question;
@@ -160,7 +152,7 @@ public class State {
                 return Discard;
             } else if (this == Discard) {
                 return KnockOrContinue;
-            } else if (this == MeldConfirmation) {
+            } else if (this == LayoutConfirmation) {
                 return LayOff;
             } else if (this == LayOff) {
                 return EndOfRound;

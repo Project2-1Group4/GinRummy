@@ -28,9 +28,10 @@ public class HandLayout {
         this.hand = hand;
         this.setOfMelds = melds;
         unusedCards = new ArrayList<>();
-        init(Calculator.copy(hand));
+        init(Finder.copy(hand));
     }
 
+    /* SETTERS */
     private void init(int[][] hand){
         for (Meld meld : setOfMelds) {
             for (MyCard myCard : meld.viewMeld()) {
@@ -47,10 +48,6 @@ public class HandLayout {
                 }
             }
         }
-    }
-
-    public int[][] getHand(){
-        return Calculator.copy(hand);
     }
 
     public void addUnusedCard(MyCard card){
@@ -87,6 +84,11 @@ public class HandLayout {
         return true;
     }
 
+    /* GETTERS */
+    public int[][] getHand(){
+        return Finder.copy(hand);
+    }
+
     public int getDeadwood(){
         return deadwood;
     }
@@ -108,12 +110,44 @@ public class HandLayout {
     }
 
     public List<Meld> viewMelds(){
-        return Meld.clone(setOfMelds);
+        return Meld.deepCopy(setOfMelds);
     }
 
+    public boolean isValid(){
+        for (Meld setOfMeld : setOfMelds) {
+            if(!setOfMeld.isValid()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean same(HandLayout other){
+        int found =0;
+        for (MyCard unusedCard : unusedCards) {
+            for (MyCard card : other.unusedCards) {
+                if(unusedCard.same(card)){
+                    found++;
+                }
+            }
+        }
+        if(found!=unusedCards.size()){
+            return false;
+        }
+        for (Meld meld1 : setOfMelds) {
+            for (Meld meld2 : other.setOfMelds) {
+                if(!meld1.same(meld2)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /* EXTRA */
     public HandLayout deepCopy(){
         HandLayout m = new HandLayout();
-        m.setOfMelds = Meld.clone(setOfMelds);
+        m.setOfMelds = Meld.deepCopy(setOfMelds);
         m.unusedCards = new ArrayList<>(unusedCards);
         m.deadwood = this.deadwood;
         m.value = this.value;
@@ -124,11 +158,14 @@ public class HandLayout {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Value ").append(value).append(" with melds:\n");
-        sb.append(setOfMelds.get(0));
-        for (int i=1;i<setOfMelds.size();i++) {
-            sb.append(" ").append(setOfMelds.get(i));
+        if (setOfMelds.size() != 0) {
+            sb.append(setOfMelds.get(0));
+            for (int i = 1; i < setOfMelds.size(); i++) {
+                sb.append(" ").append(setOfMelds.get(i));
+            }
+            sb.append("\n");
         }
-        sb.append("\nDeadwood ").append(deadwood).append(" with cards:\n");
+        sb.append("Deadwood ").append(deadwood).append(" with cards:\n");
         sb.append(MyCard.toString(unusedCards));
         return sb.toString();
     }

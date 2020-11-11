@@ -1,6 +1,6 @@
 package temp.GameLogic;
 
-import temp.GameLogic.MELDINGOMEGALUL.Calculator;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameRules;
@@ -141,18 +141,18 @@ public class Validator {
      */
     public static boolean layOff(Layoff layoff, List<Meld> knockerMelds, List<MyCard> actorCards) {
         //Check if card to layoff is in actor hand
-        boolean found = false;
+        boolean cardFound = false;
         for (MyCard actorCard : actorCards) {
             if(actorCard.same(layoff.card)){
-                found=true;
+                cardFound=true;
                 break;
             }
         }
-        if(!found){
+        if(!cardFound){
             return false;
         }
         //Check if the meld given in the layoff is one of the knockers melds
-        Integer index = Calculator.getMeld(layoff.meld,knockerMelds);
+        Integer index = Finder.findMeldIndexIn(layoff.meld,knockerMelds);
 
         //If meld found in knocker meld, validate it
         if(index!=null){
