@@ -11,7 +11,7 @@ public class GameRules {
     public static float knockOrContinueTime = .1f;
     public static float DeckOrDiscardPileTime = .1f;
     public static float DiscardTime = .1f;
-    public static float MeldConfirmationTime = .1f;
+    public static float LayoutConfirmationTime = .1f;
     public static float LayOffTime = .1f;
 
     public static boolean print = true;

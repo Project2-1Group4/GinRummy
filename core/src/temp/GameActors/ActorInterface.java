@@ -26,7 +26,7 @@ public interface ActorInterface {
     /**
      * @return true if confirmed, false if not done
      */
-    HandLayout confirmMelds();
+    HandLayout confirmLayout();
 
 
     /**

@@ -69,7 +69,7 @@ public class KeyboardPlayer extends GameActor {
     }
 
     @Override
-    public HandLayout confirmMelds() {
+    public HandLayout confirmLayout() {
         return null;
     }
 

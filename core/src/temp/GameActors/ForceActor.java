@@ -54,7 +54,7 @@ public class ForceActor extends GameActor {
     }
 
     @Override
-    public HandLayout confirmMelds() {
+    public HandLayout confirmLayout() {
         return actor.getBestMelds();
     }
 
