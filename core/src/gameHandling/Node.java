@@ -20,17 +20,21 @@ public class Node {
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
-        if(scoreHand(hand.toList()) > scoreHand(opponentHand.toList()) && scoreHand(hand.toList())<=10){
+        if(Player.scoreHand(hand.toList()) > Player.scoreHand(opponentHand.toList()) && Player.scoreHand(hand.toList())<=10){
             this.winOrLose = true;
         }
     }
 
+    //we already have static method in Player class
+    /*
     public int scoreHand(List<Card> aHand) {
         SetOfCards hand = new SetOfCards(aHand);
         Player player = new Player(hand);
         int scoreHand = player.scoreHand();
         return scoreHand;
     }
+
+     */
 
     public List<Node> getChildren() {
         return children;

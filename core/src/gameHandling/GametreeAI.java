@@ -123,7 +123,7 @@ public class GametreeAI {
     }
 
     public List<Card> makeDeck(List<Card> unknown, List<Card> opponent){
-        List<Card> deck = unknown;
+        List<Card> deck = Player.copyList(unknown);
         for(int i = 0; i<opponent.size(); i++){
             deck.remove(opponent.get(i));
         }
