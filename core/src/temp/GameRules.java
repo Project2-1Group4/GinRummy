@@ -14,5 +14,5 @@ public class GameRules {
     public static float LayoutConfirmationTime = .1f;
     public static float LayOffTime = .1f;
 
-    public static boolean print = true;
+    public static boolean print = false;
 }

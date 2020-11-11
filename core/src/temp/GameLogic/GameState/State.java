@@ -4,6 +4,7 @@ import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -11,6 +12,7 @@ import java.util.Stack;
  * Saves all game information. Needs to be simplify to make saving/loading easy
  */
 public class State {
+    protected List<MyCard> initDeck;
     protected List<MyCard> deck;
     protected Stack<MyCard> discardPile;
     protected int numberOfPlayers;
@@ -28,6 +30,7 @@ public class State {
 
     protected State(List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
+        this.initDeck = new ArrayList<>(deck);
         this.deck = deck;
         this.discardPile = discardPile;
         this.players = players;

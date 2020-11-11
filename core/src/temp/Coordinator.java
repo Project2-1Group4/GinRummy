@@ -1,6 +1,7 @@
 package temp;
 
 import com.badlogic.gdx.ScreenAdapter;
+import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameState.Executor;
@@ -26,7 +27,8 @@ public class Coordinator extends ScreenAdapter {
 
     @Override
     public void show() {
-        this.currentGameState = Executor.startNewRound(500, null);
+        currentGameState = new StateBuilder().setNumberOfPlayers(2).build();
+        this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
 
     /**

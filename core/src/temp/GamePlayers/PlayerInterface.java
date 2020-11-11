@@ -39,4 +39,9 @@ public interface PlayerInterface {
      * @return null if no card has been chosen, otherwise the card you want to discard
      */
     MyCard discardCard();
+
+    /**
+     * Called every time a new round starts to let the player know to reset it's memory
+     */
+    void newRound();
 }

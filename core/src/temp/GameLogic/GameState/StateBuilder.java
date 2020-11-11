@@ -91,6 +91,7 @@ public class StateBuilder {
 
     public StateBuilder addPlayers(List<GamePlayer> players){
         for (GamePlayer player : players) {
+            player.newRound();
             addPlayer(player);
         }
         return this;
@@ -129,10 +130,12 @@ public class StateBuilder {
         if(numberOfPlayers==0){
             numberOfPlayers = 2;
         }
+        if(numberOfPlayers<players.size()){
+            numberOfPlayers= players.size();
+        }
 
         assert deck != null;
         assert discardPile != null;
-        assert players.size() < numberOfPlayers;
         assert players.size() == playerStates.size();
         assert playerTurn < numberOfPlayers;
         assert stepInTurn != null;

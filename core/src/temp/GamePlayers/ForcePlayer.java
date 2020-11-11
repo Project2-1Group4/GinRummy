@@ -6,6 +6,8 @@ import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameRules;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.List;
@@ -21,31 +23,38 @@ public class ForcePlayer extends GamePlayer {
     private boolean onlyGin = false;
     private GamePlayer player;
 
-    public ForcePlayer(GamePlayer player) {
+    public ForcePlayer(GamePlayer player, PlayerRenderer renderer) {
+        super(renderer);
         this.player = player;
+        this.handLayout = player.handLayout;
+        this.allCards = player.allCards;
+        this.renderer = player.renderer;
+    }
+    public ForcePlayer(GamePlayer player) {
+        this(player, new BasicPlayerRenderer());
     }
 
     @Override
     public HandLayout viewHandLayout() {
-        return player.viewHandLayout();
+        return viewHandLayout();
     }
 
     @Override
     public List<MyCard> viewHand() {
-        return player.viewHand();
+        return viewHand();
     }
 
     @Override
     public void render(SpriteBatch batch, Style renderingStyle) {
-        player.render(batch, renderingStyle);
+        render(batch, renderingStyle);
     }
 
     @Override
     public Boolean knockOrContinue() {
         if(onlyGin) {
-            return player.handLayout.viewUnusedCards().size() == 0;
+            return handLayout.viewUnusedCards().size() == 0;
         }
-        return player.handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
+        return handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
     }
 
     @Override
@@ -55,16 +64,16 @@ public class ForcePlayer extends GamePlayer {
 
     @Override
     public HandLayout confirmLayout() {
-        return player.getBestMelds();
+        return getBestMelds();
     }
 
     @Override
     public Layoff layOff(List<Meld> knockerMelds) {
-        return player.automaticLayoff(knockerMelds);
+        return automaticLayoff(knockerMelds);
     }
 
     @Override
     public MyCard discardCard() {
-        return player.handLayout.viewUnusedCards().get(0);
+        return handLayout.viewUnusedCards().get(0);
     }
 }

@@ -30,7 +30,7 @@ import java.util.Random;
  * except for update(), getWinner() and startNewRound()
  */
 public class Executor {
-    private static Integer seed =10;
+    private static Integer seed =11;
 
     /* GAME/ROUND INITIALISATION */
     /**
@@ -49,15 +49,16 @@ public class Executor {
                 if (curState.scores[i] >= GameRules.pointsToWin) {
                     //TODO properly make end of game screen
                     System.out.println("Player " + i + " won with "+curState.scores[i]+" points");
-                    System.out.println("FInal scores: ");
+                    System.out.println("Final scores: ");
                     for (int j = 0; j < curState.scores.length; j++) {
                         System.out.println("Player "+j+" "+curState.scores[j]);
                     }
                     Gdx.app.exit();
                 }
             }
-            //TODO save initial creation such as custom deck, custom players
             newState = new StateBuilder()
+                    .useCustomDeck(curState.initDeck)
+                    .addPlayers(curState.players)
                     .setScores(curState.scores)
                     .setRound(curState.round+1)
                     .setSecondsPerStep(curState.secondsPerStep)

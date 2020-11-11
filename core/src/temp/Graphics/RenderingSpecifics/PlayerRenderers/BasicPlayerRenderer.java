@@ -1,24 +1,23 @@
-package temp.Graphics.RenderingSpecifics;
+package temp.Graphics.RenderingSpecifics.PlayerRenderers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 import temp.Graphics.Style;
 
 import java.util.List;
 
-public class PlayerRenderer implements Renderer {
+public class BasicPlayerRenderer extends PlayerRenderer {
+
     private float maxWidthPerc = 0.8f;
     private float maxHeightPerc = 0.2f;
     private float percAwayFromBottom = 0.2f;
 
     @Override
-    public void render(SpriteBatch batch, Style style, State curState) {
-        HandLayout handLayout = curState.getPlayer().viewHandLayout();
+    public void render(SpriteBatch batch, Style style, HandLayout handLayout) {
 
         float[] dimensions = getDimensions(11, style.getWidthToHeightCard());
 

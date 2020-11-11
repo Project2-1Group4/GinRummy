@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
 import temp.Graphics.RenderingSpecifics.*;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,6 @@ public class Graphics {
         renderers.add(new BackgroundRenderer());
         renderers.add(new DeckRenderer());
         renderers.add(new DiscardRenderer());
-        renderers.add(new PlayerRenderer());
         renderers.add(new ExtraRenderer());
     }
 

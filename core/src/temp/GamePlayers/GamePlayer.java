@@ -6,6 +6,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.ArrayList;
@@ -15,13 +16,14 @@ public abstract class GamePlayer implements PlayerInterface {
 
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
+    protected PlayerRenderer renderer;
 
-    public GamePlayer(){
+    public GamePlayer(PlayerRenderer renderer){
+        this.renderer = renderer;
     }
 
     /* SETTERS */
     public void update(HandLayout realLayout){
-
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
     }
@@ -72,7 +74,11 @@ public abstract class GamePlayer implements PlayerInterface {
 
     /* EXTRA */
     public void render(SpriteBatch batch, Style renderStyle) {
-        //In case subclass wants some visuals
+        if(renderer!=null) renderer.render(batch,renderStyle,handLayout);
+    }
+
+    @Override
+    public void newRound() {
     }
 
     /* PLAYER METHODS */
