@@ -1,6 +1,5 @@
 package temp.GamePlayers;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.MyCard;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
@@ -16,6 +15,7 @@ public class MousePlayer extends GamePlayer {
     }
     @Override
     public Boolean knockOrContinue() {
+
         return null;
     }
 

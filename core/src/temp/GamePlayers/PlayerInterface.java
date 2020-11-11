@@ -26,7 +26,6 @@ public interface PlayerInterface {
      */
     HandLayout confirmLayout();
 
-
     /**
      *  Layoff 1 card at a time because idk how to implement in another way
      *

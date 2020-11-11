@@ -1,11 +1,13 @@
 package temp.GamePlayers;
 
+import cardlogic.SetOfCards;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 import temp.Graphics.Style;
 
@@ -18,6 +20,10 @@ public abstract class GamePlayer implements PlayerInterface {
     protected HandLayout handLayout;
     protected PlayerRenderer renderer;
 
+    public GamePlayer(){
+        renderer = new BasicPlayerRenderer();
+    }
+    
     public GamePlayer(PlayerRenderer renderer){
         this.renderer = renderer;
     }
