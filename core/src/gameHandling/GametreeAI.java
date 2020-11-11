@@ -221,8 +221,19 @@ public class GametreeAI {
         List<Card> copyList = new ArrayList<>(totalCards);
 
         List<Card> resultList = new ArrayList<>();
+        
+        for(Card aCard : copyList){
+            // Might be changed to is greater than or equals
+            if(aCard.getProb() == 1){
+                resultList.add(aCard);
+                copyList.remove(aCard);
+            }
 
-        for(int i=0; i<10; i++){
+        }
+
+
+
+        while(resultList.size() < 10){
 
             Card toSave = pickRandomCard(copyList);
 
