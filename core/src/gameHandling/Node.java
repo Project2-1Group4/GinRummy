@@ -1,5 +1,6 @@
 package gameHandling;
 
+import cardlogic.Card;
 import cardlogic.SetOfCards;
 
 import java.util.*;
@@ -7,17 +8,28 @@ import java.util.*;
 public class Node {
     SetOfCards discardPile;
     SetOfCards hand;
-    SetOfCards deck;
+    SetOfCards unknownCards;
     SetOfCards opponentHand;
-
+    boolean winOrLose;
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards deck, SetOfCards opponentHand) {
+
+    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand) {
         this.discardPile = pile;
         this.hand = cards;
-        this.deck = deck;
+        this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
+        if(scoreHand(hand.toList()) > scoreHand(opponentHand.toList()) && scoreHand(hand.toList())<=10){
+            this.winOrLose = true;
+        }
+    }
+
+    public int scoreHand(List<Card> aHand) {
+        SetOfCards hand = new SetOfCards(aHand);
+        Player player = new Player(hand);
+        int scoreHand = player.scoreHand();
+        return scoreHand;
     }
 
     public List<Node> getChildren() {
