@@ -58,8 +58,8 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
-        return !deckEmpty;
+    public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        return remainingCardsInDeck!=0;
     }
 
     @Override

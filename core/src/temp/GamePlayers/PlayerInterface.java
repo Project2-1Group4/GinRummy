@@ -1,5 +1,6 @@
 package temp.GamePlayers;
 
+import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
@@ -19,7 +20,7 @@ public interface PlayerInterface {
     /**
      * @return true if deck, false if discard, null if no decision
      */
-    Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard);
+    Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard);
 
     /**
      * @return true if confirmed, false if not done
@@ -43,4 +44,9 @@ public interface PlayerInterface {
      * Called every time a new round starts to let the player know to reset it's memory
      */
     void newRound();
+
+    /**
+     * @param action feeds in every action done by other players
+     */
+    void otherPlayerActed(Action action);
 }

@@ -37,7 +37,7 @@ public class StateBuilder {
         playerTurn = 0;
         round = 0;
         turnInRound = 0;
-        stepInTurn = State.StepInTurn.KnockOrContinue;
+        stepInTurn = State.StepInTurn.Pick;
         knocker = null;
         actions = new Stack<>();
         players = new ArrayList<>();

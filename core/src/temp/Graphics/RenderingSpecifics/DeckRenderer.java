@@ -15,7 +15,7 @@ public class DeckRenderer implements Renderer {
 
     @Override
     public void render(SpriteBatch batch, Style style, State curState) {
-        if (!curState.isDeckEmpty()) {
+        if (curState.getDeckSize()!=0) {
             Sprite s = style.getCardBack();
             float[] size = Graphics.getDimensions(style.getWidthToHeightCard(), maxPercOfScreen, maxPercOfScreen);
             s.setSize(size[0], size[1]);

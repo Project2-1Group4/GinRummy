@@ -36,9 +36,9 @@ public class Validator {
      * @param deck true if pick from deck, false if pick from discard
      * @return true move can be executed, false if not
      */
-    public static boolean pickDeckOrDiscard(Boolean deck, boolean deckEmpty, boolean discardEmpty) {
+    public static boolean pickDeckOrDiscard(Boolean deck, int deckSize, boolean discardEmpty) {
         // Deck but deck empty
-        if (deck && deckEmpty) {
+        if (deck && deckSize==0) {
             return false;
         }
         // Discard but discard empty (shouldn't happen)

@@ -7,6 +7,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameLogic.Validator;
+import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -145,13 +146,19 @@ public class Executor {
     public static void nextStep(State curState) {
         if (GameRules.print) System.out.println(curState.viewLastAction());
 
+        for (int i = 0; i < curState.players.size(); i++) {
+            if(i!=curState.getPlayerNumber()){
+                curState.players.get(i).otherPlayerActed(curState.viewLastAction());
+            }
+        }
+
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
             getNextPlayer(curState);
             if (curState.knocker == curState.playerTurn) {
                 curState.stepInTurn = curState.stepInTurn.getNext();
             }
         } else {
-            if (curState.stepInTurn == State.StepInTurn.Discard) {
+            if (curState.stepInTurn == State.StepInTurn.KnockOrContinue) {
                 getNextPlayer(curState);
             }
             curState.stepInTurn = curState.stepInTurn.getNext();
@@ -271,7 +278,7 @@ public class Executor {
      * @return true if executed, false if not
      */
     public static boolean pickDeckOrDiscard(Boolean move, State curState) {
-        if (Validator.pickDeckOrDiscard(move, curState.isDeckEmpty(),
+        if (Validator.pickDeckOrDiscard(move, curState.getDeckSize(),
                 curState.isDiscardEmpty())) {
             if (move) {
                 curState.movesDone.add(new PickAction(curState.getPlayerNumber(), true,null));

@@ -20,7 +20,7 @@ public class MousePlayer extends GamePlayer {
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
+    public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         return null;
     }
 

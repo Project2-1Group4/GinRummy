@@ -75,6 +75,12 @@ public class Coordinator extends ScreenAdapter {
      */
     private void handleTurn(GamePlayer curPlayer, State.StepInTurn step, boolean outOfTime) {
         if(GameRules.print) if(outOfTime) System.out.println("FORCE "+step.name());
+
+        if(currentGameState.getDeckSize()==2){
+            if(GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
+            currentGameState = Executor.startNewRound(500,currentGameState);
+        }
+
         switch (step) {
             case KnockOrContinue:
                 if (outOfTime) {
@@ -129,7 +135,7 @@ public class Coordinator extends ScreenAdapter {
     }
 
     private void pick(GamePlayer curPlayer) {
-        Boolean move = curPlayer.pickDeckOrDiscard(currentGameState.isDeckEmpty(), currentGameState.peekDiscardTop());
+        Boolean move = curPlayer.pickDeckOrDiscard(currentGameState.getDeckSize(), currentGameState.peekDiscardTop());
         if (move!=null && Executor.pickDeckOrDiscard(move, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;

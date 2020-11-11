@@ -79,8 +79,8 @@ public class State {
         return stepInTurn;
     }
 
-    public boolean isDeckEmpty() {
-        return deck.isEmpty();
+    public int getDeckSize() {
+        return deck.size();
     }
 
     public boolean isDiscardEmpty() {

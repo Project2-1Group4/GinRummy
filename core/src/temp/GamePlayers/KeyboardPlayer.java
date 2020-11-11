@@ -38,7 +38,7 @@ public class KeyboardPlayer extends GamePlayer {
     }
 
     @Override
-    public Boolean pickDeckOrDiscard(boolean deckEmpty, MyCard topOfDiscard) {
+    public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             return true;
         }
