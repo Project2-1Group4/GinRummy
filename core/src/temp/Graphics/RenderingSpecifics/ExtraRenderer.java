@@ -15,7 +15,7 @@ public class ExtraRenderer implements Renderer {
         int y=Gdx.graphics.getHeight()-20;
         font.draw(batch,"Round "+curState.getRound()+" turn "+curState.getTurn(),20, y);
         y-=20;
-        font.draw(batch, "Player " + curState.getActorNumber(), 20, y);
+        font.draw(batch, "Player " + curState.getPlayerNumber(), 20, y);
         y-=20;
         font.draw(batch, curState.getStep().question, 20,y);
         y-=20;

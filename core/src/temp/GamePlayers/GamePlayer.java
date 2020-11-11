@@ -1,4 +1,4 @@
-package temp.GameActors;
+package temp.GamePlayers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.Layoff;
@@ -11,12 +11,12 @@ import temp.Graphics.Style;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GameActor implements ActorInterface {
+public abstract class GamePlayer implements PlayerInterface {
 
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
 
-    public GameActor(){
+    public GamePlayer(){
     }
 
     /* SETTERS */
@@ -41,7 +41,7 @@ public abstract class GameActor implements ActorInterface {
     }
 
     /**
-     * To allow all actors to get this feature
+     * To allow all players to get this feature
      * Automatically creates best melds for given hand
      */
     public HandLayout getBestMelds() {
@@ -49,7 +49,7 @@ public abstract class GameActor implements ActorInterface {
     }
 
     /**
-     * To allow all actors to get this feature
+     * To allow all players to get this feature
      * Automatically lays the most cards off
      *
      * Shit show of a method. Dont feel like cleaning up
@@ -75,7 +75,7 @@ public abstract class GameActor implements ActorInterface {
         //In case subclass wants some visuals
     }
 
-    /* ACTOR METHODS */
+    /* PLAYER METHODS */
     @Override
     public HandLayout confirmLayout() {
         return getBestMelds();

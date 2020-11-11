@@ -1,9 +1,10 @@
-package temp.GameActors;
+package temp.GamePlayers;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.MyCard;
+import temp.Graphics.Style;
 
-public class MousePlayer extends GameActor {
+public class MousePlayer extends GamePlayer {
     public MousePlayer(){
 
     }
@@ -20,5 +21,10 @@ public class MousePlayer extends GameActor {
     @Override
     public MyCard discardCard() {
         return null;
+    }
+
+    @Override
+    public void render(SpriteBatch batch, Style renderStyle) {
+        super.render(batch, renderStyle);
     }
 }

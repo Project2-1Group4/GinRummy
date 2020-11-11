@@ -33,7 +33,7 @@ public class Finder {
     /**
      * Calculates the amount of points won only based on deadwood differences. Nothing else.
      *
-     * @param handLayouts       1 meldSet for every actor (even winner but that gives 0)
+     * @param handLayouts       1 meldSet for every player (even winner but that gives 0)
      * @param winnerDeadwood value of the winners deadwood
      * @return sum(losers deadwood - winner deadwood)
      */
@@ -49,14 +49,14 @@ public class Finder {
      * Finds set of melds that has the highest value and lowest deadwood.
      *
      * @param cards list of cards to be considered
-     * @return list of melds that maximize actors hand value
+     * @return list of melds that maximize players hand value
      */
     public static HandLayout findBestHandLayout(List<MyCard> cards) {
         int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
         for (MyCard card : cards) {
             hand[card.suit.index][card.rank.index] = 1;
         }
-        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<>(), hand, new ArrayList<>());
+        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
 
         List<HandLayout> handLayouts = new ArrayList<>();
         for (Stack<Meld> meldCombination : meldCombinations) {

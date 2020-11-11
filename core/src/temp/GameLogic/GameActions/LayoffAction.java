@@ -8,8 +8,8 @@ import temp.GameLogic.MyCard;
 public class LayoffAction extends Action {
     public final MyCard card;
     public final Meld meld;
-    public LayoffAction(int actorIndex, MyCard card, Meld meld) {
-        super(State.StepInTurn.LayOff, actorIndex);
+    public LayoffAction(int playerIndex, MyCard card, Meld meld) {
+        super(State.StepInTurn.LayOff, playerIndex);
         this.card = card;
         this.meld = meld;
     }

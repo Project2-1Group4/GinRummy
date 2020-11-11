@@ -7,13 +7,13 @@ import temp.GameLogic.MyCard;
 
 public abstract class Action {
     public final State.StepInTurn step;
-    public final int actorIndex;
-    public Action(State.StepInTurn step, int actorIndex){
+    public final int playerIndex;
+    public Action(State.StepInTurn step, int playerIndex){
         this.step = step;
-        this.actorIndex = actorIndex;
+        this.playerIndex = playerIndex;
     }
     protected String baseString(){
-        return "Player "+actorIndex;
+        return "Player "+playerIndex;
     }
 
     public boolean same(Action other){

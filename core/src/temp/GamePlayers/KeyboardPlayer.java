@@ -1,4 +1,4 @@
-package temp.GameActors;
+package temp.GamePlayers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,7 +15,7 @@ import java.util.List;
  * 1 = deck, 2 = discard pile
  * 1,2,3,4,5,6,7,8,9,0 <- discard card of index-1, and 0 = 10
  */
-public class KeyboardPlayer extends GameActor {
+public class KeyboardPlayer extends GamePlayer {
     public KeyboardPlayer() {
         super();
     }

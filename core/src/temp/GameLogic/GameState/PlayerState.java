@@ -10,11 +10,11 @@ import java.util.List;
  * Anything that wants to play the game needs to inherit this.
  * Holds the game state. Only modifiable by executor. Visible by all.
  */
-public class ActorState {
+public class PlayerState {
 
     protected HandLayout handLayout;
 
-    public ActorState() {
+    public PlayerState() {
         handLayout = new HandLayout();
     }
 
@@ -27,7 +27,7 @@ public class ActorState {
         return handLayout.removeCard(card);
     }
 
-    /* GETTERS */ // Only viewing, no changing of the real internal state of actor without the use of package
+    /* GETTERS */ // Only viewing, no changing of the real internal state of player without the use of package
     public List<MyCard> viewHand() {
         return handLayout.viewAllCards();
     }

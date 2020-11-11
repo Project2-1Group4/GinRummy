@@ -1,7 +1,7 @@
 package temp.GameLogic.GameState;
 
-import temp.GameActors.GameActor;
-import temp.GameActors.KeyboardPlayer;
+import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.KeyboardPlayer;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 import temp.GameRules;
@@ -20,8 +20,8 @@ public class StateBuilder {
     private List<MyCard> deck;
     private Stack<MyCard> discardPile;
     private int numberOfPlayers;
-    private List<GameActor> actors;
-    private List<ActorState> actorStates;
+    private List<GamePlayer> players;
+    private List<PlayerState> playerStates;
     private int playerTurn;
     private State.StepInTurn stepInTurn;
     private int[] scores;
@@ -40,14 +40,14 @@ public class StateBuilder {
         stepInTurn = State.StepInTurn.KnockOrContinue;
         knocker = null;
         actions = new Stack<>();
-        actors = new ArrayList<>();
-        actorStates = new ArrayList<>();
+        players = new ArrayList<>();
+        playerStates = new ArrayList<>();
         discardPile = new Stack<>();
         secondsPerStep = new float[State.StepInTurn.values().length];
         secondsPerStep[0] = GameRules.knockOrContinueTime;
         secondsPerStep[1] = GameRules.DeckOrDiscardPileTime;
         secondsPerStep[2] = GameRules.DiscardTime;
-        secondsPerStep[3] = GameRules.MeldConfirmationTime;
+        secondsPerStep[3] = GameRules.LayoutConfirmationTime;
         secondsPerStep[4] = GameRules.LayOffTime;
     }
 
@@ -71,27 +71,27 @@ public class StateBuilder {
         return this;
     }
 
-    public StateBuilder addActor(GameActor actor, ActorState state) {
-        actors.add(actor);
-        actorStates.add(state);
+    public StateBuilder addPlayer(GamePlayer player, PlayerState state) {
+        players.add(player);
+        playerStates.add(state);
         numberOfPlayers++;
         return this;
     }
 
-    public StateBuilder addActor(GameActor actor){
-        return addActor(actor, new ActorState());
+    public StateBuilder addPlayer(GamePlayer player){
+        return addPlayer(player, new PlayerState());
     }
 
-    public StateBuilder addActors(List<GameActor> actors, List<ActorState> states){
-        for (int i = 0; i < actors.size(); i++) {
-            addActor(actors.get(i),states.get(i));
+    public StateBuilder addPlayers(List<GamePlayer> players, List<PlayerState> states){
+        for (int i = 0; i < players.size(); i++) {
+            addPlayer(players.get(i),states.get(i));
         }
         return this;
     }
 
-    public StateBuilder addActors(List<GameActor> actors){
-        for (GameActor actor : actors) {
-            addActor(actor);
+    public StateBuilder addPlayers(List<GamePlayer> players){
+        for (GamePlayer player : players) {
+            addPlayer(player);
         }
         return this;
     }
@@ -132,22 +132,22 @@ public class StateBuilder {
 
         assert deck != null;
         assert discardPile != null;
-        assert actors.size() < numberOfPlayers;
-        assert actors.size() == actorStates.size();
+        assert players.size() < numberOfPlayers;
+        assert players.size() == playerStates.size();
         assert playerTurn < numberOfPlayers;
         assert stepInTurn != null;
         assert scores.length == numberOfPlayers;
         assert secondsPerStep.length == 3;
         assert knocker > numberOfPlayers;
 
-        int actorsToAdd = numberOfPlayers - actors.size();
-        for (int i = 0; i < actorsToAdd; i++) {
-            actors.add(new KeyboardPlayer());
-            actorStates.add(new ActorState());
+        int playersToAdd = numberOfPlayers - players.size();
+        for (int i = 0; i < playersToAdd; i++) {
+            players.add(new KeyboardPlayer());
+            playerStates.add(new PlayerState());
         }
         if(scores==null){
             scores = new int[numberOfPlayers];
         }
-        return new State(deck, discardPile, actors, actorStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
+        return new State(deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
     }
 }

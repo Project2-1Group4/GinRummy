@@ -1,4 +1,4 @@
-package temp.GameActors;
+package temp.GamePlayers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.Layoff;
@@ -11,41 +11,41 @@ import temp.Graphics.Style;
 import java.util.List;
 
 /**
- * Used when actor takes too long on their turn.
+ * Used when player takes too long on their turn.
  * <p>
  * Prioritizes deck always
  * Discards first unused card
  * Only knocks on Gin
  */
-public class ForceActor extends GameActor {
+public class ForcePlayer extends GamePlayer {
     private boolean onlyGin = false;
-    private GameActor actor;
+    private GamePlayer player;
 
-    public ForceActor(GameActor actor) {
-        this.actor = actor;
+    public ForcePlayer(GamePlayer player) {
+        this.player = player;
     }
 
     @Override
     public HandLayout viewHandLayout() {
-        return actor.viewHandLayout();
+        return player.viewHandLayout();
     }
 
     @Override
     public List<MyCard> viewHand() {
-        return actor.viewHand();
+        return player.viewHand();
     }
 
     @Override
     public void render(SpriteBatch batch, Style renderingStyle) {
-        actor.render(batch, renderingStyle);
+        player.render(batch, renderingStyle);
     }
 
     @Override
     public Boolean knockOrContinue() {
         if(onlyGin) {
-            return actor.handLayout.viewUnusedCards().size() == 0;
+            return player.handLayout.viewUnusedCards().size() == 0;
         }
-        return actor.handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
+        return player.handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
     }
 
     @Override
@@ -55,16 +55,16 @@ public class ForceActor extends GameActor {
 
     @Override
     public HandLayout confirmLayout() {
-        return actor.getBestMelds();
+        return player.getBestMelds();
     }
 
     @Override
     public Layoff layOff(List<Meld> knockerMelds) {
-        return actor.automaticLayoff(knockerMelds);
+        return player.automaticLayoff(knockerMelds);
     }
 
     @Override
     public MyCard discardCard() {
-        return actor.handLayout.viewUnusedCards().get(0);
+        return player.handLayout.viewUnusedCards().get(0);
     }
 }

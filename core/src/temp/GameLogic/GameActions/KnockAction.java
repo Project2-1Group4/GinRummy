@@ -7,8 +7,8 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 public class KnockAction extends Action {
     public final boolean knock;
     private final HandLayout knockLayout;
-    public KnockAction(int actorIndex, boolean knock, HandLayout knockLayout) {
-        super(State.StepInTurn.KnockOrContinue, actorIndex);
+    public KnockAction(int playerIndex, boolean knock, HandLayout knockLayout) {
+        super(State.StepInTurn.KnockOrContinue, playerIndex);
         this.knock = knock;
         if(knock){
             assert knockLayout!=null;

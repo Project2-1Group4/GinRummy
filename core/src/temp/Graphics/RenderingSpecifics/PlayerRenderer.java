@@ -18,7 +18,7 @@ public class PlayerRenderer implements Renderer {
 
     @Override
     public void render(SpriteBatch batch, Style style, State curState) {
-        HandLayout handLayout = curState.getActor().viewHandLayout();
+        HandLayout handLayout = curState.getPlayer().viewHandLayout();
 
         float[] dimensions = getDimensions(11, style.getWidthToHeightCard());
 

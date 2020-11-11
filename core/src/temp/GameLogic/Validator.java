@@ -15,7 +15,7 @@ public class Validator {
     /**
      * Checks if you can knock with the given info.
      *
-     * @param knock rue if actor wants to knock, false if actor wants to continue
+     * @param knock rue if player wants to knock, false if player wants to continue
      * @param layout cards currently in player hand
      * @return true move can be executed, false if not
      */
@@ -49,7 +49,7 @@ public class Validator {
     /**
      * Checks if you can discard with the given info.
      *
-     * @param cardToDiscard card actor wants to discard
+     * @param cardToDiscard card player wants to discard
      * @param playerHand    list of cards in player hand
      * @return true move can be executed, false if not
      */
@@ -136,14 +136,14 @@ public class Validator {
      *
      * @param layoff wanting to be executed
      * @param knockerMelds melds of knocker
-     * @param actorCards cards in actor hand
+     * @param playerCards cards in player hand
      * @return true if valid, false if not
      */
-    public static boolean layOff(Layoff layoff, List<Meld> knockerMelds, List<MyCard> actorCards) {
-        //Check if card to layoff is in actor hand
+    public static boolean layOff(Layoff layoff, List<Meld> knockerMelds, List<MyCard> playerCards) {
+        //Check if card to layoff is in player hand
         boolean cardFound = false;
-        for (MyCard actorCard : actorCards) {
-            if(actorCard.same(layoff.card)){
+        for (MyCard playerCard : playerCards) {
+            if(playerCard.same(layoff.card)){
                 cardFound=true;
                 break;
             }

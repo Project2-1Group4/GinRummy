@@ -1,8 +1,8 @@
 package temp;
 
 import com.badlogic.gdx.ScreenAdapter;
-import temp.GameActors.ForceActor;
-import temp.GameActors.GameActor;
+import temp.GamePlayers.ForcePlayer;
+import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameState.Executor;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -11,7 +11,7 @@ import temp.GameLogic.MyCard;
 import temp.Graphics.Graphics;
 
 /**
- * Handles coordination between actors||validator||executor||graphics
+ * Handles coordination between players||validator||executor||graphics
  */
 public class Coordinator extends ScreenAdapter {
 
@@ -41,8 +41,8 @@ public class Coordinator extends ScreenAdapter {
             // only called upon new round
             oncePerStep();
         }
-        GameActor curActor = currentGameState.getActor();
-        handleTurn(curActor, currentGameState.getStep(), Executor.update(currentGameState, delta));
+        GamePlayer curPlayer = currentGameState.getPlayer();
+        handleTurn(curPlayer, currentGameState.getStep(), Executor.update(currentGameState, delta));
 
         if (newStep) {
             oncePerStep();
@@ -57,7 +57,7 @@ public class Coordinator extends ScreenAdapter {
     }
 
     /**
-     * Gets called every time an actor makes a valid move
+     * Gets called every time an player makes a valid move
      */
     private void oncePerStep() {
         newStep = false;
@@ -67,39 +67,39 @@ public class Coordinator extends ScreenAdapter {
     /**
      *  Handles the main turn logic
      *
-     * @param curActor actor that needs to make the move
-     * @param step turn in the actors turn round
+     * @param curPlayer player that needs to make the move
+     * @param step turn in the players turn round
      * @param outOfTime true if you need to force a move
      */
-    private void handleTurn(GameActor curActor, State.StepInTurn step, boolean outOfTime) {
+    private void handleTurn(GamePlayer curPlayer, State.StepInTurn step, boolean outOfTime) {
         if(GameRules.print) if(outOfTime) System.out.println("FORCE "+step.name());
         switch (step) {
             case KnockOrContinue:
                 if (outOfTime) {
-                    knockOrContinue(new ForceActor(curActor));
+                    knockOrContinue(new ForcePlayer(curPlayer));
                 } else {
-                    knockOrContinue(curActor);
+                    knockOrContinue(curPlayer);
                 }
                 break;
             case Pick:
                 if (outOfTime) {
-                    pick(new ForceActor(curActor));
+                    pick(new ForcePlayer(curPlayer));
                 } else {
-                    pick(curActor);
+                    pick(curPlayer);
                 }
                 break;
             case Discard:
                 if (outOfTime) {
-                    discard(new ForceActor(curActor));
+                    discard(new ForcePlayer(curPlayer));
                 } else {
-                    discard(curActor);
+                    discard(curPlayer);
                 }
                 break;
             case LayoutConfirmation:
                 if (outOfTime) {
-                    layoutConfirmation(new ForceActor(curActor));
+                    layoutConfirmation(new ForcePlayer(curPlayer));
                 } else {
-                    layoutConfirmation(curActor);
+                    layoutConfirmation(curPlayer);
                 }
                 break;
             case LayOff:
@@ -108,9 +108,9 @@ public class Coordinator extends ScreenAdapter {
                     break;
                 }
                 if (outOfTime) {
-                    layOff(new ForceActor(curActor));
+                    layOff(new ForcePlayer(curPlayer));
                 } else {
-                    layOff(curActor);
+                    layOff(curPlayer);
                 }
                 break;
             case EndOfRound:
@@ -118,40 +118,40 @@ public class Coordinator extends ScreenAdapter {
         }
     }
 
-    private void knockOrContinue(GameActor curActor) {
-        Boolean move = curActor.knockOrContinue();
+    private void knockOrContinue(GamePlayer curPlayer) {
+        Boolean move = curPlayer.knockOrContinue();
         if (move!=null && Executor.knockOrContinue(move, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }
     }
 
-    private void pick(GameActor curActor) {
-        Boolean move = curActor.pickDeckOrDiscard(currentGameState.isDeckEmpty(), currentGameState.peekDiscardTop());
+    private void pick(GamePlayer curPlayer) {
+        Boolean move = curPlayer.pickDeckOrDiscard(currentGameState.isDeckEmpty(), currentGameState.peekDiscardTop());
         if (move!=null && Executor.pickDeckOrDiscard(move, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }
     }
 
-    private void discard(GameActor curActor) {
-        MyCard cardToDiscard = curActor.discardCard();
+    private void discard(GamePlayer curPlayer) {
+        MyCard cardToDiscard = curPlayer.discardCard();
         if (cardToDiscard!=null && Executor.discardCard(cardToDiscard, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }
     }
 
-    private void layoutConfirmation(GameActor curActor) {
-        HandLayout set = curActor.confirmLayout();
+    private void layoutConfirmation(GamePlayer curPlayer) {
+        HandLayout set = curPlayer.confirmLayout();
         if (set!=null && Executor.updateHandLayout(set, currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;
         }
     }
 
-    private void layOff(GameActor curActor) {
-        Layoff layOffs = curActor.layOff(currentGameState.getKnockerState().viewMelds());
+    private void layOff(GamePlayer curPlayer) {
+        Layoff layOffs = curPlayer.layOff(currentGameState.getKnockerState().viewMelds());
         if (layOffs!=null && Executor.layOff(layOffs,currentGameState)) {
             Executor.nextStep(currentGameState);
             newStep = true;

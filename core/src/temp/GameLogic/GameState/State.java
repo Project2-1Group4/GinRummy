@@ -1,6 +1,6 @@
 package temp.GameLogic.GameState;
 
-import temp.GameActors.GameActor;
+import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 
@@ -14,8 +14,8 @@ public class State {
     protected List<MyCard> deck;
     protected Stack<MyCard> discardPile;
     protected int numberOfPlayers;
-    protected List<GameActor> actors;
-    protected List<ActorState> actorStates;
+    protected List<GamePlayer> players;
+    protected List<PlayerState> playerStates;
     protected int playerTurn;
     protected StepInTurn stepInTurn;
     protected int[] scores;
@@ -26,12 +26,12 @@ public class State {
     protected int turnInRound;
     protected Stack<Action> movesDone;
 
-    protected State(List<MyCard> deck, Stack<MyCard> discardPile, List<GameActor> actors, List<ActorState> actorStates,
+    protected State(List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
         this.deck = deck;
         this.discardPile = discardPile;
-        this.actors = actors;
-        this.actorStates = actorStates;
+        this.players = players;
+        this.playerStates = playerStates;
         this.numberOfPlayers = numberOfPlayers;
         this.playerTurn = playerTurn;
         this.stepInTurn = stepInTurn;
@@ -46,30 +46,30 @@ public class State {
     }
 
     /* GETTERS */
-    public int getActorNumber() {
+    public int getPlayerNumber() {
         return playerTurn;
     }
 
-    public GameActor getActor() {
-        return actors.get(playerTurn);
+    public GamePlayer getPlayer() {
+        return players.get(playerTurn);
     }
 
-    public ActorState getActorState(){
-        return actorStates.get(playerTurn);
+    public PlayerState getPlayerState(){
+        return playerStates.get(playerTurn);
     }
 
     public int getKnockerNumber(){
         return knocker;
     }
 
-    public GameActor getKnocker() {
+    public GamePlayer getKnocker() {
         assert knocker != null;
-        return actors.get(knocker);
+        return players.get(knocker);
     }
 
-    public ActorState getKnockerState(){
+    public PlayerState getKnockerState(){
         assert knocker != null;
-        return actorStates.get(knocker);
+        return playerStates.get(knocker);
     }
 
     public StepInTurn getStep() {
@@ -167,7 +167,7 @@ public class State {
         StringBuilder sb = new StringBuilder();
         sb.append("Deck size: ").append(deck.size())
                 .append("\nDiscard size: ").append(discardPile.size())
-                .append("\nPlayers: ").append(numberOfPlayers).append(" ").append(actors.size());
+                .append("\nPlayers: ").append(numberOfPlayers).append(" ").append(players.size());
         return sb.toString();
 
     }

@@ -56,7 +56,7 @@ public class Executor {
                     Gdx.app.exit();
                 }
             }
-            //TODO save initial creation such as custom deck, custom actors
+            //TODO save initial creation such as custom deck, custom players
             newState = new StateBuilder()
                     .setScores(curState.scores)
                     .setRound(curState.round+1)
@@ -101,12 +101,12 @@ public class Executor {
     public static void distributeCards(int cardsPerHand, State curState) {
         if (GameRules.print) System.out.println("Cards distributed");
 
-        for (int i =0;i<curState.actorStates.size();i++) {
+        for (int i =0;i<curState.playerStates.size();i++) {
 
             for (int j = 0; j < cardsPerHand; j++) {
-                curState.actorStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
+                curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
-            curState.actors.get(i).update(curState.actorStates.get(i).viewHandLayout());
+            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
         }
 
     }
@@ -157,7 +157,7 @@ public class Executor {
         }
         curState.curTime = curState.secondsPerStep[curState.getStep().index];
 
-        if (GameRules.print) System.out.println("\nNew step: Player "+curState.getActorNumber()+" "+curState.stepInTurn);
+        if (GameRules.print) System.out.println("\nNew step: Player "+curState.getPlayerNumber()+" "+curState.stepInTurn);
 
     }
 
@@ -176,11 +176,11 @@ public class Executor {
     /**
      * Starts the knocking process (meld creation then laying off (if no gin) and then point counting).
      *
-     * @param knocker  index of the actor that knocked
+     * @param knocker  index of the player that knocked
      * @param curState current game state
      */
     private static void knocked(int knocker, State curState) {
-        if (GameRules.print) System.out.println("Player "+curState.getActorNumber()+" knocked with:\n"+curState.getActor().viewHandLayout()+"\n");
+        if (GameRules.print) System.out.println("Player "+curState.getPlayerNumber()+" knocked with:\n"+curState.getPlayer().viewHandLayout()+"\n");
 
         curState.stepInTurn = State.StepInTurn.LayoutConfirmation;
         curState.knocker = knocker;
@@ -206,10 +206,10 @@ public class Executor {
     public static void assignPoints(State curState) {
         int winner = getWinner(curState);
         List<HandLayout> handLayouts = new ArrayList<>();
-        for (ActorState actor : curState.actorStates) {
-            handLayouts.add(actor.viewHandLayout());
+        for (PlayerState player : curState.playerStates) {
+            handLayouts.add(player.viewHandLayout());
         }
-        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.actors.get(winner).viewHandLayout().getDeadwood());
+        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(winner).viewHandLayout().getDeadwood());
 
         if (winner == curState.knocker) {
             if(curState.getKnocker().viewHandLayout().getDeadwood() == 0){
@@ -234,29 +234,29 @@ public class Executor {
      */
     private static int getWinner(State curState) {
         List<HandLayout> handLayouts = new ArrayList<>();
-        for (ActorState actor : curState.actorStates) {
-            handLayouts.add(actor.viewHandLayout());
+        for (PlayerState player : curState.playerStates) {
+            handLayouts.add(player.viewHandLayout());
         }
         return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood());
     }
 
     /* TURN HANDLING */
     /**
-     * Executes the knock or continue order given. Uses hand layout in actor. Not in game save.
+     * Executes the knock or continue order given. Uses hand layout in player. Not in game save.
      *
      * @param move     null if no move, true if knock, false if continue // Can be made into an enum
      * @param curState current game state
      * @return true if executed, false if not
      */
     public static boolean knockOrContinue(Boolean move, State curState) {
-        if (Validator.knockOrContinueMove(move, curState.getActor().viewHandLayout())) {
-            curState.getActorState().handLayout = curState.getActor().viewHandLayout();
+        if (Validator.knockOrContinueMove(move, curState.getPlayer().viewHandLayout())) {
+            curState.getPlayerState().handLayout = curState.getPlayer().viewHandLayout();
             if (move) {
-                knocked(curState.getActorNumber(), curState);
+                knocked(curState.getPlayerNumber(), curState);
             }
-            curState.movesDone.add(new KnockAction(curState.getActorNumber(),move));
+            curState.movesDone.add(new KnockAction(curState.getPlayerNumber(),move,curState.getPlayer().viewHandLayout()));
             //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
@@ -273,63 +273,63 @@ public class Executor {
         if (Validator.pickDeckOrDiscard(move, curState.isDeckEmpty(),
                 curState.isDiscardEmpty())) {
             if (move) {
-                curState.movesDone.add(new PickAction(curState.getActorNumber(), true,null));
-                curState.getActorState().handLayout.addUnusedCard(curState.pickDeckTop());
+                curState.movesDone.add(new PickAction(curState.getPlayerNumber(), true,null));
+                curState.getPlayerState().handLayout.addUnusedCard(curState.pickDeckTop());
             } else {
-                curState.movesDone.add(new PickAction(curState.getActorNumber(), false,curState.peekDiscardTop()));
-                curState.getActorState().handLayout.addUnusedCard(curState.pickDiscardTop());
+                curState.movesDone.add(new PickAction(curState.getPlayerNumber(), false,curState.peekDiscardTop()));
+                curState.getPlayerState().handLayout.addUnusedCard(curState.pickDiscardTop());
             }
             //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
     }
 
     /**
-     * Removes card from current actor's hand and adds it to the discard pile.
+     * Removes card from current player's hand and adds it to the discard pile.
      *
      * @param card     to discard
      * @param curState current game state
      * @return true if executed, false if not
      */
     public static boolean discardCard(MyCard card, State curState) {
-        if (Validator.discardCard(card, curState.getActor().viewHand())) {
+        if (Validator.discardCard(card, curState.getPlayer().viewHand())) {
 
-            if(curState.getActorState().removeCard(card)){
+            if(curState.getPlayerState().removeCard(card)){
                 curState.addToDiscard(card);
             }else{
                 System.out.println("Executor.discardCard() ERROR ERROR ERROR"); // in case some weird error occurs
                 Gdx.app.exit();
             }
-            curState.movesDone.add(new DiscardAction(curState.getActorNumber(),card));
+            curState.movesDone.add(new DiscardAction(curState.getPlayerNumber(),card));
             //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
     }
 
     /**
-     * Saves hand layout in actor to game save if valid
+     * Saves hand layout in player to game save if valid
      *
      * @param handLayout updated meldSet
      * @param curState current game state
      * @return true if executed, false if not
      */
     public static boolean updateHandLayout(HandLayout handLayout, State curState) {
-        if (Validator.confirmLayout(handLayout.deepCopy(), curState.getActorState().handLayout.deepCopy())) {
-            curState.getActorState().handLayout = handLayout.deepCopy();
-            curState.movesDone.add(new LayoutConfirmationAction(curState.getActorNumber()));
+        if (Validator.confirmLayout(handLayout.deepCopy(), curState.getPlayerState().handLayout.deepCopy())) {
+            curState.getPlayerState().handLayout = handLayout.deepCopy();
+            curState.movesDone.add(new LayoutConfirmationAction(curState.getPlayerNumber(),handLayout));
             //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
     }
 
     /**
-     * Removes card from actor hand and adds to knock melds
+     * Removes card from player hand and adds to knock melds
      *
      * @param layOff to be executed
      * @param curState current game state
@@ -337,26 +337,26 @@ public class Executor {
     public static boolean layOff(Layoff layOff, State curState){
 
         if(layOff.meld==null){
-            curState.movesDone.add(new LayoffAction(curState.getActorNumber(),null));
+            curState.movesDone.add(new LayoffAction(curState.getPlayerNumber(),null,null));
             //TODO find better way do this
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
 
-        if(Validator.layOff(layOff,curState.getKnockerState().viewMelds(),curState.getActorState().viewHand())){
+        if(Validator.layOff(layOff,curState.getKnockerState().viewMelds(),curState.getPlayerState().viewHand())){
             Integer index = Finder.findMeldIndexIn(layOff.meld,curState.getKnockerState().viewMelds());
             assert index != null;
 
-            if(curState.getActorState().removeCard(layOff.card)){
+            if(curState.getPlayerState().removeCard(layOff.card)){
                 curState.getKnockerState().handLayout.addToMeld(index,layOff.card);
             }else {
                 System.out.println("Executor.layOff() ERROR ERROR ERROR");
                 Gdx.app.exit();
             }
-            curState.movesDone.add(new LayoffAction(curState.getActorNumber(),layOff.card));
+            curState.movesDone.add(new LayoffAction(curState.getPlayerNumber(),layOff.card,layOff.meld));
             //TODO find better way do this
             curState.getKnocker().update(curState.getKnockerState().viewHandLayout());
-            curState.getActor().update(curState.getActorState().viewHandLayout());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return false;
         }
         return false;

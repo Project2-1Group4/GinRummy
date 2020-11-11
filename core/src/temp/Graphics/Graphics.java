@@ -53,7 +53,7 @@ public class Graphics {
             for (Renderer renderer : renderers) {
                 renderer.render(batch, renderingStyle, curState);
             }
-            curState.getActor().render(batch, renderingStyle);
+            curState.getPlayer().render(batch, renderingStyle);
         }
         batch.end();
     }

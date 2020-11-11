@@ -6,8 +6,8 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 // IMMUTABLE
 public class LayoutConfirmationAction extends Action {
     public final HandLayout layout;
-    public LayoutConfirmationAction(int actorIndex, HandLayout handLayout) {
-        super(State.StepInTurn.LayoutConfirmation, actorIndex);
+    public LayoutConfirmationAction(int playerIndex, HandLayout handLayout) {
+        super(State.StepInTurn.LayoutConfirmation, playerIndex);
         assert handLayout.isValid();
         this.layout = handLayout;
     }

@@ -6,8 +6,8 @@ import temp.GameLogic.MyCard;
 // IMMUTABLE
 public class DiscardAction extends Action {
     public final MyCard card;
-    public DiscardAction(int actorIndex, MyCard card) {
-        super(State.StepInTurn.Discard, actorIndex);
+    public DiscardAction(int playerIndex, MyCard card) {
+        super(State.StepInTurn.Discard, playerIndex);
         this.card=card;
     }
 

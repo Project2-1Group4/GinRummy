@@ -1,18 +1,16 @@
-package temp.GameActors;
+package temp.GamePlayers;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.Graphics.Style;
 
 import java.util.List;
 
 /**
- * Can be moved to actor (maybe should because it's kinda useless)
+ * Can be moved to player (maybe should because it's kinda useless)
  */
-public interface ActorInterface {
+public interface PlayerInterface {
     /**
      * @return true if knock, false if continue, null if no decision
      */
