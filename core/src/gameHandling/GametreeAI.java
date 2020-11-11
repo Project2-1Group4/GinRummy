@@ -57,7 +57,7 @@ public class GametreeAI {
                 List<Node> nodesDiscard1 = monteCarloSim(false);
                 for(int j = 0; j< nodesDiscard1.size(); j++){
                     nodesPile.get(i).addChild(nodesDiscard1.get(i));
-                    // call createNodesAI for next layer in tree
+                    createNodesAI(nodesDiscard1.get(j));
                 }
             }
 
@@ -77,7 +77,7 @@ public class GametreeAI {
                     List<Node> nodesDiscard2 = monteCarloSim(false);
                     for(int j = 0; j< nodesDiscard2.size(); j++){
                         nodesDeck.get(j).addChild(nodesDiscard2.get(i));
-                        // call createNodesAI for next layer in tree
+                        createNodesAI(nodesDiscard2.get(j));
                     }
                 }
             }
@@ -103,7 +103,7 @@ public class GametreeAI {
                 discardPile.addCard(discard);
                 Node child = new Node(discardPile, hand, cardsUnknown, opponentHand);
                 parent.addChild(child);
-                // call createNodesOpponent for next layer in tree
+                createNodesOpponent(child, false);
             }
             else{
                 List<Card> deck = makeDeck(cardsUnknown.toList(), opponentHand.toList());
@@ -114,7 +114,7 @@ public class GametreeAI {
                     discardPile.addCard(discard);
                     Node child = new Node(discardPile, hand, cardsUnknown, opponentHand);
                     parent.addChild(child);
-                    // call createNodesOpponent for next layer in tree
+                    createNodesOpponent(child, false);
                 }
 
             }
