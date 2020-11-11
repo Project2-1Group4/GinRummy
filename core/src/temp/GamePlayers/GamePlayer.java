@@ -24,7 +24,7 @@ public abstract class GamePlayer implements PlayerInterface {
     protected PlayerRenderer renderer;
 
     public GamePlayer(){
-        renderer = new BasicPlayerRenderer();
+        this(new BasicPlayerRenderer());
     }
 
     public GamePlayer(PlayerRenderer renderer){
