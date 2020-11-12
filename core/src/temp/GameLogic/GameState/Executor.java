@@ -134,7 +134,7 @@ public class Executor {
      * @return true if there is no more time for the current step
      */
     public static boolean update(State curState, float deltaT) {
-        curState.curTime -= deltaT;
+        curState.curTime -= deltaT*GameRules.gameSpeed;
         return curState.curTime <= 0;
     }
 

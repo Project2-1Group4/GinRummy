@@ -8,7 +8,6 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class KeyboardPlayer extends GamePlayer {
         super(renderer);
     }
     public KeyboardPlayer() {
-        this(new BasicPlayerRenderer());
+        this(new PlayerRenderer());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package temp.GamePlayers;
 
-import cardlogic.SetOfCards;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
@@ -10,7 +9,6 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 import temp.Graphics.Style;
 
@@ -24,7 +22,7 @@ public abstract class GamePlayer implements PlayerInterface {
     protected PlayerRenderer renderer;
 
     public GamePlayer(){
-        this(new BasicPlayerRenderer());
+        this(new PlayerRenderer());
     }
 
     public GamePlayer(PlayerRenderer renderer){
@@ -83,7 +81,10 @@ public abstract class GamePlayer implements PlayerInterface {
 
     /* EXTRA */
     public void render(SpriteBatch batch, Style renderStyle) {
-        if(renderer!=null) renderer.render(batch,renderStyle,handLayout);
+        if(renderer!=null) {
+            renderer.init(renderStyle,handLayout);
+            renderer.render(batch,renderStyle,handLayout);
+        }
     }
 
     @Override

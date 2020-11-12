@@ -44,7 +44,7 @@ public class StateBuilder {
         playerStates = new ArrayList<>();
         discardPile = new Stack<>();
         secondsPerStep = new float[State.StepInTurn.values().length];
-        secondsPerStep[0] = GameRules.knockOrContinueTime;
+        secondsPerStep[0] = GameRules.KnockOrContinueTime;
         secondsPerStep[1] = GameRules.DeckOrDiscardPileTime;
         secondsPerStep[2] = GameRules.DiscardTime;
         secondsPerStep[3] = GameRules.LayoutConfirmationTime;

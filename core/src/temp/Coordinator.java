@@ -1,5 +1,6 @@
 package temp;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.ForcePlayer;
@@ -9,6 +10,7 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.Graphics;
 
 /**
@@ -18,6 +20,7 @@ public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
+    private InputProcessor processor;
 
     private boolean newStep = true;
 
@@ -27,7 +30,7 @@ public class Coordinator extends ScreenAdapter {
 
     @Override
     public void show() {
-        currentGameState = new StateBuilder().setNumberOfPlayers(2).build();
+        currentGameState = new StateBuilder().addPlayer(new MousePlayer()).build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
 

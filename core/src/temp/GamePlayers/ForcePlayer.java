@@ -8,7 +8,6 @@ import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameRules;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.BasicPlayerRenderer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 import temp.Graphics.Style;
 
@@ -33,7 +32,7 @@ public class ForcePlayer extends GamePlayer {
         this.renderer = player.renderer;
     }
     public ForcePlayer(GamePlayer player) {
-        this(player, new BasicPlayerRenderer());
+        this(player, new PlayerRenderer());
     }
 
     @Override
