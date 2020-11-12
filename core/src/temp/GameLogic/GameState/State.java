@@ -110,13 +110,15 @@ public class State {
         return turnInRound;
     }
 
-    //TODO haven't checked if this works
     public Stack<Action> viewActions(){
         return (Stack<Action>) movesDone.clone();
     }
 
     public Action viewLastAction(){
-        return movesDone.peek();
+        if(movesDone.size()!=0){
+            return movesDone.peek();
+        }
+        return null;
     }
 
     /* SETTERS. ONLY ACCESSIBLE BY PACKAGE (Executor mainly) */

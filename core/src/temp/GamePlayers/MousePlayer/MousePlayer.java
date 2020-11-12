@@ -21,7 +21,7 @@ public class MousePlayer extends GamePlayer {
     }
     @Override
     public Boolean knockOrContinue() {
-
+        Gdx.input.setInputProcessor(new MouseHandler());
         return null;
     }
 

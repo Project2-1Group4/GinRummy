@@ -144,6 +144,9 @@ public class Executor {
      * @param curState current game state
      */
     public static void nextStep(State curState) {
+
+        curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
+
         if (GameRules.print) System.out.println(curState.viewLastAction());
 
         for (int i = 0; i < curState.players.size(); i++) {
@@ -263,8 +266,6 @@ public class Executor {
                 knocked(curState.getPlayerNumber(), curState);
             }
             curState.movesDone.add(new KnockAction(curState.getPlayerNumber(),move,curState.getPlayer().viewHandLayout()));
-            //TODO find better way do this
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
@@ -287,8 +288,6 @@ public class Executor {
                 curState.movesDone.add(new PickAction(curState.getPlayerNumber(), false,curState.peekDiscardTop()));
                 curState.getPlayerState().handLayout.addUnusedCard(curState.pickDiscardTop());
             }
-            //TODO find better way do this
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
@@ -311,8 +310,6 @@ public class Executor {
                 Gdx.app.exit();
             }
             curState.movesDone.add(new DiscardAction(curState.getPlayerNumber(),card));
-            //TODO find better way do this
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
@@ -329,8 +326,6 @@ public class Executor {
         if (Validator.confirmLayout(handLayout.deepCopy(), curState.getPlayerState().handLayout.deepCopy())) {
             curState.getPlayerState().handLayout = handLayout.deepCopy();
             curState.movesDone.add(new LayoutConfirmationAction(curState.getPlayerNumber(),handLayout));
-            //TODO find better way do this
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
         return false;
@@ -346,8 +341,6 @@ public class Executor {
 
         if(layOff.meld==null){
             curState.movesDone.add(new LayoffAction(curState.getPlayerNumber(),null,null));
-            //TODO find better way do this
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return true;
         }
 
@@ -362,7 +355,6 @@ public class Executor {
                 Gdx.app.exit();
             }
             curState.movesDone.add(new LayoffAction(curState.getPlayerNumber(),layOff.card,layOff.meld));
-            //TODO find better way do this
             curState.getKnocker().update(curState.getKnockerState().viewHandLayout());
             curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
             return false;
