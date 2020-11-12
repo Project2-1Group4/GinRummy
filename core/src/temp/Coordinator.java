@@ -30,7 +30,7 @@ public class Coordinator extends ScreenAdapter {
 
     @Override
     public void show() {
-        currentGameState = new StateBuilder().addPlayer(new MousePlayer()).build();
+        currentGameState = new StateBuilder().addPlayer(new MousePlayer(graphics)).addPlayer(new MousePlayer(graphics)).build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
 

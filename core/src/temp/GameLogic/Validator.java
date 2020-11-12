@@ -108,7 +108,7 @@ public class Validator {
      * @param meld to be checked
      * @return true if valid meld, false if non-valid meld
      */
-    private static boolean validMeld(Meld meld) {
+    public static boolean validMeld(Meld meld) {
         Meld.MeldType type = meld.getType();
         // If set
         if (type == Meld.MeldType.Run) {

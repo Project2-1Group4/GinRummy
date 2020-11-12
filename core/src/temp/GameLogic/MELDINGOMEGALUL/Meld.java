@@ -1,6 +1,7 @@
 package temp.GameLogic.MELDINGOMEGALUL;
 
 import temp.GameLogic.MyCard;
+import temp.GameLogic.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,12 @@ public class Meld {
     }
 
     public boolean removeCard(MyCard card){
-        if(meld.remove(card)){
-            value-= card.ginValue();
-            return true;
+        for (int i = 0; i < meld.size(); i++) {
+            if(card.same(meld.get(i))){
+                value-= meld.get(i).ginValue();
+                meld.remove(i);
+                return true;
+            }
         }
         return false;
     }

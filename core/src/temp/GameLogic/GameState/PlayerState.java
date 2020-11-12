@@ -43,4 +43,8 @@ public class PlayerState {
     public HandLayout viewHandLayout() {
         return handLayout.deepCopy();
     }
+
+    public String toString(){
+        return handLayout.toString();
+    }
 }

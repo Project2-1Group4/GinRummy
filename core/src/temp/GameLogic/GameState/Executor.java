@@ -302,7 +302,6 @@ public class Executor {
      */
     public static boolean discardCard(MyCard card, State curState) {
         if (Validator.discardCard(card, curState.getPlayer().viewHand())) {
-
             if(curState.getPlayerState().removeCard(card)){
                 curState.addToDiscard(card);
             }else{

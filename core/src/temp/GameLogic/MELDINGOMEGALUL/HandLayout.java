@@ -66,20 +66,26 @@ public class HandLayout {
     }
 
     public boolean removeUnusedCard(MyCard card){
-        if(unusedCards.remove(card)) {
-            deadwood -= card.ginValue();
-            return true;
+        for (int i = 0; i < unusedCards.size(); i++) {
+
+            if(unusedCards.get(i).same(card)){
+                deadwood-= unusedCards.get(i).ginValue();
+                unusedCards.remove(i);
+                return true;
+            }
         }
         return false;
     }
 
     public boolean removeCard(MyCard card){
         if(!removeUnusedCard(card)){
+            System.out.println(setOfMelds.size());
             for (Meld meld : viewMelds()) {
                 if(meld.removeCard(card)){
                     return true;
                 }
             }
+            return false;
         }
         return true;
     }

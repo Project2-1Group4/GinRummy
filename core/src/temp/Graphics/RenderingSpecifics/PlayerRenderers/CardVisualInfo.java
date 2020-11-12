@@ -16,7 +16,7 @@ public class CardVisualInfo extends VisualInfo{
     public void render(SpriteBatch batch, Style style){
         Sprite s;
         if(card==null){
-            s = style.getBackground();
+            s = style.getCardBack();
         }else {
             s = style.getCardFace(card);
         }

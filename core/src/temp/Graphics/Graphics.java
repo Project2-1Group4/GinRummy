@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
 import temp.Graphics.RenderingSpecifics.*;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.MeldVisualInfo;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ public class Graphics {
     private SpriteBatch batch;
 
     private Style renderingStyle;
+    private DeckRenderer deckRenderer;
+    private DiscardRenderer discardRenderer;
     private List<Renderer> renderers;
 
     /**
@@ -32,10 +36,11 @@ public class Graphics {
         camera.setToOrtho(false);
 
         renderingStyle = new StyleBuilder().build();
+
+        deckRenderer = new DeckRenderer();
+        discardRenderer = new DiscardRenderer();
         renderers = new ArrayList<>();
         renderers.add(new BackgroundRenderer());
-        renderers.add(new DeckRenderer());
-        renderers.add(new DiscardRenderer());
         renderers.add(new ExtraRenderer());
     }
 
@@ -53,6 +58,8 @@ public class Graphics {
             for (Renderer renderer : renderers) {
                 renderer.render(batch, renderingStyle, curState);
             }
+            deckRenderer.render(batch,renderingStyle,curState);
+            discardRenderer.render(batch,renderingStyle,curState);
             curState.getPlayer().render(batch, renderingStyle);
         }
         batch.end();
@@ -73,6 +80,17 @@ public class Graphics {
                 x - w / 2,
                 y - h / 2
         };
+    }
+
+    public CardVisualInfo getCard(int x, int y){
+        if(deckRenderer.isOn(x,y)){
+            return deckRenderer.visualInfo;
+        }else{
+            if(discardRenderer.isOn(x,y)){
+                return discardRenderer.visualInfo;
+            }
+        }
+        return null;
     }
 
     public static float[] getDimensions(float widthToHeight, float percW, float percH) {

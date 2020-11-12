@@ -49,6 +49,10 @@ public abstract class GamePlayer implements PlayerInterface {
         return handLayout.viewMelds();
     }
 
+    public List<MyCard> viewUnusedHand(){
+        return handLayout.viewUnusedCards();
+    }
+
     /**
      * To allow all players to get this feature
      * Automatically creates best melds for given hand
