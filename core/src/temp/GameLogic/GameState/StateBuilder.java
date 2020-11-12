@@ -18,10 +18,10 @@ public class StateBuilder {
      * Statebuilder.build() returns normal 2 player game. No AI. From starting space
      */
     private List<MyCard> deck;
-    private Stack<MyCard> discardPile;
+    private final Stack<MyCard> discardPile;
     private int numberOfPlayers;
-    private List<GamePlayer> players;
-    private List<PlayerState> playerStates;
+    private final List<GamePlayer> players;
+    private final List<PlayerState> playerStates;
     private int playerTurn;
     private State.StepInTurn stepInTurn;
     private int[] scores;

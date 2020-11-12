@@ -18,7 +18,7 @@ import temp.Graphics.Style;
 //TODO REDO WHOLE GRAPHICS THING. FUCKED IT UP
 public class MousePlayer extends GamePlayer {
 
-    private Graphics gameGraphics;
+    private final Graphics gameGraphics;
     private VisualInfo hovered;
 
     public MousePlayer(Graphics graphics, PlayerRenderer renderer){

@@ -10,9 +10,7 @@ public class KnockAction extends Action {
     public KnockAction(int playerIndex, boolean knock, HandLayout knockLayout) {
         super(State.StepInTurn.KnockOrContinue, playerIndex);
         this.knock = knock;
-        if(knock){
-            assert knockLayout!=null;
-        }
+        assert !knock || knockLayout != null;
         this.knockLayout = knockLayout;
     }
 

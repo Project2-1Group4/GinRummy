@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ForcePlayer extends GamePlayer {
     private boolean onlyGin = false;
-    private GamePlayer player;
+    private final GamePlayer player;
 
     public ForcePlayer(GamePlayer player, PlayerRenderer renderer) {
         super(renderer);

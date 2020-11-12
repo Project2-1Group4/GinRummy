@@ -18,7 +18,7 @@ public class Finder {
      * @param handLayouts best hands found
      * @return index of the winning hand
      */
-    public static int findLowestDeadwoodIndex(List<HandLayout> handLayouts, int knockerDeadwood) {
+    public static Integer findLowestDeadwoodIndex(List<HandLayout> handLayouts, int knockerDeadwood) {
         int lowestDeadwood = knockerDeadwood;
         int lowestDeadwoodIndex = 0;
         for (int i = 0; i < handLayouts.size(); i++) {
@@ -26,6 +26,9 @@ public class Finder {
                 lowestDeadwood = handLayouts.get(i).getDeadwood();
                 lowestDeadwoodIndex = i;
             }
+        }
+        if(lowestDeadwood==0){
+            return null;
         }
         return lowestDeadwoodIndex;
     }

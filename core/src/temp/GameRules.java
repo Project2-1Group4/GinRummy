@@ -16,6 +16,7 @@ public class GameRules {
     public static float LayOffTime = 20f;
 
     public static boolean print = false;
+    public static boolean printEndOfRound = true;
 
     // Visuals
     public static float maxWidthPercentage = 0.8f;

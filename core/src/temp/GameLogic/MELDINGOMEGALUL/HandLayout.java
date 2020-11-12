@@ -79,7 +79,6 @@ public class HandLayout {
 
     public boolean removeCard(MyCard card){
         if(!removeUnusedCard(card)){
-            System.out.println(setOfMelds.size());
             for (Meld meld : viewMelds()) {
                 if(meld.removeCard(card)){
                     return true;
