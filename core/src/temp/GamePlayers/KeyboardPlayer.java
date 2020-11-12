@@ -51,26 +51,27 @@ public class KeyboardPlayer extends GamePlayer {
 
     @Override
     public MyCard discardCard() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            return viewHand().get(0);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            return viewHand().get(1);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            return viewHand().get(2);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            return viewHand().get(3);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            return viewHand().get(4);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            return viewHand().get(5);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            return viewHand().get(6);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
-            return viewHand().get(7);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            return viewHand().get(8);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            return viewHand().get(9);
+        List<MyCard> cards = viewUnusedHand();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && cards.size()>=1) {
+            return cards.get(0);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && cards.size()>=2) {
+            return cards.get(1);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3) && cards.size()>=3) {
+            return cards.get(2);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4) && cards.size()>=4) {
+            return cards.get(3);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5) && cards.size()>=5) {
+            return cards.get(4);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6) && cards.size()>=6) {
+            return cards.get(5);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7) && cards.size()>=7) {
+            return cards.get(6);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8) && cards.size()>=8) {
+            return cards.get(7);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9) && cards.size()>=9) {
+            return cards.get(8);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) && cards.size()>=10) {
+            return cards.get(9);
         }
         return null;
     }
