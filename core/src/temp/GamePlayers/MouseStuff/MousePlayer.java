@@ -1,7 +1,8 @@
-package temp.GamePlayers.MousePlayer;
+package temp.GamePlayers.MouseStuff;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
@@ -10,13 +11,15 @@ import temp.GamePlayers.GamePlayer;
 import temp.Graphics.Graphics;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.PlayerRenderers.VisualInfo;
 import temp.Graphics.Style;
 
 // NEEDS GRAPHICS TO WORK
+//TODO REDO WHOLE GRAPHICS THING. FUCKED IT UP
 public class MousePlayer extends GamePlayer {
 
     private Graphics gameGraphics;
-    private CardVisualInfo hovered;
+    private VisualInfo hovered;
 
     public MousePlayer(Graphics graphics, PlayerRenderer renderer){
         super(renderer);
@@ -28,18 +31,22 @@ public class MousePlayer extends GamePlayer {
     @Override
     public Boolean knockOrContinue() {
         if (hovered!=null && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            //TODO if on knock button return true
-            // else if on continue button return false
+            if(hovered instanceof KnockButton){
+                return true;
+            }
+            if(hovered instanceof ContinueButton){
+                return false;
+            }
         }
         return null;
     }
 
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        if (hovered!=null && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            if (hovered.card == null) {
+        if (hovered!=null && hovered instanceof CardVisualInfo && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            if (((CardVisualInfo)hovered).card == null) {
                 return true;
-            } else if (hovered.card.same(topOfDiscard)) {
+            } else if (((CardVisualInfo)hovered).card.same(topOfDiscard)) {
                 return false;
             }
         }
@@ -48,10 +55,10 @@ public class MousePlayer extends GamePlayer {
 
     @Override
     public MyCard discardCard() {
-        if(hovered!=null && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+        if(hovered!=null && hovered instanceof CardVisualInfo && ((CardVisualInfo)hovered).card  != null && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
             for (MyCard myCard : viewHand()) {
-                if(myCard.same(hovered.card)){
-                    return hovered.card;
+                if(myCard.same(((CardVisualInfo)hovered).card )){
+                    return ((CardVisualInfo)hovered).card ;
                 }
             }
         }
@@ -82,6 +89,29 @@ public class MousePlayer extends GamePlayer {
             hovered.height*=1.2f;
         }
         renderer.render(batch,renderStyle,handLayout);
-        //TODO render knock and continue buttons
+
+        if(kb!=null && kb.isOn(x,y)){
+            hovered = kb;
+            kb.hovered = true;
+        }
+        if(cb!=null && cb.isOn(x,y)){
+            hovered = cb;
+            cb.hovered = true;
+        }
+        renderKnockOrCont(batch,renderStyle);
+    }
+
+    private KnockButton kb;
+    private ContinueButton cb;
+    private void renderKnockOrCont(SpriteBatch batch, Style style){
+        if(kb==null){
+            kb = new KnockButton();
+        }
+        if(cb==null){
+            cb = new ContinueButton();
+        }
+        kb.render(batch,style);
+        cb.render(batch,style);
+
     }
 }

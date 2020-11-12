@@ -10,7 +10,7 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.MousePlayer.MousePlayer;
+import temp.GamePlayers.MouseStuff.MousePlayer;
 import temp.Graphics.Graphics;
 
 /**

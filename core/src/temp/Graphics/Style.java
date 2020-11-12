@@ -1,5 +1,6 @@
 package temp.Graphics;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import temp.GameLogic.MyCard;
@@ -42,6 +43,8 @@ public class Style {
         if (font == null) {
             return new BitmapFont();
         }
+        font.setColor(Color.BLACK);
+        font.getData().setScale(1);
         return font;
     }
 
@@ -55,5 +58,9 @@ public class Style {
             return unknownSprite;
         }
         return s;
+    }
+
+    public Sprite getUnknownSprite(){
+        return unknownSprite;
     }
 }
