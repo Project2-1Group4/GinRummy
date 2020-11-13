@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import temp.GameLogic.MyCard;
 
-/**
- * Builder class
- */
+// Builder class
 public class StyleBuilder {
     private Sprite background;
     private Sprite[][] cardFaces;

@@ -13,7 +13,7 @@ import java.util.Stack;
 public class Finder {
 
     /**
-     * Finds meldSet with lowest deadwood. If another player has the same deadwood as the knocker, knocker overpowers.
+     * Finds hand layout with lowest deadwood in the given list. If another player has the same deadwood as the knocker, knocker overpowers.
      *
      * @param handLayouts best hands found
      * @return index of the winning hand
@@ -49,7 +49,7 @@ public class Finder {
     }
 
     /**
-     * Finds set of melds that has the highest value and lowest deadwood.
+     * Finds set of melds that has the lowest deadwood and highest value (if tie).
      *
      * @param cards list of cards to be considered
      * @return list of melds that maximize players hand value
@@ -86,6 +86,28 @@ public class Finder {
     }
 
     /**
+     * INGORE, HELPER FOR findBestHandLayout(). Takes lowest deadwood then  highest value if there's a tie.
+     *
+     * @param handLayoutValues all values of set of melds considered
+     * @return best hand found
+     */
+    private static HandLayout findLowestDeadwoodLayout(List<HandLayout> handLayoutValues) {
+        int index = 0;
+        int maxVal = 0;
+        int lowestDead = Integer.MAX_VALUE;
+        for (int i = 0; i < handLayoutValues.size(); i++) {
+            if (handLayoutValues.get(i).getDeadwood() <= lowestDead) {
+                if (handLayoutValues.get(i).getValue() >= maxVal) {
+                    index = i;
+                    maxVal = handLayoutValues.get(i).getValue();
+                    lowestDead = handLayoutValues.get(i).getDeadwood();
+                }
+            }
+        }
+        return handLayoutValues.get(index);
+    }
+
+    /**
      * Returns the first found index that can be added to meld
      *
      * @param cards list of cards you want to pick from
@@ -102,7 +124,7 @@ public class Finder {
     }
 
     /**
-     * Only used for runs
+     * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for runs
      *
      * @param cards list of cards you want to pick from
      * @param meld you want to fit card in
@@ -129,7 +151,7 @@ public class Finder {
     }
 
     /**
-     * Only used for sets
+     * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for sets
      *
      * @param cards list of cards you want to pick from
      * @param meld you want to fit card in
@@ -164,28 +186,6 @@ public class Finder {
             }
         }
         return null;
-    }
-
-    /**
-     * Takes lowest deadwood then  highest value if there's a tie.
-     *
-     * @param handLayoutValues all values of set of melds considered
-     * @return best hand found
-     */
-    private static HandLayout findLowestDeadwoodLayout(List<HandLayout> handLayoutValues) {
-        int index = 0;
-        int maxVal = 0;
-        int lowestDead = Integer.MAX_VALUE;
-        for (int i = 0; i < handLayoutValues.size(); i++) {
-            if (handLayoutValues.get(i).getDeadwood() <= lowestDead) {
-                if (handLayoutValues.get(i).getValue() >= maxVal) {
-                    index = i;
-                    maxVal = handLayoutValues.get(i).getValue();
-                    lowestDead = handLayoutValues.get(i).getDeadwood();
-                }
-            }
-        }
-        return handLayoutValues.get(index);
     }
 
     /**

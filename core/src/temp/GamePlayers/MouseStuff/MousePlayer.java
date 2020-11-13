@@ -2,16 +2,17 @@ package temp.GamePlayers.MouseStuff;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
 import temp.Graphics.Graphics;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.VisualInfo;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.CardVisualInfo;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.ContinueButtonVisualInfo;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.KnockButtonVisualInfo;
+import temp.Graphics.RenderingSpecifics.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.VisualInfo;
 import temp.Graphics.Style;
 
 // NEEDS GRAPHICS TO WORK
@@ -20,20 +21,16 @@ public class MousePlayer extends GamePlayer {
     private final Graphics gameGraphics;
     private VisualInfo hovered;
 
-    public MousePlayer(Graphics graphics, PlayerRenderer renderer){
-        super(renderer);
-        this.gameGraphics = graphics;
-    }
     public MousePlayer(Graphics graphics){
-        this(graphics,new PlayerRenderer());
+        this.gameGraphics = graphics;
     }
     @Override
     public Boolean knockOrContinue() {
         if (hovered!=null && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            if(hovered instanceof KnockButton){
+            if(hovered instanceof KnockButtonVisualInfo){
                 return true;
             }
-            if(hovered instanceof ContinueButton){
+            if(hovered instanceof ContinueButtonVisualInfo){
                 return false;
             }
         }
@@ -75,19 +72,17 @@ public class MousePlayer extends GamePlayer {
     }
 
     @Override
-    public void render(SpriteBatch batch, Style renderStyle) {
-        renderer.init(renderStyle,handLayout);
+    public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
         int x = Gdx.input.getX();
         int y = Gdx.graphics.getHeight() - Gdx.input.getY();
         hovered = renderer.getCard(x,y);
         if(hovered==null){
-            hovered = gameGraphics.getCard(x,y);
+            hovered = gameGraphics.getHovered(x,y);
         }
         if(hovered!=null){
             hovered.width*=1.2f;
             hovered.height*=1.2f;
         }
-        renderer.render(batch,renderStyle,handLayout);
 
         if(kb!=null && kb.isOn(x,y)){
             hovered = kb;
@@ -100,14 +95,14 @@ public class MousePlayer extends GamePlayer {
         renderKnockOrCont(batch,renderStyle);
     }
 
-    private KnockButton kb;
-    private ContinueButton cb;
+    private KnockButtonVisualInfo kb;
+    private ContinueButtonVisualInfo cb;
     private void renderKnockOrCont(SpriteBatch batch, Style style){
         if(kb==null){
-            kb = new KnockButton();
+            kb = new KnockButtonVisualInfo();
         }
         if(cb==null){
-            cb = new ContinueButton();
+            cb = new ContinueButtonVisualInfo();
         }
         kb.render(batch,style);
         cb.render(batch,style);

@@ -8,7 +8,6 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
 
 import java.util.List;
 
@@ -19,13 +18,6 @@ import java.util.List;
  * 1,2,3,4,5,6,7,8,9,0 <- discard card of index-1, and 0 = 10
  */
 public class KeyboardPlayer extends GamePlayer {
-
-    public KeyboardPlayer(PlayerRenderer renderer) {
-        super(renderer);
-    }
-    public KeyboardPlayer() {
-        this(new PlayerRenderer());
-    }
 
     @Override
     public Boolean knockOrContinue() {

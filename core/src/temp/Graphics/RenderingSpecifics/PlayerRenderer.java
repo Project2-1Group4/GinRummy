@@ -1,11 +1,14 @@
-package temp.Graphics.RenderingSpecifics.PlayerRenderers;
+package temp.Graphics.RenderingSpecifics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.CardVisualInfo;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.MeldVisualInfo;
 import temp.Graphics.Style;
 
 import java.util.ArrayList;
@@ -18,8 +21,11 @@ public class PlayerRenderer{
     public List<CardVisualInfo> moved = new ArrayList<>();
     public List<MeldVisualInfo> melds = new ArrayList<>();
 
-    public void render(SpriteBatch batch, Style style, HandLayout handLayout){
+    public void render(SpriteBatch batch, Style style, GamePlayer player){
+        HandLayout handLayout = player.viewHandLayout();
+        init(style,handLayout);
         update();
+        player.render(batch,style,this);
 
         renderUnmoved(batch,style);
         renderMelds(batch,style);

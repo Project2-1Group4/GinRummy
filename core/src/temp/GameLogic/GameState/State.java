@@ -48,7 +48,22 @@ public class State {
 
     }
 
-    /* GETTERS */
+    // SETTERS
+    // Quality of life methods
+    protected MyCard pickDeckTop() {
+        return deck.remove(deck.size() - 1);
+    }
+
+    protected MyCard pickDiscardTop() {
+        return discardPile.pop();
+    }
+
+    protected void addToDiscard(MyCard card) {
+        discardPile.add(card);
+    }
+
+    // GETTERS
+    // Returns copies to avoid the changing of the inner state outside of package
     public int getPlayerNumber() {
         return playerTurn;
     }
@@ -121,20 +136,30 @@ public class State {
         return null;
     }
 
-    /* SETTERS. ONLY ACCESSIBLE BY PACKAGE (Executor mainly) */
-    protected MyCard pickDeckTop() {
-        return deck.remove(deck.size() - 1);
+    public String toString() {
+        return "Deck size: " + deck.size() +
+                "\nDiscard size: " + discardPile.size() +
+                "\nPlayers: " + numberOfPlayers;
+
     }
 
-    protected MyCard pickDiscardTop() {
-        return discardPile.pop();
+    public String deepToString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Deck: ").append(deck.size()).append(" cards\n").append(deck).append("\n");
+        sb.append("\nDiscard: ").append(discardPile.size()).append(" cards\n").append(discardPile).append("\n");
+        for (int i = 0; i < players.size(); i++) {
+            sb.append("\nPlayer ").append(i).append(": ")
+                    .append("\nReal state: ").append(playerStates.get(i))
+                    .append("\nInner state: ").append(players.get(i));
+        }
+        sb.append("\nMoves done:\n");
+        for (Action action : movesDone) {
+            sb.append(action).append(", ");
+        }
+        return sb.toString();
     }
 
-    protected void addToDiscard(MyCard card) {
-        discardPile.add(card);
-    }
-
-    /* EXTRA */
+    // EXTRA
     public enum StepInTurn {
         KnockOrContinue("Knock or not?", 0),
         Pick("Deck or Discard pile?", 1),
@@ -165,15 +190,6 @@ public class State {
             System.out.println("STEP ERROR??");
             return null;
         }
-
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Deck size: ").append(deck.size())
-                .append("\nDiscard size: ").append(discardPile.size())
-                .append("\nPlayers: ").append(numberOfPlayers).append(" ").append(players.size());
-        return sb.toString();
 
     }
 }

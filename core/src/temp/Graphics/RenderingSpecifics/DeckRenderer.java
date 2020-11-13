@@ -1,12 +1,11 @@
 package temp.Graphics.RenderingSpecifics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
 import temp.GameRules;
 import temp.Graphics.Graphics;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.CardVisualInfo;
 import temp.Graphics.Style;
 
 public class DeckRenderer implements Renderer {

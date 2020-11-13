@@ -9,7 +9,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.ArrayList;
@@ -19,15 +19,6 @@ public abstract class GamePlayer implements PlayerInterface {
 
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
-    protected PlayerRenderer renderer;
-
-    public GamePlayer(){
-        this(new PlayerRenderer());
-    }
-
-    public GamePlayer(PlayerRenderer renderer){
-        this.renderer = renderer;
-    }
 
     /* SETTERS */
     public void update(HandLayout realLayout){
@@ -84,11 +75,8 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     /* EXTRA */
-    public void render(SpriteBatch batch, Style renderStyle) {
-        if(renderer!=null) {
-            renderer.init(renderStyle,handLayout);
-            renderer.render(batch,renderStyle,handLayout);
-        }
+    public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
+        // In case you want to render extra
     }
 
     @Override
@@ -113,5 +101,12 @@ public abstract class GamePlayer implements PlayerInterface {
         }else if(action instanceof DiscardAction){
             otherPlayerDiscarded((DiscardAction)action);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "GamePlayer{" +
+                "handLayout=" + handLayout +
+                '}';
     }
 }

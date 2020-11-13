@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * shit fest of code. Recursion is a nightmare
+ * Recursion is a nightmare.
  */
 class MeldCreator {
 

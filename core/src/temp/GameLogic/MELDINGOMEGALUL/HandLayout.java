@@ -31,7 +31,16 @@ public class HandLayout {
         init(Finder.copy(hand));
     }
 
-    /* SETTERS */
+    // No real reason to use this imo
+    public HandLayout(List<MyCard> cards){
+        super();
+        for (MyCard card : cards) {
+            addUnusedCard(card);
+        }
+    }
+
+    // SETTERS
+    // Only way to change inner state of HandLayout
     private void init(int[][] hand){
         for (Meld meld : setOfMelds) {
             for (MyCard myCard : meld.viewMeld()) {
@@ -89,7 +98,8 @@ public class HandLayout {
         return true;
     }
 
-    /* GETTERS */
+    // GETTERS
+    // Returns copies to avoid the changing of the inner state using mutable objects
     public int[][] getHand(){
         return Finder.copy(hand);
     }
@@ -149,7 +159,6 @@ public class HandLayout {
         return true;
     }
 
-    /* EXTRA */
     public HandLayout deepCopy(){
         HandLayout m = new HandLayout();
         m.setOfMelds = Meld.deepCopy(setOfMelds);

@@ -7,6 +7,7 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.MouseStuff.MousePlayer;
 import temp.Graphics.Graphics;
+import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.ArrayList;
@@ -75,10 +76,9 @@ public class CombinePlayer extends GamePlayer{
     }
 
     @Override
-    public void render(SpriteBatch batch, Style renderStyle) {
-        super.render(batch, renderStyle);
+    public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
         for (GamePlayer handler : handlers) {
-            handler.render(batch,renderStyle);
+            handler.render(batch,renderStyle, renderer);
         }
     }
 

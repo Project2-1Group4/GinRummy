@@ -30,7 +30,7 @@ import java.util.Random;
  * except for update(), getWinner() and startNewRound()
  */
 public class Executor {
-    private static Integer seed =11;
+    private static Integer seed =null;
 
     /* GAME/ROUND INITIALISATION */
     /**

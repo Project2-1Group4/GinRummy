@@ -8,7 +8,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameRules;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.List;
@@ -24,15 +24,10 @@ public class ForcePlayer extends GamePlayer {
     private boolean onlyGin = false;
     private final GamePlayer player;
 
-    public ForcePlayer(GamePlayer player, PlayerRenderer renderer) {
-        super(renderer);
+    public ForcePlayer(GamePlayer player) {
         this.player = player;
         this.handLayout = player.handLayout;
         this.allCards = player.allCards;
-        this.renderer = player.renderer;
-    }
-    public ForcePlayer(GamePlayer player) {
-        this(player, new PlayerRenderer());
     }
 
     @Override
@@ -46,8 +41,8 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
-    public void render(SpriteBatch batch, Style renderingStyle) {
-        render(batch, renderingStyle);
+    public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
+        render(batch, renderingStyle,renderer);
     }
 
     @Override

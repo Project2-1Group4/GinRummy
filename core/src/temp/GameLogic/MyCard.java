@@ -3,9 +3,7 @@ package temp.GameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Simple card class
- */
+// Simple card class. IMMUTABLE
 public class MyCard {
     public final Suit suit;
     public final Rank rank;
@@ -20,7 +18,7 @@ public class MyCard {
         this.rank = Rank.getRank(j);
     }
 
-    /* GETTERS */
+    // GETTERS
     public boolean same(MyCard card) {
         return card.suit == this.suit && card.rank == this.rank;
     }
@@ -29,7 +27,11 @@ public class MyCard {
         return rank.ginValue;
     }
 
-    /* EXTRA */
+    public String toString() {
+        return rank.name() + " Of " + suit.name();
+    }
+
+    // EXTRA
     public enum Suit {
         Clubs("clubs", 0),
         Spades("spades", 1),
@@ -75,10 +77,6 @@ public class MyCard {
         public static Rank getRank(int i) {
             return values()[i];
         }
-    }
-
-    public String toString() {
-        return rank.name() + " Of " + suit.name();
     }
 
     public static String toString(List<MyCard> cards) {

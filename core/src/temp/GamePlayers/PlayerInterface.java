@@ -2,7 +2,6 @@ package temp.GamePlayers;
 
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
-import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -11,9 +10,7 @@ import temp.GameLogic.MyCard;
 
 import java.util.List;
 
-/**
- * Can be moved to player (maybe should because it's kinda useless)
- */
+// Can be moved to GamePlayer, but it's nice to see the main methods a player needs to implement.
 public interface PlayerInterface {
     /**
      * @return true if knock, false if continue, null if no decision
@@ -49,11 +46,23 @@ public interface PlayerInterface {
     void newRound();
 
     /**
-     * @param action feeds in every action done by other players
+     * Feeds in every action done by other players to every other player with all specifics
+     *
+     * @param action action executed
      */
     void otherPlayerActed(Action action);
 
+    /**
+     * Feeds in the discardAction executed (including card and who did it)
+     *
+     * @param discardAction action executed
+     */
     void otherPlayerDiscarded(DiscardAction discardAction);
 
+    /**
+     * Feeds in pickAction executed (including where, which card and who did it)
+     *
+     * @param pickAction action executed
+     */
     void otherPlayerPicked(PickAction pickAction);
 }

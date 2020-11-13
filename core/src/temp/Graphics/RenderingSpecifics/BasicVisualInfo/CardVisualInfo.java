@@ -1,11 +1,11 @@
-package temp.Graphics.RenderingSpecifics.PlayerRenderers;
+package temp.Graphics.RenderingSpecifics.BasicVisualInfo;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.MyCard;
 import temp.Graphics.Style;
 
-public class CardVisualInfo extends VisualInfo{
+public class CardVisualInfo extends VisualInfo {
 
     public final MyCard card;
 
@@ -33,6 +33,6 @@ public class CardVisualInfo extends VisualInfo{
     }
 
     public String toString(){
-        return card + " at " + pos + " with width " + width + " and height " + height;
+        return card +" "+baseString();
     }
 }

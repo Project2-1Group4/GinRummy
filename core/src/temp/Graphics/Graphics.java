@@ -6,18 +6,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
-import temp.GameRules;
 import temp.Graphics.RenderingSpecifics.*;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.MeldVisualInfo;
-import temp.Graphics.RenderingSpecifics.PlayerRenderers.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.PlayerRenderer;
+import temp.Graphics.RenderingSpecifics.BasicVisualInfo.VisualInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Coordinates the rendering
- */
+// Coordinates all renderers
 public class Graphics {
 
     private OrthographicCamera camera;
@@ -26,11 +24,11 @@ public class Graphics {
     private Style renderingStyle;
     private DeckRenderer deckRenderer;
     private DiscardRenderer discardRenderer;
+    private Map<Integer, PlayerRenderer> playerRenderers;
     private List<Renderer> renderers;
 
-    /**
-     * To add more graphical information, create new renderer
-     */
+    // To add more graphical information, create new renderer
+    // Or if player specific, override GamePlayer.render()
     public Graphics() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -43,12 +41,13 @@ public class Graphics {
         renderers = new ArrayList<>();
         renderers.add(new BackgroundRenderer());
         renderers.add(new ExtraRenderer());
+        playerRenderers = new HashMap<>();
     }
 
     /**
-     * No need to modify this because all "real" rendering is done in a Renderer subclass
+     * No need to modify this because all "real" rendering is done in other classes
      *
-     * @param curState
+     * @param curState current game state
      */
     public void render(State curState) {
         Gdx.gl.glClearColor(0, 0, 0, 0f);
@@ -61,7 +60,12 @@ public class Graphics {
             }
             deckRenderer.render(batch,renderingStyle,curState);
             discardRenderer.render(batch,renderingStyle,curState);
-            curState.getPlayer().render(batch, renderingStyle);
+            PlayerRenderer pRenderer = playerRenderers.get(curState.getPlayerNumber());
+            if(pRenderer==null){
+                pRenderer = new PlayerRenderer();
+                playerRenderers.put(curState.getPlayerNumber(),pRenderer);
+            }
+            pRenderer.render(batch,renderingStyle,curState.getPlayer());
         }
         batch.end();
     }
@@ -74,16 +78,14 @@ public class Graphics {
         camera.update();
     }
 
-    public static float[] centerSpriteOn(Sprite sprite, float x, float y) {
-        float w = sprite.getWidth();
-        float h = sprite.getHeight();
-        return new float[]{
-                x - w / 2,
-                y - h / 2
-        };
-    }
-
-    public CardVisualInfo getCard(int x, int y){
+    /**
+     * Returns what is at the x,y coords on screen (Only takes deck,discard and player cards into account)
+     *
+     * @param x pos on screen
+     * @param y pos on screen
+     * @return thing that is being hovered, if nothing then null
+     */
+    public VisualInfo getHovered(int x, int y){
         if(deckRenderer.isOn(x,y)){
             return deckRenderer.visualInfo;
         }else{
@@ -94,6 +96,7 @@ public class Graphics {
         return null;
     }
 
+    // NEED TO BE MOVED MAYBE
     public static float[] getDimensions(float widthToHeight, float percW, float percH) {
         float[] max = new float[]{
                 Gdx.graphics.getWidth() * percW,
@@ -105,5 +108,14 @@ public class Graphics {
             max[0] = max[1] * widthToHeight;
         }
         return max;
+    }
+
+    public static float[] centerSpriteOn(Sprite sprite, float x, float y) {
+        float w = sprite.getWidth();
+        float h = sprite.getHeight();
+        return new float[]{
+                x - w / 2,
+                y - h / 2
+        };
     }
 }

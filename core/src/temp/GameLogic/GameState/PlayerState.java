@@ -18,7 +18,8 @@ public class PlayerState {
         handLayout = new HandLayout();
     }
 
-    /* SETTERS */
+    // SETTERS
+    // Quality of life methods
     protected boolean removeUnusedCard(MyCard card){
         return handLayout.removeUnusedCard(card);
     }
@@ -27,7 +28,8 @@ public class PlayerState {
         return handLayout.removeCard(card);
     }
 
-    /* GETTERS */ // Only viewing, no changing of the real internal state of player without the use of package
+    // GETTERS
+    // Returns copies to avoid the changing of the inner state outside of package
     public List<MyCard> viewHand() {
         return handLayout.viewAllCards();
     }

@@ -5,9 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import temp.GameLogic.MyCard;
 
-/**
- * Where the main rendering information is stored
- */
+// Main rendering information stored here
 public class Style {
     private Sprite background;
     private Sprite[][] cardFaces;

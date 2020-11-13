@@ -1,6 +1,5 @@
-package temp.Graphics.RenderingSpecifics.PlayerRenderers;
+package temp.Graphics.RenderingSpecifics.BasicVisualInfo;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
@@ -9,7 +8,7 @@ import temp.Graphics.Style;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeldVisualInfo extends VisualInfo{
+public class MeldVisualInfo extends VisualInfo {
 
     public final Meld meld;
     public List<CardVisualInfo> cards;
@@ -43,5 +42,12 @@ public class MeldVisualInfo extends VisualInfo{
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "MeldVisualInfo{" +
+                "cards=" + cards +
+                '}';
     }
 }

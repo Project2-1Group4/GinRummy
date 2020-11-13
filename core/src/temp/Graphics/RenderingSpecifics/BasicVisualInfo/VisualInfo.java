@@ -1,4 +1,4 @@
-package temp.Graphics.RenderingSpecifics.PlayerRenderers;
+package temp.Graphics.RenderingSpecifics.BasicVisualInfo;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -16,5 +16,9 @@ public abstract class VisualInfo {
                 pos.x-width/2,
                 pos.y-height/2
         };
+    }
+
+    protected String baseString(){
+        return "pos "+pos+" size ("+width+","+height+")";
     }
 }

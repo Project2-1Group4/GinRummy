@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-/**
- * Builder class
- */
+// Builder class
 public class StateBuilder {
     /**
-     * Statebuilder.build() returns normal 2 player game. No AI. From starting space
+     * new Statebuilder().build() returns normal 2 player game. No AI. From starting space
      */
     private List<MyCard> deck;
     private final Stack<MyCard> discardPile;
@@ -126,6 +124,7 @@ public class StateBuilder {
         this.actions = actions;
         return this;
     }
+
     public State build() {
         if(numberOfPlayers==0){
             numberOfPlayers = 2;

@@ -7,9 +7,7 @@ import temp.GameRules;
 
 import java.util.List;
 
-/**
- * Checks if move is valid/can be executed
- */
+// Checks if a move is valid
 public class Validator {
 
     /**

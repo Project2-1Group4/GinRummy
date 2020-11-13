@@ -74,7 +74,7 @@ public class Coordinator extends ScreenAdapter {
         newStep = false;
     }
 
-    /* GAME TURNS */
+    // GAME TURNS
     /**
      *  Handles the main turn logic
      *
