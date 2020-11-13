@@ -91,7 +91,7 @@ public class State {
         if (discardPile.size() == 0) {
             return null;
         }
-        return discardPile.peek().clone();
+        return discardPile.peek();
     }
 
     public float getCurTime() {

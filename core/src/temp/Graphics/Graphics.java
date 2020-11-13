@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
+import temp.GameRules;
 import temp.Graphics.RenderingSpecifics.*;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.MeldVisualInfo;

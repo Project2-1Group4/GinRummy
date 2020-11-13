@@ -7,7 +7,6 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GameLogic.Validator;
-import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -56,6 +55,19 @@ public class Executor {
                     }
                     Gdx.app.exit();
                 }
+            }
+            if(GameRules.printEndOfRound){
+                Integer winner = getWinner(curState);
+                if(winner!=null) {
+                    System.out.println("Player " + winner + " won round "+curState.round+" with\n" + curState.getKnockerState());
+                }else{
+                    System.out.println("No one won round "+curState.round);
+                }
+                System.out.println("\nCurrent scores:");
+                for (int i = 0; i < curState.scores.length; i++) {
+                    System.out.println("Player "+i+": "+curState.scores[i]);
+                }
+                System.out.println();
             }
             newState = new StateBuilder()
                     .useCustomDeck(curState.initDeck)
@@ -215,14 +227,17 @@ public class Executor {
      * @param curState current game state
      */
     public static void assignPoints(State curState) {
-        int winner = getWinner(curState);
+        Integer winner = getWinner(curState);
+        if(winner==null){
+            return;
+        }
         List<HandLayout> handLayouts = new ArrayList<>();
         for (PlayerState player : curState.playerStates) {
             handLayouts.add(player.viewHandLayout());
         }
         int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(winner).viewHandLayout().getDeadwood());
 
-        if (winner == curState.knocker) {
+        if (winner.equals(curState.knocker)) {
             if(curState.getKnocker().viewHandLayout().getDeadwood() == 0){
                 if(GameRules.print) System.out.println("Gin");
                 pointsWon += GameRules.ginBonus;
@@ -243,10 +258,13 @@ public class Executor {
      * @param curState current game state
      * @return index of winner
      */
-    private static int getWinner(State curState) {
+    private static Integer getWinner(State curState) {
         List<HandLayout> handLayouts = new ArrayList<>();
         for (PlayerState player : curState.playerStates) {
             handLayouts.add(player.viewHandLayout());
+        }
+        if(curState.knocker==null){
+            return null;
         }
         return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood());
     }

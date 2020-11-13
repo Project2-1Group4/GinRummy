@@ -3,6 +3,7 @@ package temp;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import temp.GameLogic.GameState.StateBuilder;
+import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameState.Executor;
@@ -10,12 +11,14 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.KeyboardPlayer;
 import temp.GamePlayers.MouseStuff.MousePlayer;
 import temp.Graphics.Graphics;
 
 /**
  * Handles coordination between players||validator||executor||graphics
  */
+//TODO REDO WHOLE GRAPHICS <-> PLAYER INTERACTION
 public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
@@ -30,7 +33,10 @@ public class Coordinator extends ScreenAdapter {
 
     @Override
     public void show() {
-        currentGameState = new StateBuilder().addPlayer(new MousePlayer(graphics)).addPlayer(new MousePlayer(graphics)).build();
+        currentGameState = new StateBuilder()
+                .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
+                .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
+                .build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
 

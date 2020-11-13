@@ -15,7 +15,6 @@ import temp.Graphics.RenderingSpecifics.PlayerRenderers.VisualInfo;
 import temp.Graphics.Style;
 
 // NEEDS GRAPHICS TO WORK
-//TODO REDO WHOLE GRAPHICS THING. FUCKED IT UP
 public class MousePlayer extends GamePlayer {
 
     private final Graphics gameGraphics;

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
+import temp.GameRules;
 import temp.Graphics.Graphics;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
 import temp.Graphics.Style;
@@ -28,7 +29,7 @@ public class DeckRenderer implements Renderer {
 
     private void setInfo(Style style){
         visualInfo = new CardVisualInfo(null);
-        float[] size = Graphics.getDimensions(style.getWidthToHeightCard(), maxPercOfScreen, maxPercOfScreen);
+        float[] size = Graphics.getDimensions(style.getWidthToHeightCard(), GameRules.cardMaxWidthPercentage, GameRules.cardMaxHeightPercentage);
         visualInfo.width = size[0];
         visualInfo.height = size[1];
         visualInfo.pos.set( Gdx.graphics.getWidth() * percAwayFromLeft, Gdx.graphics.getHeight() * percAwayFromBottom);

@@ -1,9 +1,7 @@
 package temp.Graphics.RenderingSpecifics.PlayerRenderers;
 
-import cardlogic.Card;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
@@ -54,7 +52,6 @@ public class PlayerRenderer{
 
     }
 
-    //TODO normalize p
     private void initMelds(List<Meld> cardMelds, float[] dimensions){
         float[] p = new float[]{
                 Gdx.graphics.getWidth() - (1.5f*(dimensions[0] * melds.size())),
@@ -72,7 +69,6 @@ public class PlayerRenderer{
         }
     }
 
-    //TODO normalize p
     private void initUnmoved(List<MyCard> cards, float[] dimensions){
         float[] p = new float[]{
                 Gdx.graphics.getWidth()*0.5f-((dimensions[0]*unmoved.size())/2)+0.5f*dimensions[0],
@@ -116,8 +112,8 @@ public class PlayerRenderer{
     }
 
     private float[] getDimensions(float widthToHeight) {
-        float maxW = (Gdx.graphics.getWidth() * GameRules.maxWidthPercentage) / 11;
-        float maxH = Gdx.graphics.getHeight() * GameRules.maxHeightPercentage;
+        float maxW = (Gdx.graphics.getWidth()/(float)11) * GameRules.cardMaxWidthPercentage;
+        float maxH = Gdx.graphics.getHeight() * GameRules.cardMaxHeightPercentage;
         if (maxH * widthToHeight > maxW) {
             maxH = maxW / widthToHeight;
         } else {

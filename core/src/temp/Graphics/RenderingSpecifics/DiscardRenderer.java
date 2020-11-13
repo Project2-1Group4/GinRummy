@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
+import temp.GameRules;
 import temp.Graphics.Graphics;
 import temp.Graphics.RenderingSpecifics.PlayerRenderers.CardVisualInfo;
 import temp.Graphics.Style;
@@ -14,7 +15,6 @@ public class DiscardRenderer implements Renderer {
     public CardVisualInfo visualInfo;
     private float percAwayFromLeft = 0.5f;
     private float percAwayFromBottom = 0.5f;
-    private float maxPercOfScreen = 0.2f;
 
     @Override
     public void render(SpriteBatch batch, Style style, State curState) {
@@ -29,7 +29,7 @@ public class DiscardRenderer implements Renderer {
 
     private void setInfo(Style style, MyCard topOfDiscard){
         visualInfo = new CardVisualInfo(topOfDiscard);
-        float[] size = Graphics.getDimensions(style.getWidthToHeightCard(), maxPercOfScreen, maxPercOfScreen);
+        float[] size = Graphics.getDimensions(style.getWidthToHeightCard(), GameRules.cardMaxWidthPercentage, GameRules.cardMaxHeightPercentage);
         visualInfo.width = size[0];
         visualInfo.height = size[1];
         visualInfo.pos.set(Gdx.graphics.getWidth() * percAwayFromLeft, Gdx.graphics.getHeight() * percAwayFromBottom);

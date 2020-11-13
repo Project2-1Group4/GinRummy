@@ -77,10 +77,6 @@ public class MyCard {
         }
     }
 
-    public MyCard clone(){
-        return new MyCard(suit,rank);
-    }
-
     public String toString() {
         return rank.name() + " Of " + suit.name();
     }
