@@ -1,6 +1,5 @@
 package temp;
 
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
@@ -11,11 +10,20 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.KeyboardPlayer;
-import temp.GamePlayers.MouseStuff.MousePlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics
+/*
+Things you could need:
+-Coordinator.show()
+-GameRules variables
+-GameActions classes
+-Finder methods
+-HandLayout and Meld classes
+-Add AI to GamePlayers package and extend GamePlayer (create extra package if more than 1 file)
+-Override GamePlayer.render() method if you need to render anything extra
+(Might not be everything)
+ */
 public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
