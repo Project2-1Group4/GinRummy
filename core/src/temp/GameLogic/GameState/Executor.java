@@ -30,7 +30,6 @@ import java.util.Random;
  * except for update(), getWinner() and startNewRound()
  */
 public class Executor {
-    private static Integer seed =null;
 
     /* GAME/ROUND INITIALISATION */
     /**
@@ -92,16 +91,9 @@ public class Executor {
      */
     public static void shuffleDeck(int shuffles, State curState) {
         if (GameRules.print) System.out.println("Deck shuffled");
-
-        Random rd;
-        if(seed!=null){
-            rd = new Random(seed);
-        }else{
-            rd = new Random();
-        }
         for (int i = 0; i < shuffles; i++) {
-            MyCard card = curState.deck.remove(rd.nextInt(curState.deck.size()));
-            curState.deck.add(rd.nextInt(curState.deck.size()), card);
+            MyCard card = curState.deck.remove(curState.seed.nextInt(curState.deck.size()));
+            curState.deck.add(curState.seed.nextInt(curState.deck.size()), card);
         }
 
     }

@@ -6,12 +6,14 @@ import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 /**
  * Saves all game information. Needs to be simplify to make saving/loading easy
  */
 public class State {
+    protected Random seed;
     protected List<MyCard> initDeck;
     protected List<MyCard> deck;
     protected Stack<MyCard> discardPile;
@@ -28,8 +30,13 @@ public class State {
     protected int turnInRound;
     protected Stack<Action> movesDone;
 
-    protected State(List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
+    protected State(Integer seed,List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
+        if(seed==null){
+            this.seed = new Random();
+        }else {
+            this.seed = new Random(seed);
+        }
         this.initDeck = new ArrayList<>(deck);
         this.deck = deck;
         this.discardPile = discardPile;

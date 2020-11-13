@@ -15,6 +15,7 @@ public class StateBuilder {
     /**
      * new Statebuilder().build() returns normal 2 player game. No AI. From starting space
      */
+    private Integer seed;
     private List<MyCard> deck;
     private final Stack<MyCard> discardPile;
     private int numberOfPlayers;
@@ -37,6 +38,7 @@ public class StateBuilder {
         turnInRound = 0;
         stepInTurn = State.StepInTurn.Pick;
         knocker = null;
+        seed = null;
         actions = new Stack<>();
         players = new ArrayList<>();
         playerStates = new ArrayList<>();
@@ -47,6 +49,11 @@ public class StateBuilder {
         secondsPerStep[2] = GameRules.DiscardTime;
         secondsPerStep[3] = GameRules.LayoutConfirmationTime;
         secondsPerStep[4] = GameRules.LayOffTime;
+    }
+
+    public StateBuilder setSeed(Integer seed){
+        this.seed = seed;
+        return this;
     }
 
     public StateBuilder useCustomDeck(List<MyCard> deck) {
@@ -150,6 +157,6 @@ public class StateBuilder {
         if(scores==null){
             scores = new int[numberOfPlayers];
         }
-        return new State(deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
+        return new State(seed,deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
     }
 }

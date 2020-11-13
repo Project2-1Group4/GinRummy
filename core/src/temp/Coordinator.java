@@ -15,15 +15,11 @@ import temp.GamePlayers.KeyboardPlayer;
 import temp.GamePlayers.MouseStuff.MousePlayer;
 import temp.Graphics.Graphics;
 
-/**
- * Handles coordination between players||validator||executor||graphics
- */
-//TODO REDO WHOLE GRAPHICS <-> PLAYER INTERACTION
+// Handles coordination between players||validator||executor||graphics
 public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
-    private InputProcessor processor;
 
     private boolean newStep = true;
 
@@ -31,9 +27,13 @@ public class Coordinator extends ScreenAdapter {
         graphics = new Graphics();
     }
 
+    // INITIATE GAME HERE
+    // SET THE START OF THE GAME HOWEVER YOU WANT TO
+    // Nb of players, Specific players, Starting deck, Shuffle seed, etc...
     @Override
     public void show() {
         currentGameState = new StateBuilder()
+                .setSeed(11)
                 .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
                 .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
                 .build();
