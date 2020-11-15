@@ -158,46 +158,85 @@ public class GametreeAI {
         cardsUnknown = parent.unknownCards;
         hand = parent.hand;
         opponentHand = parent.opponentHand;
+
         if(pileOrDeck){
             Card chosen = discardPile.getCard((discardPile.size()-1));
             // card must be in opponents hand
-            chosen.setProb(1);
-            cardsUnknown.addCard(chosen);
-            discardPile.discardCard(chosen);
+
             // look through known cards to see how many usefull one (melts) are left in unknown setofcards
             lookThroughKnownCards(chosen);
             // update prob of unknown cards
-            for(int j = 0; j<cardsUnknown.size(); j++){
+            double probSpecial = 0 ;
+            for(int j = 0; j<cardsUnknown.size(); j++) {
+                double setProb = 0;
+                double runProb = 0;
                 // increase prob for cards that form set with chosen card
-                if(cardsUnknown.getCard(j).getValue() == chosen.getValue()){
+                if (cardsUnknown.getCard(j).getValue() == chosen.getValue()) {
                     //BAYES RULEE!! change this!!
-                    cardsUnknown.getCard(j).setProb(1000);
+                    setProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownSet);
+                    cardsUnknown.getCard(j).setProb(setProb);
+                    probSpecial += setProb;
                 }
                 // increase prob for cards that form run with chosen card
-                else if(cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1){
+                else if (cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1) {
                     // BAYES RULEE!! change this!
-                    cardsUnknown.getCard(j).setProb(1000);
-                }
-                // update prob of cards that don't form melts with chosen card
-                else{
-                    cardsUnknown.getCard(j).setProb(10000);
+                    runProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownRun);
+                    cardsUnknown.getCard(j).setProb(runProb);
+                    probSpecial += runProb;
                 }
             }
-        }
+            // calculate the probability of the remaining cards
+            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+            double leftProb = 1-probSpecial;
+            double unknownProb;
+            double newUnknownProb;
+                // update prob of cards that don't form melts with chosen card
+            for(int j = 0; j<cardsUnknown.size(); j++) {
+                if (cardsUnknown.getCard(j).getValue() != chosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1)) {
+                    unknownProb = leftProb/size;
+                    newUnknownProb = cardsUnknown.getCard(j).getProb()- unknownProb;
+                    cardsUnknown.getCard(j).setProb(newUnknownProb);
+                }
+            }
+            chosen.setProb(1);
+            cardsUnknown.addCard(chosen);
+            discardPile.discardCard(chosen);
+            }
         // if opponent picks card from deck and therefore doesn't use card from pile
         else{
+
             Card notChosen = discardPile.getCard(discardPile.size()-1);
+            lookThroughKnownCards(notChosen);
+            double probSpecial = 0 ;
             for(int j = 0; j< cardsUnknown.size(); j++){
+                double setProb = 0;
+                double runProb = 0;
                 // decrease prob of cards that form set with not chosen card
                 if(cardsUnknown.getCard(j).getValue() == notChosen.getValue()){
                     // Bayes rule
-                    cardsUnknown.getCard(j).setProb(0);
+                    setProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownSet);
+                    cardsUnknown.getCard(j).setProb(setProb);
+                    probSpecial += setProb;
                 }
                 // decrease prob of cards that form run with chosen card
                 if(cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1){
                     // Bayes rule
-                    cardsUnknown.getCard(j).setProb(0);
+                    runProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownRun);
+                    cardsUnknown.getCard(j).setProb(runProb);
+                    probSpecial += runProb;
                 }
+            }
+            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+            double leftProb = 1-probSpecial;
+            double unknownProb;
+            double newUnknownProb;
+            for(int j = 0; j<cardsUnknown.size(); j++) {
+                if (cardsUnknown.getCard(j).getValue() != notChosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1)) {
+                    unknownProb = leftProb/size;
+                    newUnknownProb = cardsUnknown.getCard(j).getProb() + unknownProb;
+                    cardsUnknown.getCard(j).setProb(newUnknownProb);
+                }
+
             }
         }
     }
@@ -210,16 +249,37 @@ public class GametreeAI {
         Card discard = chooseCardToDiscard(parent.opponentHand.toList());
         discardPile.addCard(discard);
         opponentHand.discardCard(discard);
+        double probSpecial = 0 ;
+        lookThroughKnownCards(discard);
         // OPPONENT DISCARDS CARD
         for(int j = 0; j<cardsUnknown.size(); j++){
+            double setProb = 0;
+            double runProb = 0;
             // decrease prob of cards that form set with discarded card
             if(cardsUnknown.getCard(j).getValue() == discard.getValue()){
-                cardsUnknown.getCard(j).setProb(0);
+                setProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownSet);
+                cardsUnknown.getCard(j).setProb(setProb);
+                probSpecial += setProb;;
             }
             // decrease prob of cards that form run with discarded card
             if(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1){
-                cardsUnknown.getCard(j).setProb(0);
+                runProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownRun);
+                cardsUnknown.getCard(j).setProb(runProb);
+                probSpecial += runProb;
             }
+
+        }
+        int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+        double leftProb = 1-probSpecial;
+        double unknownProb;
+        double newUnknownProb;
+        for(int j = 0; j<cardsUnknown.size(); j++) {
+            if (cardsUnknown.getCard(j).getValue() != discard.getValue() && !(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1)) {
+                unknownProb = leftProb/size;
+                newUnknownProb = cardsUnknown.getCard(j).getProb() + unknownProb;
+                cardsUnknown.getCard(j).setProb(newUnknownProb);
+            }
+
         }
     }
 
@@ -251,7 +311,7 @@ public class GametreeAI {
     // method that looks in known cards (hand + discardpile) for usefull cards
     public void lookThroughKnownCards(Card chosen){
         // 4 suits
-        leftInUnknownSet = 4;
+        leftInUnknownSet = 3;
 
         // if chosen card is Ace or King you only have 1 'neighbour' for run
         if(chosen.getValue() == 1 || chosen.getValue() == 13){
@@ -385,5 +445,8 @@ public class GametreeAI {
     public void alphabetaPruning(int alpha, int beta, boolean maximizingPlayer ) {
 
     }
+    public static void main(String[]args){
 
+        GametreeAI AI = new GametreeAI();
+    }
 }
