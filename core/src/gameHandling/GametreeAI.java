@@ -16,6 +16,8 @@ public class GametreeAI {
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private SetOfCards opponentHand;
+    boolean knockComputer = false;
+    boolean knockPlayer = false;
 
 
     public  GametreeAI (SetOfCards pile, SetOfCards cards, Player player){
@@ -378,6 +380,10 @@ public class GametreeAI {
         else{
             return true;
         }
+    }
+
+    public void alphabetaPruning(int alpha, int beta, boolean maximizingPlayer ) {
+
     }
 
 }
