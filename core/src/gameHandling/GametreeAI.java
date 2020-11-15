@@ -1,6 +1,7 @@
 package gameHandling;
 
 import cardlogic.Card;
+import cardlogic.CardBatch;
 import cardlogic.SetOfCards;
 
 import java.util.ArrayList;
@@ -18,13 +19,13 @@ public class GametreeAI {
     private SetOfCards opponentHand;
     boolean knockComputer = false;
     boolean knockPlayer = false;
+    int test = 0;
 
 
-    public  GametreeAI (SetOfCards pile, SetOfCards cards, Player player){
+    public  GametreeAI (SetOfCards pile, SetOfCards cards){
         this.discardPile = pile;
         this.hand = cards;
         this.cardsUnknown = new SetOfCards(true,false);
-        this.player = player;
         for(int i = 0; i<hand.size(); i++){
            cardsUnknown.discardCard(hand.getCard(i));
         }
@@ -32,6 +33,9 @@ public class GametreeAI {
             cardsUnknown.discardCard(discardPile.getCard(i));
         }
         opponentHand = new SetOfCards();
+        for(int i = 0; i< 10; i++){
+            opponentHand.addCard(cardsUnknown.getCard(i));
+        }
     }
 
     public void createTree (){
@@ -40,7 +44,6 @@ public class GametreeAI {
         createNodesOpponent(pass, true);
         Node discard1 = first.addChild(pickDiscard(discardPile,hand));
         createNodesOpponent(discard1, false);
-
     }
 
     // we need to determine stop statement for recursion
@@ -55,12 +58,27 @@ public class GametreeAI {
             List<Node> nodesPile = monteCarloSim(true);
             for(int i = 0; i< nodesPile.size(); i++){
                 parent.addChild(nodesPile.get(i));
+                if(test < 2){
+                    System.out.println("node " + i);
+                    SetOfCards opp = nodesPile.get(i).opponentHand;
+                    for(int k = 0; k< opp.size(); k++ ) {
+                        System.out.println(opp.getCard(k).getProb());
+                    }
+                }
                 simulationDiscard(nodesPile.get(i));
                 List<Node> nodesDiscard1 = monteCarloSim(false);
                 for(int j = 0; j< nodesDiscard1.size(); j++){
                     nodesPile.get(i).addChild(nodesDiscard1.get(i));
+
+                    System.out.println("node " + i);
+                    SetOfCards opp = nodesPile.get(i).opponentHand;
+                    for(int k = 0; k< opp.size(); k++ ) {
+                        System.out.println(opp.getCard(k).getProb());
+                    }
+
                     createNodesAI(nodesDiscard1.get(j));
                 }
+                test++;
             }
 
             // makes nodes for is player picks deck or for the first round passes
@@ -175,6 +193,7 @@ public class GametreeAI {
                     //BAYES RULEE!! change this!!
                     setProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownSet);
                     cardsUnknown.getCard(j).setProb(setProb);
+                    System.out.println(setProb);
                     probSpecial += setProb;
                 }
                 // increase prob for cards that form run with chosen card
@@ -182,11 +201,12 @@ public class GametreeAI {
                     // BAYES RULEE!! change this!
                     runProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownRun);
                     cardsUnknown.getCard(j).setProb(runProb);
+                    System.out.println(runProb);
                     probSpecial += runProb;
                 }
             }
             // calculate the probability of the remaining cards
-            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
             double leftProb = 1-probSpecial;
             double unknownProb;
             double newUnknownProb;
@@ -195,6 +215,7 @@ public class GametreeAI {
                 if (cardsUnknown.getCard(j).getValue() != chosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1)) {
                     unknownProb = leftProb/size;
                     newUnknownProb = cardsUnknown.getCard(j).getProb()- unknownProb;
+                    System.out.println(unknownProb);
                     cardsUnknown.getCard(j).setProb(newUnknownProb);
                 }
             }
@@ -226,7 +247,7 @@ public class GametreeAI {
                     probSpecial += runProb;
                 }
             }
-            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+            int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
             double leftProb = 1-probSpecial;
             double unknownProb;
             double newUnknownProb;
@@ -269,7 +290,7 @@ public class GametreeAI {
             }
 
         }
-        int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet - 1;
+        int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
         double leftProb = 1-probSpecial;
         double unknownProb;
         double newUnknownProb;
@@ -289,7 +310,7 @@ public class GametreeAI {
         List<Node> nodes = new ArrayList<>();
         List<Card> opponentHandcur;
         // simulate 100 times
-        for(int i= 1; i<= 100; i++){
+        for(int i= 1; i<= 10; i++){
             if(pickOrDiscard){
                 opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 11);
             }
@@ -298,9 +319,9 @@ public class GametreeAI {
             }
             SetOfCards opponent = new SetOfCards(false, false);
             for(int j= 0; j< 10; j++){
-                opponentHand.addCard(opponentHandcur.get(j));
+                opponent.addCard(opponentHandcur.get(j));
             }
-            Node node = new Node(hand, discardPile, cardsUnknown, opponentHand);
+            Node node = new Node(hand, discardPile, cardsUnknown, opponent);
             nodes.add(node);
         }
         return nodes;
@@ -446,7 +467,18 @@ public class GametreeAI {
 
     }
     public static void main(String[]args){
-
-        GametreeAI AI = new GametreeAI();
+        SetOfCards deck = new SetOfCards(true, false);
+        SetOfCards hand = new SetOfCards(false, false);
+        for(int i = 0; i < 10; i++){
+            Card aCard = deck.drawTopCard();
+            hand.addCard(aCard);
+        }
+        SetOfCards pile = new SetOfCards(false, false);
+        Card discardCard = deck.drawTopCard();
+        pile.addCard(discardCard);
+        GametreeAI AI = new GametreeAI(pile, hand);
+        AI.createTree();
     }
+
+
 }
