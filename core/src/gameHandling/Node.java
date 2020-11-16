@@ -30,6 +30,19 @@ public class Node {
         handValue = Player.getHandValue(cards.toList());
     }
 
+    public Node(boolean positiveInf) {
+        this.discardPile = new SetOfCards(false, false);
+        this.hand = new SetOfCards(false, false);
+        this.opponentHand = new SetOfCards(false, false);
+        this.unknownCards = new SetOfCards(false, false);
+
+        if (positiveInf) {
+            this.setHandValue(100000);
+        }
+        else
+            this.setHandValue(-100000);
+    }
+
     //we already have static method in Player class
     /*
     public int scoreHand(List<Card> aHand) {
@@ -65,8 +78,25 @@ public class Node {
     }
 
     public int getHandValue() {
-        this.handValue = Player.getHandValue(this.hand.toList());
         return this.handValue;
+    }
+
+    public void setHandValue(int value) {
+        this.handValue = value;
+    }
+
+    public static Node getNodeMax(Node node1, Node node2) {
+        if (node1.getHandValue() > node2.getHandValue())
+            return node1;
+        else
+            return node2;
+    }
+
+    public static Node getNodeMin(Node node1, Node node2) {
+        if (node1.getHandValue() < node2.getHandValue())
+            return node1;
+        else
+            return node2;
     }
 
     public static void main(String[] args) {
