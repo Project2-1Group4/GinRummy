@@ -31,6 +31,7 @@ public class CardBatch extends SetOfCards implements RenderableProvider, Disposa
         renderable.material = material;
     }
 
+
     public static CardBatch handOutCard(int numberOdCard, CardBatch deck) {
         deck.shuffleCards();
         CardBatch setCard = new CardBatch(deck.material, false);

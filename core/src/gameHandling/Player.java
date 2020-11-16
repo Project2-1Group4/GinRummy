@@ -472,7 +472,14 @@ public class Player {
     	return score;
     	
     }
-    
+
+    public static int scoreHand(List<Card> aHand) {
+        SetOfCards hand = new SetOfCards(aHand);
+        Player player = new Player(hand);
+        int scoreHand = player.scoreHand();
+        return scoreHand;
+    }
+
     
     
     public List<Card> findDeadwood(List<Card> cardsInMelds){

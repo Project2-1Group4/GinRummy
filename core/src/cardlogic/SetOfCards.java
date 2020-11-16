@@ -2,6 +2,7 @@ package cardlogic;
 
 import cardlogic.Card.SUITS;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import gameHandling.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +12,7 @@ import java.util.List;
 public class SetOfCards {
 	
 	List<Card> cards;
-	TextureAtlas atlas;
+	//TextureAtlas atlas = new TextureAtlas("carddeck.atlas");;
 	
 	/*
 	 * Assumption is being done that top of deck is the last card in the pile
@@ -30,22 +31,25 @@ public class SetOfCards {
 		if (deck) {
 			for(int i=0; i<4; i++) {
 				for(int j=1;j<14;j++) {
-					this.cards.add(new Card(i,j));
+					Card card = new Card(i,j);
+					this.cards.add(card);
 				}
 			}
-			Collections.shuffle(this.cards);
+
 		} else {
 
 		}
+
 		if(visual){
 			for(Card aCard: this.cards){
 				aCard.addVisualInfo();
 			}
 		}
+		Collections.shuffle(this.cards);
 	}
 
 	public SetOfCards(List<Card> someCards){
-		this.cards = someCards;
+		this.cards = Player.copyList(someCards);
 	}
 
 
@@ -158,6 +162,8 @@ public class SetOfCards {
 		return Arrays.toString(this.cards.toArray());
 	}
 
+
+
 	// Hand out card for each player
 	public static SetOfCards handOutCard(int numberOdCard, SetOfCards deck) {
 		deck.shuffleCards();
@@ -166,6 +172,11 @@ public class SetOfCards {
 			setCard.addCard(deck.drawTopCard());
 		}
 		return setCard;
+	}
+
+	public static void main(String[] args) {
+		SetOfCards deck = new SetOfCards(true, false);
+		System.out.println(deck.size());
 	}
 
 }

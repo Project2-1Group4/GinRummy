@@ -95,8 +95,7 @@ public class basicGreedy extends Player{
             aList.remove(aCard);
 
             // This is garbage unnefficient, but I don't feel like adding a proper method now
-            Player temp = new Player(new SetOfCards(aList));
-            int resultingHand = temp.scoreHand();
+            int resultingHand = evaluateHand(aList);
 
             if(resultingHand>=highestVal){
                 theCard = aCard;
@@ -109,6 +108,11 @@ public class basicGreedy extends Player{
 
         return theCard;
 
+    }
+
+    public static int evaluateHand(List<Card> aHand){
+        Player temp = new Player(new SetOfCards(aHand));
+        return temp.scoreHand();
     }
     
 }
