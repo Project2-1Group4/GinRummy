@@ -509,7 +509,7 @@ public class GametreeAI {
             Node minNode = new Node(true); // node with positive inf hand value
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, true);
-                minNode = Node.getNodeMax(beta, evalNode);
+                minNode = Node.getNodeMin(beta, evalNode);
                 beta = Node.getNodeMin(beta, evalNode);
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
