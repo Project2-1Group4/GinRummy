@@ -164,6 +164,7 @@ public class GametreeAI {
         SetOfCards currentdeck = deck;
         Card discarded = discardPile.getCard(discardPile.size()-1);
         for(int j = 0; j<deck.size(); j++){
+            //
             if(deck.getCard(j).getValue() == discarded.getValue()){
                 deck.getCard(j).setProb(0);
             }
