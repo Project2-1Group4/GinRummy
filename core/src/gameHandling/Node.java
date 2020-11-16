@@ -16,6 +16,9 @@ public class Node {
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
 
+    boolean playerStop = false; // when game is over this one turns to be true
+    boolean AIStop = false; // turn to be true when game is over
+
     public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand) {
         this.discardPile = pile;
         this.hand = cards;

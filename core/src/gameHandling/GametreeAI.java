@@ -17,8 +17,6 @@ public class GametreeAI {
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private SetOfCards opponentHand;
-    boolean knockComputer = false;
-    boolean knockPlayer = false;
     int test = 0;
 
 
@@ -462,10 +460,32 @@ public class GametreeAI {
             return true;
         }
     }
-
-    public void alphabetaPruning(int alpha, int beta, boolean maximizingPlayer ) {
-
+    // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
+    public int alphabetaPruning(Node node, int alpha, int beta, boolean maximizingPlayer ) {
+        if ((node.getChildren().size() == 0) || !node.playerStop || !!node.AIStop)
+            return node.handValue;
+        if (maximizingPlayer) {
+            int maxEval = -100000; // negative infinity
+            for (Node child : node.getChildren()) {
+                int eval = alphabetaPruning(child, alpha, beta, false);
+                maxEval = Math.max(alpha, eval);
+                if (beta <= alpha)
+                    break;
+            }
+            return maxEval;
+        }
+        else {
+            int minEval = 100000; //positive infinity
+            for (Node child : node.getChildren()) {
+                int eval = alphabetaPruning(child, alpha, beta, true);
+                beta = Math.min(beta, eval);
+                if (beta <= alpha)
+                    break;
+            }
+            return minEval;
+        }
     }
+
     public static void main(String[] args){
         SetOfCards deck = new SetOfCards(true, false);
         SetOfCards hand = new SetOfCards(false, false);
