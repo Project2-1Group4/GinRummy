@@ -2,6 +2,7 @@ package temp;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.mygdx.game.GinRummy;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.ForcePlayer;
@@ -11,45 +12,37 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.testPlayer;
+import temp.GamePlayers.Testing.GA;
+import temp.GamePlayers.Testing.TestPlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics
-/*
-Things you could need:
--Coordinator.show()
--GameRules variables
--GameActions classes
--Finder methods
--HandLayout and Meld classes
--Add AI to GamePlayers package and extend GamePlayer (create extra package if more than 1 file)
--Override GamePlayer.render() method if you need to render anything extra
-(Might not be everything)
- */
 public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
+    private final GinRummy master;
 
     private boolean newStep = true;
+    private boolean roundEnd = false;
 
-    public Coordinator() {
+    public Coordinator(GinRummy master,State state) {
+        this.master = master;
+        currentGameState = state;
         graphics = new Graphics();
     }
 
-    // INITIATE GAME HERE
-    // Set the start of the game however you want
-    // Nb of players, Specific players, Starting deck, Shuffle seed, etc...
     @Override
     public void show() {
-        currentGameState = new StateBuilder()
-                .setSeed(11)
-                .addPlayer(CombinePlayer.getBaseCombinePlayer())
-                .addPlayer(new testPlayer())
-                .build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
+        if(currentGameState==null){
+            gameEnded();
+        }
     }
 
+    public void gameEnded(){
+        master.changeScreen(GinRummy.END);
+    }
     /**
      * Main logic loop. Everything goes from here.
      *
@@ -57,19 +50,23 @@ public class Coordinator extends ScreenAdapter {
      */
     @Override
     public void render(float delta) {
+        if (currentGameState != null) {
+            if (newStep) {
+                // only called upon new round
+                oncePerStep();
+            }
+            GamePlayer curPlayer = currentGameState.getPlayer();
+            handleTurn(curPlayer, currentGameState.getStep(), Executor.update(currentGameState, delta));
 
-        if (newStep) {
-            // only called upon new round
-            oncePerStep();
+            if (newStep) {
+                oncePerStep();
+            }
+
+            graphics.render(currentGameState);
         }
-        GamePlayer curPlayer = currentGameState.getPlayer();
-        handleTurn(curPlayer, currentGameState.getStep(), Executor.update(currentGameState, delta));
-
-        if (newStep) {
-            oncePerStep();
+        if(roundEnd){
+            endOfRound();
         }
-
-        graphics.render(currentGameState);
     }
 
     @Override
@@ -99,6 +96,9 @@ public class Coordinator extends ScreenAdapter {
         if(currentGameState.getDeckSize()==2){
             if(GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
             currentGameState = Executor.startNewRound(500,currentGameState);
+            if(currentGameState==null){
+                gameEnded();
+            }
         }
 
         switch (step) {
@@ -142,7 +142,7 @@ public class Coordinator extends ScreenAdapter {
                 }
                 break;
             case EndOfRound:
-                EndOfRound();
+                roundEnd = true;
         }
     }
 
@@ -190,9 +190,13 @@ public class Coordinator extends ScreenAdapter {
      * Only called once everything is done. The melds and the laying off.
      * Assigns points and starts a new round
      */
-    private void EndOfRound() {
+    private void endOfRound() {
         Executor.assignPoints(currentGameState);
         currentGameState = Executor.startNewRound(500, currentGameState);
         newStep = true;
+        if(currentGameState==null){
+            gameEnded();
+        }
+        roundEnd = false;
     }
 }

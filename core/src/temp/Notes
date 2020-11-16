@@ -1,0 +1,14 @@
+Things you could need:
+-Coordinator.show()
+-GameRules variables
+-GameActions classes
+-Finder methods
+-HandLayout and Meld classes
+-Add AI to GamePlayers package and extend GamePlayer (create extra package if more than 1 file)
+-Override GamePlayer.render() method if you need to render anything extra
+(Might not be everything)
+
+Initiate game in GinRummy class. If you want a specific game
+Set the start of the game however you want
+Nb of players, Specific players, Starting deck, Shuffle seed, etc...
+Will be saved for every round

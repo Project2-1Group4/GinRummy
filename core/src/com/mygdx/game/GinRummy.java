@@ -9,12 +9,15 @@ import com.mygdx.game.views.LoadingScreen;
 import com.mygdx.game.views.MainScreen;
 import com.mygdx.game.views.MenuScreen;
 import temp.Coordinator;
+import temp.GameLogic.GameState.StateBuilder;
+import temp.GamePlayers.CombinePlayer;
+import temp.GamePlayers.Testing.TestPlayer;
 
 public class GinRummy extends Game {
 
 	private LoadingScreen loadingScreen;
 	private MenuScreen menuScreen;
-	private MainScreen mainScreen;
+	private Coordinator mainScreen;
 	private EndScreen endScreen;
 
 	public final static int MENU = 0;
@@ -28,7 +31,7 @@ public class GinRummy extends Game {
 	@Override
 	public void create () {
 		loadingScreen = new LoadingScreen(this);
-		setScreen(new Coordinator());
+		setScreen(loadingScreen);
 	}
 
 	@Override
@@ -43,7 +46,11 @@ public class GinRummy extends Game {
 				this.setScreen(menuScreen);
 				break;
 			case APPLICATION:
-				if(mainScreen == null) mainScreen = new MainScreen(this);
+				mainScreen = new Coordinator(this, new StateBuilder()
+							.setSeed(11)
+							.addPlayer(CombinePlayer.getBaseCombinePlayer())
+							.addPlayer(new TestPlayer())
+							.build());
 				this.setScreen(mainScreen);
 				break;
 			case END:

@@ -7,7 +7,7 @@ import temp.GameLogic.MyCard;
 
 public abstract class MemoryPlayer extends GamePlayer{
     // -1 = discard, 0 = unknown, player = player index+1
-    int[] memory;
+    protected int[] memory;
     public MemoryPlayer(){
         memory = new int[MyCard.Suit.values().length*MyCard.Rank.values().length];
     }

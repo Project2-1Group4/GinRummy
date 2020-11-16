@@ -85,11 +85,19 @@ public class MyCard {
 
     public static String toString(List<MyCard> cards) {
         StringBuilder sb = new StringBuilder();
-        sb.append(cards.get(0));
-        for (int i = 1; i < cards.size(); i++) {
-            sb.append(" ").append(cards.get(i));
+        if(cards.size()!=0) {
+            sb.append(cards.get(0));
+            for (int i = 1; i < cards.size(); i++) {
+                sb.append(" ").append(cards.get(i));
+            }
         }
         return sb.toString();
+    }
+
+    public static MyCard getCard(int index){
+        int suit = index%Rank.values().length;
+        int rank = index%Suit.values().length;
+        return new MyCard(suit,rank);
     }
 
     /**

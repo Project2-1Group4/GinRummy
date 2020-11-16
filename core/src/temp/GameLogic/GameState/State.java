@@ -30,13 +30,9 @@ public class State {
     protected int turnInRound;
     protected Stack<Action> movesDone;
 
-    protected State(Integer seed,List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
+    protected State(Random seed,List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
-        if(seed==null){
-            this.seed = new Random();
-        }else {
-            this.seed = new Random(seed);
-        }
+        this.seed = seed;
         this.initDeck = new ArrayList<>(deck);
         this.deck = deck;
         this.discardPile = discardPile;

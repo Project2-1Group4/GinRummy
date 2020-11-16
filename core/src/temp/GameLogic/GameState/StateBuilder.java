@@ -8,6 +8,7 @@ import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 // Builder class
@@ -16,6 +17,7 @@ public class StateBuilder {
      * new Statebuilder().build() returns normal 2 player game. No AI. From starting space
      */
     private Integer seed;
+    private Random random;
     private List<MyCard> deck;
     private final Stack<MyCard> discardPile;
     private int numberOfPlayers;
@@ -53,6 +55,11 @@ public class StateBuilder {
 
     public StateBuilder setSeed(Integer seed){
         this.seed = seed;
+        return this;
+    }
+
+    public StateBuilder setRandomizer(Random rd){
+        random = rd;
         return this;
     }
 
@@ -157,6 +164,13 @@ public class StateBuilder {
         if(scores==null){
             scores = new int[numberOfPlayers];
         }
-        return new State(seed,deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
+        if(random==null) {
+            if (seed != null) {
+                random = new Random(seed);
+            } else {
+                random = new Random();
+            }
+        }
+        return new State(random,deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
     }
 }

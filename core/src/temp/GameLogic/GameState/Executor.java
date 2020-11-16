@@ -46,29 +46,37 @@ public class Executor {
         } else {
             for (int i = 0; i < curState.scores.length; i++) {
                 if (curState.scores[i] >= GameRules.pointsToWin) {
-                    //TODO properly make end of game screen
                     System.out.println("Player " + i + " won with "+curState.scores[i]+" points");
                     System.out.println("Final scores: ");
                     for (int j = 0; j < curState.scores.length; j++) {
                         System.out.println("Player "+j+" "+curState.scores[j]);
                     }
-                    Gdx.app.exit();
+                    return null;
                 }
             }
             if(GameRules.printEndOfRound){
                 Integer winner = getWinner(curState);
                 if(winner!=null) {
-                    System.out.println("Player " + winner + " won round "+curState.round+" with\n" + curState.getKnockerState());
+                    System.out.println("Player " + winner + " won round "+curState.round+" with\n" + curState.playerStates.get(winner));
                 }else{
                     System.out.println("No one won round "+curState.round);
+                }
+                if(winner==null){
+                    winner = -1;
+                }
+                System.out.println("Other Players:");
+                for (int i = 0; i < curState.playerStates.size(); i++) {
+                    if(i!=winner) {
+                        System.out.println("Player "+i+":\n"+curState.playerStates.get(i)+"\n");
+                    }
                 }
                 System.out.println("\nCurrent scores:");
                 for (int i = 0; i < curState.scores.length; i++) {
                     System.out.println("Player "+i+": "+curState.scores[i]);
                 }
-                System.out.println();
             }
             newState = new StateBuilder()
+                    .setRandomizer(curState.seed)
                     .useCustomDeck(curState.initDeck)
                     .addPlayers(curState.players)
                     .setScores(curState.scores)
@@ -258,7 +266,12 @@ public class Executor {
         if(curState.knocker==null){
             return null;
         }
-        return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood());
+        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood(),curState.getKnockerNumber());
+        if(winner==null){
+            return curState.getKnockerNumber();
+        }else{
+            return winner;
+        }
     }
 
     /* TURN HANDLING */
