@@ -9,7 +9,7 @@ public class GameRules {
     public static int baseCardsPerHand = 10;
 
     // Game speed specs
-    public static float gameSpeed = 100f;
+    public static float gameSpeed = 1f;
     public static float KnockOrContinueTime = 50f;
     public static float DeckOrDiscardPileTime = 50f;
     public static float DiscardTime = 50f;

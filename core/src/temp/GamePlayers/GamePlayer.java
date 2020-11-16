@@ -21,10 +21,12 @@ public abstract class GamePlayer implements PlayerInterface {
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
     protected InputProcessor processor;
+    protected int index;
     /* SETTERS */
-    public void update(HandLayout realLayout){
+    public void update(HandLayout realLayout,int index){
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
+        this.index = index;
     }
 
     /* GETTERS */

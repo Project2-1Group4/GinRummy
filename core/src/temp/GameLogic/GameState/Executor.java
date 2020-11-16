@@ -112,7 +112,7 @@ public class Executor {
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
-            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
+            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout(),i);
         }
 
     }
@@ -149,7 +149,7 @@ public class Executor {
      */
     public static void nextStep(State curState) {
 
-        curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
+        curState.getPlayer().update(curState.getPlayerState().viewHandLayout(),curState.getPlayerNumber());
 
         if (GameRules.print) System.out.println(curState.viewLastAction());
 
@@ -364,8 +364,8 @@ public class Executor {
                 Gdx.app.exit();
             }
             curState.movesDone.add(new LayoffAction(curState.getPlayerNumber(),layOff.card,layOff.meld));
-            curState.getKnocker().update(curState.getKnockerState().viewHandLayout());
-            curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
+            curState.getKnocker().update(curState.getKnockerState().viewHandLayout(),curState.getPlayerNumber());
+            curState.getPlayer().update(curState.getPlayerState().viewHandLayout(),curState.getPlayerNumber());
             return false;
         }
         return false;

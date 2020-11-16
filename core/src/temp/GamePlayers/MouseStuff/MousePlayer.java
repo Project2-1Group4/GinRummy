@@ -55,8 +55,8 @@ public class MousePlayer extends GamePlayer {
     }
 
     @Override
-    public void update(HandLayout realLayout) {
-        super.update(realLayout);
+    public void update(HandLayout realLayout,int index) {
+        super.update(realLayout,index);
         clicked = null;
     }
 

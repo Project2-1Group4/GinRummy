@@ -23,6 +23,10 @@ public class MyCard {
         return card.suit == this.suit && card.rank == this.rank;
     }
 
+    public int getIndex(){
+        return suit.index*(Rank.values().length)+(rank.index);
+    }
+
     public int ginValue() {
         return rank.ginValue;
     }

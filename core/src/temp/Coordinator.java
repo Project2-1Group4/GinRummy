@@ -11,6 +11,7 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.testPlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics
@@ -44,7 +45,7 @@ public class Coordinator extends ScreenAdapter {
         currentGameState = new StateBuilder()
                 .setSeed(11)
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
-                .addPlayer(CombinePlayer.getBaseCombinePlayer())
+                .addPlayer(new testPlayer())
                 .build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
