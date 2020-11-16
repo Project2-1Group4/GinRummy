@@ -432,7 +432,7 @@ public class GametreeAI {
 
     // returns true if you want to pick from discard pile
     public boolean evaluate(Card discardCard, SetOfCards hand){
-        List<Card> current = hand.toList();
+        List<Card> current = Player.copyList(hand.toList());
         current.add(discardCard);
         if(chooseCardToDiscard(current) == discardCard){
             return false;
@@ -445,8 +445,10 @@ public class GametreeAI {
     public void alphabetaPruning(int alpha, int beta, boolean maximizingPlayer ) {
 
     }
-    public static void main(String[]args){
 
-        GametreeAI AI = new GametreeAI();
+    public static void main(String[] args) {
+        SetOfCards deck = new SetOfCards(true, false);
+        SetOfCards opp = SetOfCards.handOutCard(10, deck);
+        //Card topCard = deck.
     }
 }

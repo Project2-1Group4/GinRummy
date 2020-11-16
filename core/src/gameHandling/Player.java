@@ -18,6 +18,8 @@ public class Player {
     private List<List<Card>> permutations;
     public List<Card> deadWood;
 
+    public static int constantScore = 100; //just constant score for alphabeta pruning
+
     public Player(String name, CardBatch hand) {
         this.name = name;
         this.hand = hand;
@@ -480,6 +482,15 @@ public class Player {
         return scoreHand;
     }
 
+    //by this method, the hand with less deadwood will give the more value on score (an apparent way to use for evaluation)
+    public static int getHandValue(List<Card> aHand) {
+        int scoreHand = scoreHand(aHand);
+        return constantScore - scoreHand;
+    }
+
+    public int getHandValue() {
+        return constantScore - scoreHand();
+    }
     
     
     public List<Card> findDeadwood(List<Card> cardsInMelds){

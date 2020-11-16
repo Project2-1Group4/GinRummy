@@ -11,6 +11,7 @@ public class Node {
     SetOfCards unknownCards;
     SetOfCards opponentHand;
     boolean winOrLose;
+    int handValue; //not deadwood value, constant - deadwood, (for easier implementation pruning)
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
@@ -23,6 +24,7 @@ public class Node {
         if(Player.scoreHand(hand.toList()) > Player.scoreHand(opponentHand.toList()) && Player.scoreHand(hand.toList())<=10){
             this.winOrLose = true;
         }
+        handValue = Player.getHandValue(cards.toList());
     }
 
     //we already have static method in Player class
@@ -57,6 +59,11 @@ public class Node {
     @Override
     public String toString() {
         return "node";
+    }
+
+    public int getHandValue() {
+        this.handValue = Player.getHandValue(this.hand.toList());
+        return this.handValue;
     }
 
     public static void main(String[] args) {
