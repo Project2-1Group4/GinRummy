@@ -1,5 +1,6 @@
 package temp.GamePlayers;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
@@ -19,7 +20,7 @@ public abstract class GamePlayer implements PlayerInterface {
 
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
-
+    protected InputProcessor processor;
     /* SETTERS */
     public void update(HandLayout realLayout){
         allCards = realLayout.viewAllCards();
@@ -27,6 +28,10 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     /* GETTERS */
+
+    public InputProcessor getProcessor(){
+        return processor;
+    }
     // All views. IDK why
     public List<MyCard> viewHand() {
         return new ArrayList<>(allCards);

@@ -1,5 +1,6 @@
 package temp;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
@@ -36,14 +37,14 @@ public class Coordinator extends ScreenAdapter {
     }
 
     // INITIATE GAME HERE
-    // SET THE START OF THE GAME HOWEVER YOU WANT TO
+    // Set the start of the game however you want
     // Nb of players, Specific players, Starting deck, Shuffle seed, etc...
     @Override
     public void show() {
         currentGameState = new StateBuilder()
                 .setSeed(11)
-                .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
-                .addPlayer(CombinePlayer.getBaseCombinePlayer(graphics))
+                .addPlayer(CombinePlayer.getBaseCombinePlayer())
+                .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .build();
         this.currentGameState = Executor.startNewRound(500, currentGameState);
     }
@@ -79,6 +80,7 @@ public class Coordinator extends ScreenAdapter {
      * Gets called every time an player makes a valid move
      */
     private void oncePerStep() {
+        Gdx.input.setInputProcessor(currentGameState.getPlayer().getProcessor());
         newStep = false;
     }
 

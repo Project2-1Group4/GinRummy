@@ -1,5 +1,6 @@
 package temp.GamePlayers;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
@@ -17,12 +18,16 @@ public class CombinePlayer extends GamePlayer{
     private List<GamePlayer> handlers;
     public CombinePlayer(GamePlayer player1, GamePlayer player2){
         handlers = new ArrayList<>();
-        handlers.add(player1);
-        handlers.add(player2);
+        processor = new InputMultiplexer();
+        addPlayer(player1);
+        addPlayer(player2);
     }
 
     public void addPlayer(GamePlayer player){
         handlers.add(player);
+        if(player.processor!=null) {
+            ((InputMultiplexer) processor).addProcessor(player.processor);
+        }
     }
     @Override
     public Boolean knockOrContinue() {
@@ -90,7 +95,7 @@ public class CombinePlayer extends GamePlayer{
         }
     }
 
-    public static CombinePlayer getBaseCombinePlayer(Graphics graphics){
-        return new CombinePlayer(new KeyboardPlayer(),new MousePlayer(graphics));
+    public static CombinePlayer getBaseCombinePlayer(){
+        return new CombinePlayer(new KeyboardPlayer(),new MousePlayer());
     }
 }
