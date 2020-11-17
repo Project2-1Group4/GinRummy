@@ -50,6 +50,7 @@ public class Card extends Actor implements Comparable {
 	 * K = 13
 	 */
 
+	
 	public Card(int suit, int value){
 		this.setSuit(suit);
 		this.setValue(value);
