@@ -28,7 +28,7 @@ public class Card extends Actor implements Comparable {
 	private float pointX;
 	private float pointY;
 
-	private double prob = 1/41;
+	private double prob = 1.0/41.0;
 
 	public float[] vertices;
 	public short[] indices;
@@ -44,6 +44,8 @@ public class Card extends Actor implements Comparable {
 	 */
 
 	public Card(int suit, int value){
+
+
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
