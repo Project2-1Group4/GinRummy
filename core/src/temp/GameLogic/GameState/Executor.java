@@ -123,7 +123,7 @@ public class Executor {
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
-            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout(),i);
+            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
         }
 
     }
@@ -160,7 +160,7 @@ public class Executor {
      */
     public static void nextStep(State curState) {
 
-        curState.getPlayer().update(curState.getPlayerState().viewHandLayout(),curState.getPlayerNumber());
+        curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
 
         if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
 

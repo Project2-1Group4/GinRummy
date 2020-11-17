@@ -73,10 +73,10 @@ public class CombinePlayer extends GamePlayer{
     }
 
     @Override
-    public void update(HandLayout realLayout, int index) {
-        super.update(realLayout,index);
+    public void update(HandLayout realLayout) {
+        super.update(realLayout);
         for (GamePlayer handler : handlers) {
-            handler.update(realLayout,index);
+            handler.update(realLayout);
         }
     }
 

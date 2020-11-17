@@ -18,15 +18,23 @@ import java.util.List;
 
 public abstract class GamePlayer implements PlayerInterface {
 
+    private static int player = 0;
+    private static int getPlayer(){
+        player++;
+        return player;
+    }
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
     protected InputProcessor processor;
-    protected int index;
+    protected final int index;
+    public GamePlayer(){
+        index = getPlayer();
+    }
+
     /* SETTERS */
-    public void update(HandLayout realLayout,int index){
+    public void update(HandLayout realLayout){
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
-        this.index = index;
     }
 
     /* GETTERS */

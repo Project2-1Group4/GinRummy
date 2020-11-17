@@ -2,17 +2,12 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.game.views.EndScreen;
 import com.mygdx.game.views.LoadingScreen;
-import com.mygdx.game.views.MainScreen;
 import com.mygdx.game.views.MenuScreen;
 import temp.Coordinator;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
-import temp.GamePlayers.Testing.GA;
-import temp.GamePlayers.Testing.TestPlayer;
 
 public class GinRummy extends Game {
 

@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
 import temp.GameLogic.GameActions.*;
-import temp.GameLogic.GameState.StateBuilder;
-import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameState.Executor;
@@ -13,8 +11,6 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.Testing.GA;
-import temp.GamePlayers.Testing.TestPlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics
@@ -28,11 +24,8 @@ public class Coordinator extends ScreenAdapter {
     private boolean newStep = true;
     private boolean roundEnd = false;
 
-    public Integer winner = null;
-    public GA ga;
     public Coordinator(GinRummy master,State state) {
         this.master = master;
-        ga = new GA();
         currentGameState = state;
         graphics = new Graphics();
     }
