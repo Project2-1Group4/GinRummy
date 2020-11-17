@@ -5,11 +5,12 @@ import java.util.Random;
 public class GA{
 
     public static void main(String[] args){
-        GA ga = new GA(0,10,2,0.05f,0);
+        GA ga = new GA(0,20,1,0.5f,0);
         ga.init(new GAPlayer[]{
                 new GAPlayer(0,new TestPlayer())
         });
-        ga.train();
+        GAPlayer[] winners = ga.train();
+        winners[0].player.printMatrices();
     }
     /////////////////////////////////////////////////////////////////////////////////////////
     ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
@@ -23,12 +24,12 @@ public class GA{
         }
         for (int i = 0; i < p.probabilityMatrix.length; i++) {
             for (int j = 0; j < p.probabilityMatrix.length; j++) {
-                p.probabilityMatrix[i][j]+= getMutation(rd)*5;
+                p.probabilityMatrix[i][j]+= getMutation(rd)*1;
             }
         }
         for (int i = 0; i < p.valueMatrix.length; i++) {
             for (int j = 0; j < p.valueMatrix.length; j++) {
-                p.valueMatrix[i][j]+= getMutation(rd)*5;
+                p.valueMatrix[i][j]+= getMutation(rd)*1;
             }
         }
         return new GAPlayer(index,p);
@@ -50,7 +51,7 @@ public class GA{
     }
 
     protected boolean stopCondition(){
-        return iteration >= 20;
+        return iteration >= 500;
     }
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,8 +84,13 @@ public class GA{
         GALogic game = new GALogic();
         int seed = 0;
         do{
-            System.out.println("Iteration: "+iteration);
             GAPlayer[] winners = getWinners();
+
+            System.out.println("Iteration: "+iteration);
+            System.out.println(winners[0].score);
+            //winners[0].player.printMatrices();
+            //System.out.println();
+
             update(winners);
             resetScores();
             for (int i = 0; i < competitors.length; i++) {

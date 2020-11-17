@@ -53,28 +53,23 @@ public class TestPlayer extends MemoryPlayer{
 
     @Override
     public MyCard discardCard() {
-        int discardIndex=0;
-        double highestValue=Integer.MIN_VALUE;
-        for (int i = 0; i < cardValues.length; i++) {
-            if(cardValues[i]!=0) {
-                double save = enemyCardOwnership[i];
-                enemyCardOwnership[i] = 1;
-                double[] values = matrixMultiplication(valueMatrix, enemyCardOwnership);
-                double val=0;
-                for (double value : values) {
-                    val+=value;
-                }
-                if(val>highestValue){
-                    highestValue = val;
-                    discardIndex = i;
-                }
-                enemyCardOwnership[i] = save;
-            }
-        }
+        MyCard discard = null;
+        double lowestValue=Integer.MAX_VALUE;
         for (int i = 0; i < allCards.size(); i++) {
-            
+            double save = enemyCardOwnership[allCards.get(i).getIndex()];
+            enemyCardOwnership[allCards.get(i).getIndex()] = 1;
+            double[] values = matrixMultiplication(valueMatrix, enemyCardOwnership);
+            double val=0;
+            for (double value : values) {
+                val+=value;
+            }
+            if(lowestValue>val){
+                lowestValue = val;
+                discard = allCards.get(i);
+            }
+            enemyCardOwnership[i] = save;
         }
-        return MyCard.getCard(discardIndex);
+        return discard;
     }
 
     @Override
@@ -155,8 +150,9 @@ public class TestPlayer extends MemoryPlayer{
 
     public void printMatrices(){
         System.out.println("PROB MATRIX");
-        System.out.println(Arrays.toString(probabilityMatrix));
-        System.out.println("VALUE MATRIX");
-        System.out.println(Arrays.toString(valueMatrix));
+        System.out.println(Arrays.deepToString(probabilityMatrix));
+        System.out.println("\nVALUE MATRIX\n");
+        System.out.println(Arrays.deepToString(valueMatrix));
+        System.out.println("\n");
     }
 }

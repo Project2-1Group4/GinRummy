@@ -23,7 +23,7 @@ public class GameRules {
     // Command printing specs
     public static boolean print = false;
     public static boolean printEndOfRound = false;
-    public static boolean minPrint = true;
+    public static boolean minPrint = false;
 
     // Visual specs
     public static float cardMaxWidthPercentage = 0.8f;
