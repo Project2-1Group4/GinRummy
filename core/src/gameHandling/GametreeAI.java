@@ -17,8 +17,6 @@ public class GametreeAI {
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private SetOfCards opponentHand;
-    boolean knockComputer = false;
-    boolean knockPlayer = false;
     int test = 0;
 
 
@@ -27,7 +25,7 @@ public class GametreeAI {
         this.hand = cards;
         this.cardsUnknown = new SetOfCards(true,false);
         for(int i = 0; i<hand.size(); i++){
-           cardsUnknown.discardCard(hand.getCard(i));
+            cardsUnknown.discardCard(hand.getCard(i));
         }
         for(int i = 0; i<discardPile.size(); i++) {
             cardsUnknown.discardCard(discardPile.getCard(i));
@@ -210,7 +208,7 @@ public class GametreeAI {
             double leftProb = 1-probSpecial;
             double unknownProb;
             double newUnknownProb;
-                // update prob of cards that don't form melts with chosen card
+            // update prob of cards that don't form melts with chosen card
             for(int j = 0; j<cardsUnknown.size(); j++) {
                 if (cardsUnknown.getCard(j).getValue() != chosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1)) {
                     unknownProb = leftProb/size;
@@ -222,7 +220,7 @@ public class GametreeAI {
             chosen.setProb(1);
             cardsUnknown.addCard(chosen);
             discardPile.discardCard(chosen);
-            }
+        }
         // if opponent picks card from deck and therefore doesn't use card from pile
         else{
 
@@ -453,7 +451,7 @@ public class GametreeAI {
 
     // returns true if you want to pick from discard pile
     public boolean evaluate(Card discardCard, SetOfCards hand){
-        List<Card> current = hand.toList();
+        List<Card> current = Player.copyList(hand.toList());
         current.add(discardCard);
         if(chooseCardToDiscard(current) == discardCard){
             return false;
@@ -462,11 +460,65 @@ public class GametreeAI {
             return true;
         }
     }
-
-    public void alphabetaPruning(int alpha, int beta, boolean maximizingPlayer ) {
-
+    //demo pruning algo
+    public int alphabetaPruning(Node node, int alpha, int beta, boolean maximizingPlayer ) {
+        if ((node.getChildren().size() == 0) || !node.playerStop || !!node.AIStop)
+            return node.handValue;
+        if (maximizingPlayer) {
+            int maxEval = -100000; // negative infinity
+            for (Node child : node.getChildren()) {
+                int eval = alphabetaPruning(child, alpha, beta, false);
+                maxEval = Math.max(maxEval, eval);
+                alpha = Math.max(alpha, eval);
+                if (beta <= alpha)
+                    break;
+            }
+            return maxEval;
+        }
+        else {
+            int minEval = 100000; //positive infinity
+            for (Node child : node.getChildren()) {
+                int eval = alphabetaPruning(child, alpha, beta, true);
+                minEval = Math.min(beta, eval);
+                beta = Math.min(beta, eval);
+                if (beta <= alpha)
+                    break;
+            }
+            return minEval;
+        }
     }
-    public static void main(String[]args){
+
+    // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
+    public Node alphaBetaPruning(Node node, Node alpha, Node beta, boolean maxPlayer) {
+        if ((node.getChildren().size() == 0) || !node.playerStop || !!node.AIStop) {
+            return node;
+        }
+
+        if (maxPlayer) {
+            Node maxNode = new Node(false); //node with negative inf hand value
+            for (Node child : node.getChildren()) {
+                Node evalNode = alphaBetaPruning(child, alpha, beta, false);
+                maxNode = Node.getNodeMax(alpha, evalNode);
+                alpha = Node.getNodeMax(alpha, evalNode);
+                if (beta.getHandValue() <= alpha.getHandValue())
+                    break;
+            }
+            return maxNode;
+        }
+        else {
+            Node minNode = new Node(true); // node with positive inf hand value
+            for (Node child : node.getChildren()) {
+                Node evalNode = alphaBetaPruning(child, alpha, beta, true);
+                minNode = Node.getNodeMin(beta, evalNode);
+                beta = Node.getNodeMin(beta, evalNode);
+                if (beta.getHandValue() <= alpha.getHandValue())
+                    break;
+            }
+            return minNode;
+        }
+    }
+
+    public static void main(String[] args){
         SetOfCards deck = new SetOfCards(true, false);
         SetOfCards hand = new SetOfCards(false, false);
         for(int i = 0; i < 10; i++){

@@ -35,7 +35,7 @@ public class Card extends Actor implements Comparable {
 	private float pointX;
 	private float pointY;
 
-	private double prob = 1/41;
+	private double prob = 1.0/41.0;
 
 	public float[] vertices;
 	public short[] indices;
