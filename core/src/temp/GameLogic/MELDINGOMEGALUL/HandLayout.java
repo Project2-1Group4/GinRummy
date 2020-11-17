@@ -149,14 +149,19 @@ public class HandLayout {
         if(found!=unusedCards.size()){
             return false;
         }
-        for (Meld meld1 : setOfMelds) {
-            for (Meld meld2 : other.setOfMelds) {
-                if(!meld1.same(meld2)){
-                    return false;
+        List<Meld> cpy = viewMelds();
+        List<Meld> otherCpy = other.viewMelds();
+        for (int i = 0; i < cpy.size(); i++) {
+            for (int j = 0; j < otherCpy.size(); j++) {
+                if(cpy.get(i).same(otherCpy.get(j))){
+                    cpy.remove(i);
+                    i--;
+                    otherCpy.remove(j);
+                    j--;
                 }
             }
         }
-        return true;
+        return cpy.size() == 0;
     }
 
     public HandLayout deepCopy(){

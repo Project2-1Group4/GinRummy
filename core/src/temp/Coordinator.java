@@ -3,6 +3,7 @@ package temp;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
+import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.ForcePlayer;
@@ -21,13 +22,17 @@ public class Coordinator extends ScreenAdapter {
 
     private Graphics graphics;
     private State currentGameState;
+    private State previousState;
     private final GinRummy master;
 
     private boolean newStep = true;
     private boolean roundEnd = false;
 
+    public Integer winner = null;
+    public GA ga;
     public Coordinator(GinRummy master,State state) {
         this.master = master;
+        ga = new GA();
         currentGameState = state;
         graphics = new Graphics();
     }
@@ -35,7 +40,7 @@ public class Coordinator extends ScreenAdapter {
     @Override
     public void show() {
         this.currentGameState = Executor.startNewRound(500, currentGameState);
-        if(currentGameState==null){
+        if(currentGameState.getWinner()!=null){
             gameEnded();
         }
     }
@@ -43,6 +48,7 @@ public class Coordinator extends ScreenAdapter {
     public void gameEnded(){
         master.changeScreen(GinRummy.END);
     }
+
     /**
      * Main logic loop. Everything goes from here.
      *
@@ -51,14 +57,21 @@ public class Coordinator extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (currentGameState != null) {
+
             if (newStep) {
                 // only called upon new round
                 oncePerStep();
             }
-            GamePlayer curPlayer = currentGameState.getPlayer();
-            handleTurn(curPlayer, currentGameState.getStep(), Executor.update(currentGameState, delta));
 
-            if (newStep) {
+            GamePlayer curPlayer = currentGameState.getPlayer();
+            boolean outOfTime = Executor.update(currentGameState,delta);
+
+            if(GameRules.print) if(outOfTime) System.out.println("FORCE "+currentGameState.getStep());
+
+            Action action = handleTurn(outOfTime? new ForcePlayer(curPlayer):curPlayer, currentGameState.getStep());
+
+            if (Executor.execute(action,currentGameState)) {
+                Executor.nextStep(currentGameState);
                 oncePerStep();
             }
 
@@ -88,102 +101,89 @@ public class Coordinator extends ScreenAdapter {
      *
      * @param curPlayer player that needs to make the move
      * @param step turn in the players turn round
-     * @param outOfTime true if you need to force a move
      */
-    private void handleTurn(GamePlayer curPlayer, State.StepInTurn step, boolean outOfTime) {
-        if(GameRules.print) if(outOfTime) System.out.println("FORCE "+step.name());
-
+    private Action handleTurn(GamePlayer curPlayer, State.StepInTurn step) {
+        // TODO maybe move elsewhere
         if(currentGameState.getDeckSize()==2){
             if(GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
             currentGameState = Executor.startNewRound(500,currentGameState);
-            if(currentGameState==null){
+            if(currentGameState.getWinner()!=null){
                 gameEnded();
+                roundEnd = true;
+                return null;
             }
         }
-
+        Action action = null;
         switch (step) {
             case KnockOrContinue:
-                if (outOfTime) {
-                    knockOrContinue(new ForcePlayer(curPlayer));
-                } else {
-                    knockOrContinue(curPlayer);
-                }
+                action = knockOrContinue(curPlayer);
                 break;
             case Pick:
-                if (outOfTime) {
-                    pick(new ForcePlayer(curPlayer));
-                } else {
-                    pick(curPlayer);
-                }
+                action = pick(curPlayer);
                 break;
             case Discard:
-                if (outOfTime) {
-                    discard(new ForcePlayer(curPlayer));
-                } else {
-                    discard(curPlayer);
-                }
+                action = discard(curPlayer);
                 break;
             case LayoutConfirmation:
-                if (outOfTime) {
-                    layoutConfirmation(new ForcePlayer(curPlayer));
-                } else {
-                    layoutConfirmation(curPlayer);
-                }
+                action = layoutConfirmation(curPlayer);
                 break;
             case LayOff:
                 if (currentGameState.getKnocker().viewHandLayout().getDeadwood() == 0) {
                     Executor.endRound(currentGameState);
+                }else{
+                    action = layOff(curPlayer);
                     break;
                 }
-                if (outOfTime) {
-                    layOff(new ForcePlayer(curPlayer));
-                } else {
-                    layOff(curPlayer);
-                }
-                break;
             case EndOfRound:
                 roundEnd = true;
         }
+        return action;
     }
 
-    private void knockOrContinue(GamePlayer curPlayer) {
+    private KnockAction knockOrContinue(GamePlayer curPlayer) {
         Boolean move = curPlayer.knockOrContinue();
-        if (move!=null && Executor.knockOrContinue(move, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
+        if(move==null){
+            return null;
+        }else if(move){
+            return new KnockAction(currentGameState.getPlayerNumber(),true,curPlayer.viewHandLayout());
+        }else{
+            return new KnockAction(currentGameState.getPlayerNumber(),false,curPlayer.viewHandLayout());
         }
     }
 
-    private void pick(GamePlayer curPlayer) {
+    private PickAction pick(GamePlayer curPlayer) {
         Boolean move = curPlayer.pickDeckOrDiscard(currentGameState.getDeckSize(), currentGameState.peekDiscardTop());
-        if (move!=null && Executor.pickDeckOrDiscard(move, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
+        if(move==null){
+            return null;
+        }else if(move){
+            return new PickAction(currentGameState.getPlayerNumber(),true,null);
+        }else{
+            return new PickAction(currentGameState.getPlayerNumber(), false, currentGameState.peekDiscardTop());
         }
     }
 
-    private void discard(GamePlayer curPlayer) {
+    private DiscardAction discard(GamePlayer curPlayer) {
         MyCard cardToDiscard = curPlayer.discardCard();
-        if (cardToDiscard!=null && Executor.discardCard(cardToDiscard, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
+        if(cardToDiscard!=null){
+            return new DiscardAction(currentGameState.getPlayerNumber(),cardToDiscard);
         }
+        return null;
     }
 
-    private void layoutConfirmation(GamePlayer curPlayer) {
+    private LayoutConfirmationAction layoutConfirmation(GamePlayer curPlayer) {
         HandLayout set = curPlayer.confirmLayout();
-        if (set!=null && Executor.updateHandLayout(set, currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
+        if(set!=null){
+            return new LayoutConfirmationAction(currentGameState.getPlayerNumber(), set);
         }
+        return null;
     }
 
-    private void layOff(GamePlayer curPlayer) {
+    private LayoffAction layOff(GamePlayer curPlayer) {
         Layoff layOffs = curPlayer.layOff(currentGameState.getKnockerState().viewMelds());
-        if (layOffs!=null && Executor.layOff(layOffs,currentGameState)) {
-            Executor.nextStep(currentGameState);
-            newStep = true;
+        if(layOffs!=null){
+            return new LayoffAction(currentGameState.getPlayerNumber(),layOffs);
         }
+        return null;
     }
 
     /**
@@ -191,10 +191,11 @@ public class Coordinator extends ScreenAdapter {
      * Assigns points and starts a new round
      */
     private void endOfRound() {
+        previousState = currentGameState;
         Executor.assignPoints(currentGameState);
         currentGameState = Executor.startNewRound(500, currentGameState);
         newStep = true;
-        if(currentGameState==null){
+        if(currentGameState.getWinner()!=null){
             gameEnded();
         }
         roundEnd = false;

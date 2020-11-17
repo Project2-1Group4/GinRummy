@@ -52,17 +52,8 @@ public class Finder {
      * @return list of melds that maximize players hand value
      */
     public static HandLayout findBestHandLayout(List<MyCard> cards) {
-        int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
-        for (MyCard card : cards) {
-            hand[card.suit.index][card.rank.index] = 1;
-        }
-        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
 
-        List<HandLayout> handLayouts = new ArrayList<>();
-        for (Stack<Meld> meldCombination : meldCombinations) {
-            handLayouts.add(new HandLayout(copy(hand), meldCombination));
-        }
-
+        List<HandLayout> handLayouts = findAllLayouts(cards);
         // To stop auto sorting of unused cards
         HandLayout bestLayout = findLowestDeadwoodLayout(handLayouts);
         List<MyCard> unusedCards = bestLayout.viewUnusedCards();
@@ -80,6 +71,26 @@ public class Finder {
             }
         }
         return findLowestDeadwoodLayout(handLayouts);
+    }
+
+    /**
+     * Finds all possible layouts with a given list of cards
+     *
+     * @param cards list of cards to evaluate
+     * @return list of all possible layouts
+     */
+    public static List<HandLayout> findAllLayouts(List<MyCard> cards){
+        int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
+        for (MyCard card : cards) {
+            hand[card.suit.index][card.rank.index] = 1;
+        }
+        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
+
+        List<HandLayout> handLayouts = new ArrayList<>();
+        for (Stack<Meld> meldCombination : meldCombinations) {
+            handLayouts.add(new HandLayout(copy(hand), meldCombination));
+        }
+        return handLayouts;
     }
 
     /**

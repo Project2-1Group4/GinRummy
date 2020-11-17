@@ -26,6 +26,7 @@ public class State {
     protected float[] secondsPerStep;
     protected float curTime;
     protected Integer knocker;
+    protected Integer winner;
     protected int round;
     protected int turnInRound;
     protected Stack<Action> movesDone;
@@ -71,6 +72,10 @@ public class State {
         return playerTurn;
     }
 
+    public Integer getWinner(){
+        return winner;
+    }
+
     public GamePlayer getPlayer() {
         return players.get(playerTurn);
     }
@@ -79,7 +84,7 @@ public class State {
         return playerStates.get(playerTurn);
     }
 
-    public int getKnockerNumber(){
+    public Integer getKnockerNumber(){
         return knocker;
     }
 
@@ -125,6 +130,10 @@ public class State {
     }
 
     public int getTurn(){
+        return turnInRound;
+    }
+
+    public int getRoundTurn(){
         return turnInRound;
     }
 

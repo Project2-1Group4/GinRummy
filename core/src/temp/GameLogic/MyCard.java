@@ -95,8 +95,8 @@ public class MyCard {
     }
 
     public static MyCard getCard(int index){
-        int suit = index%Rank.values().length;
-        int rank = index%Suit.values().length;
+        int rank = index%Rank.values().length;
+        int suit = (index-rank)/Rank.values().length;
         return new MyCard(suit,rank);
     }
 

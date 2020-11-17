@@ -11,6 +11,7 @@ import com.mygdx.game.views.MenuScreen;
 import temp.Coordinator;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.CombinePlayer;
+import temp.GamePlayers.Testing.GA;
 import temp.GamePlayers.Testing.TestPlayer;
 
 public class GinRummy extends Game {
@@ -33,7 +34,6 @@ public class GinRummy extends Game {
 		loadingScreen = new LoadingScreen(this);
 		setScreen(loadingScreen);
 	}
-
 	@Override
 	public void render () {
 		super.render();
@@ -49,7 +49,7 @@ public class GinRummy extends Game {
 				mainScreen = new Coordinator(this, new StateBuilder()
 							.setSeed(11)
 							.addPlayer(CombinePlayer.getBaseCombinePlayer())
-							.addPlayer(new TestPlayer())
+							.addPlayer(CombinePlayer.getBaseCombinePlayer())
 							.build());
 				this.setScreen(mainScreen);
 				break;
