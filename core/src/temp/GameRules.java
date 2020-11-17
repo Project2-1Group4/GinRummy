@@ -6,7 +6,11 @@ public class GameRules {
     public static int ginBonus = 25;
     public static int undercutBonus = 25;
     public static int pointsToWin = 1;
+
+    // Game rules
+    public static int minCardsInDeck = 2;
     public static int baseCardsPerHand = 10;
+    public static int maxTurnsInARound = 500; //To avoid bots just picking from discard for infinity
 
     // Game speed specs
     public static float gameSpeed = 1f;

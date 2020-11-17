@@ -104,15 +104,16 @@ public class Coordinator extends ScreenAdapter {
      */
     private Action handleTurn(GamePlayer curPlayer, State.StepInTurn step) {
         // TODO maybe move elsewhere
-        if(currentGameState.getDeckSize()==2){
+        if(currentGameState.getDeckSize()<=GameRules.minCardsInDeck){
             if(GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
             currentGameState = Executor.startNewRound(500,currentGameState);
-            if(currentGameState.getWinner()!=null){
-                gameEnded();
-                roundEnd = true;
-                return null;
-            }
         }
+        if(currentGameState.getRoundTurn()>=GameRules.maxTurnsInARound){
+            gameEnded();
+            roundEnd = true;
+            return null;
+        }
+
         Action action = null;
         switch (step) {
             case KnockOrContinue:

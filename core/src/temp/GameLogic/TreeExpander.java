@@ -17,83 +17,74 @@ import java.util.List;
 public class TreeExpander {
 
     public static List<? extends Action> getPossibleActions(State curState){
+        int index = curState.getPlayerNumber();
         switch (curState.getStep()) {
             case KnockOrContinue:
-                return getPossibleKnockActions(curState);
+                return getPossibleKnockActions(index,curState.getPlayerState().viewHandLayout());
             case Pick:
-                return getPossiblePickActions(curState);
+                return getPossiblePickActions(index,curState.getDeckSize(),curState.peekDiscardTop());
             case Discard:
-                return getPossibleDiscardActions(curState);
+                return getPossibleDiscardActions(index,curState.getPlayerState().viewHandLayout());
             case LayoutConfirmation:
-                return getPossibleLayoutConfirmationActions(curState);
+                return getPossibleLayoutConfirmationActions(index,curState.getPlayerState().viewHandLayout());
             case LayOff:
-                return getPossibleLayoffActions(curState);
+                return getPossibleLayoffActions(index,curState.getPlayerState().viewHandLayout(),curState.getKnockerState().viewMelds());
             default:
                 return new ArrayList<>();
         }
     }
 
-    private static List<KnockAction> getPossibleKnockActions(State curState){
-        assert curState.getStep() == State.StepInTurn.KnockOrContinue;
-
-        List<HandLayout> layouts = Finder.findAllLayouts(curState.getPlayerState().viewHand());
+    public static List<KnockAction> getPossibleKnockActions(int index, HandLayout layout){
+        List<HandLayout> layouts = Finder.findAllLayouts(layout.viewAllCards());
         List<KnockAction> possibleActions = new ArrayList<>();
-        for (HandLayout layout : layouts) {
-            if(layout.getDeadwood()<= GameRules.minDeadwoodToKnock){
-                possibleActions.add(new KnockAction(curState.getPlayerNumber(),true,layout));
+        for (HandLayout possible : layouts) {
+            if(possible.getDeadwood()<= GameRules.minDeadwoodToKnock){
+                possibleActions.add(new KnockAction(index,true,possible));
             }
         }
-        possibleActions.add(new KnockAction(curState.getPlayerNumber(),false,null));
+        possibleActions.add(new KnockAction(index,false,null));
         return possibleActions;
     }
 
-    private static List<PickAction> getPossiblePickActions(State curState){
-        assert curState.getStep() == State.StepInTurn.Pick;
-
+    public static List<PickAction> getPossiblePickActions(int index, int deckSize, MyCard topOfDiscard){
         List<PickAction> possibleActions = new ArrayList<>();
-        if(!curState.isDiscardEmpty()) {
-            possibleActions.add(new PickAction(curState.getPlayerNumber(), false, curState.peekDiscardTop()));
+        if(topOfDiscard!=null) {
+            possibleActions.add(new PickAction(index, false, topOfDiscard));
         }
-        if(curState.getDeckSize()!=0) {
-            possibleActions.add(new PickAction(curState.getPlayerNumber(), true, null));
+        if(deckSize!=0) {
+            possibleActions.add(new PickAction(index, true, null));
         }
         return possibleActions;
     }
 
-    private static List<DiscardAction> getPossibleDiscardActions(State curState){
-        assert curState.getStep()== State.StepInTurn.Discard;
-
+    public static List<DiscardAction> getPossibleDiscardActions(int index, HandLayout layout){
         List<DiscardAction> possibleActions = new ArrayList<>();
-        for (MyCard card : curState.getPlayerState().viewHand()) {
-            possibleActions.add(new DiscardAction(curState.getPlayerNumber(),card));
+        for (MyCard card : layout.viewAllCards()) {
+            possibleActions.add(new DiscardAction(index,card));
         }
         return possibleActions;
     }
 
-    private static List<LayoutConfirmationAction> getPossibleLayoutConfirmationActions(State curState){
-        assert curState.getStep() == State.StepInTurn.LayoutConfirmation;
-
+    public static List<LayoutConfirmationAction> getPossibleLayoutConfirmationActions(int index, HandLayout layout){
         List<LayoutConfirmationAction> possibleActions = new ArrayList<>();
-        List<HandLayout> layouts = Finder.findAllLayouts(curState.getPlayerState().viewHand());
-        for (HandLayout layout : layouts) {
-            possibleActions.add(new LayoutConfirmationAction(curState.getPlayerNumber(),layout));
+        List<HandLayout> layouts = Finder.findAllLayouts(layout.viewAllCards());
+        for (HandLayout possible : layouts) {
+            possibleActions.add(new LayoutConfirmationAction(index,possible));
         }
         return possibleActions;
     }
 
-    private static List<LayoffAction> getPossibleLayoffActions(State curState){
-        assert curState.getStep() == State.StepInTurn.LayOff;
-
+    public static List<LayoffAction> getPossibleLayoffActions(int index, HandLayout layout, List<Meld> knockerMelds){
         List<LayoffAction> possibleActions = new ArrayList<>();
-        List<MyCard> unusedCards = curState.getPlayerState().viewUnusedCards();
-        for (Meld meld : curState.getKnockerState().viewMelds()) {
+        List<MyCard> unusedCards = layout.viewUnusedCards();
+        for (Meld meld : knockerMelds) {
             for (MyCard unusedCard : unusedCards) {
                 if(meld.isValidWith(unusedCard)){
-                    possibleActions.add(new LayoffAction(curState.getPlayerNumber(),unusedCard,meld));
+                    possibleActions.add(new LayoffAction(index,unusedCard,meld));
                 }
             }
         }
-        possibleActions.add(new LayoffAction(curState.getPlayerNumber(),null,null));
+        possibleActions.add(new LayoffAction(index,null,null));
         return possibleActions;
     }
 }
