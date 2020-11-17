@@ -26,7 +26,7 @@ public abstract class GamePlayer implements PlayerInterface {
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
     protected InputProcessor processor;
-    protected final int index;
+    public final int index;
     public GamePlayer(){
         index = getPlayer();
     }

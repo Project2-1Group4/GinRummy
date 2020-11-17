@@ -67,6 +67,10 @@ public class State {
     }
 
     // GETTERS
+    // TODO, honestly kinda fked myself with all the: only executor has access to inside of state
+    public List<PlayerState> getPlayerStates(){
+        return playerStates;
+    }
     // Returns copies to avoid the changing of the inner state outside of package
     public int getPlayerNumber() {
         return playerTurn;
