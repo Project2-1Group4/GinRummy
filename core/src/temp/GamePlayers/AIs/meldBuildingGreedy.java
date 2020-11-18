@@ -6,13 +6,13 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.GamePlayer;
+import temp.GeneticAlgo.TestPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class meldBuildingGreedy extends GamePlayer {
+public class meldBuildingGreedy extends TestPlayer {
 
     /*
     SO I just realized that with the general structure I want to implement a lot of this current code is garbage
@@ -20,6 +20,8 @@ public class meldBuildingGreedy extends GamePlayer {
     For now I'll leave in the garbage methods, but yeah this is how it's currently made
     TODO: Fix up the inefficient methods to actually be fast
      */
+
+    int deadwoodCutOff;
 
     // These methods are for the GA, as I want to be able to modify them going on
     // For the start the value of the heuristics will be set in stone.
@@ -43,6 +45,7 @@ public class meldBuildingGreedy extends GamePlayer {
         this.discardedCards = new ArrayList<>();
         this.otherPlayerDiscards = new ArrayList<>();
         this.knownInOtherHand = new ArrayList<>();
+        this.deadwoodCutOff = 10;
     }
 
 
@@ -487,7 +490,12 @@ public class meldBuildingGreedy extends GamePlayer {
 
     @Override
     public Boolean knockOrContinue() {
-        return null;
+        int val = this.handLayout.getDeadwood();
+        if (val <= this.deadwoodCutOff){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
