@@ -8,6 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Card extends Actor implements Comparable {
 
+	/*
+	0 = spades
+	1 = clovers
+	2 = hearts
+	3 = diamonds
+	 */
 	public enum SUITS{
 		SPADES,
 		CLOVERS,
@@ -17,6 +23,7 @@ public class Card extends Actor implements Comparable {
 
 	private static TextureAtlas atlas;
 	private SUITS suit;
+	private int suitVal;
 	private int value;
 	private String nameCard;
 
@@ -28,7 +35,7 @@ public class Card extends Actor implements Comparable {
 	private float pointX;
 	private float pointY;
 
-	private double prob = 1/41;
+	private double prob = 1.0/41.0;
 
 	public float[] vertices;
 	public short[] indices;
@@ -43,7 +50,14 @@ public class Card extends Actor implements Comparable {
 	 * K = 13
 	 */
 
+	
 	public Card(int suit, int value){
+		this.setSuit(suit);
+		this.setValue(value);
+	}
+
+	private void setSuit(int suit){
+		this.suitVal = suit;
 		if(suit == 0) {
 			this.setSuit(SUITS.SPADES);
 		} else if (suit ==1){
@@ -52,9 +66,10 @@ public class Card extends Actor implements Comparable {
 			this.setSuit(SUITS.HEARTS);
 		} else if (suit == 3) {
 			this.setSuit(SUITS.DIAMONDS);
+		} else{
+			System.out.println("An invalid value of " + suit + " has been given as a suit");
 		}
 
-		this.setValue(value);
 	}
 
 	public void addVisualInfo(){
@@ -119,7 +134,11 @@ public class Card extends Actor implements Comparable {
 	public SUITS getSuit() {
 		return suit;
 	}
-	
+
+	public int getSuitVal(){
+		return this.suitVal;
+	}
+
 	public int getGinRummyValue() {
 		if (this.value>10) {
 			return 10;

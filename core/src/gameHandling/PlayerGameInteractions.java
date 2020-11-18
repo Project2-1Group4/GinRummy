@@ -3,7 +3,9 @@ package gameHandling;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 
-public interface PlayerGameInteractions {
+public interface
+
+PlayerGameInteractions {
 	
 	public Boolean chooseDeckOrPile(Card discardTop);
 	
