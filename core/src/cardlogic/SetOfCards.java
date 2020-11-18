@@ -1,9 +1,8 @@
 package cardlogic;
 
 import cardlogic.Card.SUITS;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import gameHandling.Player;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,21 +47,6 @@ public class SetOfCards {
 		}
 		Collections.shuffle(this.cards);
 	}
-
-	public SetOfCards(HandLayout layout){
-		this(layout.viewAllCards(), false);
-	}
-
-	public SetOfCards(List<MyCard> cardList, boolean garbage){
-		this.cards = new ArrayList<>();
-		for(MyCard myCard: cardList){
-			cards.add(new Card(myCard));
-		}
-
-	}
-
-
-
 
 	public SetOfCards(List<Card> someCards){
 		this.cards = Player.copyList(someCards);

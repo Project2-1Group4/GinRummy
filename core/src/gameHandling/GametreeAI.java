@@ -1,10 +1,13 @@
 package gameHandling;
 
 import cardlogic.Card;
+import cardlogic.CardBatch;
 import cardlogic.SetOfCards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class GametreeAI {
     SetOfCards discardPile;
@@ -15,7 +18,6 @@ public class GametreeAI {
     private int leftInUnknownRun = 2;
     private SetOfCards opponentHand;
     int test = 0;
-    //private HashMap<MyCard, double>;
 
 
     public  GametreeAI (SetOfCards pile, SetOfCards cards){
