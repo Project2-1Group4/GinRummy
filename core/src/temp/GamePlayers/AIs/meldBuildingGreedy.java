@@ -1,14 +1,18 @@
-package AI;
+package temp.GamePlayers.AIs;
 
-import cardlogic.Card;
 import cardlogic.SetOfCards;
-import gameHandling.Player;
-import gameHandling.PlayerGameInteractions;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
+import temp.GameLogic.MyCard;
+import temp.GamePlayers.GamePlayer;
 
 import java.util.List;
 
 
-public class meldBuildingGreedy extends basicGreedy {
+public class meldBuildingGreedy extends GamePlayer {
 
     /*
     SO I just realized that with the general structure I want to implement a lot of this current code is garbage
@@ -18,9 +22,9 @@ public class meldBuildingGreedy extends basicGreedy {
      */
 
     public meldBuildingGreedy(SetOfCards cards){
-        super(cards);
+        super();
 
-        this.updateMemoryMatrix();
+        //this.updateMemoryMatrix();
 
     }
 
@@ -44,65 +48,53 @@ public class meldBuildingGreedy extends basicGreedy {
     /*
     Card at the top of the discard pile, used for the evaluate function
      */
-    Card topDiscard;
-
-    boolean evaluate(Card discard){
-        this.setTopDiscard(discard);
-
-    }
-
-    @Override
-    public boolean ChooseDeckOrPile(Card aCard){
-        this.updateMemoryMatrix();
-
-        List<Card> cards = this.hand.toList();
-        cards.add(aCard);
-
-        for(Card oneCard : cards){
+    MyCard topDiscard;
 
 
+    int[][] createMemoryMatrix(HandLayout layout){
 
-
-        }
-
-
-
-    }
-
-    int[][] createMemoryMatrix(List<Card> cards){
-        Player temp = new Player(new SetOfCards(cards));
-
-        List<List<Card>> melds = temp.getMelds();
-        List<Card> deadwood = temp.getDeadwood(melds);
+        List<Meld> melds = layout.viewMelds();
+        List<MyCard> deadwood = layout.viewUnusedCards();
 
         int[][] newMemMatrix = new int[4][13];
 
-        for(List<Card> list : melds){
-            for(Card aCard : list){
-                newMemMatrix[aCard.getSuitVal()][aCard.getValue()] = -1;
+        for(Meld list : melds){
+            for(MyCard aCard : list.viewMeld()){
+                newMemMatrix[aCard.suit.index][aCard.suit.index] = -1;
             }
         }
 
-        for(Card aCard: deadwood){
-            newMemMatrix[aCard.getSuitVal()][aCard.getValue()] = 1;
+        for(MyCard aCard: deadwood){
+            newMemMatrix[aCard.suit.index][aCard.suit.index] = 1;
         }
 
         return newMemMatrix;
 
     }
 
-    void updateMemoryMatrix(){
-        List<List<Card>> melds = this.getMelds();
-        List<Card> deadwood = this.getDeadwood(melds);
+    /*
+    For a given memory matrix it'll delete all values that are in a meld or in hand
+    And then update it with the new values that are in the given hand
 
-        for(List<Card> list : melds){
-            for(Card aCard : list){
-                memoryMatrix[aCard.getSuitVal()][aCard.getValue()] = -1;
+    This method assumes that the reset cards will be added to the discardPile
+     */
+    static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand){
+
+
+    }
+
+    void resetMemoryMatrix(){
+        List<Meld> melds = this.handLayout.viewMelds();
+        List<MyCard> deadwood = this.handLayout.viewUnusedCards();
+
+        for(Meld list : melds){
+            for(MyCard aCard : list.viewMeld()){
+                memoryMatrix[aCard.suit.index][aCard.suit.index] = -1;
             }
         }
 
-        for(Card aCard: deadwood){
-            memoryMatrix[aCard.getSuitVal()][aCard.getValue()] = 1;
+        for(MyCard aCard: deadwood){
+            memoryMatrix[aCard.suit.index][aCard.suit.index] = 1;
         }
 
     }
@@ -135,7 +127,7 @@ public class meldBuildingGreedy extends basicGreedy {
         for(int i = 0; i<4; i++){
             if(memoryMatrix[i][val] == 1){
                 setCount++;
-            } else if((memoryMatrix[i][val] == 4) || (memoryMatrix[i][val] == 3)){
+            } else if(((memoryMatrix[i][val] == 4) || (memoryMatrix[i][val] == 3)) || (memoryMatrix[i][val] == -1)){
                 // Just increasing the value of cards that are discarded for now
                 discardCount++;
             } else if (memoryMatrix[i][val]==2){
@@ -166,6 +158,9 @@ public class meldBuildingGreedy extends basicGreedy {
 
     Method assumes that all runs are just as valuable
     When in practice a larger run is better (as more cards are discarded)
+
+    Method also assume that the memoryMatrix has been build already with all of the possible values
+    What it's finding is the run value of the specific card in the memory matrix
 
      */
     static int evaluateRun(int suit, int val, int[][] memoryMatrix){
@@ -323,10 +318,45 @@ public class meldBuildingGreedy extends basicGreedy {
     }
 
 
-    void setTopDiscard(Card aCard){
+    void setTopDiscard(MyCard aCard){
         this.topDiscard = aCard;
-        memoryMatrix[aCard.getSuitVal()][aCard.getValue()] = 4;
+        memoryMatrix[aCard.suit.index][aCard.rank.index] = 4;
 
     }
 
+    @Override
+    public Boolean knockOrContinue() {
+        return null;
+    }
+
+    @Override
+    public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+
+
+
+        return null;
+    }
+
+    @Override
+    public MyCard discardCard() {
+        return null;
+    }
+
+    static public int findValOfHand(List<MyCard> cardList){
+        HandLayout layout = Finder.findBestHandLayout(cardList);
+
+        return layout.getDeadwood();
+    }
+
+    @Override
+    public void otherPlayerDiscarded(DiscardAction discardAction) {
+        MyCard DisCard = discardAction.card;
+        this.memoryMatrix[DisCard.suit.index][DisCard.rank.index] = 3;
+    }
+
+    // TODO: Go over this method to update what happens when the other player picks up a card
+    @Override
+    public void otherPlayerPicked(PickAction pickAction) {
+
+    }
 }

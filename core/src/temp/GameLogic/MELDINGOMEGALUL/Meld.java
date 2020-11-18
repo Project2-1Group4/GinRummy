@@ -21,6 +21,7 @@ public class Meld {
     // SETTERS
     // Only way to change inner state of Meld
     public void addCard(MyCard card) {
+        // In Gin Rummy the melds don't really have a value, so we can probably ignore this
         value+= card.ginValue();
         meld.add(card);
     }
