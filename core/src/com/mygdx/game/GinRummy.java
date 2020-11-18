@@ -2,18 +2,18 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.game.views.EndScreen;
 import com.mygdx.game.views.LoadingScreen;
-import com.mygdx.game.views.MainScreen;
 import com.mygdx.game.views.MenuScreen;
+import temp.Coordinator;
+import temp.GameLogic.GameState.StateBuilder;
+import temp.GamePlayers.CombinePlayer;
 
 public class GinRummy extends Game {
 
 	private LoadingScreen loadingScreen;
 	private MenuScreen menuScreen;
-	private MainScreen mainScreen;
+	private Coordinator mainScreen;
 	private EndScreen endScreen;
 
 	public final static int MENU = 0;
@@ -29,7 +29,6 @@ public class GinRummy extends Game {
 		loadingScreen = new LoadingScreen(this);
 		setScreen(loadingScreen);
 	}
-
 	@Override
 	public void render () {
 		super.render();
@@ -42,7 +41,11 @@ public class GinRummy extends Game {
 				this.setScreen(menuScreen);
 				break;
 			case APPLICATION:
-				if(mainScreen == null) mainScreen = new MainScreen(this);
+				mainScreen = new Coordinator(this, new StateBuilder()
+							.setSeed(11)
+							.addPlayer(CombinePlayer.getBaseCombinePlayer())
+							.addPlayer(CombinePlayer.getBaseCombinePlayer())
+							.build());
 				this.setScreen(mainScreen);
 				break;
 			case END:

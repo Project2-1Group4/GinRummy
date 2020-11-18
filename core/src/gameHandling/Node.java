@@ -1,9 +1,11 @@
 package gameHandling;
 
-import cardlogic.Card;
 import cardlogic.SetOfCards;
+import temp.GameLogic.MyCard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Node {
     SetOfCards discardPile;
@@ -15,6 +17,7 @@ public class Node {
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
+    protected HashMap<MyCard, Double> probMap = new HashMap<>();
 
     boolean playerStop = false; // when game is over this one turns to be true
     boolean AIStop = false; // turn to be true when game is over
@@ -24,6 +27,7 @@ public class Node {
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
+
         if(Player.scoreHand(hand.toList()) > Player.scoreHand(opponentHand.toList()) && Player.scoreHand(hand.toList())<=10){
             this.winOrLose = true;
         }
@@ -41,6 +45,14 @@ public class Node {
         }
         else
             this.setHandValue(-100000);
+    }
+
+    double getProbability(MyCard aCard){
+        return this.probMap.get(aCard);
+    }
+
+    void updateProbability(MyCard aCard, double aVal){
+        this.probMap.put(aCard, aVal);
     }
 
     //we already have static method in Player class
