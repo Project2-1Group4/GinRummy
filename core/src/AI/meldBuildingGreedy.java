@@ -72,7 +72,22 @@ public class meldBuildingGreedy extends basicGreedy {
     int[][] createMemoryMatrix(List<Card> cards){
         Player temp = new Player(new SetOfCards(cards));
 
+        List<List<Card>> melds = temp.getMelds();
+        List<Card> deadwood = temp.getDeadwood(melds);
 
+        int[][] newMemMatrix = new int[4][13];
+
+        for(List<Card> list : melds){
+            for(Card aCard : list){
+                newMemMatrix[aCard.getSuitVal()][aCard.getValue()] = -1;
+            }
+        }
+
+        for(Card aCard: deadwood){
+            newMemMatrix[aCard.getSuitVal()][aCard.getValue()] = 1;
+        }
+
+        return newMemMatrix;
 
     }
 
