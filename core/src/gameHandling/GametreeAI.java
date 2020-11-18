@@ -187,7 +187,7 @@ public class GametreeAI {
                 // increase prob for cards that form set with chosen card
                 if (cardsUnknown.getCard(j).getValue() == chosen.getValue()) {
                     //BAYES RULEE!! change this!!
-                    setProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownSet);
+                    setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
                     cardsUnknown.getCard(j).setProb(setProb);
                     System.out.println(setProb);
                     probSpecial += setProb;
@@ -195,15 +195,18 @@ public class GametreeAI {
                 // increase prob for cards that form run with chosen card
                 else if (cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1) {
                     // BAYES RULEE!! change this!
-                    runProb = cardsUnknown.getCard(j).getProb() / (1 / 2 * leftInUnknownRun);
+                    System.out.println("start Prob" + cardsUnknown.getCard(j).getProb());
+                    System.out.println("left in run" + leftInUnknownRun);
+                    runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
+                    System.out.println(1.0 / (2.0 * leftInUnknownRun));
                     cardsUnknown.getCard(j).setProb(runProb);
-                    System.out.println(runProb);
+                    System.out.println("run Prob" + runProb);
                     probSpecial += runProb;
                 }
             }
             // calculate the probability of the remaining cards
             int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
-            double leftProb = 1-probSpecial;
+            double leftProb = 1.0-probSpecial;
             double unknownProb;
             double newUnknownProb;
             // update prob of cards that don't form melts with chosen card
@@ -215,7 +218,7 @@ public class GametreeAI {
                     cardsUnknown.getCard(j).setProb(newUnknownProb);
                 }
             }
-            chosen.setProb(1);
+            chosen.setProb(1.0);
             cardsUnknown.addCard(chosen);
             discardPile.discardCard(chosen);
         }
@@ -231,20 +234,20 @@ public class GametreeAI {
                 // decrease prob of cards that form set with not chosen card
                 if(cardsUnknown.getCard(j).getValue() == notChosen.getValue()){
                     // Bayes rule
-                    setProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownSet);
+                    setProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownSet));
                     cardsUnknown.getCard(j).setProb(setProb);
                     probSpecial += setProb;
                 }
                 // decrease prob of cards that form run with chosen card
                 if(cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1){
                     // Bayes rule
-                    runProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownRun);
+                    runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
                     cardsUnknown.getCard(j).setProb(runProb);
                     probSpecial += runProb;
                 }
             }
             int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
-            double leftProb = 1-probSpecial;
+            double leftProb = 1.0 -probSpecial;
             double unknownProb;
             double newUnknownProb;
             for(int j = 0; j<cardsUnknown.size(); j++) {
@@ -392,21 +395,25 @@ public class GametreeAI {
         List<Card> copyList = Player.copyList(totalCards);
 
         List<Card> resultList = new ArrayList<>();
-        for(Card aCard : copyList){
+        for(int i = 0; i < copyList.size();i++){
             // Might be changed to is greater than or equals
-            if(aCard.getProb() == 1){
-                resultList.add(aCard);
-                copyList.remove(aCard);
+            if(copyList.get(i).getProb() == 1){
+                resultList.add(copyList.get(i));
+                System.out.println(copyList.get(i));
+                copyList.remove(copyList.get(i));
             }
         }
 
         while(resultList.size() < size){
 
             Card toSave = pickRandomCard(copyList);
-            resultList.add(toSave);
-
+            if(toSave != null) {
+                resultList.add(toSave);
+                System.out.println(toSave);
+                copyList.remove(toSave);
+            }
             // TODO: Check to make sure that this method doesn't affect the original list of cards
-            copyList.remove(toSave);
+
         }
         return resultList;
     }
