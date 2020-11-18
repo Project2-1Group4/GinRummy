@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
 import temp.GameLogic.GameActions.*;
+import temp.GameLogic.GameState.StateBuilder;
+import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameState.Executor;
@@ -24,9 +26,15 @@ public class Coordinator extends ScreenAdapter {
     private boolean newStep = true;
     private boolean roundEnd = false;
 
-    public Coordinator(GinRummy master,State state) {
+
+
+    public Coordinator(GinRummy master) {
         this.master = master;
-        currentGameState = state;
+        currentGameState = new StateBuilder()
+                .setSeed(11)
+                .addPlayer(CombinePlayer.getBaseCombinePlayer())
+                .addPlayer(CombinePlayer.getBaseCombinePlayer())
+                .build();
         graphics = new Graphics();
     }
 

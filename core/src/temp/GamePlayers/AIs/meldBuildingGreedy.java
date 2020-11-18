@@ -1,18 +1,18 @@
 package temp.GamePlayers.AIs;
 
+import cardlogic.SetOfCards;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
-import temp.GeneticAlgo.TestPlayer;
+import temp.GamePlayers.GamePlayer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
-public class meldBuildingGreedy extends TestPlayer {
+public class meldBuildingGreedy extends GamePlayer {
 
     /*
     SO I just realized that with the general structure I want to implement a lot of this current code is garbage
@@ -21,34 +21,12 @@ public class meldBuildingGreedy extends TestPlayer {
     TODO: Fix up the inefficient methods to actually be fast
      */
 
-    int deadwoodCutOff;
-
-    // These methods are for the GA, as I want to be able to modify them going on
-    // For the start the value of the heuristics will be set in stone.
-    double cardInMeldMult;
-    double cardApproxMeld;
-    double cardFreeMult;
-    double cardNeverMult;
-
-    List<MyCard> discardedCards;
-    List<MyCard> otherPlayerDiscards;
-
-    List<MyCard> knownInOtherHand;
-
-    public meldBuildingGreedy(){
+    public meldBuildingGreedy(SetOfCards cards){
         super();
-        this.cardInMeldMult = 0.0;
-        this.cardApproxMeld = 1.0;
-        this.cardFreeMult = 2.0;
-        this.cardNeverMult = 4.0;
 
-        this.discardedCards = new ArrayList<>();
-        this.otherPlayerDiscards = new ArrayList<>();
-        this.knownInOtherHand = new ArrayList<>();
-        this.deadwoodCutOff = 10;
+        //this.updateMemoryMatrix();
+
     }
-
-
 
     /*
     Memory matrix takes into account all of the cards played so far and stores them so that it can decide how to act
@@ -100,40 +78,12 @@ public class meldBuildingGreedy extends TestPlayer {
 
     This method assumes that the reset cards will be added to the discardPile
      */
-    static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand, MyCard removedCard){
-        int[][] newMem = memoryMatrix.clone();
+    static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand){
 
-        newMem[removedCard.suit.index][removedCard.rank.index] = 4;
-
-        List<Meld> melds = hand.viewMelds();
-        List<MyCard> deadwood = hand.viewUnusedCards();
-
-        for(Meld aMeld: melds){
-            for(MyCard myCard: aMeld.viewMeld()){
-                newMem[myCard.suit.index][myCard.rank.index] = -1;
-            }
-        }
-
-        for(MyCard myCard:deadwood){
-            newMem[myCard.suit.index][myCard.rank.index] = 1;
-        }
-
-        return newMem;
-
+        return null;
     }
 
-    /*
-    Updates all the values in the memory matrix according to the found values
-    This could be a bottleneck considering how often the update is done
-    As well as a potential source of bugs.
-    But for now it seems good enough.
-
-    TODO: Make sure no issues arise out of this method
-     */
-
-    void updateMemoryMatrix(){
-
-        this.memoryMatrix = new int[4][13];
+    void resetMemoryMatrix(){
         List<Meld> melds = this.handLayout.viewMelds();
         List<MyCard> deadwood = this.handLayout.viewUnusedCards();
 
@@ -147,64 +97,6 @@ public class meldBuildingGreedy extends TestPlayer {
             memoryMatrix[aCard.suit.index][aCard.suit.index] = 1;
         }
 
-        for(MyCard myCard: this.knownInOtherHand){
-            memoryMatrix[myCard.suit.index][myCard.suit.index] = 2;
-        }
-
-        for(MyCard myCard: this.otherPlayerDiscards){
-            memoryMatrix[myCard.suit.index][myCard.suit.index] = 3;
-        }
-
-        for(MyCard myCard: this.discardedCards){
-            memoryMatrix[myCard.suit.index][myCard.suit.index] = 4;
-        }
-
-
-    }
-
-    /*
-    Event is just a short hand way of defining what kind of event updated the memory matrix
-    It follows the same general guidelines of the memory matrix, where 1= in hand
-    3 = discarded by other player, etc.
-
-    The method also does additional stuff depending on what the event was
-
-    If it's in hand, there's no extra event as for the most part any extra stuff for that is handled elsewhere
-    This is really only important for when the other player picks a card from the discard pile or something like that
-     */
-
-    void updateMemoryMatrix(MyCard aCard, int event){
-        this.memoryMatrix[aCard.suit.index][aCard.rank.index] = event;
-
-        if (event == 2) {
-            this.knownInOtherHand.add(aCard);
-        } else if (event == 3){
-            this.knownInOtherHand.remove(aCard);
-            this.otherPlayerDiscards.add(aCard);
-        } else if (event == 4){
-            this.discardedCards.add(aCard);
-        }
-    }
-
-    void resetMemoryMatrix(){
-        this.memoryMatrix = new int[4][13];
-        this.updateMemoryMatrix();
-    }
-
-    // Just gives an evaluation of the card
-    // It's simple and effective
-    // If it's in a meld it just returns the heuristicForMeld
-    // If it's not then it calculates its run value + its set value
-    // And returns that
-    // Under the idea that a card that could be in a run or in a set is more valuable, as there's more possible options
-    double evaluateCard(MyCard aCard, int[][] memMatrix){
-        int val = aCard.rank.index;
-        int suit = aCard.suit.index;
-        if(memMatrix[suit][val] == -1){
-            return heuristicForMeld(val);
-        } else {
-            return evaluateRun(suit, val, memoryMatrix) + evaluateSet(val, memMatrix);
-        }
     }
 
     /*
@@ -220,7 +112,7 @@ public class meldBuildingGreedy extends TestPlayer {
 
     // Method looks finished
     // TODO: Bugtest
-    double evaluateSet(int val, int[][] memoryMatrix){
+    static int evaluateSet(int val, int[][] memoryMatrix){
 
         int setCount = 0;
         int discardCount = 0;
@@ -270,11 +162,8 @@ public class meldBuildingGreedy extends TestPlayer {
     Method also assume that the memoryMatrix has been build already with all of the possible values
     What it's finding is the run value of the specific card in the memory matrix
 
-    The method already takes into accounts the fact that cards in other melds are not as valuable
-    So I don't need to worry about updating that fact
-
      */
-    double evaluateRun(int suit, int val, int[][] memoryMatrix){
+    static int evaluateRun(int suit, int val, int[][] memoryMatrix){
         // I go twice, once forwards and once backwards
         // Because it felt like the easiest way to do it
         // Garbage efficiency though
@@ -349,10 +238,7 @@ public class meldBuildingGreedy extends TestPlayer {
 
     }
 
-    /*
-    Helper method for runs
-     */
-    public double findIfNearbyIsValidWithNegativeOpposite(int val, int nearby, int nxt) {
+    public static int findIfNearbyIsValidWithNegativeOpposite(int val, int nearby, int nxt) {
         if(nxt >=2){
             return heuristicForNever(val);
         } else if ((nxt == 1) && (nearby == 1)){
@@ -404,20 +290,12 @@ public class meldBuildingGreedy extends TestPlayer {
     }
 
     /*
-    Method to multiply in case a card is in a meld
-    For now, just keep it as very valuable
-     */
-    double heuristicForMeld(int value){
-        return valInGinRummy(value)*this.cardInMeldMult;
-    }
-
-    /*
     This method will probably be the one that gets changed the most going forward
     This will return a value for when the given card (in this case we only care about its value) is close to creating a meld
     The exact heuristic is probably what's going to be most tested, but for now I'll just create the method elsewhere and make it simple
      */
-    double heuristicForApprox(int value){
-        return valInGinRummy(value)*this.cardApproxMeld;
+    static int heuristicForApprox(int value){
+        return valInGinRummy(value);
     }
     /*
     Another method that'll be changed around going forward
@@ -426,8 +304,8 @@ public class meldBuildingGreedy extends TestPlayer {
     Current punishment is meh, but it'll do
      */
 
-    double heuristicForNever(int value){
-        return valInGinRummy(value)*this.cardNeverMult;
+    static int heuristicForNever(int value){
+        return valInGinRummy(value)*4;
     }
 
     /*
@@ -435,8 +313,8 @@ public class meldBuildingGreedy extends TestPlayer {
     AKA it's in hand, but none of the cards in hand make it close to a meld
      */
 
-    double heuristicForFree(int value){
-        return valInGinRummy(value)*this.cardFreeMult;
+    static int heuristicForFree(int value){
+        return valInGinRummy(value)*2;
     }
 
 
@@ -446,82 +324,22 @@ public class meldBuildingGreedy extends TestPlayer {
 
     }
 
-    public MyCard findLeastValuableCard(List<MyCard> cardList){
-
-        // A high value is bad, so I'm just setting an arbitrarily large value
-        double val = -100;
-        MyCard worst = null;
-
-        for(MyCard myCard:cardList){
-            List<MyCard> temp = new ArrayList<>(cardList);
-            temp.remove(myCard);
-            HandLayout layout = Finder.findBestHandLayout(temp);
-
-            int[][] clone = cloneResetMemMatrix(this.memoryMatrix, layout, myCard);
-            double subVal = this.evaluate(memoryMatrix, temp);
-
-            if(subVal >=val){
-                val = subVal;
-                worst = myCard;
-            }
-
-
-        }
-
-        return worst;
-    }
-
-    public double evaluate(int[][] memoryMatrix, List<MyCard> cardList){
-        double val = 0;
-
-        for(MyCard myCard: cardList){
-            val += this.evaluateCard(myCard, memoryMatrix);
-        }
-        return val;
-
-    }
-
-    // TODO: Ask if this method is used when resetting rounds or for every time a card is added.
-    @Override
-    public void update(HandLayout realLayout){
-        super.update(realLayout);
-        this.updateMemoryMatrix();
-    }
-
     @Override
     public Boolean knockOrContinue() {
-        int val = this.handLayout.getDeadwood();
-        if (val <= this.deadwoodCutOff){
-            return true;
-        } else {
-            return false;
-        }
+        return null;
     }
 
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
 
-        List<MyCard> tempList = new ArrayList<>(this.allCards);
 
-        tempList.add(topOfDiscard);
 
-        MyCard least = this.findLeastValuableCard(tempList);
-
-        if (least == topOfDiscard){
-            return true;
-        } else {
-            return false;
-        }
-
+        return null;
     }
 
-    /*
-    DiscardCard is for when there's 11 cards in the hand
-    So what we need to do is just evaluate all combinations with 11 cards and see what happens
-     */
     @Override
     public MyCard discardCard() {
-        return this.findLeastValuableCard(this.allCards);
+        return null;
     }
 
     static public int findValOfHand(List<MyCard> cardList){
@@ -533,17 +351,12 @@ public class meldBuildingGreedy extends TestPlayer {
     @Override
     public void otherPlayerDiscarded(DiscardAction discardAction) {
         MyCard DisCard = discardAction.card;
-        this.updateMemoryMatrix(DisCard, 3);
+        this.memoryMatrix[DisCard.suit.index][DisCard.rank.index] = 3;
     }
 
     // TODO: Go over this method to update what happens when the other player picks up a card
     @Override
     public void otherPlayerPicked(PickAction pickAction) {
-        if(pickAction.deck){
-            // There's really not much to do in case the other player picked a card from the deck
-        } else {
-            this.updateMemoryMatrix(pickAction.card, 2);
 
-        }
     }
 }

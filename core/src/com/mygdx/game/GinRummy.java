@@ -6,8 +6,6 @@ import com.mygdx.game.views.EndScreen;
 import com.mygdx.game.views.LoadingScreen;
 import com.mygdx.game.views.MenuScreen;
 import temp.Coordinator;
-import temp.GameLogic.GameState.StateBuilder;
-import temp.GamePlayers.CombinePlayer;
 
 public class GinRummy extends Game {
 
@@ -41,11 +39,7 @@ public class GinRummy extends Game {
 				this.setScreen(menuScreen);
 				break;
 			case APPLICATION:
-				mainScreen = new Coordinator(this, new StateBuilder()
-							.setSeed(11)
-							.addPlayer(CombinePlayer.getBaseCombinePlayer())
-							.addPlayer(CombinePlayer.getBaseCombinePlayer())
-							.build());
+				mainScreen = new Coordinator(this);
 				this.setScreen(mainScreen);
 				break;
 			case END:
