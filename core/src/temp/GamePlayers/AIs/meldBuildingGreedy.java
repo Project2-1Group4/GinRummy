@@ -80,7 +80,7 @@ public class meldBuildingGreedy extends GamePlayer {
      */
     static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand){
 
-
+        return null;
     }
 
     void resetMemoryMatrix(){
