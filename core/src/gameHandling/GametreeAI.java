@@ -18,16 +18,13 @@ public class GametreeAI {
     //private HashMap<MyCard, double>;
 
 
-    public  GametreeAI (SetOfCards pile, SetOfCards cards){
+    public  GametreeAI (SetOfCards pile, SetOfCards cards, SetOfCards deck){
+        System.out.println("constructor");
         this.discardPile = pile;
         this.hand = cards;
-        this.cardsUnknown = new SetOfCards(true,false);
-        for(int i = 0; i<hand.size(); i++){
-            cardsUnknown.discardCard(hand.getCard(i));
-        }
-        for(int i = 0; i<discardPile.size(); i++) {
-            cardsUnknown.discardCard(discardPile.getCard(i));
-        }
+        System.out.println(hand.size());
+        this.cardsUnknown = deck;
+
         opponentHand = new SetOfCards();
         for(int i = 0; i< 10; i++){
             opponentHand.addCard(cardsUnknown.getCard(i));
@@ -38,7 +35,7 @@ public class GametreeAI {
         Node first = new Node(discardPile, hand, cardsUnknown, opponentHand);
         Node pass = first.addChild(new Node(discardPile,hand,cardsUnknown, opponentHand));
         createNodesOpponent(pass, true);
-        Node discard1 = first.addChild(pickDiscard(discardPile,hand));
+        Node discard1 = first.addChild(pickDiscard(hand,discardPile));
         createNodesOpponent(discard1, false);
     }
 
@@ -160,7 +157,7 @@ public class GametreeAI {
         Card discardCard = chooseCardToDiscard(copyList);
         copyCards.discardCard(discardCard);
         copyDiscard.addCard(discardCard);
-        Node result = new Node(copyDiscard, copyCards, cardsUnknown, new SetOfCards());
+        Node result = new Node(copyDiscard, copyCards, cardsUnknown, opponentHand);
         return result;
     }
 
@@ -171,7 +168,7 @@ public class GametreeAI {
         discardPile = parent.discardPile;
         cardsUnknown = parent.unknownCards;
         hand = parent.hand;
-        opponentHand = parent.opponentHand;
+        opponentHand = new SetOfCards();
 
         if(pileOrDeck){
             Card chosen = discardPile.getCard((discardPile.size()-1));
@@ -206,15 +203,15 @@ public class GametreeAI {
             }
             // calculate the probability of the remaining cards
             int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
-            double leftProb = 1.0-probSpecial;
-            double unknownProb;
+            //double leftProb = 1.0-probSpecial;
+            //double unknownProb;
             double newUnknownProb;
             // update prob of cards that don't form melts with chosen card
             for(int j = 0; j<cardsUnknown.size(); j++) {
                 if (cardsUnknown.getCard(j).getValue() != chosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1)) {
-                    unknownProb = leftProb/size;
-                    newUnknownProb = cardsUnknown.getCard(j).getProb()- unknownProb;
-                    System.out.println(unknownProb);
+                    //unknownProb = leftProb/size;
+                    newUnknownProb = cardsUnknown.getCard(j).getProb();
+
                     cardsUnknown.getCard(j).setProb(newUnknownProb);
                 }
             }
@@ -247,13 +244,13 @@ public class GametreeAI {
                 }
             }
             int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
-            double leftProb = 1.0 -probSpecial;
-            double unknownProb;
+            //double leftProb = 1.0 -probSpecial;
+            //double unknownProb;
             double newUnknownProb;
             for(int j = 0; j<cardsUnknown.size(); j++) {
                 if (cardsUnknown.getCard(j).getValue() != notChosen.getValue() && !(cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1)) {
-                    unknownProb = leftProb/size;
-                    newUnknownProb = cardsUnknown.getCard(j).getProb() + unknownProb;
+                    //unknownProb = leftProb/size;
+                    newUnknownProb = cardsUnknown.getCard(j).getProb();
                     cardsUnknown.getCard(j).setProb(newUnknownProb);
                 }
 
@@ -290,13 +287,13 @@ public class GametreeAI {
 
         }
         int size = cardsUnknown.size() - leftInUnknownRun - leftInUnknownSet;
-        double leftProb = 1-probSpecial;
-        double unknownProb;
+        //double leftProb = 1-probSpecial;
+        //double unknownProb;
         double newUnknownProb;
         for(int j = 0; j<cardsUnknown.size(); j++) {
             if (cardsUnknown.getCard(j).getValue() != discard.getValue() && !(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1)) {
-                unknownProb = leftProb/size;
-                newUnknownProb = cardsUnknown.getCard(j).getProb() + unknownProb;
+                //unknownProb = leftProb/size;
+                newUnknownProb = cardsUnknown.getCard(j).getProb();
                 cardsUnknown.getCard(j).setProb(newUnknownProb);
             }
 
@@ -317,10 +314,10 @@ public class GametreeAI {
                 opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 10);
             }
             SetOfCards opponent = new SetOfCards(false, false);
-            for(int j= 0; j< 10; j++){
+            for(int j= 0; j< opponentHandcur.size(); j++){
                 opponent.addCard(opponentHandcur.get(j));
             }
-            Node node = new Node(hand, discardPile, cardsUnknown, opponent);
+            Node node = new Node(discardPile,hand, cardsUnknown, opponent);
             nodes.add(node);
         }
         return nodes;
@@ -533,7 +530,7 @@ public class GametreeAI {
         SetOfCards pile = new SetOfCards(false, false);
         Card discardCard = deck.drawTopCard();
         pile.addCard(discardCard);
-        GametreeAI AI = new GametreeAI(pile, hand);
+        GametreeAI AI = new GametreeAI(pile, hand,deck);
         AI.createTree();
     }
 
