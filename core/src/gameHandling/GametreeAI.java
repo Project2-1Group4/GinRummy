@@ -10,11 +10,13 @@ public class GametreeAI {
     SetOfCards discardPile;
     SetOfCards hand;
     SetOfCards cardsUnknown;
+    private SetOfCards opponentHand;
     Player player;
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
-    private SetOfCards opponentHand;
+
     int test = 0;
+    boolean playerPick = false;
     //private HashMap<MyCard, double>;
 
 
@@ -29,6 +31,8 @@ public class GametreeAI {
         for(int i = 0; i< 10; i++){
             opponentHand.addCard(cardsUnknown.getCard(i));
         }
+
+        System.out.println("total cards: "+ hand.size() +" " +discardPile.size() + " "+cardsUnknown.size());
     }
 
     public void createTree (){
@@ -37,6 +41,10 @@ public class GametreeAI {
         createNodesOpponent(pass, true);
         Node discard1 = first.addChild(pickDiscard(hand,discardPile));
         createNodesOpponent(discard1, false);
+    }
+
+    public Node getParentNode() {
+        return new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand);
     }
 
     // we need to determine stop statement for recursion
@@ -66,7 +74,7 @@ public class GametreeAI {
                     System.out.println("node " + i);
                     SetOfCards opp = nodesPile.get(i).opponentHand;
                     for(int k = 0; k< opp.size(); k++ ) {
-                        System.out.println(opp.getCard(k).getProb());
+                        System.out.println("prob: "+opp.getCard(k).getProb());
                     }
 
                     createNodesAI(nodesDiscard1.get(j));
@@ -145,7 +153,6 @@ public class GametreeAI {
 
 
 
-
     public Node pickDiscard(SetOfCards current, SetOfCards discardPile){
         SetOfCards copyCards = new SetOfCards(current.toList());
         SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
@@ -184,7 +191,12 @@ public class GametreeAI {
                 // increase prob for cards that form set with chosen card
                 if (cardsUnknown.getCard(j).getValue() == chosen.getValue()) {
                     //BAYES RULEE!! change this!!
-                    setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
+                    if (leftInUnknownSet > 0) {
+                        setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
+                    }
+                    else {
+                        setProb = 0.0;
+                    }
                     cardsUnknown.getCard(j).setProb(setProb);
                     System.out.println(setProb);
                     probSpecial += setProb;
@@ -192,12 +204,17 @@ public class GametreeAI {
                 // increase prob for cards that form run with chosen card
                 else if (cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1) {
                     // BAYES RULEE!! change this!
-                    System.out.println("start Prob" + cardsUnknown.getCard(j).getProb());
-                    System.out.println("left in run" + leftInUnknownRun);
-                    runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
-                    System.out.println(1.0 / (2.0 * leftInUnknownRun));
+                    System.out.println("start Prob " + cardsUnknown.getCard(j).getProb());
+                    System.out.println("left in run " + leftInUnknownRun);
+                    if (leftInUnknownRun > 0) {
+                        runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
+                    }
+                    else {
+                        runProb = 0.0;
+                    }
+                    //System.out.println(1.0 / (2.0 * leftInUnknownRun));
                     cardsUnknown.getCard(j).setProb(runProb);
-                    System.out.println("run Prob" + runProb);
+                    System.out.println("run Prob " + runProb);
                     probSpecial += runProb;
                 }
             }
@@ -231,14 +248,24 @@ public class GametreeAI {
                 // decrease prob of cards that form set with not chosen card
                 if(cardsUnknown.getCard(j).getValue() == notChosen.getValue()){
                     // Bayes rule
-                    setProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownSet));
+                    if (leftInUnknownSet > 0) {
+                        setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
+                    }
+                    else {
+                        setProb = 0.0;
+                    }
                     cardsUnknown.getCard(j).setProb(setProb);
                     probSpecial += setProb;
                 }
                 // decrease prob of cards that form run with chosen card
                 if(cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1){
                     // Bayes rule
-                    runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
+                    if (leftInUnknownRun > 0) {
+                        runProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownRun));
+                    }
+                    else {
+                        runProb = 0.0;
+                    }
                     cardsUnknown.getCard(j).setProb(runProb);
                     probSpecial += runProb;
                 }
@@ -259,28 +286,47 @@ public class GametreeAI {
     }
 
     public void simulationDiscard(Node parent){
+
         discardPile = parent.discardPile;
         cardsUnknown = parent.unknownCards;
         hand = parent.hand;
         opponentHand = parent.opponentHand;
+        System.out.println("total cards: "+ hand.size() + " "+discardPile.size() +" "+ cardsUnknown.size());
         Card discard = chooseCardToDiscard(parent.opponentHand.toList());
         discardPile.addCard(discard);
+        if(cardsUnknown.discardCard(discard)) {
+            System.out.println("Card discard: "+discard);
+        }
+        else {
+            System.out.println("Doesnt discard");
+        }
+        System.out.println("total cards: "+ hand.size() + " "+discardPile.size() +" "+ cardsUnknown.size());
         opponentHand.discardCard(discard);
         double probSpecial = 0 ;
         lookThroughKnownCards(discard);
         // OPPONENT DISCARDS CARD
         for(int j = 0; j<cardsUnknown.size(); j++){
-            double setProb = 0;
-            double runProb = 0;
+            double setProb = 0.0;
+            double runProb = 0.0;
             // decrease prob of cards that form set with discarded card
             if(cardsUnknown.getCard(j).getValue() == discard.getValue()){
-                setProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownSet);
+                if (leftInUnknownSet > 0) {
+                    setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
+                }
+                else {
+                    setProb = 0.0;
+                }
                 cardsUnknown.getCard(j).setProb(setProb);
                 probSpecial += setProb;;
             }
             // decrease prob of cards that form run with discarded card
             if(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1){
-                runProb = cardsUnknown.getCard(j).getProb()*(1 / 2 * leftInUnknownRun);
+                if (leftInUnknownRun > 0) {
+                    runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
+                }
+                else {
+                    runProb = 0.0;
+                }
                 cardsUnknown.getCard(j).setProb(runProb);
                 probSpecial += runProb;
             }
@@ -294,10 +340,13 @@ public class GametreeAI {
             if (cardsUnknown.getCard(j).getValue() != discard.getValue() && !(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1)) {
                 //unknownProb = leftProb/size;
                 newUnknownProb = cardsUnknown.getCard(j).getProb();
+                System.out.println("new unknown prob: "+ newUnknownProb);
                 cardsUnknown.getCard(j).setProb(newUnknownProb);
             }
 
         }
+
+        System.out.println("total cards: "+ hand.size() + " "+discardPile.size() +" "+ cardsUnknown.size());
     }
 
 
@@ -340,23 +389,27 @@ public class GametreeAI {
 
         for(int k = 0; k< hand.size(); k++){
             // look through hand for cards that form set with given card
-            if(hand.getCard(k).getValue() == chosen.getValue()){
+            if(hand.getCard(k).getValue() == chosen.getValue() && leftInUnknownSet > 0){
                 leftInUnknownSet--;
             }
             // look through hand for cards that form run with given card
-            if(hand.getCard(k).getSuit() == chosen.getSuit() && Math.abs(hand.getCard(k).getValue() - chosen.getValue()) == 1){
+            if(hand.getCard(k).getSuit() == chosen.getSuit() && Math.abs(hand.getCard(k).getValue() - chosen.getValue()) == 1 && leftInUnknownRun > 0){
                 leftInUnknownRun--;
             }
         }
         // look through pile, same as hand
         for(int k = 0; k< discardPile.size(); k++){
-            if(discardPile.getCard(k).getValue() == chosen.getValue()){
+            if(discardPile.getCard(k).getValue() == chosen.getValue() && leftInUnknownSet > 0){
                 leftInUnknownSet--;
             }
-            if(discardPile.getCard(k).getSuit() == chosen.getSuit() && Math.abs(discardPile.getCard(k).getValue() - chosen.getValue()) == 1){
+            if(discardPile.getCard(k).getSuit() == chosen.getSuit() && Math.abs(discardPile.getCard(k).getValue() - chosen.getValue()) == 1 && leftInUnknownRun > 0){
                 leftInUnknownRun--;
             }
         }
+
+        System.out.println("unknown run: "+leftInUnknownRun);
+        System.out.println("unknown set: "+leftInUnknownSet);
+
     }
 
 
@@ -396,17 +449,18 @@ public class GametreeAI {
             // Might be changed to is greater than or equals
             if(copyList.get(i).getProb() == 1){
                 resultList.add(copyList.get(i));
-                System.out.println(copyList.get(i));
+                //System.out.println("card remove : "+copyList.get(i));
                 copyList.remove(copyList.get(i));
             }
         }
+        //System.out.println();
 
         while(resultList.size() < size){
 
             Card toSave = pickRandomCard(copyList);
             if(toSave != null) {
                 resultList.add(toSave);
-                System.out.println(toSave);
+                //System.out.println("card remove : "+toSave);
                 copyList.remove(toSave);
             }
             // TODO: Check to make sure that this method doesn't affect the original list of cards
@@ -416,7 +470,7 @@ public class GametreeAI {
     }
 
     public static double calcTotalProb(List<Card> setOfCards){
-        double val = 0;
+        double val = 0.0;
 
         for(Card aCard: setOfCards){
             val+=aCard.getProb();
@@ -462,6 +516,7 @@ public class GametreeAI {
             return true;
         }
     }
+
     //demo pruning algo
     public int alphabetaPruning(Node node, int alpha, int beta, boolean maximizingPlayer ) {
         if ((node.getChildren().size() == 0) || !node.playerStop || !!node.AIStop)
@@ -469,6 +524,7 @@ public class GametreeAI {
         if (maximizingPlayer) {
             int maxEval = -100000; // negative infinity
             for (Node child : node.getChildren()) {
+                //update tree here
                 int eval = alphabetaPruning(child, alpha, beta, false);
                 maxEval = Math.max(maxEval, eval);
                 alpha = Math.max(alpha, eval);
@@ -532,6 +588,8 @@ public class GametreeAI {
         pile.addCard(discardCard);
         GametreeAI AI = new GametreeAI(pile, hand,deck);
         AI.createTree();
+
+        System.out.println("Hand: "+AI.getParentNode().hand);
     }
 
 

@@ -122,7 +122,7 @@ public class Player {
         //run recursion
         this.recursiveSearch(this.hand.toList(), removed);
 
-        System.out.println("runs and sets chosen: "+this.bestCombination);
+        //System.out.println("runs and sets chosen: "+this.bestCombination);
     }
 
     public int valueOfLists(List<List<Card>> cards){

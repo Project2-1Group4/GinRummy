@@ -91,6 +91,7 @@ public class Node {
 
     public int getHandValue() {
         return this.handValue;
+        //return hand.getHandValue();
     }
 
     public void setHandValue(int value) {
