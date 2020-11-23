@@ -196,11 +196,11 @@ public class Card extends Actor implements Comparable {
 
 	// TO DO: change else statement!!
 	public void setProb(double prob) {
-		if(prob <= 1 && prob >= 0){
+		if(prob <= 1.0 && prob >= 0.0){
 			this.prob = prob;
 		}
-		else{
-			System.out.println("wrong prob!");
+		else if(prob > 1.0){
+			this.prob = 1.0;
 		}
 
 	}
