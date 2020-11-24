@@ -15,6 +15,8 @@ public class GametreeAI {
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
 
+    private int simulationNum = 3;
+
     int test = 0;
     boolean playerPick = false;
     //private HashMap<MyCard, double>;
@@ -139,6 +141,7 @@ public class GametreeAI {
                 for(int i = 0; i< deck.size(); i++){
                     hand.addCard(deck.get(i));
                     cardsUnknown.discardCard(deck.get(i));
+                    System.out.println("ChooseCard to Discard is being called with: " + hand.toString());
                     Card discard = chooseCardToDiscard(hand.toList());
                     hand.discardCard(discard);
                     discardPile.addCard(discard);
@@ -295,6 +298,7 @@ public class GametreeAI {
         hand = new SetOfCards(parent.hand.toList());
         opponentHand = new SetOfCards(parent.opponentHand.toList());
         System.out.println("total cards: "+ hand.size() + " "+discardPile.size() +" "+ cardsUnknown.size());
+        System.out.println("Cards for opponent: " + parent.opponentHand.toString());
         Card discard = chooseCardToDiscard(parent.opponentHand.toList());
 
         lookThroughKnownCards(discard);
@@ -350,7 +354,7 @@ public class GametreeAI {
         List<Node> nodes = new ArrayList<>();
         List<Card> opponentHandcur;
         // simulate 100 times
-        for(int i= 1; i<= 10; i++){
+        for(int i= 1; i<= this.simulationNum; i++){
             if(pickOrDiscard){
                 opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 11);
             }
