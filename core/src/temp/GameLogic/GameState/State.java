@@ -73,7 +73,7 @@ public class State {
     }
     // Returns copies to avoid the changing of the inner state outside of package
     public int getPlayerNumber() {
-        return playerTurn;
+        return getPlayer().index;
     }
 
     public Integer getWinner(){

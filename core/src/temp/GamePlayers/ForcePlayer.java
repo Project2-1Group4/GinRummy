@@ -74,12 +74,12 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
-    public void otherPlayerDiscarded(DiscardAction discardAction) {
+    public void playerDiscarded(DiscardAction discardAction) {
 
     }
 
     @Override
-    public void otherPlayerPicked(PickAction pickAction) {
+    public void playerPicked(PickAction pickAction) {
 
     }
 }

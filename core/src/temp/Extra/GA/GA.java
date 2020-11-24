@@ -1,22 +1,22 @@
-package temp.GeneticAlgo;
+package temp.Extra.GA;
 
 import java.util.Random;
 
 public class GA{
 
     public static void main(String[] args){
-        GA ga = new GA(0,20,1,0.5f,0);
+        /*GA ga = new GA(0,20,1,0.05f,0);
         ga.init(new GAPlayer[]{
                 new GAPlayer(0,new TestPlayer())
         });
         GAPlayer[] winners = ga.train();
-        winners[0].player.printMatrices();
+        winners[0].player.printMatrices();*/
     }
     /////////////////////////////////////////////////////////////////////////////////////////
     ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
     /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
     protected GAPlayer mutate(Random rd, GAPlayer[] winners, int index) {
-        TestPlayer p = new TestPlayer();
+        /*TestPlayer p = new TestPlayer();
         if (winners != null) {
             GAPlayer parent = winners[rd.nextInt(winners.length)];
             p.probabilityMatrix = parent.player.probabilityMatrix;
@@ -32,7 +32,8 @@ public class GA{
                 p.valueMatrix[i][j]+= getMutation(rd)*1;
             }
         }
-        return new GAPlayer(index,p);
+        return new GAPlayer(index,p);*/
+        return null;
     }
 
     protected void updateScores(Result result){
@@ -87,9 +88,7 @@ public class GA{
             GAPlayer[] winners = getWinners();
 
             System.out.println("Iteration: "+iteration);
-            System.out.println(winners[0].score);
-            //winners[0].player.printMatrices();
-            //System.out.println();
+            System.out.println(winners[0].score+"\n");
 
             update(winners);
             resetScores();

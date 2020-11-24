@@ -349,14 +349,14 @@ public class meldBuildingGreedy extends GamePlayer {
     }
 
     @Override
-    public void otherPlayerDiscarded(DiscardAction discardAction) {
+    public void playerDiscarded(DiscardAction discardAction) {
         MyCard DisCard = discardAction.card;
         this.memoryMatrix[DisCard.suit.index][DisCard.rank.index] = 3;
     }
 
     // TODO: Go over this method to update what happens when the other player picks up a card
     @Override
-    public void otherPlayerPicked(PickAction pickAction) {
+    public void playerPicked(PickAction pickAction) {
 
     }
 }

@@ -7,7 +7,6 @@ import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.MouseStuff.MousePlayer;
-import temp.Graphics.Graphics;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
@@ -63,12 +62,12 @@ public class CombinePlayer extends GamePlayer{
     }
 
     @Override
-    public void otherPlayerDiscarded(DiscardAction discardAction) {
+    public void playerDiscarded(DiscardAction discardAction) {
 
     }
 
     @Override
-    public void otherPlayerPicked(PickAction pickAction) {
+    public void playerPicked(PickAction pickAction) {
 
     }
 
@@ -88,10 +87,10 @@ public class CombinePlayer extends GamePlayer{
     }
 
     @Override
-    public void newRound() {
-        super.newRound();
+    public void newRound(MyCard topOfDiscard) {
+        super.newRound(topOfDiscard);
         for (GamePlayer handler : handlers) {
-            handler.newRound();
+            handler.newRound(topOfDiscard);
         }
     }
 

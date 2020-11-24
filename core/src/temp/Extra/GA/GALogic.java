@@ -1,4 +1,4 @@
-package temp.GeneticAlgo;
+package temp.Extra.GA;
 
 import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.Executor;

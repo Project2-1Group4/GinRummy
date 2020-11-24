@@ -94,6 +94,13 @@ public class MyCard {
         return sb.toString();
     }
 
+    public static int[] getIndices(int index){
+        int rank = index%Rank.values().length;
+        return new int[]{
+        (index-rank)/Rank.values().length,
+                rank
+        };
+    }
     public static int getIndex(Suit s, Rank r){
         return getIndex(s.index,r.index);
     }

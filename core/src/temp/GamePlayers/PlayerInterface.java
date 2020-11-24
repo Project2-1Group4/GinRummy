@@ -42,27 +42,28 @@ public interface PlayerInterface {
 
     /**
      * Called every time a new round starts to let the player know to reset it's memory
+     * @param topOfDiscard
      */
-    void newRound();
+    void newRound(MyCard topOfDiscard);
 
     /**
      * Feeds in every action done by other players to every other player with all specifics
      *
      * @param action action executed
      */
-    void otherPlayerActed(Action action);
+    void playerActed(Action action);
 
     /**
      * Feeds in the discardAction executed (including card and who did it)
      *
      * @param discardAction action executed
      */
-    void otherPlayerDiscarded(DiscardAction discardAction);
+    void playerDiscarded(DiscardAction discardAction);
 
     /**
      * Feeds in pickAction executed (including where, which card and who did it)
      *
      * @param pickAction action executed
      */
-    void otherPlayerPicked(PickAction pickAction);
+    void playerPicked(PickAction pickAction);
 }

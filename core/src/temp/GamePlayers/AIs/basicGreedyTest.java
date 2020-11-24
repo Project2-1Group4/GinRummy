@@ -140,12 +140,12 @@ public class basicGreedyTest extends GamePlayer {
     }
 
     @Override
-    public void otherPlayerDiscarded(DiscardAction discardAction) {
+    public void playerDiscarded(DiscardAction discardAction) {
         this.opDiscard = discardAction.card;
     }
 
     @Override
-    public void otherPlayerPicked(PickAction pickAction) {
+    public void playerPicked(PickAction pickAction) {
 
     }
 }

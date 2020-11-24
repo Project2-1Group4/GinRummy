@@ -103,7 +103,6 @@ public class StateBuilder {
 
     public StateBuilder addPlayers(List<GamePlayer> players){
         for (GamePlayer player : players) {
-            player.newRound();
             addPlayer(player);
         }
         return this;

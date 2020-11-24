@@ -32,6 +32,15 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     /* SETTERS */
+
+    /**
+     * Called:
+     * -when cards have been distributed
+     * -after having picked
+     * -after having discarded
+     * -after having decided to knock (or not)
+     * @param realLayout current hand layout being considered by the game
+     */
     public void update(HandLayout realLayout){
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
@@ -94,8 +103,12 @@ public abstract class GamePlayer implements PlayerInterface {
         // In case you want to render extra
     }
 
+    /**
+     * Called at the start of every round once the cards have been distributed
+     * @param topOfDiscard current top of discard
+     */
     @Override
-    public void newRound() {
+    public void newRound(MyCard topOfDiscard) {
     }
 
     /* PLAYER METHODS */
@@ -110,11 +123,13 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     @Override
-    public void otherPlayerActed(Action action) {
-        if(action instanceof PickAction){
-            otherPlayerPicked((PickAction)action);
-        }else if(action instanceof DiscardAction){
-            otherPlayerDiscarded((DiscardAction)action);
+    public void playerActed(Action action) {
+        if(action.playerIndex!=index) {
+            if (action instanceof PickAction) {
+                playerPicked((PickAction) action);
+            } else if (action instanceof DiscardAction) {
+                playerDiscarded((DiscardAction) action);
+            }
         }
     }
 

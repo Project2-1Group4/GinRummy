@@ -1,19 +1,15 @@
 package temp.GameLogic.GameState;
 
-import com.badlogic.gdx.Gdx;
 import temp.GameLogic.GameActions.*;
-import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 import temp.GameLogic.TreeExpander;
-import temp.GameLogic.Validator;
 import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Executes validates moves. Only class that should(/can) modify the game state.
@@ -88,8 +84,8 @@ public class Executor {
                     .build();
         }
         shuffleDeck(shuffles, newState);
-        distributeCards(GameRules.baseCardsPerHand, newState);
         startDiscardPile(newState);
+        distributeCards(GameRules.baseCardsPerHand, newState);
 
         return newState;
     }
@@ -124,6 +120,7 @@ public class Executor {
                 curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
             curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
+            curState.players.get(i).newRound(curState.peekDiscardTop());
         }
 
     }
@@ -165,9 +162,7 @@ public class Executor {
         if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
 
         for (int i = 0; i < curState.players.size(); i++) {
-            if(i!=curState.getPlayerNumber()){
-                curState.players.get(i).otherPlayerActed(curState.viewLastAction());
-            }
+            curState.players.get(i).playerActed(curState.viewLastAction());
         }
 
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {

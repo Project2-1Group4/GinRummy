@@ -26,8 +26,6 @@ public class Coordinator extends ScreenAdapter {
     private boolean newStep = true;
     private boolean roundEnd = false;
 
-
-
     public Coordinator(GinRummy master) {
         this.master = master;
         currentGameState = new StateBuilder()
