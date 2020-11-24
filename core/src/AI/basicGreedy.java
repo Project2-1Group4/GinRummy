@@ -97,6 +97,7 @@ public class basicGreedy extends Player{
             // This is garbage unnefficient, but I don't feel like adding a proper method now
             int resultingHand = evaluateHand(aList);
 
+            // less deadwood => less value on hand so the resultingHand should be less than highestVal...
             if(resultingHand>=highestVal){
                 theCard = aCard;
                 highestVal = resultingHand;
@@ -109,7 +110,7 @@ public class basicGreedy extends Player{
         return theCard;
 
     }
-
+    // We already have static method for scoring a hand, dont need it here (more reuseab)
     public static int evaluateHand(List<Card> aHand){
         Player temp = new Player(new SetOfCards(aHand));
         return temp.scoreHand();
