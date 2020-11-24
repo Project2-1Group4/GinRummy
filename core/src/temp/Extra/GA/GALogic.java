@@ -46,9 +46,6 @@ public class GALogic {
         GamePlayer player = currentGameState.getPlayer();
         Action action = getAction(player,currentGameState);
         boolean executed = Executor.execute(action,currentGameState);
-        if(executed){
-            Executor.nextStep(currentGameState);
-        }
         if(action==null){
             System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
         }

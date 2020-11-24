@@ -51,7 +51,6 @@ public class State {
         curTime = secondsPerStep[stepInTurn.index];
 
     }
-
     // SETTERS
     // Quality of life methods
     protected MyCard pickDeckTop() {
@@ -92,14 +91,26 @@ public class State {
         return knocker;
     }
 
+    public Integer getKnockerIndex(){
+        Integer index = null;
+        if(knocker!=null) {
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).index == knocker) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index;
+    }
     public GamePlayer getKnocker() {
         assert knocker != null;
-        return players.get(knocker);
+        return players.get(getKnockerIndex());
     }
 
     public PlayerState getKnockerState(){
         assert knocker != null;
-        return playerStates.get(knocker);
+        return playerStates.get(getKnockerIndex());
     }
 
     public StepInTurn getStep() {
@@ -207,5 +218,12 @@ public class State {
             return null;
         }
 
+    }
+
+    public State copy(){
+        return new State(seed,new ArrayList<MyCard>(deck),(Stack<MyCard>)discardPile.clone(),
+                new ArrayList<GamePlayer>(players),new ArrayList<PlayerState>(playerStates),
+                numberOfPlayers, playerTurn, stepInTurn, scores.clone(), secondsPerStep.clone(), knocker, round,
+                turnInRound, (Stack<Action>)movesDone.clone());
     }
 }

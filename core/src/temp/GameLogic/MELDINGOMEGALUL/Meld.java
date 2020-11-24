@@ -91,6 +91,7 @@ public class Meld {
     }
 
     public boolean isValid(){
+        setType();
         // If set
         if (type == Meld.MeldType.Run) {
             for (int i = 1; i < meld.size() - 1; i++) {

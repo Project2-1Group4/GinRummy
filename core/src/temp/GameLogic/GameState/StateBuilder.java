@@ -1,5 +1,6 @@
 package temp.GameLogic.GameState;
 
+import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.KeyboardPlayer;
 import temp.GameLogic.GameActions.Action;
@@ -157,7 +158,7 @@ public class StateBuilder {
 
         int playersToAdd = numberOfPlayers - players.size();
         for (int i = 0; i < playersToAdd; i++) {
-            players.add(new KeyboardPlayer());
+            players.add(CombinePlayer.getBaseCombinePlayer());
             playerStates.add(new PlayerState());
         }
         if(scores==null){

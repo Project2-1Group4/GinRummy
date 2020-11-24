@@ -70,7 +70,6 @@ public class Coordinator extends ScreenAdapter {
             Action action = handleTurn(outOfTime? new ForcePlayer(curPlayer):curPlayer, currentGameState.getStep());
 
             if (Executor.execute(action,currentGameState)) {
-                Executor.nextStep(currentGameState);
                 oncePerStep();
             }
 

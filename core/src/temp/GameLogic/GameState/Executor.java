@@ -167,7 +167,7 @@ public class Executor {
 
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
             getNextPlayer(curState);
-            if (curState.knocker == curState.playerTurn) {
+            if (curState.getKnockerNumber().equals(curState.getPlayerNumber())) {
                 curState.stepInTurn = curState.stepInTurn.getNext();
             }
         } else {
@@ -264,9 +264,9 @@ public class Executor {
         if(curState.knocker==null){
             return null;
         }
-        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.knocker).getDeadwood(),curState.getKnockerNumber());
+        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(),curState.getKnockerNumber());
         if(winner==null){
-            return curState.getKnockerNumber();
+            return curState.getKnockerIndex();
         }else{
             return winner;
         }
@@ -302,6 +302,7 @@ public class Executor {
                 if(executed){
                     if (GameRules.print || GameRules.minPrint) System.out.println("Action saved");
                     curState.movesDone.add(action);
+                    Executor.nextStep(curState);
                 }
                 return executed;
             }
