@@ -19,8 +19,8 @@ public class test {
                 .build();
         startState = Executor.startNewRound(500, startState);
         Node root = new Node(0,null, null);
-        recursiveTree(startState,root,0,6);
-        root.print(root.depth);
+        recursiveTree(startState,root,0,14);
+        System.out.println(root.treeWidthAtDepth(14));
     }
 
     public static void recursiveTree(State curState,Node curNode, int depth, int wantedDepth){
