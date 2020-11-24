@@ -498,7 +498,7 @@ public class GametreeAI {
     }
 
     public static double randomNumberGenerator(double min, double max){
-        return (Math.random()*(max-min+1)+min);
+        return min+(Math.random()*(max-min));
     }
 
     // returns true if you want to pick from discard pile
