@@ -1,4 +1,4 @@
-package temp.Extra.Test;
+package temp.Extra.GameTree;
 
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.KnockAction;
@@ -10,7 +10,7 @@ import temp.GamePlayers.CombinePlayer;
 
 import java.util.List;
 
-public class test {
+public class TreeCreation {
     public static void main(String[] args){
         State startState = new StateBuilder()
                 .setSeed(11)

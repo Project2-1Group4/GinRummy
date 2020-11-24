@@ -1,4 +1,4 @@
-package temp.Extra.Test;
+package temp.Extra.GameTree;
 
 import temp.GameLogic.GameActions.Action;
 
