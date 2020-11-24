@@ -49,4 +49,10 @@ public class PlayerState {
     public String toString(){
         return handLayout.toString();
     }
+
+    public PlayerState copy(){
+        PlayerState pState = new PlayerState();
+        pState.handLayout = handLayout.deepCopy();
+        return pState;
+    }
 }

@@ -221,8 +221,12 @@ public class State {
     }
 
     public State copy(){
+        List<PlayerState> pStates = new ArrayList<>();
+        for (PlayerState playerState : playerStates) {
+            pStates.add(playerState.copy());
+        }
         return new State(seed,new ArrayList<MyCard>(deck),(Stack<MyCard>)discardPile.clone(),
-                new ArrayList<GamePlayer>(players),new ArrayList<PlayerState>(playerStates),
+                new ArrayList<GamePlayer>(players), pStates,
                 numberOfPlayers, playerTurn, stepInTurn, scores.clone(), secondsPerStep.clone(), knocker, round,
                 turnInRound, (Stack<Action>)movesDone.clone());
     }

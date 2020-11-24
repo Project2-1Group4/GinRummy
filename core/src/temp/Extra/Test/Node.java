@@ -38,10 +38,10 @@ public class Node {
 
     public void print(int level) {
         assert level==depth;
-        for (int i = 1; i < level; i++) {
+        for (int i = 0; i < level; i++) {
             System.out.print("\t");
         }
-        System.out.println(action);
+        System.out.println("depth "+depth+" "+action);
         for (Node child : children) {
             child.print(level + 1);
         }
