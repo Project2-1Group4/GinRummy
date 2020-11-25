@@ -1,7 +1,6 @@
 package temp.GameLogic.MELDINGOMEGALUL;
 
 import temp.GameLogic.MyCard;
-import temp.GameLogic.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +21,14 @@ public class Meld {
     // Only way to change inner state of Meld
     public void addCard(MyCard card) {
         // In Gin Rummy the melds don't really have a value, so we can probably ignore this
-        value+= card.ginValue();
+        value += card.ginValue();
         meld.add(card);
     }
 
-    public boolean removeCard(MyCard card){
+    public boolean removeCard(MyCard card) {
         for (int i = 0; i < meld.size(); i++) {
-            if(card.same(meld.get(i))){
-                value-= meld.get(i).ginValue();
+            if (card.same(meld.get(i))) {
+                value -= meld.get(i).ginValue();
                 meld.remove(i);
                 return true;
             }
@@ -75,11 +74,11 @@ public class Meld {
 
     // GETTERS
     // Returns copies to avoid the changing of the inner state using mutable objects
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 
-    public List<MyCard> viewMeld(){
+    public List<MyCard> viewMeld() {
         return new ArrayList<>(meld);
     }
 
@@ -90,7 +89,7 @@ public class Meld {
         return type;
     }
 
-    public boolean isValid(){
+    public boolean isValid() {
         setType();
         // If set
         if (type == Meld.MeldType.Run) {
@@ -113,18 +112,18 @@ public class Meld {
         return true;
     }
 
-    public boolean isValidWith(MyCard card){
+    public boolean isValidWith(MyCard card) {
         addCard(card);
         boolean valid = isValid();
         removeCard(card);
         return valid;
     }
 
-    public boolean same(Meld other){
+    public boolean same(Meld other) {
         int found = 0;
         for (MyCard card : meld) {
             for (MyCard myCard : other.meld) {
-                if(card.same(myCard)){
+                if (card.same(myCard)) {
                     found++;
                 }
             }
@@ -142,7 +141,7 @@ public class Meld {
         return sb.toString();
     }
 
-    public Meld deepCopy(){
+    public Meld deepCopy() {
         Meld m = new Meld();
         m.type = this.type;
         m.meld = new ArrayList<>(meld);

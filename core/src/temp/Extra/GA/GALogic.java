@@ -15,46 +15,47 @@ public class GALogic {
 
     private State currentGameState;
     private boolean roundEnd;
-    public Result play(GAPlayer player1, GAPlayer player2, int seed){
+
+    public Result play(GAPlayer player1, GAPlayer player2, int seed) {
         currentGameState = new StateBuilder()
                 .setSeed(seed)
                 .addPlayer(player1.player)
                 .addPlayer(player2.player)
                 .build();
         roundEnd = false;
-        currentGameState = Executor.startNewRound(500,currentGameState);
-        while(currentGameState.getWinner()==null){
+        currentGameState = Executor.startNewRound(500, currentGameState);
+        while (currentGameState.getWinner() == null) {
             update();
-            if(roundEnd){
+            if (roundEnd) {
                 Executor.assignPoints(currentGameState);
             }
-            if(currentGameState.getRoundTurn()>= 200 || roundEnd){
+            if (currentGameState.getRoundTurn() >= 200 || roundEnd) {
                 break;
             }
         }
         GAPlayer winner = null;
-        if(currentGameState.getWinner()!=null){
-            winner = currentGameState.getWinner()==0? player1:player2;
+        if (currentGameState.getWinner() != null) {
+            winner = currentGameState.getWinner() == 0 ? player1 : player2;
         }
-        return new Result(player1,player2,winner,
+        return new Result(player1, player2, winner,
                 currentGameState.getPlayerStates().get(0).viewHandLayout(),
                 currentGameState.getPlayerStates().get(1).viewHandLayout(),
                 currentGameState.getRoundTurn());
     }
 
-    private void update(){
+    private void update() {
         GamePlayer player = currentGameState.getPlayer();
-        Action action = getAction(player,currentGameState);
-        boolean executed = Executor.execute(action,currentGameState);
-        if(action==null){
+        Action action = getAction(player, currentGameState);
+        boolean executed = Executor.execute(action, currentGameState);
+        if (action == null) {
             System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
         }
-        if(!executed){
+        if (!executed) {
             System.out.println("ERROR ERROR ERRROR BOT RETURNS NON-EXECUTABLE MOVE");
         }
     }
 
-    private Action getAction(GamePlayer curPlayer,State curState) {
+    private Action getAction(GamePlayer curPlayer, State curState) {
         // TODO maybe move elsewhere
         if (curState.getDeckSize() <= GameRules.minCardsInDeck) {
             if (GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
@@ -90,37 +91,37 @@ public class GALogic {
 
     private KnockAction knockOrContinue(GamePlayer curPlayer) {
         Boolean move = curPlayer.knockOrContinue();
-        if(move==null){
+        if (move == null) {
             return null;
-        }else if(move){
-            return new KnockAction(currentGameState.getPlayerNumber(),true,curPlayer.viewHandLayout());
-        }else{
-            return new KnockAction(currentGameState.getPlayerNumber(),false,curPlayer.viewHandLayout());
+        } else if (move) {
+            return new KnockAction(currentGameState.getPlayerNumber(), true, curPlayer.viewHandLayout());
+        } else {
+            return new KnockAction(currentGameState.getPlayerNumber(), false, curPlayer.viewHandLayout());
         }
     }
 
     private PickAction pick(GamePlayer curPlayer) {
         Boolean move = curPlayer.pickDeckOrDiscard(currentGameState.getDeckSize(), currentGameState.peekDiscardTop());
-        if(move==null){
+        if (move == null) {
             return null;
-        }else if(move){
-            return new PickAction(currentGameState.getPlayerNumber(),true,null);
-        }else{
+        } else if (move) {
+            return new PickAction(currentGameState.getPlayerNumber(), true, null);
+        } else {
             return new PickAction(currentGameState.getPlayerNumber(), false, currentGameState.peekDiscardTop());
         }
     }
 
     private DiscardAction discard(GamePlayer curPlayer) {
         MyCard cardToDiscard = curPlayer.discardCard();
-        if(cardToDiscard!=null){
-            return new DiscardAction(currentGameState.getPlayerNumber(),cardToDiscard);
+        if (cardToDiscard != null) {
+            return new DiscardAction(currentGameState.getPlayerNumber(), cardToDiscard);
         }
         return null;
     }
 
     private LayoutConfirmationAction layoutConfirmation(GamePlayer curPlayer) {
         HandLayout set = curPlayer.confirmLayout();
-        if(set!=null){
+        if (set != null) {
             return new LayoutConfirmationAction(currentGameState.getPlayerNumber(), set);
         }
         return null;
@@ -128,8 +129,8 @@ public class GALogic {
 
     private LayoffAction layOff(GamePlayer curPlayer) {
         Layoff layOffs = curPlayer.layOff(currentGameState.getKnockerState().viewMelds());
-        if(layOffs!=null){
-            return new LayoffAction(currentGameState.getPlayerNumber(),layOffs);
+        if (layOffs != null) {
+            return new LayoffAction(currentGameState.getPlayerNumber(), layOffs);
         }
         return null;
     }

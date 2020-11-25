@@ -21,7 +21,7 @@ public class meldBuildingGreedy extends GamePlayer {
     TODO: Fix up the inefficient methods to actually be fast
      */
 
-    public meldBuildingGreedy(SetOfCards cards){
+    public meldBuildingGreedy(SetOfCards cards) {
         super();
 
         //this.updateMemoryMatrix();
@@ -51,20 +51,20 @@ public class meldBuildingGreedy extends GamePlayer {
     MyCard topDiscard;
 
 
-    int[][] createMemoryMatrix(HandLayout layout){
+    int[][] createMemoryMatrix(HandLayout layout) {
 
         List<Meld> melds = layout.viewMelds();
         List<MyCard> deadwood = layout.viewUnusedCards();
 
         int[][] newMemMatrix = new int[4][13];
 
-        for(Meld list : melds){
-            for(MyCard aCard : list.viewMeld()){
+        for (Meld list : melds) {
+            for (MyCard aCard : list.viewMeld()) {
                 newMemMatrix[aCard.suit.index][aCard.suit.index] = -1;
             }
         }
 
-        for(MyCard aCard: deadwood){
+        for (MyCard aCard : deadwood) {
             newMemMatrix[aCard.suit.index][aCard.suit.index] = 1;
         }
 
@@ -78,22 +78,22 @@ public class meldBuildingGreedy extends GamePlayer {
 
     This method assumes that the reset cards will be added to the discardPile
      */
-    static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand){
+    static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand) {
 
         return null;
     }
 
-    void resetMemoryMatrix(){
+    void resetMemoryMatrix() {
         List<Meld> melds = this.handLayout.viewMelds();
         List<MyCard> deadwood = this.handLayout.viewUnusedCards();
 
-        for(Meld list : melds){
-            for(MyCard aCard : list.viewMeld()){
+        for (Meld list : melds) {
+            for (MyCard aCard : list.viewMeld()) {
                 memoryMatrix[aCard.suit.index][aCard.suit.index] = -1;
             }
         }
 
-        for(MyCard aCard: deadwood){
+        for (MyCard aCard : deadwood) {
             memoryMatrix[aCard.suit.index][aCard.suit.index] = 1;
         }
 
@@ -112,7 +112,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
     // Method looks finished
     // TODO: Bugtest
-    static int evaluateSet(int val, int[][] memoryMatrix){
+    static int evaluateSet(int val, int[][] memoryMatrix) {
 
         int setCount = 0;
         int discardCount = 0;
@@ -124,21 +124,21 @@ public class meldBuildingGreedy extends GamePlayer {
 
         For now I'm just taking them as being equal to a discard card
          */
-        for(int i = 0; i<4; i++){
-            if(memoryMatrix[i][val] == 1){
+        for (int i = 0; i < 4; i++) {
+            if (memoryMatrix[i][val] == 1) {
                 setCount++;
-            } else if(((memoryMatrix[i][val] == 4) || (memoryMatrix[i][val] == 3)) || (memoryMatrix[i][val] == -1)){
+            } else if (((memoryMatrix[i][val] == 4) || (memoryMatrix[i][val] == 3)) || (memoryMatrix[i][val] == -1)) {
                 // Just increasing the value of cards that are discarded for now
                 discardCount++;
-            } else if (memoryMatrix[i][val]==2){
+            } else if (memoryMatrix[i][val] == 2) {
                 otherPlayerCnt++;
             }
 
         }
 
-        if(setCount >= 3){
+        if (setCount >= 3) {
             return 0;
-        } else if ((setCount == 2) && (discardCount + otherPlayerCnt < 2)){
+        } else if ((setCount == 2) && (discardCount + otherPlayerCnt < 2)) {
             return heuristicForApprox(val);
         } else if (discardCount + otherPlayerCnt >= 2) {
             return heuristicForNever(val);
@@ -163,7 +163,7 @@ public class meldBuildingGreedy extends GamePlayer {
     What it's finding is the run value of the specific card in the memory matrix
 
      */
-    static int evaluateRun(int suit, int val, int[][] memoryMatrix){
+    static int evaluateRun(int suit, int val, int[][] memoryMatrix) {
         // I go twice, once forwards and once backwards
         // Because it felt like the easiest way to do it
         // Garbage efficiency though
@@ -180,38 +180,38 @@ public class meldBuildingGreedy extends GamePlayer {
 
         int count = 1;
 
-        int prev = checkCardNearby(suit,val, -1, memoryMatrix);
-        int front = checkCardNearby(suit,val, 1, memoryMatrix);
+        int prev = checkCardNearby(suit, val, -1, memoryMatrix);
+        int front = checkCardNearby(suit, val, 1, memoryMatrix);
 
         // I hate this garbage spaghetti code, can't think of any other way of doing it
         // TODO: Bug test my spaghetti code to make it doesn't break down on me
-        if((prev>=2) && (front>=2)){
+        if ((prev >= 2) && (front >= 2)) {
             return heuristicForNever(val);
-        } else if (prev>=2){
-            int nxt = checkCardNearby(suit,val,2,memoryMatrix);
+        } else if (prev >= 2) {
+            int nxt = checkCardNearby(suit, val, 2, memoryMatrix);
 
             return findIfNearbyIsValidWithNegativeOpposite(val, front, nxt);
 
-        } else if (front>=2){
-            int nxt = checkCardNearby(suit,val,-2,memoryMatrix);
+        } else if (front >= 2) {
+            int nxt = checkCardNearby(suit, val, -2, memoryMatrix);
 
             return findIfNearbyIsValidWithNegativeOpposite(val, prev, nxt);
-        } else if ((front == 0) && (prev == 0)){
-            int frontNxt = checkCardNearby(suit,val,2,memoryMatrix);
-            int backNxt = checkCardNearby(suit,val,-2, memoryMatrix);
+        } else if ((front == 0) && (prev == 0)) {
+            int frontNxt = checkCardNearby(suit, val, 2, memoryMatrix);
+            int backNxt = checkCardNearby(suit, val, -2, memoryMatrix);
 
-            if((frontNxt == 1) || (backNxt == 1)){
+            if ((frontNxt == 1) || (backNxt == 1)) {
                 return heuristicForApprox(val);
             } else {
                 return heuristicForFree(val);
             }
 
-        } else if((prev == 1)&&(front == 1)){
+        } else if ((prev == 1) && (front == 1)) {
             return 0;
-        } else if (prev==1) {
-            int nxt = checkCardNearby(suit,val,-2,memoryMatrix);
+        } else if (prev == 1) {
+            int nxt = checkCardNearby(suit, val, -2, memoryMatrix);
 
-            if(nxt == 1){
+            if (nxt == 1) {
                 return 0;
             } else {
                 return heuristicForApprox(val);
@@ -221,13 +221,13 @@ public class meldBuildingGreedy extends GamePlayer {
             // This state should only be reached when only front == 1 and prev is unknown (so = 1)
             // As a sanity check, I'll print out an error message inside here, just in case
 
-            if ((front!=1)&&(prev != 0)){
+            if ((front != 1) && (prev != 0)) {
                 System.out.println("There's been an error in the spaghetti code");
             }
 
-            int nxt = checkCardNearby(suit,val,2,memoryMatrix);
+            int nxt = checkCardNearby(suit, val, 2, memoryMatrix);
 
-            if(nxt ==1){
+            if (nxt == 1) {
                 return 0;
             } else {
                 return heuristicForApprox(val);
@@ -239,11 +239,11 @@ public class meldBuildingGreedy extends GamePlayer {
     }
 
     public static int findIfNearbyIsValidWithNegativeOpposite(int val, int nearby, int nxt) {
-        if(nxt >=2){
+        if (nxt >= 2) {
             return heuristicForNever(val);
-        } else if ((nxt == 1) && (nearby == 1)){
+        } else if ((nxt == 1) && (nearby == 1)) {
             return 0;
-        } else if (((nxt == 1)&&(nearby ==0))||((nxt == 0)&&(nearby ==1))) {
+        } else if (((nxt == 1) && (nearby == 0)) || ((nxt == 0) && (nearby == 1))) {
             return heuristicForApprox(val);
         } else {
             return heuristicForFree(val);
@@ -255,8 +255,8 @@ public class meldBuildingGreedy extends GamePlayer {
     So if value >= 10, return 10
     else return value
      */
-    static int valInGinRummy(int value){
-        if(value >=10){
+    static int valInGinRummy(int value) {
+        if (value >= 10) {
             return 10;
         } else {
             return value;
@@ -276,15 +276,15 @@ public class meldBuildingGreedy extends GamePlayer {
         If it's out of bounds, return 3
         If it's already in another meld (which is more valuable) then return 3
      */
-    static int checkCardNearby(int suit, int val, int loc, int[][] memoryMatrix){
-        try{
-            int res = memoryMatrix[suit][val+loc];
-            if((res >= 3) || (res == -1)){
+    static int checkCardNearby(int suit, int val, int loc, int[][] memoryMatrix) {
+        try {
+            int res = memoryMatrix[suit][val + loc];
+            if ((res >= 3) || (res == -1)) {
                 return 3;
             } else {
                 return res;
             }
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             return 3;
         }
     }
@@ -294,7 +294,7 @@ public class meldBuildingGreedy extends GamePlayer {
     This will return a value for when the given card (in this case we only care about its value) is close to creating a meld
     The exact heuristic is probably what's going to be most tested, but for now I'll just create the method elsewhere and make it simple
      */
-    static int heuristicForApprox(int value){
+    static int heuristicForApprox(int value) {
         return valInGinRummy(value);
     }
     /*
@@ -304,8 +304,8 @@ public class meldBuildingGreedy extends GamePlayer {
     Current punishment is meh, but it'll do
      */
 
-    static int heuristicForNever(int value){
-        return valInGinRummy(value)*4;
+    static int heuristicForNever(int value) {
+        return valInGinRummy(value) * 4;
     }
 
     /*
@@ -313,12 +313,12 @@ public class meldBuildingGreedy extends GamePlayer {
     AKA it's in hand, but none of the cards in hand make it close to a meld
      */
 
-    static int heuristicForFree(int value){
-        return valInGinRummy(value)*2;
+    static int heuristicForFree(int value) {
+        return valInGinRummy(value) * 2;
     }
 
 
-    void setTopDiscard(MyCard aCard){
+    void setTopDiscard(MyCard aCard) {
         this.topDiscard = aCard;
         memoryMatrix[aCard.suit.index][aCard.rank.index] = 4;
 
@@ -333,7 +333,6 @@ public class meldBuildingGreedy extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
 
 
-
         return null;
     }
 
@@ -342,7 +341,7 @@ public class meldBuildingGreedy extends GamePlayer {
         return null;
     }
 
-    static public int findValOfHand(List<MyCard> cardList){
+    static public int findValOfHand(List<MyCard> cardList) {
         HandLayout layout = Finder.findBestHandLayout(cardList);
 
         return layout.getDeadwood();

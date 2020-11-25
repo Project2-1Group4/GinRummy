@@ -28,9 +28,9 @@ public interface PlayerInterface {
     HandLayout confirmLayout();
 
     /**
-     *  Layoff 1 card at a time because idk how to implement in another way
+     * Layoff 1 card at a time because idk how to implement in another way
      *
-      * @param knockerMelds melds of knocker
+     * @param knockerMelds melds of knocker
      * @return null if nothing, layoff if card to layoff, layoff with only nulls
      */
     Layoff layOff(List<Meld> knockerMelds);
@@ -42,12 +42,14 @@ public interface PlayerInterface {
 
     /**
      * Called every time a new round starts to let the player know to reset it's memory
+     *
      * @param topOfDiscard
      */
     void newRound(MyCard topOfDiscard);
 
     /**
      * Feeds in every action done by other players to every other player with all specifics
+     * If I act, this won't get called
      *
      * @param action action executed
      */
@@ -73,6 +75,7 @@ public interface PlayerInterface {
 
     /**
      * Called after this players action has been executed
+     *
      * @param action executed
      */
     void executed(Action action);

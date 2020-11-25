@@ -1,7 +1,7 @@
 package temp.GameLogic.GameState;
 
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 
 import java.util.List;
@@ -20,11 +20,11 @@ public class PlayerState {
 
     // SETTERS
     // Quality of life methods
-    protected boolean removeUnusedCard(MyCard card){
+    protected boolean removeUnusedCard(MyCard card) {
         return handLayout.removeUnusedCard(card);
     }
 
-    protected boolean removeCard(MyCard card){
+    protected boolean removeCard(MyCard card) {
         return handLayout.removeCard(card);
     }
 
@@ -34,11 +34,11 @@ public class PlayerState {
         return handLayout.viewAllCards();
     }
 
-    public List<MyCard> viewUnusedCards(){
+    public List<MyCard> viewUnusedCards() {
         return handLayout.viewUnusedCards();
     }
 
-    public List<Meld> viewMelds(){
+    public List<Meld> viewMelds() {
         return handLayout.viewMelds();
     }
 
@@ -46,11 +46,11 @@ public class PlayerState {
         return handLayout.deepCopy();
     }
 
-    public String toString(){
+    public String toString() {
         return handLayout.toString();
     }
 
-    public PlayerState copy(){
+    public PlayerState copy() {
         PlayerState pState = new PlayerState();
         pState.handLayout = handLayout.deepCopy();
         return pState;

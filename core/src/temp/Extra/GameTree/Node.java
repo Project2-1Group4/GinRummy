@@ -10,7 +10,8 @@ public class Node {
     public final Node parent;
     public final Action action;
     public List<Node> children;
-    public Node(int depth, Node parent, Action action){
+
+    public Node(int depth, Node parent, Action action) {
         this.depth = depth;
         this.parent = parent;
         this.action = action;
@@ -21,15 +22,15 @@ public class Node {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Depth ").append(depth);
-        if(parent!=null) {
-            if(parent.action==null){
+        if (parent != null) {
+            if (parent.action == null) {
                 sb.append(" Parent root ");
-            }else {
+            } else {
                 sb.append(" Parent action ").append(parent.action);
             }
             sb.append(" Action ").append(action)
                     .append(" Children ").append(children.size());
-        }else{
+        } else {
             sb.append("Root");
         }
         return sb.toString();
@@ -37,13 +38,14 @@ public class Node {
 
     /**
      * Prints the whole tree starting from this node
+     *
      * @param depth start with 0.
      */
     public void printLeaves(int depth) {
         for (int i = 0; i < depth; i++) {
             System.out.print("\t");
         }
-        System.out.println("depth "+this.depth+" "+action);
+        System.out.println("depth " + this.depth + " " + action);
         for (Node child : children) {
             child.printLeaves(depth + 1);
         }
@@ -51,29 +53,31 @@ public class Node {
 
     /**
      * Prints the tree in the form of a directory
-     * @param depth you want to go lower than this node (ex: depth = 2, and this.depth = 1 then print from this node to depth = 3)
+     *
+     * @param depth    you want to go lower than this node (ex: depth = 2, and this.depth = 1 then print from this node to depth = 3)
      * @param curDepth starts at 0. Used to keep \t consistent
      */
-    public void printLeavesTo(int depth, int curDepth){
-        if(curDepth==depth+1){
+    public void printLeavesTo(int depth, int curDepth) {
+        if (curDepth == depth + 1) {
             return;
         }
         for (int i = 0; i < curDepth; i++) {
             System.out.print("\t");
         }
-        System.out.println("depth "+this.depth+" "+action);
+        System.out.println("depth " + this.depth + " " + action);
         for (Node child : children) {
-            child.printLeavesTo(depth, curDepth+1);
+            child.printLeavesTo(depth, curDepth + 1);
         }
     }
 
     /**
      * Returns the width of the tree when you go *depth* deeper from this node
+     *
      * @param depth you want to go to starting from this current node
      * @return width of the tree given the starting node (this)
      */
-    public int treeWidthAtDepth(int depth){
-        if(depth==0){
+    public int treeWidthAtDepth(int depth) {
+        if (depth == 0) {
             return 0;
         }
         int width = children.size();

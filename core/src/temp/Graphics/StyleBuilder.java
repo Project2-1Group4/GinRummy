@@ -9,10 +9,10 @@ import temp.GameLogic.MyCard;
 // Builder class
 public class StyleBuilder {
     private Sprite background;
-    private Sprite[][] cardFaces;
+    private final Sprite[][] cardFaces;
     private Sprite cardBack;
     private BitmapFont font;
-    private Sprite unknownSprite;
+    private final Sprite unknownSprite;
 
     public StyleBuilder() {
         background = new Sprite(new Texture("core/assets/pokerTable2.jpg"));

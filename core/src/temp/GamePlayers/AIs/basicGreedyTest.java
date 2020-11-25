@@ -13,7 +13,7 @@ import java.util.List;
 
 public class basicGreedyTest extends GamePlayer {
 
-    public basicGreedyTest(){
+    public basicGreedyTest() {
         super();
     }
 
@@ -47,21 +47,16 @@ public class basicGreedyTest extends GamePlayer {
     And if it returns false that means it should pick from the deck instead (as there's a chance something good is there)
     */
 
-    boolean evaluate(MyCard discardCard){
+    boolean evaluate(MyCard discardCard) {
         List<MyCard> current = new ArrayList<>(this.allCards);
         try {
             Thread.sleep(500);
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
         current.add(discardCard);
-        if(chooseCardToDiscard(current) == discardCard){
-            return false;
-        }
-        else{
-            return true;
-        }
-        
+        return chooseCardToDiscard(current) != discardCard;
+
     }
 
     /*
@@ -71,25 +66,25 @@ public class basicGreedyTest extends GamePlayer {
 
 
     public MyCard chooseCardToDiscard(MyCard aCard) {
-    	List<MyCard> current = this.handLayout.viewAllCards();
-    	
-    	current.add(aCard);
-    	
-    	return chooseCardToDiscard(aCard);
-    	
+        List<MyCard> current = this.handLayout.viewAllCards();
+
+        current.add(aCard);
+
+        return chooseCardToDiscard(aCard);
+
     }
 
     /*
     This'll go through the current hand and find the card that'll lower the value the most when discarded
     */
 
-    public static MyCard chooseCardToDiscard(List<MyCard> aHand){
+    public static MyCard chooseCardToDiscard(List<MyCard> aHand) {
         MyCard theCard = null;
 
         // It's just a low number, doesn't really matter what it is
         int highestVal = -1;
 
-        for(MyCard aCard : aHand){
+        for (MyCard aCard : aHand) {
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
             List<MyCard> aList = new ArrayList<>(aHand);
             aList.remove(aCard);
@@ -99,7 +94,7 @@ public class basicGreedyTest extends GamePlayer {
 
             int resultingHand = layout.getDeadwood();
 
-            if(resultingHand>=highestVal){
+            if (resultingHand >= highestVal) {
                 theCard = aCard;
                 highestVal = resultingHand;
             }
@@ -118,15 +113,11 @@ public class basicGreedyTest extends GamePlayer {
 
         try {
             Thread.sleep(500);
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
 
-        if(currentHand <= this.knockValue) {
-            return true;
-        } else {
-            return false;
-        }
+        return currentHand <= this.knockValue;
     }
 
     @Override

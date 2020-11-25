@@ -7,12 +7,12 @@ import temp.GameLogic.MyCard;
 
 // Main rendering information stored here
 public class Style {
-    private Sprite background;
-    private Sprite[][] cardFaces;
-    private Sprite cardBack;
-    private BitmapFont font;
-    private Sprite unknownSprite;
-    private float widthToHeightCard;
+    private final Sprite background;
+    private final Sprite[][] cardFaces;
+    private final Sprite cardBack;
+    private final BitmapFont font;
+    private final Sprite unknownSprite;
+    private final float widthToHeightCard;
 
     protected Style(Sprite background, Sprite[][] cardFaces, Sprite cardBack, BitmapFont font, Sprite unknownSprite) {
         this.background = background;
@@ -58,7 +58,7 @@ public class Style {
         return s;
     }
 
-    public Sprite getUnknownSprite(){
+    public Sprite getUnknownSprite() {
         return unknownSprite;
     }
 }

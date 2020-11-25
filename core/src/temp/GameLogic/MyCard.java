@@ -23,8 +23,8 @@ public class MyCard {
         return card.suit == this.suit && card.rank == this.rank;
     }
 
-    public int getIndex(){
-        return suit.index*(Rank.values().length)+(rank.index);
+    public int getIndex() {
+        return suit.index * (Rank.values().length) + (rank.index);
     }
 
     public int ginValue() {
@@ -85,7 +85,7 @@ public class MyCard {
 
     public static String toString(List<MyCard> cards) {
         StringBuilder sb = new StringBuilder();
-        if(cards.size()!=0) {
+        if (cards.size() != 0) {
             sb.append(cards.get(0));
             for (int i = 1; i < cards.size(); i++) {
                 sb.append(" ").append(cards.get(i));
@@ -94,26 +94,26 @@ public class MyCard {
         return sb.toString();
     }
 
-    public static int[] getIndices(int index){
-        int rank = index%Rank.values().length;
+    public static int[] getIndices(int index) {
+        int rank = index % Rank.values().length;
         return new int[]{
-        (index-rank)/Rank.values().length,
+                (index - rank) / Rank.values().length,
                 rank
         };
     }
 
-    public static int getIndex(Suit s, Rank r){
-        return getIndex(s.index,r.index);
-    }
-    
-    public static int getIndex(int i, int j){
-        return new MyCard(i,j).getIndex();
+    public static int getIndex(Suit s, Rank r) {
+        return getIndex(s.index, r.index);
     }
 
-    public static MyCard getCard(int index){
-        int rank = index%Rank.values().length;
-        int suit = (index-rank)/Rank.values().length;
-        return new MyCard(suit,rank);
+    public static int getIndex(int i, int j) {
+        return new MyCard(i, j).getIndex();
+    }
+
+    public static MyCard getCard(int index) {
+        int rank = index % Rank.values().length;
+        int suit = (index - rank) / Rank.values().length;
+        return new MyCard(suit, rank);
     }
 
     /**

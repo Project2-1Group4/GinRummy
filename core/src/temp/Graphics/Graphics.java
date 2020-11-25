@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameState.State;
 import temp.Graphics.RenderingSpecifics.*;
-import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +35,9 @@ public class Graphics {
         renderingStyle = new StyleBuilder().build();
 
         renderers = new HashMap<>();
-        renderers.put("Background",new BackgroundRenderer());
-        renderers.put("Card",new CardRenderer());
-        renderers.put("Extra",new ExtraRenderer());
+        renderers.put("Background", new BackgroundRenderer());
+        renderers.put("Card", new CardRenderer());
+        renderers.put("Extra", new ExtraRenderer());
         playerRenderers = new HashMap<>();
     }
 
@@ -54,15 +53,15 @@ public class Graphics {
         batch.begin();
         if (curState != null) {
             for (Map.Entry<String, Renderer> entry : renderers.entrySet()) {
-                entry.getValue().render(batch,renderingStyle,curState);
+                entry.getValue().render(batch, renderingStyle, curState);
             }
             PlayerRenderer pRenderer = playerRenderers.get(curState.getPlayerNumber());
-            if(pRenderer==null){
+            if (pRenderer == null) {
                 pRenderer = new PlayerRenderer(curState.getPlayer());
-                playerRenderers.put(curState.getPlayerNumber(),pRenderer);
+                playerRenderers.put(curState.getPlayerNumber(), pRenderer);
             }
             currentPlayer = curState.getPlayerNumber();
-            pRenderer.render(batch,renderingStyle);
+            pRenderer.render(batch, renderingStyle);
         }
         batch.end();
     }
@@ -75,7 +74,7 @@ public class Graphics {
         camera.update();
     }
 
-    public PlayerRenderer getPlayerRenderer(){
+    public PlayerRenderer getPlayerRenderer() {
         return playerRenderers.get(currentPlayer);
     }
 
@@ -86,25 +85,24 @@ public class Graphics {
      * @param y pos on screen
      * @return thing that is being hovered, if nothing then null
      */
-    public GameCard getHovered(float x, float y){
-        GameCard c = getPlayerRenderer().getHovered(x,y);
-        return c!=null? c:((CardRenderer)renderers.get("Card")).getHovered(x,y);
+    public GameCard getHovered(float x, float y) {
+        GameCard c = getPlayerRenderer().getHovered(x, y);
+        return c != null ? c : ((CardRenderer) renderers.get("Card")).getHovered(x, y);
     }
 
-    public void move(GameCard card,float x, float y){
-        getPlayerRenderer().move(card,x,y);
+    public void move(GameCard card, float x, float y) {
+        getPlayerRenderer().move(card, x, y);
     }
 
     // NEED TO BE MOVED MAYBE
-    public static float[] getSize(float[] dimension, float maxW, float maxH, float widthToHeight){
+    public static float[] getSize(float[] dimension, float maxW, float maxH, float widthToHeight) {
         float[] max;
-        if(dimension==null){
+        if (dimension == null) {
             max = new float[]{
                     Gdx.graphics.getWidth() * maxW,
                     Gdx.graphics.getHeight() * maxH
             };
-        }
-        else {
+        } else {
             max = new float[]{
                     dimension[0] * maxW,
                     dimension[1] * maxH
@@ -127,8 +125,8 @@ public class Graphics {
         };
     }
 
-    public static Graphics getInstance(){
-        if(instance==null){
+    public static Graphics getInstance() {
+        if (instance == null) {
             instance = new Graphics();
         }
         return instance;

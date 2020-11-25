@@ -1,8 +1,8 @@
 package temp.GameLogic;
 
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameRules;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class Validator {
     /**
      * Checks if you can knock with the given info.
      *
-     * @param knock rue if player wants to knock, false if player wants to continue
+     * @param knock  rue if player wants to knock, false if player wants to continue
      * @param layout cards currently in player hand
      * @return true move can be executed, false if not
      */
@@ -21,7 +21,7 @@ public class Validator {
         if (!knock) {
             return true;
         } else {
-            if(validHandLayout(layout)) {
+            if (validHandLayout(layout)) {
                 return layout.getDeadwood() <= GameRules.minDeadwoodToKnock;
             }
             return false;
@@ -36,7 +36,7 @@ public class Validator {
      */
     public static boolean pickDeckOrDiscard(Boolean deck, int deckSize, boolean discardEmpty) {
         // Deck but deck empty
-        if (deck && deckSize==0) {
+        if (deck && deckSize == 0) {
             return false;
         }
         // Discard but discard empty (shouldn't happen)
@@ -65,24 +65,24 @@ public class Validator {
      * Checks if all melds in wantedLayout are valid and then that the realLayout and the wantedLayout share the same cards.
      *
      * @param wantedLayout layout you want to save
-     * @param realLayout current layout
+     * @param realLayout   current layout
      * @return true if valid, false if not
      */
     public static boolean confirmLayout(HandLayout wantedLayout, HandLayout realLayout) {
         for (Meld meld : wantedLayout.viewMelds()) {
-            if(!validMeld(meld)){
+            if (!validMeld(meld)) {
                 return false;
             }
         }
         List<MyCard> realCards = realLayout.viewAllCards();
         int removed = 0;
         for (MyCard card : realCards) {
-            if(!wantedLayout.removeCard(card)){
+            if (!wantedLayout.removeCard(card)) {
                 return false;
             }
             removed++;
         }
-        return realCards.size()==removed;
+        return realCards.size() == removed;
     }
 
     /**
@@ -91,9 +91,9 @@ public class Validator {
      * @param handLayout to be checked
      * @return true if valid, no if not
      */
-    private static boolean validHandLayout(HandLayout handLayout){
+    private static boolean validHandLayout(HandLayout handLayout) {
         for (Meld meld : handLayout.viewMelds()) {
-            if(!validMeld(meld)){
+            if (!validMeld(meld)) {
                 return false;
             }
         }
@@ -132,28 +132,28 @@ public class Validator {
     /**
      * Checks if you can layoff with the given info.
      *
-     * @param layoff wanting to be executed
+     * @param layoff       wanting to be executed
      * @param knockerMelds melds of knocker
-     * @param playerCards cards in player hand
+     * @param playerCards  cards in player hand
      * @return true if valid, false if not
      */
     public static boolean layOff(Layoff layoff, List<Meld> knockerMelds, List<MyCard> playerCards) {
         //Check if card to layoff is in player hand
         boolean cardFound = false;
         for (MyCard playerCard : playerCards) {
-            if(playerCard.same(layoff.card)){
-                cardFound=true;
+            if (playerCard.same(layoff.card)) {
+                cardFound = true;
                 break;
             }
         }
-        if(!cardFound){
+        if (!cardFound) {
             return false;
         }
         //Check if the meld given in the layoff is one of the knockers melds
-        Integer index = Finder.findMeldIndexIn(layoff.meld,knockerMelds);
+        Integer index = Finder.findMeldIndexIn(layoff.meld, knockerMelds);
 
         //If meld found in knocker meld, validate it
-        if(index!=null){
+        if (index != null) {
             knockerMelds.get(index).addCard(layoff.card);
             return validMeld(knockerMelds.get(index));
         }
