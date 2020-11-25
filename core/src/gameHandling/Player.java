@@ -25,20 +25,20 @@ public class Player {
         this.hand = hand;
         this.score = 0;
     }
-    
-    public Player(SetOfCards cards) {
-    	this("player",cards);
-    }
-    
-    public Player(String name, SetOfCards cards) {
-    	this.name = name;
-    	this.hand = cards;
-    	this.score = 0;
 
-    	// TODO: Add a method so that the default constructor already scores the hand
+    public Player(SetOfCards cards) {
+        this("player",cards);
+    }
+
+    public Player(String name, SetOfCards cards) {
+        this.name = name;
+        this.hand = cards;
+        this.score = 0;
+
+        // TODO: Add a method so that the default constructor already scores the hand
         // TODO: Add this method as well whenever a card is drawn
-    	this.scoreHand();
-    	this.deadWood = this.findDeadwood();
+        this.scoreHand();
+        this.deadWood = this.findDeadwood();
     }
 
     public String getName() {
@@ -96,8 +96,12 @@ public class Player {
                     Ignore everything and return the new removed, which should be empty
                 }
                  */
-
-                int newValue = valueOfLists(findRuns(newSequenceSet)) + valueOfLists(newRemoved);
+                int newValue;
+                if (newSequenceSet.getCardSetSize() == 0) {
+                    newValue = valueOfLists(newRemoved);
+                }
+                else
+                    newValue = valueOfLists(findRuns(newSequenceSet)) + valueOfLists(newRemoved);
 
                 if(newValue > this.bestValueCombination){
                     List<List<Card>> newCombination = new ArrayList<>();
@@ -188,7 +192,7 @@ public class Player {
     public static int valueInList(List<Card> listCard) {
         int score = 0;
         for (int i = 0; i < listCard.size(); i++) {
-        	score = score + listCard.get(i).getGinRummyValue();
+            score = score + listCard.get(i).getGinRummyValue();
         }
         return score;
     }
@@ -240,48 +244,55 @@ public class Player {
 
         //System.out.println("listSet of "+this.name+" is: " + listList);
 
-            return listList;
+        return listList;
 
 
     }
 
     public List<List<Card>> findRuns(SetOfCards handOfCards){
-        handOfCards.sortBySuits();
-
         List<List<Card>> runs = new ArrayList<>();
 
-        List<Card> currentRun = new ArrayList<>();
-        currentRun.add(handOfCards.getCard(0));
-        for(int i = 1; i < handOfCards.getCardSetSize();i++){
-            if(handOfCards.getCard(i).getSuit().equals(currentRun.get(currentRun.size()-1).getSuit())){
-                if(currentRun.isEmpty()){
-                    currentRun.add(handOfCards.getCard(i));
-                }else{
-                    if(currentRun.get(currentRun.size()-1).getValue()+1 == handOfCards.getCard(i).getValue()){
-                        currentRun.add(handOfCards.getCard(i));
-                    }else{
-                        if(currentRun.size() >= 3){
-                            runs.add(currentRun);
-                        }
-                        currentRun = new ArrayList<>();
-                        currentRun.add(handOfCards.getCard(i));
-                    }
-                }
+        if (handOfCards.getCardSetSize() < 3) {
+            return runs;
+        }
 
-            }else{
-                if(currentRun.size() >= 3){
+        else {
+            handOfCards.sortBySuits();
+
+
+            List<Card> currentRun = new ArrayList<>();
+            currentRun.add(handOfCards.getCard(0));
+            for (int i = 1; i < handOfCards.getCardSetSize(); i++) {
+                if (handOfCards.getCard(i).getSuit().equals(currentRun.get(currentRun.size() - 1).getSuit())) {
+                    if (currentRun.isEmpty()) {
+                        currentRun.add(handOfCards.getCard(i));
+                    } else {
+                        if (currentRun.get(currentRun.size() - 1).getValue() + 1 == handOfCards.getCard(i).getValue()) {
+                            currentRun.add(handOfCards.getCard(i));
+                        } else {
+                            if (currentRun.size() >= 3) {
+                                runs.add(currentRun);
+                            }
+                            currentRun = new ArrayList<>();
+                            currentRun.add(handOfCards.getCard(i));
+                        }
+                    }
+
+                } else {
+                    if (currentRun.size() >= 3) {
+                        runs.add(currentRun);
+                    }
+                    currentRun = new ArrayList<>();
+                    currentRun.add(handOfCards.getCard(i));
+                }
+                if (i == handOfCards.getCardSetSize() - 1 && currentRun.size() >= 3) {
                     runs.add(currentRun);
                 }
-                currentRun = new ArrayList<>();
-                currentRun.add(handOfCards.getCard(i));
-            }
-            if (i == handOfCards.getCardSetSize() - 1 && currentRun.size() >= 3) {
-                runs.add(currentRun);
-            }
 
 
+            }
+            return runs;
         }
-        return runs;
     }
 
     public List<List<Card>> findSets(){
@@ -332,7 +343,7 @@ public class Player {
 
 
 
-            return listList;
+        return listList;
 
 
     }
@@ -409,13 +420,13 @@ public class Player {
         return tempList;
     }
 
-    
+
     /*
      * I'm not sure if I'm understanding this method correctly, but it seems to find the deadwood somehow
      * The part that makes me unsure is the copyList() method, as I don't know how it reaches the hand
      * That and the fact that best combination is stored inside the class, there's something in there that makes me unsure
      */
-    
+
     public List<Card> findDeadwood() {
 
         List<Card> handCard = this.hand.toList();
@@ -451,16 +462,16 @@ public class Player {
     public void evaluateScore(int value) { //subtract or add score in case of loss or win
         score += value;
     }
-    
+
     public void setHand(SetOfCards cards) {
-    	this.hand = cards;
+        this.hand = cards;
     }
-    
+
     public void addPoints(int points) {
-    	this.score += points;
+        this.score += points;
     }
-    
-    
+
+
     /*
      *  Finds the score of a given hand
      *  Needs to be modified to receive which cards are already in a run or a set
@@ -470,20 +481,20 @@ public class Player {
 
 
     public int scoreHand() {
-    	
-    	
-    	List<List<Card>> resultingCards = this.getMelds();
-    	
-    	List<Card> deadwood = this.getDeadwood(resultingCards);
-    	
-    	// I also need to find a way to take the deadwood out in some capacity
-    	// As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
-    	// TODO: Modify this so that the player that didn't knock can lose some of the deadwood
-    	
-    	int score = SetOfCards.scoreGinRummy(deadwood);
 
-    	return score;
-    	
+
+        List<List<Card>> resultingCards = this.getMelds();
+
+        List<Card> deadwood = this.getDeadwood(resultingCards);
+
+        // I also need to find a way to take the deadwood out in some capacity
+        // As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
+        // TODO: Modify this so that the player that didn't knock can lose some of the deadwood
+
+        int score = SetOfCards.scoreGinRummy(deadwood);
+
+        return score;
+
     }
 
     public static int scoreHand(List<Card> aHand) {
@@ -502,11 +513,11 @@ public class Player {
     public int getHandValue() {
         return constantScore - scoreHand();
     }
-    
-    
+
+
     public List<Card> findDeadwood(List<Card> cardsInMelds){
-    	
-    	List<Card> deadwood = new ArrayList<Card>();
+
+        List<Card> deadwood = new ArrayList<Card>();
 
     	/*
     	if(cardsInMelds.size() == 0){
@@ -514,68 +525,68 @@ public class Player {
     	    return deadwood;
         }*/
 
-    	deadwood.addAll(this.hand.toList());
+        deadwood.addAll(this.hand.toList());
 
-    	for(Card aCard: cardsInMelds) {
-    		if(deadwood.contains(aCard)) {
-    			deadwood.remove(aCard);
-    		}
-    	}
-    	
-    	return deadwood;
-    	
+        for(Card aCard: cardsInMelds) {
+            if(deadwood.contains(aCard)) {
+                deadwood.remove(aCard);
+            }
+        }
+
+        return deadwood;
+
     }
-    
+
     /*
      * This method is more than all used internally
      * Idea was to overload this guy with findDeadwood, but due to garbage java treatment of generics this happened
      */
-    
+
     public List<Card> getDeadwood(List<List<Card>> cardsInMelds){
-    	
-    	List<Card> usedCards = new ArrayList<Card>();
-    	
-    	for(List<Card> melds:cardsInMelds) {
-    		usedCards.addAll(melds);
-    	}
-    	
-    	return this.findDeadwood(usedCards);
-    	
+
+        List<Card> usedCards = new ArrayList<Card>();
+
+        for(List<Card> melds:cardsInMelds) {
+            usedCards.addAll(melds);
+        }
+
+        return this.findDeadwood(usedCards);
+
     }
-    
-    
+
+
     /*
      * Idea is that this method will find the melds in the given player's hand
      * It'll return the melds in a list of lists
-     * 
-     * 
+     *
+     *
      * NEW INFO:
      * I'm pretty sure the method's useless now due to the findBestCombinations method done by Truc
      * I added some changes to make sure the older code works, but there's definitely some updating needed inside
      * TODO: Check code for inconsistencys and speed
-     * 
+     *
      */
     public List<List<Card>> getMelds(){
-    	this.bestCombination();
-    	return this.bestCombination;
+        this.bestCombination();
+        return this.bestCombination;
     }
 
 
-    
-    
+
+
     /*
      * Some method that has listeners and stuff
      * It'll add the card to the player's hand, and then ask them to discard a card
      * If the returned card is the given card, then there's no changes
-     * 
+     *
      * For now, I'm just returning the given card
      * So the game will always discard the given card
-     * 
+     *
      * TODO: Add the listeners
-     * 
+     *
      */
     public Card chooseCardToDiscard(Card aCard) {
-    	return aCard;
+        return aCard;
     }
 
 
@@ -589,29 +600,29 @@ public class Player {
     public boolean chooseToKnock(){
         return false;
     }
-    
-    
+
+
     /*
      * Listener to get whether to get the deck or from the discard pile
-     * 
+     *
      * If false:
      * 	then the player chose the deck
      * if true:
      * 	player chose the card from the discard pile
-     * 
+     *
      * Currently the player only chooses from the deck
-     * 
+     *
      * TODO: Add the listeners for the game
-     * 
+     *
      */
-    
+
     public boolean chooseDeckOrPile(Card pileTop) {
-    	return false;
+        return false;
     }
-    
+
     /*
      * Listener to get whether the player chose to knock or not
-     * 
+     *
      * If false:
      * 	Player didn't knock, so goes on
      * If true:
@@ -631,10 +642,23 @@ public class Player {
     public static void main(String[] args) {
 
 
-        SetOfCards deck = new SetOfCards(true, false);
-        deck.shuffleCards();
-		SetOfCards hand = new SetOfCards(false, false);
+        //SetOfCards deck = new SetOfCards(true, false);
+        //deck.shuffleCards();
+        SetOfCards hand = new SetOfCards(false, false);
 
+        for (int i = 0; i < 3; i++) {
+            hand.addCard(new Card(i,1));
+        }
+
+        for (int i = 3; i < 7; i++) {
+            hand.addCard(new Card(0,i));
+        }
+
+        Player p = new Player(hand);
+        p.bestCombination();
+        System.out.println(p.bestCombination);
+
+        /*
         for (int i = 1; i < 10; i++) {
             hand.addCard(new Card(0,i));
         }
@@ -643,7 +667,7 @@ public class Player {
             hand.addCard(new Card(i,12));
         }
 
-		Player aPlayer = new Player("player", hand);
+        Player aPlayer = new Player("player", hand);
         System.out.println(hand);
 
         SetOfCards handy = new SetOfCards(false, false);
@@ -656,19 +680,19 @@ public class Player {
             handy.addCard(new Card(i,3));
         }
 
-       //Player ap = new Player("player1", handy);
+        //Player ap = new Player("player1", handy);
 
         System.out.println("handy: "+handy+"cc"+hand.getCard(0));
 
-      //  System.out.println("permutations: "+ap.getPermutation(ap.findSets(handy)));
+        //  System.out.println("permutations: "+ap.getPermutation(ap.findSets(handy)));
 
         System.out.println("permutation: " +aPlayer.getPermutation(aPlayer.findSets(handy)));
 
 
-		List<List<Card>> runs = aPlayer.findRuns();
+        List<List<Card>> runs = aPlayer.findRuns();
         System.out.println("runs: \n " + runs);
 
-		//List<List<Card>> sets = aPlayer.findSets();
+        //List<List<Card>> sets = aPlayer.findSets();
         //System.out.println("sets: \n" + sets);
 
         List<List<Card>> sets = aPlayer.findSets(hand);
@@ -692,7 +716,8 @@ public class Player {
 
         System.out.println("deadwood" + p2.findDeadwood());
 
+         */
 
-	}
-    
+    }
+
 }
