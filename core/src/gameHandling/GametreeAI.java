@@ -222,10 +222,10 @@ public class GametreeAI {
     }
 
     public void copyParent(Node parent){
-        discardPile = new SetOfCards(parent.discardPile.toList());
-        cardsUnknown = new SetOfCards(parent.unknownCards.toList());
-        hand = new SetOfCards(parent.hand.toList());
-        opponentHand = new SetOfCards(parent.opponentHand.toList());
+        this.discardPile = new SetOfCards(parent.discardPile.toList());
+        this.cardsUnknown = new SetOfCards(parent.unknownCards.toList());
+        this.hand = new SetOfCards(parent.hand.toList());
+        this.opponentHand = new SetOfCards(parent.opponentHand.toList());
     }
 
     // pickOrDiscard variable to indicate if you need to create hand of 10 or 11 cards, true if 11 (= picking process)
@@ -402,5 +402,6 @@ public class GametreeAI {
         pile.addCard(discardCard);
         GametreeAI AI = new GametreeAI(pile, hand,deck);
         AI.createTree();
+        System.out.print("heyyyy");
     }
 }
