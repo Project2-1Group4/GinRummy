@@ -101,6 +101,7 @@ public class MyCard {
                 rank
         };
     }
+
     public static int getIndex(Suit s, Rank r){
         return getIndex(s.index,r.index);
     }

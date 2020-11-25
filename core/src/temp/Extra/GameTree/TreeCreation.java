@@ -23,6 +23,9 @@ public class TreeCreation {
         System.out.println(root.treeWidthAtDepth(14));
     }
 
+    // Base code. To make it more "viable" to for a bot:
+    // -if it's the players turn, only add the best move
+    // -save probabilities in node class
     public static void recursiveTree(State curState,Node curNode, int depth, int wantedDepth){
         if(curNode.action instanceof KnockAction){
             if(((KnockAction)curNode.action).knock){
