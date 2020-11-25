@@ -134,6 +134,21 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     @Override
+    public void playerDiscarded(DiscardAction discardAction) {
+
+    }
+
+    @Override
+    public void playerPicked(PickAction pickAction) {
+
+    }
+
+    @Override
+    public void executed(Action action) {
+
+    }
+
+    @Override
     public String toString() {
         return "GamePlayer{" +
                 "handLayout=" + handLayout +

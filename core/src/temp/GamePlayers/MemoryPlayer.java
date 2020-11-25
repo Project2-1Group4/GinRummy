@@ -8,7 +8,6 @@ import temp.GameLogic.MyCard;
 
 public abstract class MemoryPlayer extends GamePlayer{
     protected static final int discard = -1;
-    protected static final int unknown = 0;
     // -1 = discard, 0 = unknown, player = player index
     protected int[] memory;
     public MemoryPlayer(){
@@ -30,13 +29,6 @@ public abstract class MemoryPlayer extends GamePlayer{
     }
 
     @Override
-    public void playerActed(Action action) {
-        if(action instanceof DiscardAction){
-            playerDiscarded((DiscardAction) action);
-        }
-    }
-
-    @Override
     public void playerDiscarded(DiscardAction discardAction) {
         memory[discardAction.card.getIndex()] = -1;
     }
@@ -45,6 +37,15 @@ public abstract class MemoryPlayer extends GamePlayer{
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
             memory[pickAction.card.getIndex()] = pickAction.playerIndex;
+        }
+    }
+
+    @Override
+    public void executed(Action action) {
+        if(action instanceof PickAction){
+            memory[((PickAction) action).card.getIndex()] = index;
+        }else if(action instanceof DiscardAction){
+            memory[((DiscardAction) action).card.getIndex()] = discard;
         }
     }
 }

@@ -55,6 +55,8 @@ public interface PlayerInterface {
 
     /**
      * Feeds in the discardAction executed (including card and who did it)
+     * If playerActed not overwritten then only called when other players discard
+     * Otherwise never
      *
      * @param discardAction action executed
      */
@@ -62,8 +64,16 @@ public interface PlayerInterface {
 
     /**
      * Feeds in pickAction executed (including where, which card and who did it)
+     * If playerActed not overwritten then only called when other players picked
+     * Otherwise never
      *
      * @param pickAction action executed
      */
     void playerPicked(PickAction pickAction);
+
+    /**
+     * Called after this players action has been executed
+     * @param action executed
+     */
+    void executed(Action action);
 }

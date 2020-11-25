@@ -161,8 +161,13 @@ public class Executor {
 
         if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
 
+        Action a = curState.viewLastAction();
         for (int i = 0; i < curState.players.size(); i++) {
-            curState.players.get(i).playerActed(curState.viewLastAction());
+            if(a instanceof PickAction && ((PickAction) a).deck) {
+                curState.players.get(i).playerActed(new PickAction(a.playerIndex,((PickAction) a).deck,null));
+            }else{
+                curState.players.get(i).playerActed(a);
+            }
         }
 
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
@@ -280,7 +285,7 @@ public class Executor {
         List<? extends Action> possibleActions = TreeExpander.getPossibleActions(curState);
         for (Action possibleAction : possibleActions) {
             if(action.same(possibleAction)){
-                boolean executed = false;
+                Action executed = null;
                 if(action instanceof KnockAction){
                     executed = knock((KnockAction)action,curState);
                 }
@@ -299,12 +304,13 @@ public class Executor {
                 else{
                     System.out.println("Executor.execute() ERROR ERROR ERROR");
                 }
-                if(executed){
+                if(executed!=null){
                     if (GameRules.print || GameRules.minPrint) System.out.println("Action saved");
                     curState.movesDone.add(action);
+                    curState.getPlayer().executed(executed);
                     Executor.nextStep(curState);
                 }
-                return executed;
+                return executed!=null;
             }
         }
         if(GameRules.print || GameRules.minPrint) System.out.println("ACTION NOT AVAILABLE "+action);
@@ -312,41 +318,41 @@ public class Executor {
         return false;
     }
 
-    private static boolean knock(KnockAction action, State curState){
+    private static KnockAction knock(KnockAction action, State curState){
         if(action.knock && action.viewLayout().getDeadwood()<=GameRules.minDeadwoodToKnock){
             knocked(action.playerIndex, curState);
-            return true;
+            return action;
         }else if(!action.knock){
-            return true;
+            return action;
         }
         System.out.println("Executor.knock() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean pick(PickAction action, State curState){
+    private static PickAction pick(PickAction action, State curState){
         if(action.deck && curState.getDeckSize()!=0){
             curState.getPlayerState().handLayout.addUnusedCard(curState.pickDeckTop());
-            return true;
+            return new PickAction(action.playerIndex, true,curState.peekDeckTop());
         }else if(!action.deck && !curState.isDiscardEmpty() && action.card.same(curState.peekDiscardTop())){
             curState.getPlayerState().handLayout.addUnusedCard(curState.pickDiscardTop());
-            return true;
+            return action;
         }
         System.out.println("Executor.pick() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean discard(DiscardAction action, State curState){
+    private static DiscardAction discard(DiscardAction action, State curState){
         for (MyCard card : curState.getPlayerState().viewHand()) {
             if(action.card.same(card) && curState.getPlayerState().removeCard(action.card)){
                 curState.addToDiscard(action.card);
-                return true;
+                return action;
             }
         }
         System.out.println("Executor.discard() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean layoutConfirmation(LayoutConfirmationAction action, State curState){
+    private static LayoutConfirmationAction layoutConfirmation(LayoutConfirmationAction action, State curState){
         if(action.layout.isValid()){
             int found = 0;
             for (MyCard card : action.layout.viewAllCards()) {
@@ -359,16 +365,16 @@ public class Executor {
             }
             if(found==curState.getPlayerState().viewHand().size()){
                 curState.getPlayerState().handLayout = action.layout;
-                return true;
+                return action;
             }
         }
         System.out.println("Executor.layoutConfirmation() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean layoff(LayoffAction action, State curState){
+    private static Action layoff(LayoffAction action, State curState){
         if(action.meld==null){
-            return true;
+            return action;
         }
         boolean foundInUnused = false;
         for (MyCard card : curState.getPlayerState().viewUnusedCards()) {
@@ -381,12 +387,12 @@ public class Executor {
             for (Meld meld : curState.getKnockerState().viewMelds()) {
                 if (meld.same(action.meld) && meld.isValidWith(action.card)) {
                     meld.addCard(action.card);
-                    return true;
+                    return action;
                 }
             }
         }
         System.out.println("Executor.layoff() ERROR ERROR ERROR");
-        return false;
+        return null;
 
     }
 }

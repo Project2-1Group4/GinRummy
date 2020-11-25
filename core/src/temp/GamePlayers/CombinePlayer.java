@@ -2,6 +2,7 @@ package temp.GamePlayers;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
@@ -72,6 +73,13 @@ public class CombinePlayer extends GamePlayer{
     }
 
     @Override
+    public void executed(Action action) {
+        for (GamePlayer handler : handlers) {
+            handler.executed(action);
+        }
+    }
+
+    @Override
     public void update(HandLayout realLayout) {
         super.update(realLayout);
         for (GamePlayer handler : handlers) {
@@ -97,4 +105,5 @@ public class CombinePlayer extends GamePlayer{
     public static CombinePlayer getBaseCombinePlayer(){
         return new CombinePlayer(new KeyboardPlayer(),new MousePlayer());
     }
+
 }

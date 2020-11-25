@@ -103,6 +103,7 @@ public class State {
         }
         return index;
     }
+
     public GamePlayer getKnocker() {
         assert knocker != null;
         return players.get(getKnockerIndex());
@@ -130,6 +131,10 @@ public class State {
             return null;
         }
         return discardPile.peek();
+    }
+
+    public MyCard peekDeckTop(){
+        return deck.get(deck.size()-1);
     }
 
     public float getCurTime() {
