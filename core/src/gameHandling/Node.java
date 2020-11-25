@@ -28,7 +28,10 @@ public class Node {
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
 
-        if(Player.scoreHand(hand.toList()) > Player.scoreHand(opponentHand.toList()) && Player.scoreHand(hand.toList())<=10){
+        int pScore = Player.scoreHand(hand.toList());
+        int opHand = Player.scoreHand(opponentHand.toList());
+
+        if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
         handValue = Player.getHandValue(cards.toList());

@@ -91,6 +91,12 @@ public class Player {
                 SetOfCards newSequenceSet = new SetOfCards();
                 newSequenceSet.fromList(newSequence);
 
+                /*
+                If newSequenceSet.size() == 0 {
+                    Ignore everything and return the new removed, which should be empty
+                }
+                 */
+
                 int newValue = valueOfLists(findRuns(newSequenceSet)) + valueOfLists(newRemoved);
 
                 if(newValue > this.bestValueCombination){
@@ -98,6 +104,11 @@ public class Player {
                     newCombination.addAll(copyListOfList(findRuns(newSequenceSet)));
                     newCombination.addAll(copyListOfList(newRemoved));
                     this.bestCombination = newCombination;
+
+                    /*
+                    Not sure how important best Value combination is, because for gin rummy it's the deadwood that matters in scoring
+                     */
+
                     this.bestValueCombination = newValue;
 
                 }

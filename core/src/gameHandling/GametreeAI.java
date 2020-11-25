@@ -490,7 +490,6 @@ public class GametreeAI {
             curVal += aCard.getProb();
 
             if(curVal >= objective){
-
                 finCard = aCard;
                 break;
             }
