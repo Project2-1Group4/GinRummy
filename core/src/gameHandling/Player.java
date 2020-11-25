@@ -67,7 +67,7 @@ public class Player {
         SequenceSet.fromList(copyList(sequence));
 
 
-        int Value = valueOfLists(findRuns(SequenceSet)) + valueOfLists(copyListOfList(removed));
+        int Value = valueOfLists(findRuns(SequenceSet)) + valueOfLists(removed);
 
         if(Value > this.bestValueCombination){
             List<List<Card>> newCombination = new ArrayList<>();
@@ -648,11 +648,11 @@ public class Player {
 
         for (int i = 0; i < 3; i++) {
             hand.addCard(new Card(i,1));
+            hand.addCard(new Card(i,3));
+            hand.addCard(new Card(i,5));
         }
 
-        for (int i = 3; i < 7; i++) {
-            hand.addCard(new Card(0,i));
-        }
+
 
         Player p = new Player(hand);
         p.bestCombination();
