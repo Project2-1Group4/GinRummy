@@ -11,6 +11,7 @@ import temp.GameLogic.TreeExpander;
 import temp.GamePlayers.CombinePlayer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TreeCreation {
@@ -22,16 +23,27 @@ public class TreeCreation {
                 .build();
         startState = Executor.startNewRound(500, startState);
         Node root = new Node(0, null, null);
-        recursiveTree(startState, root, 0, 7);
-        System.out.println(root.treeWidthAtDepth(7));
+
+        s = System.currentTimeMillis();
+        limitedDepthFirstSearch(startState, root, 0, 7);
+        System.out.println(root.nodesUntilDepth(10));
+        System.out.println(Arrays.toString(root.widthsAtDepths(7)));
     }
 
-    // Base code. To make it more "viable" to for a bot:
-    // -if it's the players turn, only add the best move
-    // -save probabilities in node class
-    // -have an array of currently unknown cards also pass through
-    // ^(replace List of unknown in pickActions method with array[][] or w/e you're using as unknown cards
-    public static void recursiveTree(State curState, Node curNode, int depth, int wantedDepth) {
+    /* To set time limit, feed in System.currentTimeMillis() and maxTime as extra variables.
+    Add check if(maxTime<=System.currentTimeMillis()-s/(double)1000) return;
+     */
+    static long s;
+    static double time=0;
+    static double maxTime = 50;
+
+    /* Base code. To make it more "viable" to for a bot:
+     -if it's the players turn, only add the best move
+     -save probabilities in node class
+     -have an array of currently unknown cards also pass through
+     ^(replace List of unknown in pickActions method with array[][] or w/e you're using as unknown cards
+    */
+    public static void limitedDepthFirstSearch(State curState, Node curNode, int depth, int wantedDepth) {
         if (curNode.action instanceof KnockAction) {
             if (((KnockAction) curNode.action).knock) {
                 return;
@@ -48,7 +60,7 @@ public class TreeCreation {
         }
         for (Action action : possibleActions) {
             Node child = new Node(depth + 1, curNode, action);
-            recursiveTree(newState, child, depth + 1, wantedDepth);
+            limitedDepthFirstSearch(newState, child, depth + 1, wantedDepth);
             curNode.children.add(child);
         }
     }

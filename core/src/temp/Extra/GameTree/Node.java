@@ -76,19 +76,62 @@ public class Node {
     }
 
     /**
-     * Returns the width of the tree when you go *depth* deeper from this node
+     * Returns the number of nodes in the tree when you go *depth* deeper from this node (including this)
      *
      * @param depth you want to go to starting from this current node
      * @return width of the tree given the starting node (this)
      */
-    public int treeWidthAtDepth(int depth) {
-        if (depth == 0) {
-            return 0;
+    public int nodesUntilDepth(int depth) {
+        return nodesUntilDepth(depth,0);
+    }
+
+    private int nodesUntilDepth(int depth, int nodes){
+        if (children.size() == 0 || depth == 0) {
+            return nodes+1;
         }
-        int width = children.size();
+        nodes+=1;
         for (Node child : children) {
-            width += child.treeWidthAtDepth(depth - 1);
+            nodes = child.nodesUntilDepth(depth - 1,nodes);
+        }
+        return nodes;
+    }
+
+    /**
+     * Returns the number of nodes at the depth = this.depth+depth including leaf nodes that appear earlier
+     * @param depth wanted
+     * @return width that given depth
+     */
+    public int widthAtDepth(int depth){
+        return widthAtDepth(depth,0);
+    }
+
+    private int widthAtDepth(int depth, int width){
+        if (depth == 0) {
+            return width+1;
+        }
+        for (Node child : children) {
+            width = child.widthAtDepth(depth - 1,width);
         }
         return width;
+    }
+
+    /**
+     * Returns array of width at every depth from this.depth to this.depth+depth
+     * @param depth deepest
+     * @return int[] array of width
+     */
+    public int[] widthsAtDepths(int depth){
+        return widthsAtDepths(depth,0,new int[depth+1]);
+    }
+
+    private int[] widthsAtDepths(int depth, int index, int[] nodes){
+        nodes[index]+=1;
+        if (children.size() == 0 || depth == 0) {
+            return nodes;
+        }
+        for (Node child : children) {
+            nodes = child.widthsAtDepths(depth - 1,index+1,nodes);
+        }
+        return nodes;
     }
 }
