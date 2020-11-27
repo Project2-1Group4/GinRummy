@@ -29,6 +29,8 @@ public class TreeCreation {
     // Base code. To make it more "viable" to for a bot:
     // -if it's the players turn, only add the best move
     // -save probabilities in node class
+    // -have an array of currently unknown cards also pass through
+    // ^(replace List of unknown in pickActions method with array[][] or w/e you're using as unknown cards
     public static void recursiveTree(State curState, Node curNode, int depth, int wantedDepth) {
         if (curNode.action instanceof KnockAction) {
             if (((KnockAction) curNode.action).knock) {
@@ -51,7 +53,14 @@ public class TreeCreation {
         }
     }
 
-    private static List<Action> pickActions(List<Action> possibleActions, List<MyCard> deck, int index){
+    /**
+     *
+     * @param possibleActions current possible actions
+     * @param unknown list of cards with unknown whereabouts
+     * @param index of player
+     * @return all possible picks based on the players knowledge
+     */
+    private static List<Action> pickActions(List<Action> possibleActions, List<MyCard> unknown, int index){
         List<Action> newPossible = new ArrayList<>();
         if(possibleActions.size()!=0) {
             for (Action possibleAction : possibleActions) {
@@ -60,7 +69,7 @@ public class TreeCreation {
                 }
             }
         }
-        for (MyCard myCard : deck) {
+        for (MyCard myCard : unknown) {
             newPossible.add(new PickAction(index,true,myCard));
         }
         return newPossible;
