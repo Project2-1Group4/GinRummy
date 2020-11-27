@@ -28,10 +28,14 @@ public class TreeCreation {
                 .build();
         startState = Executor.startNewRound(500, startState);
 
-        BFSNode root = timedLimitedDepthBFS(startState, 7,2);
+        BFSNode root = timedLimitedDepthBFS(startState, 20,50);
         System.out.println(root.nodesUntilDepth(20));
         System.out.println(Arrays.toString(root.widthsAtDepths(20)));
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////// ONLY FULL VISIBILITY /////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns root node once wantedDepth reached and completed
@@ -120,6 +124,11 @@ public class TreeCreation {
                     Executor.execute(v.action,state);
                     v.state = state;
                 }
+                if (v.action instanceof KnockAction) {
+                    if (((KnockAction) v.action).knock) {
+                        continue;
+                    }
+                }
                 State newState = v.state;
                 List<Action> possibleActions = (List<Action>) TreeExpander.getPossibleActions(newState);
                 if(newState.getStep()== State.StepInTurn.Pick){
@@ -168,6 +177,11 @@ public class TreeCreation {
                     State state = ((BFSNode)v.parent).state.copy();
                     Executor.execute(v.action,state);
                     v.state = state;
+                }
+                if (v.action instanceof KnockAction) {
+                    if (((KnockAction) v.action).knock) {
+                        continue;
+                    }
                 }
                 State newState = v.state;
                 List<Action> possibleActions = (List<Action>) TreeExpander.getPossibleActions(newState);
