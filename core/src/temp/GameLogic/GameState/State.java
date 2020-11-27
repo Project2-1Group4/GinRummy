@@ -72,9 +72,18 @@ public class State {
         return playerStates;
     }
 
+    //TODO dont know if I should just make everything public bc
+    // the GamePlayer subclasses will never have direct access to the real State
+    public List<MyCard> getDeck(){
+        return new ArrayList<>(deck);
+    }
     // Returns copies to avoid the changing of the inner state outside of package
     public int getPlayerNumber() {
         return getPlayer().index;
+    }
+
+    public int getPlayerIndex(){
+        return playerTurn;
     }
 
     public Integer getWinner() {

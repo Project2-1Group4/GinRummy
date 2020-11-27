@@ -27,9 +27,11 @@ public class PickAction extends Action {
 
     @Override
     public String toString() {
-        if (deck) {
+        if (deck && card ==null) {
             return baseString() + " picked from deck.";
-        } else {
+        }else if(deck){
+            return baseString() + " picked "+card+" from deck";
+        }else {
             return baseString() + " picked " + card + " from discard.";
         }
     }

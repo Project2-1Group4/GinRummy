@@ -38,10 +38,12 @@ public class Node {
 
     /**
      * Prints the whole tree starting from this node
-     *
-     * @param depth start with 0.
      */
-    public void printLeaves(int depth) {
+    public void printLeaves(){
+        printLeaves(0);
+    }
+
+    private void printLeaves(int depth) {
         for (int i = 0; i < depth; i++) {
             System.out.print("\t");
         }
@@ -55,9 +57,12 @@ public class Node {
      * Prints the tree in the form of a directory
      *
      * @param depth    you want to go lower than this node (ex: depth = 2, and this.depth = 1 then print from this node to depth = 3)
-     * @param curDepth starts at 0. Used to keep \t consistent
      */
-    public void printLeavesTo(int depth, int curDepth) {
+    public void printLeavesTo(int depth){
+        printLeavesTo(depth,0);
+    }
+
+    private void printLeavesTo(int depth, int curDepth) {
         if (curDepth == depth + 1) {
             return;
         }
