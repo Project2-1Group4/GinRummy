@@ -17,16 +17,19 @@ public class Node {
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
+
+    private int depthTree;
     protected HashMap<MyCard, Double> probMap = new HashMap<>();
 
     boolean playerStop = false; // when game is over this one turns to be true
     boolean AIStop = false; // turn to be true when game is over
 
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand) {
+    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand, int depth) {
         this.discardPile = pile;
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
+        this.depthTree = depth;
 
         int pScore = Player.scoreHand(hand.toList());
         int opHand = Player.scoreHand(opponentHand.toList());
@@ -75,6 +78,10 @@ public class Node {
 
     public Node getParent() {
         return parent;
+    }
+
+    public int getDepthTree() {
+        return depthTree;
     }
 
     public Node addChild(Node child){
