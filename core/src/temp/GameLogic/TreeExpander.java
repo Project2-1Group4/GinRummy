@@ -20,11 +20,11 @@ public class TreeExpander {
         int index = curState.getPlayerNumber();
         switch (curState.getStep()) {
             case KnockOrContinue:
-                return getPossibleKnockActions(index, curState.getPlayerState().viewHandLayout());
+                return getPossibleKnockActions(index, curState.getPlayerState().viewHand());
             case Pick:
                 return getPossiblePickActions(index, curState.getDeckSize(), curState.peekDiscardTop());
             case Discard:
-                return getPossibleDiscardActions(index, curState.getPlayerState().viewHandLayout());
+                return getPossibleDiscardActions(index, curState.getPlayerState().viewHand());
             case LayoutConfirmation:
                 return getPossibleLayoutConfirmationActions(index, curState.getPlayerState().viewHandLayout());
             case LayOff:
@@ -34,8 +34,8 @@ public class TreeExpander {
         }
     }
 
-    public static List<KnockAction> getPossibleKnockActions(int index, HandLayout layout) {
-        List<HandLayout> layouts = Finder.findAllLayouts(layout.viewAllCards());
+    public static List<KnockAction> getPossibleKnockActions(int index, List<MyCard> cards) {
+        List<HandLayout> layouts = Finder.findAllLayouts(cards);
         List<KnockAction> possibleActions = new ArrayList<>();
         for (HandLayout possible : layouts) {
             if (possible.getDeadwood() <= GameRules.minDeadwoodToKnock) {
@@ -57,9 +57,9 @@ public class TreeExpander {
         return possibleActions;
     }
 
-    public static List<DiscardAction> getPossibleDiscardActions(int index, HandLayout layout) {
+    public static List<DiscardAction> getPossibleDiscardActions(int index, List<MyCard> cards) {
         List<DiscardAction> possibleActions = new ArrayList<>();
-        for (MyCard card : layout.viewAllCards()) {
+        for (MyCard card : cards) {
             possibleActions.add(new DiscardAction(index, card));
         }
         return possibleActions;

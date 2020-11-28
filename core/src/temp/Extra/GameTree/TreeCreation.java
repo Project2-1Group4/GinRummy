@@ -1,5 +1,7 @@
 package temp.Extra.GameTree;
 
+import temp.Extra.GameTree.Bot.Bot;
+import temp.Extra.GameTree.Bot.BotMemory;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
@@ -21,7 +23,7 @@ public class TreeCreation {
     */
 
     public static void main(String[] args) {
-        State startState = new StateBuilder()
+        /*State startState = new StateBuilder()
                 .setSeed(11)
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
@@ -31,10 +33,14 @@ public class TreeCreation {
         BFSNode root = timedLimitedDepthBFS(startState, 20,50);
         System.out.println(root.nodesUntilDepth(20));
         System.out.println(Arrays.toString(root.widthsAtDepths(20)));
+         */
+        Bot b = new Bot();
+        Node root = b.DFS(7);
+        System.out.println(Arrays.toString(root.widthsAtDepths(7)));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////// ONLY FULL VISIBILITY /////////////////////////////////////////
+    //////////////////////////// ONLY WORKS WITH PERFECT INFORMATION //////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

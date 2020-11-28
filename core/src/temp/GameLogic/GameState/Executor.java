@@ -10,6 +10,7 @@ import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Executes validates moves. Only class that should(/can) modify the game state.
@@ -84,7 +85,7 @@ public class Executor {
                     .setSecondsPerStep(curState.secondsPerStep)
                     .build();
         }
-        shuffleDeck(shuffles, newState);
+        newState.deck = shuffleList(newState.seed,shuffles, newState.deck);
         startDiscardPile(newState);
         distributeCards(GameRules.baseCardsPerHand, newState);
 
@@ -92,18 +93,18 @@ public class Executor {
     }
 
     /**
-     * Shuffles the deck of the current game state
-     *
-     * @param shuffles number of times to shuffle the deck (move 1 card to another place in the deck)
-     * @param curState current game state
+     * @param rd randomizer
+     * @param shuffles number of shuffles
+     * @param cards list of cards to shuffle
+     * @return shuffled list
      */
-    public static void shuffleDeck(int shuffles, State curState) {
+    public static List<MyCard> shuffleList(Random rd, int shuffles, List<MyCard> cards) {
         if (GameRules.print) System.out.println("Deck shuffled");
         for (int i = 0; i < shuffles; i++) {
-            MyCard card = curState.deck.remove(curState.seed.nextInt(curState.deck.size()));
-            curState.deck.add(curState.seed.nextInt(curState.deck.size()), card);
+            MyCard card = cards.remove(rd.nextInt(cards.size()));
+            cards.add(rd.nextInt(cards.size()), card);
         }
-
+        return cards;
     }
 
     /**
