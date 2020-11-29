@@ -27,6 +27,7 @@ public class Bot {
     }
 
     private void DFS(BotNode curNode, BotMemory cards, int depth, int wantedDepth){
+        assert cards.nbOfCards() == 52;
         if (curNode.action instanceof KnockAction) {
             if (((KnockAction) curNode.action).knock) {
                 return;
