@@ -100,7 +100,7 @@ public class Node {
     }
 
     public int getHandValue() {
-        return this.handValue;
+        return Player.getHandValue(this.hand.toList());
         //return hand.getHandValue();
     }
 

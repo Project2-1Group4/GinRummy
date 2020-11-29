@@ -105,6 +105,8 @@ public class SetOfCards {
 	public boolean discardCard(Card aCard) {
 		return this.cards.remove(aCard);
 	}
+
+
 	
 	public static int scoreGinRummy(List<Card> cardSet) {
 		int totScore = 0;

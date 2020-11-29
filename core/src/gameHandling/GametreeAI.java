@@ -10,7 +10,7 @@ public class GametreeAI {
     SetOfCards discardPile;
     SetOfCards hand;
     SetOfCards cardsUnknown;
-    private SetOfCards opponentHand;
+    SetOfCards opponentHand;
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private int simulationNum = 3;

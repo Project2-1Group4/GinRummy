@@ -14,13 +14,20 @@ public class MinimaxPruningAI {
     public SetOfCards hand;
     public SetOfCards pile;
     public SetOfCards unknownCards;
+    //public static SetOfCards deck;
 
 
     public MinimaxPruningAI(GametreeAI tree, SetOfCards pile, SetOfCards hand, SetOfCards unknown) {
         this.tree = tree;
         this.hand = hand;
         this.pile = pile;
-        this.unknownCards = unknown;
+        this.unknownCards = unknown; //include deck and opponent hand
+        //unknown card is different from deck so I have a new attribute here (not sure somewhere has it already but I didnt find out)
+        //this.deck = new SetOfCards(unknown.toList());
+
+        //for (int i = 0; i < tree.opponentHand.size(); i++) {
+            //this.deck.discardCard(tree.opponentHand.getCard(i));
+        //}
         AITurn = true;
     }
 
@@ -57,8 +64,9 @@ public class MinimaxPruningAI {
         }
     }
 
-    public void chooseNode() {
+    public void chooseNode(SetOfCards deck) {
         // this method doesn't get root node, should be changed if that is what you need here!!
+        //get the current state of AI (game)
         Node parent = tree.getParentNode();
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
 
@@ -84,23 +92,29 @@ public class MinimaxPruningAI {
 
         if(pickCard == pile.getCard(pile.size()-1)){
             pile.discardCard(pickCard);
+            //pile.addCard(discardCard);
         }
         else{
             // should pick from actual deck instead of cardsunknown in tree since in game you get topcard from deck
             // discard card then also should be changed instead of the node one because your new card is probably different
-            unknownCards.discardCard(pickCard);
+            /* this one changes to the rule below (I am not really sure this one makes any senses or not)
+            if the search return the card from pile  -> pick pile otherwise get card from deck (we have the prob that we can pick the likely card but still not sure)
+             */
+            pickCard = deck.drawTopCard();
+            discardCard = GametreeAI.chooseCardToDiscard(currentHand);
         }
         pile.addCard(discardCard);
         hand.discardCard(discardCard);
         hand.addCard(pickCard);
         pickedCard();
+        System.out.println("Card discard from bot: "+discardCard);
         //update tree
     }
 
     public void playGame(SetOfCards opponentHand, SetOfCards deck){
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         // AI's turn
-        chooseNode();
+        chooseNode(deck);
         // opponents turn
         System.out.println("Player 2, it's your turn");
         System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
@@ -110,7 +124,7 @@ public class MinimaxPruningAI {
         String choice = "pile";
         try {
             choice = reader.readLine();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // update probs
