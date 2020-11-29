@@ -14,7 +14,7 @@ public class MousePlayer extends GamePlayer {
 
     protected GameCard clicked;
 
-    public MousePlayer(){
+    public MousePlayer() {
         processor = new MouseHandler(this);
     }
 
@@ -25,11 +25,11 @@ public class MousePlayer extends GamePlayer {
 
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        if(clicked!=null){
-            if(clicked.card==null){
+        if (clicked != null) {
+            if (clicked.card == null) {
                 return true;
             }
-            if(clicked.card.same(topOfDiscard)){
+            if (clicked.card.same(topOfDiscard)) {
                 return false;
             }
         }
@@ -38,7 +38,7 @@ public class MousePlayer extends GamePlayer {
 
     @Override
     public MyCard discardCard() {
-        if(clicked!=null){
+        if (clicked != null) {
             return clicked.card;
         }
         return null;

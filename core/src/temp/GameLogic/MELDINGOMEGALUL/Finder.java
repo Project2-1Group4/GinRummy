@@ -33,7 +33,7 @@ public class Finder {
     /**
      * Calculates the amount of points won only based on deadwood differences. Nothing else.
      *
-     * @param handLayouts       1 meldSet for every player (even winner but that gives 0)
+     * @param handLayouts    1 meldSet for every player (even winner but that gives 0)
      * @param winnerDeadwood value of the winners deadwood
      * @return sum(losers deadwood - winner deadwood)
      */
@@ -59,8 +59,8 @@ public class Finder {
         List<MyCard> unusedCards = bestLayout.viewUnusedCards();
         for (MyCard card : cards) {
             for (int i = 0; i < unusedCards.size(); i++) {
-                if(card.same(unusedCards.get(i))){
-                    if(bestLayout.removeUnusedCard(unusedCards.get(i))) {
+                if (card.same(unusedCards.get(i))) {
+                    if (bestLayout.removeUnusedCard(unusedCards.get(i))) {
                         bestLayout.addUnusedCard(card);
                         unusedCards.remove(i);
                         break;
@@ -79,7 +79,7 @@ public class Finder {
      * @param cards list of cards to evaluate
      * @return list of all possible layouts
      */
-    public static List<HandLayout> findAllLayouts(List<MyCard> cards){
+    public static List<HandLayout> findAllLayouts(List<MyCard> cards) {
         int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
         for (MyCard card : cards) {
             hand[card.suit.index][card.rank.index] = 1;
@@ -119,15 +119,14 @@ public class Finder {
      * Returns the first found index that can be added to meld
      *
      * @param cards list of cards you want to pick from
-     * @param meld you want to fit card in
+     * @param meld  you want to fit card in
      * @return null if none, otherwise index
      */
-    public static Integer findFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld){
-        if(meld.getType()== Meld.MeldType.Run){
-            return findCardIndexRun(cards,meld);
-        }
-        else{
-            return findCardIndexSet(cards,meld);
+    public static Integer findFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld) {
+        if (meld.getType() == Meld.MeldType.Run) {
+            return findCardIndexRun(cards, meld);
+        } else {
+            return findCardIndexSet(cards, meld);
         }
     }
 
@@ -135,11 +134,11 @@ public class Finder {
      * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for runs
      *
      * @param cards list of cards you want to pick from
-     * @param meld you want to fit card in
+     * @param meld  you want to fit card in
      * @return null if none, otherwise index
      */
-    private static Integer findCardIndexRun(List<MyCard> cards, Meld meld){
-        assert meld.getType()== Meld.MeldType.Run;
+    private static Integer findCardIndexRun(List<MyCard> cards, Meld meld) {
+        assert meld.getType() == Meld.MeldType.Run;
 
         MyCard.Suit runSuit = meld.viewMeld().get(0).suit;
         // For all cards in the meld
@@ -147,9 +146,9 @@ public class Finder {
             // For all unused cards
             for (int i = 0; i < cards.size(); i++) {
                 // If the card is of the same suit
-                if(cards.get(i).suit==runSuit){
+                if (cards.get(i).suit == runSuit) {
                     // If card is in the neighbourhood of the card
-                    if(Math.abs(cards.get(i).rank.value-meld.viewMeld().get(j).rank.value)<=1){
+                    if (Math.abs(cards.get(i).rank.value - meld.viewMeld().get(j).rank.value) <= 1) {
                         return i;
                     }
                 }
@@ -162,17 +161,17 @@ public class Finder {
      * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for sets
      *
      * @param cards list of cards you want to pick from
-     * @param meld you want to fit card in
+     * @param meld  you want to fit card in
      * @return null if none, otherwise index
      */
-    private static Integer findCardIndexSet(List<MyCard> cards, Meld meld){
-        assert meld.getType()== Meld.MeldType.Set;
+    private static Integer findCardIndexSet(List<MyCard> cards, Meld meld) {
+        assert meld.getType() == Meld.MeldType.Set;
 
         MyCard.Rank setRank = meld.viewMeld().get(0).rank;
         // For all unused cards
         for (int i = 0; i < cards.size(); i++) {
             // If the card is of the same rank
-            if(cards.get(i).rank==setRank){
+            if (cards.get(i).rank == setRank) {
                 return i;
             }
         }
@@ -183,13 +182,13 @@ public class Finder {
      * Finds meld that matches the toFind meld in the list given
      *
      * @param toFind meld to find
-     * @param melds list to find meld in
+     * @param melds  list to find meld in
      * @return null if not found otherwise meld
      */
-    public static Integer findMeldIndexIn(Meld toFind, List<Meld> melds){
+    public static Integer findMeldIndexIn(Meld toFind, List<Meld> melds) {
 
-        for (int i=0;i<melds.size(); i++) {
-            if(melds.get(i).same(toFind)){
+        for (int i = 0; i < melds.size(); i++) {
+            if (melds.get(i).same(toFind)) {
                 return i;
             }
         }

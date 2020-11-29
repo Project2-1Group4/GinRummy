@@ -32,7 +32,7 @@ public class HandLayout {
     }
 
     // No real reason to use this imo
-    public HandLayout(List<MyCard> cards){
+    public HandLayout(List<MyCard> cards) {
         super();
         for (MyCard card : cards) {
             addUnusedCard(card);
@@ -41,7 +41,7 @@ public class HandLayout {
 
     // SETTERS
     // Only way to change inner state of HandLayout
-    private void init(int[][] hand){
+    private void init(int[][] hand) {
         for (Meld meld : setOfMelds) {
             for (MyCard myCard : meld.viewMeld()) {
                 this.value += myCard.ginValue();
@@ -59,26 +59,26 @@ public class HandLayout {
         }
     }
 
-    public void addUnusedCard(MyCard card){
+    public void addUnusedCard(MyCard card) {
         unusedCards.add(card);
-        deadwood+= card.ginValue();
+        deadwood += card.ginValue();
     }
 
-    public void addMeld(Meld meld){
+    public void addMeld(Meld meld) {
         setOfMelds.add(meld);
-        value+= meld.getValue();
+        value += meld.getValue();
     }
 
-    public void addToMeld(int i, MyCard card){
+    public void addToMeld(int i, MyCard card) {
         setOfMelds.get(i).addCard(card);
-        value+= card.ginValue();
+        value += card.ginValue();
     }
 
-    public boolean removeUnusedCard(MyCard card){
+    public boolean removeUnusedCard(MyCard card) {
         for (int i = 0; i < unusedCards.size(); i++) {
 
-            if(unusedCards.get(i).same(card)){
-                deadwood-= unusedCards.get(i).ginValue();
+            if (unusedCards.get(i).same(card)) {
+                deadwood -= unusedCards.get(i).ginValue();
                 unusedCards.remove(i);
                 return true;
             }
@@ -86,10 +86,10 @@ public class HandLayout {
         return false;
     }
 
-    public boolean removeCard(MyCard card){
-        if(!removeUnusedCard(card)){
+    public boolean removeCard(MyCard card) {
+        if (!removeUnusedCard(card)) {
             for (Meld meld : viewMelds()) {
-                if(meld.removeCard(card)){
+                if (meld.removeCard(card)) {
                     return true;
                 }
             }
@@ -100,23 +100,23 @@ public class HandLayout {
 
     // GETTERS
     // Returns copies to avoid the changing of the inner state using mutable objects
-    public int[][] getHand(){
+    public int[][] getHand() {
         return Finder.copy(hand);
     }
 
-    public int getDeadwood(){
+    public int getDeadwood() {
         return deadwood;
     }
 
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 
-    public List<MyCard> viewUnusedCards(){
+    public List<MyCard> viewUnusedCards() {
         return new ArrayList<>(unusedCards);
     }
 
-    public List<MyCard> viewAllCards(){
+    public List<MyCard> viewAllCards() {
         List<MyCard> cards = new ArrayList<>(unusedCards);
         for (Meld setOfMeld : setOfMelds) {
             cards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
@@ -124,36 +124,36 @@ public class HandLayout {
         return cards;
     }
 
-    public List<Meld> viewMelds(){
+    public List<Meld> viewMelds() {
         return Meld.deepCopy(setOfMelds);
     }
 
-    public boolean isValid(){
+    public boolean isValid() {
         for (Meld setOfMeld : setOfMelds) {
-            if(!setOfMeld.isValid()){
+            if (!setOfMeld.isValid()) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean same(HandLayout other){
-        int found =0;
+    public boolean same(HandLayout other) {
+        int found = 0;
         for (MyCard unusedCard : unusedCards) {
             for (MyCard card : other.unusedCards) {
-                if(unusedCard.same(card)){
+                if (unusedCard.same(card)) {
                     found++;
                 }
             }
         }
-        if(found!=unusedCards.size()){
+        if (found != unusedCards.size()) {
             return false;
         }
         List<Meld> cpy = viewMelds();
         List<Meld> otherCpy = other.viewMelds();
         for (int i = 0; i < cpy.size(); i++) {
             for (int j = 0; j < otherCpy.size(); j++) {
-                if(cpy.get(i).same(otherCpy.get(j))){
+                if (cpy.get(i).same(otherCpy.get(j))) {
                     cpy.remove(i);
                     i--;
                     otherCpy.remove(j);
@@ -164,7 +164,7 @@ public class HandLayout {
         return cpy.size() == 0;
     }
 
-    public HandLayout deepCopy(){
+    public HandLayout deepCopy() {
         HandLayout m = new HandLayout();
         m.setOfMelds = Meld.deepCopy(setOfMelds);
         m.unusedCards = new ArrayList<>(unusedCards);

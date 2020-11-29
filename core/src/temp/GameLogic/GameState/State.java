@@ -1,8 +1,8 @@
 package temp.GameLogic.GameState;
 
-import temp.GamePlayers.GamePlayer;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class State {
     protected int turnInRound;
     protected Stack<Action> movesDone;
 
-    protected State(Random seed,List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
+    protected State(Random seed, List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
         this.seed = seed;
         this.initDeck = new ArrayList<>(deck);
@@ -51,6 +51,7 @@ public class State {
         curTime = secondsPerStep[stepInTurn.index];
 
     }
+
     // SETTERS
     // Quality of life methods
     protected MyCard pickDeckTop() {
@@ -67,15 +68,25 @@ public class State {
 
     // GETTERS
     // TODO, honestly kinda fked myself with all the: only executor has access to inside of state
-    public List<PlayerState> getPlayerStates(){
+    public List<PlayerState> getPlayerStates() {
         return playerStates;
+    }
+
+    //TODO dont know if I should just make everything public bc
+    // the GamePlayer subclasses will never have direct access to the real State
+    public List<MyCard> getDeck(){
+        return new ArrayList<>(deck);
     }
     // Returns copies to avoid the changing of the inner state outside of package
     public int getPlayerNumber() {
         return getPlayer().index;
     }
 
-    public Integer getWinner(){
+    public int getPlayerIndex(){
+        return playerTurn;
+    }
+
+    public Integer getWinner() {
         return winner;
     }
 
@@ -83,17 +94,17 @@ public class State {
         return players.get(playerTurn);
     }
 
-    public PlayerState getPlayerState(){
+    public PlayerState getPlayerState() {
         return playerStates.get(playerTurn);
     }
 
-    public Integer getKnockerNumber(){
+    public Integer getKnockerNumber() {
         return knocker;
     }
 
-    public Integer getKnockerIndex(){
+    public Integer getKnockerIndex() {
         Integer index = null;
-        if(knocker!=null) {
+        if (knocker != null) {
             for (int i = 0; i < players.size(); i++) {
                 if (players.get(i).index == knocker) {
                     index = i;
@@ -103,12 +114,13 @@ public class State {
         }
         return index;
     }
+
     public GamePlayer getKnocker() {
         assert knocker != null;
         return players.get(getKnockerIndex());
     }
 
-    public PlayerState getKnockerState(){
+    public PlayerState getKnockerState() {
         assert knocker != null;
         return playerStates.get(getKnockerIndex());
     }
@@ -132,6 +144,10 @@ public class State {
         return discardPile.peek();
     }
 
+    public MyCard peekDeckTop() {
+        return deck.get(deck.size() - 1);
+    }
+
     public float getCurTime() {
         return curTime;
     }
@@ -140,24 +156,24 @@ public class State {
         return scores;
     }
 
-    public int getRound(){
+    public int getRound() {
         return round;
     }
 
-    public int getTurn(){
+    public int getTurn() {
         return turnInRound;
     }
 
-    public int getRoundTurn(){
+    public int getRoundTurn() {
         return turnInRound;
     }
 
-    public Stack<Action> viewActions(){
+    public Stack<Action> viewActions() {
         return (Stack<Action>) movesDone.clone();
     }
 
-    public Action viewLastAction(){
-        if(movesDone.size()!=0){
+    public Action viewLastAction() {
+        if (movesDone.size() != 0) {
             return movesDone.peek();
         }
         return null;
@@ -170,7 +186,7 @@ public class State {
 
     }
 
-    public String deepToString(){
+    public String deepToString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Deck: ").append(deck.size()).append(" cards\n").append(deck).append("\n");
         sb.append("\nDiscard: ").append(discardPile.size()).append(" cards\n").append(discardPile).append("\n");
@@ -220,14 +236,14 @@ public class State {
 
     }
 
-    public State copy(){
+    public State copy() {
         List<PlayerState> pStates = new ArrayList<>();
         for (PlayerState playerState : playerStates) {
             pStates.add(playerState.copy());
         }
-        return new State(seed,new ArrayList<MyCard>(deck),(Stack<MyCard>)discardPile.clone(),
+        return new State(seed, new ArrayList<MyCard>(deck), (Stack<MyCard>) discardPile.clone(),
                 new ArrayList<GamePlayer>(players), pStates,
                 numberOfPlayers, playerTurn, stepInTurn, scores.clone(), secondsPerStep.clone(), knocker, round,
-                turnInRound, (Stack<Action>)movesDone.clone());
+                turnInRound, (Stack<Action>) movesDone.clone());
     }
 }

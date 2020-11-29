@@ -6,23 +6,24 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 // IMMUTABLE
 public class LayoutConfirmationAction extends Action {
     public final HandLayout layout;
+
     public LayoutConfirmationAction(int playerIndex, HandLayout handLayout) {
         super(State.StepInTurn.LayoutConfirmation, playerIndex);
         assert handLayout.isValid();
         this.layout = handLayout;
     }
 
-    public HandLayout viewLayout(){
+    public HandLayout viewLayout() {
         return layout.deepCopy();
     }
 
     @Override
     protected boolean specificSame(Action other) {
-        return layout.same(((LayoutConfirmationAction)other).layout);
+        return layout.same(((LayoutConfirmationAction) other).layout);
     }
 
     @Override
     public String toString() {
-        return baseString()+" confirmed layout:\n"+layout;
+        return baseString() + " confirmed layout:\n" + layout;
     }
 }

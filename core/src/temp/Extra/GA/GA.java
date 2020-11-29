@@ -2,9 +2,9 @@ package temp.Extra.GA;
 
 import java.util.Random;
 
-public class GA{
+public class GA {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         /*GA ga = new GA(0,20,1,0.05f,0);
         ga.init(new GAPlayer[]{
                 new GAPlayer(0,new TestPlayer())
@@ -12,6 +12,7 @@ public class GA{
         GAPlayer[] winners = ga.train();
         winners[0].player.printMatrices();*/
     }
+
     /////////////////////////////////////////////////////////////////////////////////////////
     ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
     /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
@@ -36,27 +37,26 @@ public class GA{
         return null;
     }
 
-    protected void updateScores(Result result){
+    protected void updateScores(Result result) {
         final int winScore = 30;
         final float turnLoss = 0.1f;
         final int tieScore = 5;
-        if(result.winner!=null){
-            result.winner.score+=winScore;
+        if (result.winner != null) {
+            result.winner.score += winScore;
+        } else {
+            result.player1.score += tieScore;
+            result.player2.score += tieScore;
         }
-        else {
-            result.player1.score+=tieScore;
-            result.player2.score+=tieScore;
-        }
-        result.player1.score-= result.nbOfTurns*turnLoss;
-        result.player2.score-= result.nbOfTurns*turnLoss;
+        result.player1.score -= result.nbOfTurns * turnLoss;
+        result.player2.score -= result.nbOfTurns * turnLoss;
     }
 
-    protected boolean stopCondition(){
+    protected boolean stopCondition() {
         return iteration >= 500;
     }
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    private int iteration=0;
+    private int iteration = 0;
     private final float mutationChance;
     private final float crossMutationChance;
     private final int nbOfWinners;
@@ -65,7 +65,7 @@ public class GA{
     private final GAPlayer[] competitors;
 
 
-    public GA(int initSeed, int nbOfCompetitors, int nbOfWinners, float mutationChance, float crossMutationChance){
+    public GA(int initSeed, int nbOfCompetitors, int nbOfWinners, float mutationChance, float crossMutationChance) {
         this.initSeed = initSeed;
         this.nbOfWinners = nbOfWinners;
         this.mutationChance = mutationChance;
@@ -73,28 +73,28 @@ public class GA{
         competitors = new GAPlayer[nbOfCompetitors];
     }
 
-    public void init(GAPlayer[] prototypes){
+    public void init(GAPlayer[] prototypes) {
         Random rd = new Random(initSeed);
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd,null,i);
+            competitors[i] = mutate(rd, null, i);
         }
     }
 
-    public GAPlayer[] train(){
-        assert competitors[0]!=null;
+    public GAPlayer[] train() {
+        assert competitors[0] != null;
         GALogic game = new GALogic();
         int seed = 0;
-        do{
+        do {
             GAPlayer[] winners = getWinners();
 
-            System.out.println("Iteration: "+iteration);
-            System.out.println(winners[0].score+"\n");
+            System.out.println("Iteration: " + iteration);
+            System.out.println(winners[0].score + "\n");
 
             update(winners);
             resetScores();
             for (int i = 0; i < competitors.length; i++) {
                 for (int j = 0; j < competitors.length; j++) {
-                    if(i!=j) {
+                    if (i != j) {
                         Result result = game.play(competitors[i], competitors[j], seed);
                         updateScores(result);
                     }
@@ -102,20 +102,20 @@ public class GA{
             }
             seed++;
             iteration++;
-        }while(!stopCondition());
+        } while (!stopCondition());
         return getWinners();
     }
 
-    private void resetScores(){
+    private void resetScores() {
         for (GAPlayer competitor : competitors) {
             competitor.score = 0;
         }
     }
 
-    private void update(GAPlayer[] winners){
+    private void update(GAPlayer[] winners) {
         Random rd = new Random();
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd,winners,i);
+            competitors[i] = mutate(rd, winners, i);
         }
     }
 
@@ -125,8 +125,8 @@ public class GA{
      * @param rd randomizer
      * @return double [-1,1]
      */
-    protected double getMutation(Random rd){
-        if(rd.nextDouble()<mutationChance) {
+    protected double getMutation(Random rd) {
+        if (rd.nextDouble() < mutationChance) {
             if (rd.nextBoolean()) {
                 return rd.nextDouble();
             }
@@ -135,7 +135,7 @@ public class GA{
         return 0;
     }
 
-    protected GAPlayer[] getWinners(){
+    protected GAPlayer[] getWinners() {
         GAPlayer[] sorted = bubbleSort(competitors);
         GAPlayer[] winners = new GAPlayer[nbOfWinners];
         for (int i = 0; i < winners.length; i++) {
@@ -151,13 +151,13 @@ public class GA{
 
         boolean sorted = false;
         GAPlayer temp;
-        while(!sorted) {
+        while (!sorted) {
             sorted = true;
             for (int i = 0; i < a.length - 1; i++) {
-                if (a[i].score > a[i+1].score) {
+                if (a[i].score > a[i + 1].score) {
                     temp = a[i];
-                    a[i] = a[i+1];
-                    a[i+1] = temp;
+                    a[i] = a[i + 1];
+                    a[i + 1] = temp;
                     sorted = false;
                 }
             }

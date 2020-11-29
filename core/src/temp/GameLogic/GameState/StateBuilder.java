@@ -1,10 +1,9 @@
 package temp.GameLogic.GameState;
 
-import temp.GamePlayers.CombinePlayer;
-import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.KeyboardPlayer;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.CombinePlayer;
+import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -54,12 +53,12 @@ public class StateBuilder {
         secondsPerStep[4] = GameRules.LayOffTime;
     }
 
-    public StateBuilder setSeed(Integer seed){
+    public StateBuilder setSeed(Integer seed) {
         this.seed = seed;
         return this;
     }
 
-    public StateBuilder setRandomizer(Random rd){
+    public StateBuilder setRandomizer(Random rd) {
         random = rd;
         return this;
     }
@@ -91,18 +90,18 @@ public class StateBuilder {
         return this;
     }
 
-    public StateBuilder addPlayer(GamePlayer player){
+    public StateBuilder addPlayer(GamePlayer player) {
         return addPlayer(player, new PlayerState());
     }
 
-    public StateBuilder addPlayers(List<GamePlayer> players, List<PlayerState> states){
+    public StateBuilder addPlayers(List<GamePlayer> players, List<PlayerState> states) {
         for (int i = 0; i < players.size(); i++) {
-            addPlayer(players.get(i),states.get(i));
+            addPlayer(players.get(i), states.get(i));
         }
         return this;
     }
 
-    public StateBuilder addPlayers(List<GamePlayer> players){
+    public StateBuilder addPlayers(List<GamePlayer> players) {
         for (GamePlayer player : players) {
             addPlayer(player);
         }
@@ -119,32 +118,32 @@ public class StateBuilder {
         return this;
     }
 
-    public StateBuilder setRound(int round){
+    public StateBuilder setRound(int round) {
         this.round = round;
         return this;
     }
 
-    public StateBuilder setTurnInRound(int turnInRound){
+    public StateBuilder setTurnInRound(int turnInRound) {
         this.turnInRound = turnInRound;
         return this;
     }
 
-    public StateBuilder setKnocker(int knocker){
+    public StateBuilder setKnocker(int knocker) {
         this.knocker = knocker;
         return this;
     }
 
-    public StateBuilder setActions(Stack<Action> actions){
+    public StateBuilder setActions(Stack<Action> actions) {
         this.actions = actions;
         return this;
     }
 
     public State build() {
-        if(numberOfPlayers==0){
+        if (numberOfPlayers == 0) {
             numberOfPlayers = 2;
         }
-        if(numberOfPlayers<players.size()){
-            numberOfPlayers= players.size();
+        if (numberOfPlayers < players.size()) {
+            numberOfPlayers = players.size();
         }
 
         assert deck != null;
@@ -161,16 +160,16 @@ public class StateBuilder {
             players.add(CombinePlayer.getBaseCombinePlayer());
             playerStates.add(new PlayerState());
         }
-        if(scores==null){
+        if (scores == null) {
             scores = new int[numberOfPlayers];
         }
-        if(random==null) {
+        if (random == null) {
             if (seed != null) {
                 random = new Random(seed);
             } else {
                 random = new Random();
             }
         }
-        return new State(random,deck, discardPile, players, playerStates,numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker,round,turnInRound,actions);
+        return new State(random, deck, discardPile, players, playerStates, numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker, round, turnInRound, actions);
     }
 }

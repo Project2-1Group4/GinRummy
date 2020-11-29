@@ -10,6 +10,7 @@ import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Executes validates moves. Only class that should(/can) modify the game state.
@@ -30,6 +31,7 @@ import java.util.List;
 public class Executor {
 
     /* GAME/ROUND INITIALISATION */
+
     /**
      * Either creates a new game or starts a new round using the previous game (round)
      *
@@ -44,34 +46,34 @@ public class Executor {
         } else {
             for (int i = 0; i < curState.scores.length; i++) {
                 if (curState.scores[i] >= GameRules.pointsToWin) {
-                    System.out.println("Player " + i + " won with "+curState.scores[i]+" points");
+                    System.out.println("Player " + i + " won with " + curState.scores[i] + " points");
                     System.out.println("Final scores: ");
                     for (int j = 0; j < curState.scores.length; j++) {
-                        System.out.println("Player "+j+" "+curState.scores[j]);
+                        System.out.println("Player " + j + " " + curState.scores[j]);
                     }
                     curState.winner = i;
                     return curState;
                 }
             }
-            if(GameRules.printEndOfRound){
+            if (GameRules.printEndOfRound) {
                 Integer winner = getWinner(curState);
-                if(winner!=null) {
-                    System.out.println("Player " + winner + " won round "+curState.round+" with\n" + curState.playerStates.get(winner));
-                }else{
-                    System.out.println("No one won round "+curState.round);
+                if (winner != null) {
+                    System.out.println("Player " + winner + " won round " + curState.round + " with\n" + curState.playerStates.get(winner));
+                } else {
+                    System.out.println("No one won round " + curState.round);
                 }
-                if(winner==null){
+                if (winner == null) {
                     winner = -1;
                 }
                 System.out.println("Other Players:");
                 for (int i = 0; i < curState.playerStates.size(); i++) {
-                    if(i!=winner) {
-                        System.out.println("Player "+i+":\n"+curState.playerStates.get(i)+"\n");
+                    if (i != winner) {
+                        System.out.println("Player " + i + ":\n" + curState.playerStates.get(i) + "\n");
                     }
                 }
                 System.out.println("\nCurrent scores:");
                 for (int i = 0; i < curState.scores.length; i++) {
-                    System.out.println("Player "+i+": "+curState.scores[i]);
+                    System.out.println("Player " + i + ": " + curState.scores[i]);
                 }
             }
             newState = new StateBuilder()
@@ -79,11 +81,11 @@ public class Executor {
                     .useCustomDeck(curState.initDeck)
                     .addPlayers(curState.players)
                     .setScores(curState.scores)
-                    .setRound(curState.round+1)
+                    .setRound(curState.round + 1)
                     .setSecondsPerStep(curState.secondsPerStep)
                     .build();
         }
-        shuffleDeck(shuffles, newState);
+        newState.deck = shuffleList(newState.seed,shuffles, newState.deck);
         startDiscardPile(newState);
         distributeCards(GameRules.baseCardsPerHand, newState);
 
@@ -91,18 +93,18 @@ public class Executor {
     }
 
     /**
-     * Shuffles the deck of the current game state
-     *
-     * @param shuffles number of times to shuffle the deck (move 1 card to another place in the deck)
-     * @param curState current game state
+     * @param rd randomizer
+     * @param shuffles number of shuffles
+     * @param cards list of cards to shuffle
+     * @return shuffled list
      */
-    public static void shuffleDeck(int shuffles, State curState) {
+    public static List<MyCard> shuffleList(Random rd, int shuffles, List<MyCard> cards) {
         if (GameRules.print) System.out.println("Deck shuffled");
         for (int i = 0; i < shuffles; i++) {
-            MyCard card = curState.deck.remove(curState.seed.nextInt(curState.deck.size()));
-            curState.deck.add(curState.seed.nextInt(curState.deck.size()), card);
+            MyCard card = cards.remove(rd.nextInt(cards.size()));
+            cards.add(rd.nextInt(cards.size()), card);
         }
-
+        return cards;
     }
 
     /**
@@ -114,7 +116,7 @@ public class Executor {
     public static void distributeCards(int cardsPerHand, State curState) {
         if (GameRules.print) System.out.println("Cards distributed");
 
-        for (int i =0;i<curState.playerStates.size();i++) {
+        for (int i = 0; i < curState.playerStates.size(); i++) {
 
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
@@ -140,13 +142,14 @@ public class Executor {
     }
 
     /* STATE UPDATING */
+
     /**
      * @param curState current game state
      * @param deltaT   time elapsed between now and previous render call
      * @return true if there is no more time for the current step
      */
     public static boolean update(State curState, float deltaT) {
-        curState.curTime -= deltaT*GameRules.gameSpeed;
+        curState.curTime -= deltaT * GameRules.gameSpeed;
         return curState.curTime <= 0;
     }
 
@@ -161,8 +164,15 @@ public class Executor {
 
         if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
 
+        Action a = curState.viewLastAction();
         for (int i = 0; i < curState.players.size(); i++) {
-            curState.players.get(i).playerActed(curState.viewLastAction());
+            if (i != curState.playerTurn) {
+                if (a instanceof PickAction && ((PickAction) a).deck) {
+                    curState.players.get(i).playerActed(new PickAction(a.playerIndex, ((PickAction) a).deck, null));
+                } else {
+                    curState.players.get(i).playerActed(a);
+                }
+            }
         }
 
         if (curState.stepInTurn == State.StepInTurn.LayoutConfirmation || curState.stepInTurn == State.StepInTurn.LayOff) {
@@ -178,7 +188,8 @@ public class Executor {
         }
         curState.curTime = curState.secondsPerStep[curState.getStep().index];
 
-        if (GameRules.print) System.out.println("\nNew step: Player "+curState.getPlayerNumber()+" "+curState.stepInTurn);
+        if (GameRules.print)
+            System.out.println("\nNew step: Player " + curState.getPlayerNumber() + " " + curState.stepInTurn);
 
     }
 
@@ -188,7 +199,7 @@ public class Executor {
      * @param curState current game state
      */
     private static void getNextPlayer(State curState) {
-        if(curState.playerTurn==0){
+        if (curState.playerTurn == 0) {
             curState.turnInRound++;
         }
         curState.playerTurn = (curState.playerTurn + 1) % curState.numberOfPlayers;
@@ -201,7 +212,8 @@ public class Executor {
      * @param curState current game state
      */
     private static void knocked(int knocker, State curState) {
-        if (GameRules.print) System.out.println("Player "+curState.getPlayerNumber()+" knocked with:\n"+curState.getPlayer().viewHandLayout()+"\n");
+        if (GameRules.print)
+            System.out.println("Player " + curState.getPlayerNumber() + " knocked with:\n" + curState.getPlayer().viewHandLayout() + "\n");
 
         curState.stepInTurn = State.StepInTurn.LayoutConfirmation;
         curState.knocker = knocker;
@@ -214,7 +226,7 @@ public class Executor {
      */
     public static void endRound(State curState) {
         while (curState.stepInTurn != State.StepInTurn.EndOfRound) {
-            if(GameRules.print) System.out.println("End round loop. Current step: "+curState.stepInTurn);
+            if (GameRules.print) System.out.println("End round loop. Current step: " + curState.stepInTurn);
             nextStep(curState);
         }
     }
@@ -226,7 +238,7 @@ public class Executor {
      */
     public static void assignPoints(State curState) {
         Integer winner = getWinner(curState);
-        if(winner==null){
+        if (winner == null) {
             return;
         }
         List<HandLayout> handLayouts = new ArrayList<>();
@@ -236,15 +248,14 @@ public class Executor {
         int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(winner).viewHandLayout().getDeadwood());
 
         if (winner.equals(curState.knocker)) {
-            if(curState.getKnocker().viewHandLayout().getDeadwood() == 0){
-                if(GameRules.print) System.out.println("Gin");
+            if (curState.getKnocker().viewHandLayout().getDeadwood() == 0) {
+                if (GameRules.print) System.out.println("Gin");
                 pointsWon += GameRules.ginBonus;
-            }
-            else{
-                if(GameRules.print) System.out.println("Knock");
+            } else {
+                if (GameRules.print) System.out.println("Knock");
             }
         } else {
-            if(GameRules.print) System.out.println("Undercut");
+            if (GameRules.print) System.out.println("Undercut");
             pointsWon += GameRules.undercutBonus;
         }
         curState.scores[winner] += pointsWon;
@@ -261,132 +272,128 @@ public class Executor {
         for (PlayerState player : curState.playerStates) {
             handLayouts.add(player.viewHandLayout());
         }
-        if(curState.knocker==null){
+        if (curState.knocker == null) {
             return null;
         }
-        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(),curState.getKnockerNumber());
-        if(winner==null){
+        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(), curState.getKnockerNumber());
+        if (winner == null) {
             return curState.getKnockerIndex();
-        }else{
+        } else {
             return winner;
         }
     }
 
     // TURN HANDLING
-    public static boolean execute(Action action, State curState){
-        if(action==null){
+    public static boolean execute(Action action, State curState) {
+        if (action == null) {
             return false;
         }
         List<? extends Action> possibleActions = TreeExpander.getPossibleActions(curState);
         for (Action possibleAction : possibleActions) {
-            if(action.same(possibleAction)){
-                boolean executed = false;
-                if(action instanceof KnockAction){
-                    executed = knock((KnockAction)action,curState);
-                }
-                else if(action instanceof PickAction){
-                    executed = pick((PickAction)action,curState);
-                }
-                else if(action instanceof DiscardAction){
-                    executed = discard((DiscardAction)action,curState);
-                }
-                else if(action instanceof LayoutConfirmationAction){
-                    executed = layoutConfirmation((LayoutConfirmationAction)action,curState);
-                }
-                else if(action instanceof LayoffAction){
-                    executed = layoff((LayoffAction)action,curState);
-                }
-                else{
+            if (action.same(possibleAction)) {
+                Action executed = null;
+                if (action instanceof KnockAction) {
+                    executed = knock((KnockAction) action, curState);
+                } else if (action instanceof PickAction) {
+                    executed = pick((PickAction) action, curState);
+                } else if (action instanceof DiscardAction) {
+                    executed = discard((DiscardAction) action, curState);
+                } else if (action instanceof LayoutConfirmationAction) {
+                    executed = layoutConfirmation((LayoutConfirmationAction) action, curState);
+                } else if (action instanceof LayoffAction) {
+                    executed = layoff((LayoffAction) action, curState);
+                } else {
                     System.out.println("Executor.execute() ERROR ERROR ERROR");
                 }
-                if(executed){
+                if (executed != null) {
                     if (GameRules.print || GameRules.minPrint) System.out.println("Action saved");
                     curState.movesDone.add(action);
+                    curState.getPlayer().executed(executed);
                     Executor.nextStep(curState);
                 }
-                return executed;
+                return executed != null;
             }
         }
-        if(GameRules.print || GameRules.minPrint) System.out.println("ACTION NOT AVAILABLE "+action);
+        if (GameRules.print || GameRules.minPrint) System.out.println("ACTION NOT AVAILABLE " + action);
 
         return false;
     }
 
-    private static boolean knock(KnockAction action, State curState){
-        if(action.knock && action.viewLayout().getDeadwood()<=GameRules.minDeadwoodToKnock){
+    private static KnockAction knock(KnockAction action, State curState) {
+        if (action.knock && action.viewLayout().getDeadwood() <= GameRules.minDeadwoodToKnock) {
             knocked(action.playerIndex, curState);
-            return true;
-        }else if(!action.knock){
-            return true;
+            return action;
+        } else if (!action.knock) {
+            return action;
         }
         System.out.println("Executor.knock() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean pick(PickAction action, State curState){
-        if(action.deck && curState.getDeckSize()!=0){
+    private static PickAction pick(PickAction action, State curState) {
+        if (action.deck && curState.getDeckSize() != 0) {
             curState.getPlayerState().handLayout.addUnusedCard(curState.pickDeckTop());
-            return true;
-        }else if(!action.deck && !curState.isDiscardEmpty() && action.card.same(curState.peekDiscardTop())){
+            return new PickAction(action.playerIndex, true, curState.peekDeckTop());
+        } else if (!action.deck && !curState.isDiscardEmpty() && action.card.same(curState.peekDiscardTop())) {
             curState.getPlayerState().handLayout.addUnusedCard(curState.pickDiscardTop());
-            return true;
+            return action;
         }
         System.out.println("Executor.pick() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean discard(DiscardAction action, State curState){
+    private static DiscardAction discard(DiscardAction action, State curState) {
         for (MyCard card : curState.getPlayerState().viewHand()) {
-            if(action.card.same(card) && curState.getPlayerState().removeCard(action.card)){
+            if (action.card.same(card) && curState.getPlayerState().removeCard(action.card)) {
                 curState.addToDiscard(action.card);
-                return true;
+                return action;
             }
         }
         System.out.println("Executor.discard() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean layoutConfirmation(LayoutConfirmationAction action, State curState){
-        if(action.layout.isValid()){
+    private static LayoutConfirmationAction layoutConfirmation(LayoutConfirmationAction action, State curState) {
+        if (action.layout.isValid()) {
             int found = 0;
             for (MyCard card : action.layout.viewAllCards()) {
                 for (MyCard myCard : curState.getPlayerState().viewHand()) {
-                    if(card.same(myCard)){
+                    if (card.same(myCard)) {
                         found++;
                         break;
                     }
                 }
             }
-            if(found==curState.getPlayerState().viewHand().size()){
+            if (found == curState.getPlayerState().viewHand().size()) {
                 curState.getPlayerState().handLayout = action.layout;
-                return true;
+                return action;
             }
         }
         System.out.println("Executor.layoutConfirmation() ERROR ERROR ERROR");
-        return false;
+        return null;
     }
 
-    private static boolean layoff(LayoffAction action, State curState){
-        if(action.meld==null){
-            return true;
+    private static Action layoff(LayoffAction action, State curState) {
+        if (action.meld == null) {
+            return action;
         }
         boolean foundInUnused = false;
         for (MyCard card : curState.getPlayerState().viewUnusedCards()) {
-            if(card.same(action.card)){
+            if (card.same(action.card)) {
                 foundInUnused = true;
                 break;
             }
         }
-        if(foundInUnused) {
+        if (foundInUnused) {
             for (Meld meld : curState.getKnockerState().viewMelds()) {
                 if (meld.same(action.meld) && meld.isValidWith(action.card)) {
                     meld.addCard(action.card);
-                    return true;
+                    return action;
                 }
             }
         }
         System.out.println("Executor.layoff() ERROR ERROR ERROR");
-        return false;
+        return null;
 
     }
 }

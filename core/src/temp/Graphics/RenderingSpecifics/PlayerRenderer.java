@@ -14,7 +14,7 @@ import temp.Graphics.Style;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerRenderer{
+public class PlayerRenderer {
 
     public final GamePlayer player;
 
@@ -22,23 +22,23 @@ public class PlayerRenderer{
     private List<GameMeld> melds = new ArrayList<>();
     private List<GameCard> moved = new ArrayList<>();
 
-    public PlayerRenderer(GamePlayer player){
+    public PlayerRenderer(GamePlayer player) {
         this.player = player;
     }
 
-    public void render(SpriteBatch batch, Style style){
+    public void render(SpriteBatch batch, Style style) {
         HandLayout handLayout = player.viewHandLayout();
-        init(style,handLayout);
+        init(style, handLayout);
         update();
-        player.render(batch,style,this);
+        player.render(batch, style, this);
 
-        renderUnmoved(batch,style);
-        renderMoved(batch,style);
-        renderMelds(batch,style);
-        renderValues(batch,style,new int[]{handLayout.getValue(),handLayout.getDeadwood()});
+        renderUnmoved(batch, style);
+        renderMoved(batch, style);
+        renderMelds(batch, style);
+        renderValues(batch, style, new int[]{handLayout.getValue(), handLayout.getDeadwood()});
     }
 
-    public void init(Style style, HandLayout handLayout){
+    public void init(Style style, HandLayout handLayout) {
         List<MyCard> cards = handLayout.viewUnusedCards();
         List<Meld> cardMelds = handLayout.viewMelds();
 
@@ -51,7 +51,7 @@ public class PlayerRenderer{
 
     }
 
-    private void updateUnusedCards(List<MyCard> cards){
+    private void updateUnusedCards(List<MyCard> cards) {
         List<GameCard> newUnmoved = new ArrayList<>();
         List<GameCard> newMoved = new ArrayList<>();
         // Gets rid of all unmoved
@@ -81,17 +81,17 @@ public class PlayerRenderer{
         moved = newMoved;
     }
 
-    private void updateMeldCards(List<Meld> meldCards){
+    private void updateMeldCards(List<Meld> meldCards) {
         List<GameMeld> newMelds = new ArrayList<>();
         for (Meld meld : meldCards) {
             boolean exists = false;
             for (int i = 0; i < melds.size(); i++) {
                 for (MyCard myCard : meld.viewMeld()) {
-                    if(melds.get(i).has(myCard)){
+                    if (melds.get(i).has(myCard)) {
                         exists = true;
                     }
                 }
-                if(exists){
+                if (exists) {
                     List<GameCard> newMeld = new ArrayList<>();
                     for (MyCard myCard : meld.viewMeld()) {
                         GameCard c = melds.get(i).get(myCard);
@@ -101,7 +101,7 @@ public class PlayerRenderer{
                     break;
                 }
             }
-            if(!exists){
+            if (!exists) {
                 List<GameCard> newMeld = new ArrayList<>();
                 for (MyCard myCard : meld.viewMeld()) {
                     newMeld.add(new GameCard(myCard));
@@ -111,9 +111,10 @@ public class PlayerRenderer{
         }
         this.melds = newMelds;
     }
-    private void initUnmoved(float[] dimensions){
+
+    private void initUnmoved(float[] dimensions) {
         float[] p = new float[]{
-                Gdx.graphics.getWidth()*0.5f-((dimensions[0]*unmoved.size())/2)+0.5f*dimensions[0],
+                Gdx.graphics.getWidth() * 0.5f - ((dimensions[0] * unmoved.size()) / 2) + 0.5f * dimensions[0],
                 Gdx.graphics.getHeight() * GameRules.percentageAwayFromBottom
         };
         for (GameCard gameCard : unmoved) {
@@ -121,52 +122,52 @@ public class PlayerRenderer{
                     dimensions[0],
                     dimensions[1]
             };
-            gameCard.centerPosition.set(p[0],p[1]);
-            p[0]+= dimensions[0];
+            gameCard.centerPosition.set(p[0], p[1]);
+            p[0] += dimensions[0];
         }
     }
 
-    private void initMelds(float[] dimensions){
+    private void initMelds(float[] dimensions) {
         float[] p = new float[]{
-                Gdx.graphics.getWidth() - (1.5f*(dimensions[0] * melds.size())),
+                Gdx.graphics.getWidth() - (1.5f * (dimensions[0] * melds.size())),
                 Gdx.graphics.getHeight() * 0.75f
         };
 
         for (GameMeld meld : melds) {
-            meld.setSize(new float[]{dimensions[0],dimensions[1]});
-            meld.setCenterPosition(p[0],p[1]);
-            p[0]+= dimensions[0]*1.5f;
+            meld.setSize(new float[]{dimensions[0], dimensions[1]});
+            meld.setCenterPosition(p[0], p[1]);
+            p[0] += dimensions[0] * 1.5f;
         }
     }
 
-    private void update(){
+    private void update() {
         //TODO snaping
     }
 
-    private void renderUnmoved(SpriteBatch batch, Style style){
+    private void renderUnmoved(SpriteBatch batch, Style style) {
         for (GameCard card : unmoved) {
-            card.render(batch,style);
+            card.render(batch, style);
         }
     }
 
-    private void renderMelds(SpriteBatch batch, Style style){
+    private void renderMelds(SpriteBatch batch, Style style) {
         for (GameMeld meld : melds) {
-            meld.render(batch,style);
+            meld.render(batch, style);
         }
     }
 
-    private void renderMoved(SpriteBatch batch, Style style){
+    private void renderMoved(SpriteBatch batch, Style style) {
         for (GameCard card : moved) {
-            card.render(batch,style);
+            card.render(batch, style);
         }
     }
 
-    private void renderValues(SpriteBatch batch, Style style, int[] values){
-        style.getFont().draw(batch,"Hand value: "+values[0]+"\nDeadwood value: "+values[1],10,40);
+    private void renderValues(SpriteBatch batch, Style style, int[] values) {
+        style.getFont().draw(batch, "Hand value: " + values[0] + "\nDeadwood value: " + values[1], 10, 40);
     }
 
     private float[] getDimensions(float widthToHeight) {
-        float maxW = (Gdx.graphics.getWidth()/(float)11) * GameRules.cardMaxWidthPercentage;
+        float maxW = (Gdx.graphics.getWidth() / (float) 11) * GameRules.cardMaxWidthPercentage;
         float maxH = Gdx.graphics.getHeight() * GameRules.cardMaxHeightPercentage;
         if (maxH * widthToHeight > maxW) {
             maxH = maxW / widthToHeight;
@@ -179,41 +180,41 @@ public class PlayerRenderer{
         };
     }
 
-    public GameCard getHovered(float x, float y){
+    public GameCard getHovered(float x, float y) {
         for (GameCard card : moved) {
-            if(card.isHovered(x,y)){
+            if (card.isHovered(x, y)) {
                 return card;
             }
         }
         for (GameCard gameCard : unmoved) {
-            if(gameCard.isHovered(x,y)){
+            if (gameCard.isHovered(x, y)) {
                 return gameCard;
             }
         }
         for (GameMeld meld : melds) {
-            GameCard hovered = meld.getHovered(x,y);
-            if(hovered!=null){
+            GameCard hovered = meld.getHovered(x, y);
+            if (hovered != null) {
                 return hovered;
             }
         }
         return null;
     }
 
-    public void move(GameCard card, float x, float y){
+    public void move(GameCard card, float x, float y) {
         for (int i = 0; i < unmoved.size(); i++) {
-            if(card.card!=null && card.isSame(unmoved.get(i))){
+            if (card.card != null && card.isSame(unmoved.get(i))) {
                 unmoved.remove(card);
                 moved.add(card);
                 break;
             }
         }
-       // To make the last moved card render on top but doesn't work for some reason
+        // To make the last moved card render on top but doesn't work for some reason
         moved.remove(card);
         moved.add(card);
-        card.centerPosition.set(x,y);
+        card.centerPosition.set(x, y);
     }
 
-    public void reset(){
+    public void reset() {
         unmoved.addAll(moved);
         moved = new ArrayList<>();
     }

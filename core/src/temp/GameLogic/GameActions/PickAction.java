@@ -7,6 +7,7 @@ import temp.GameLogic.MyCard;
 public class PickAction extends Action {
     public final boolean deck;
     public final MyCard card;
+
     public PickAction(int playerIndex, boolean deck, MyCard card) {
         super(State.StepInTurn.Pick, playerIndex);
         this.deck = deck;
@@ -15,21 +16,23 @@ public class PickAction extends Action {
 
     @Override
     protected boolean specificSame(Action other) {
-        if(deck!=((PickAction)other).deck){
+        if (deck != ((PickAction) other).deck) {
             return false;
         }
-        if(deck){
+        if (deck) {
             return true;
         }
-        return card.same(((PickAction)other).card);
+        return card.same(((PickAction) other).card);
     }
 
     @Override
     public String toString() {
-        if(deck) {
+        if (deck && card ==null) {
             return baseString() + " picked from deck.";
-        }else{
-            return baseString() + " picked "+card+" from discard.";
+        }else if(deck){
+            return baseString() + " picked "+card+" from deck";
+        }else {
+            return baseString() + " picked " + card + " from discard.";
         }
     }
 }

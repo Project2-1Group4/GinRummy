@@ -7,12 +7,12 @@ public class Layoff {
     public final MyCard card;
     public final Meld meld;
 
-    public Layoff(MyCard card, Meld meld){
+    public Layoff(MyCard card, Meld meld) {
         this.card = card;
         this.meld = meld;
     }
 
-    public String toString(){
-        return "Insert "+card+" in "+meld;
+    public String toString() {
+        return "Insert " + card + " in " + meld;
     }
 }

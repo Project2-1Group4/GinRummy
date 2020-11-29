@@ -7,8 +7,8 @@ import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
@@ -19,15 +19,18 @@ import java.util.List;
 public abstract class GamePlayer implements PlayerInterface {
 
     private static int player = 0;
-    private static int getPlayer(){
+
+    private static int getPlayer() {
         player++;
         return player;
     }
+
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
     protected InputProcessor processor;
     public final int index;
-    public GamePlayer(){
+
+    public GamePlayer() {
         index = getPlayer();
     }
 
@@ -39,18 +42,20 @@ public abstract class GamePlayer implements PlayerInterface {
      * -after having picked
      * -after having discarded
      * -after having decided to knock (or not)
+     *
      * @param realLayout current hand layout being considered by the game
      */
-    public void update(HandLayout realLayout){
+    public void update(HandLayout realLayout) {
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
     }
 
     /* GETTERS */
 
-    public InputProcessor getProcessor(){
+    public InputProcessor getProcessor() {
         return processor;
     }
+
     // All views. IDK why
     public List<MyCard> viewHand() {
         return new ArrayList<>(allCards);
@@ -64,7 +69,7 @@ public abstract class GamePlayer implements PlayerInterface {
         return handLayout.viewMelds();
     }
 
-    public List<MyCard> viewUnusedHand(){
+    public List<MyCard> viewUnusedHand() {
         return handLayout.viewUnusedCards();
     }
 
@@ -79,7 +84,7 @@ public abstract class GamePlayer implements PlayerInterface {
     /**
      * To allow all players to get this feature
      * Automatically lays the most cards off
-     *
+     * <p>
      * Shit show of a method. Dont feel like cleaning up
      *
      * @param knockerMelds list of melds of the player that knocked
@@ -90,9 +95,9 @@ public abstract class GamePlayer implements PlayerInterface {
         List<MyCard> unusedCards = handLayout.viewUnusedCards();
         // For all melds
         for (Meld knockerMeld : knockerMelds) {
-            Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards,knockerMeld);
-            if(index!=null){
-                return new Layoff(unusedCards.get(index),knockerMeld);
+            Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards, knockerMeld);
+            if (index != null) {
+                return new Layoff(unusedCards.get(index), knockerMeld);
             }
         }
         return new Layoff(null, null);
@@ -105,6 +110,7 @@ public abstract class GamePlayer implements PlayerInterface {
 
     /**
      * Called at the start of every round once the cards have been distributed
+     *
      * @param topOfDiscard current top of discard
      */
     @Override
@@ -124,13 +130,26 @@ public abstract class GamePlayer implements PlayerInterface {
 
     @Override
     public void playerActed(Action action) {
-        if(action.playerIndex!=index) {
+        if (action.playerIndex != index) {
             if (action instanceof PickAction) {
                 playerPicked((PickAction) action);
             } else if (action instanceof DiscardAction) {
                 playerDiscarded((DiscardAction) action);
             }
         }
+    }
+
+    @Override
+    public void playerDiscarded(DiscardAction discardAction) {
+    }
+
+    @Override
+    public void playerPicked(PickAction pickAction) {
+    }
+
+    @Override
+    public void executed(Action action) {
+
     }
 
     @Override

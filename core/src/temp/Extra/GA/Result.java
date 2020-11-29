@@ -10,8 +10,9 @@ public class Result {
     public final HandLayout player1Layout;
     public final HandLayout player2Layout;
     public final int nbOfTurns;
+
     public Result(GAPlayer player1, GAPlayer player2, GAPlayer winner,
-                  HandLayout player1Layout,HandLayout player2Layout, int nbOfTurns){
+                  HandLayout player1Layout, HandLayout player2Layout, int nbOfTurns) {
         this.player1 = player1;
         this.player2 = player2;
         this.winner = winner;

@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 import temp.GameRules;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
@@ -21,7 +21,7 @@ import java.util.List;
  * Only knocks on Gin
  */
 public class ForcePlayer extends GamePlayer {
-    private boolean onlyGin = false;
+    private final boolean onlyGin = false;
     private final GamePlayer player;
 
     public ForcePlayer(GamePlayer player) {
@@ -42,20 +42,20 @@ public class ForcePlayer extends GamePlayer {
 
     @Override
     public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
-        render(batch, renderingStyle,renderer);
+        render(batch, renderingStyle, renderer);
     }
 
     @Override
     public Boolean knockOrContinue() {
-        if(onlyGin) {
+        if (onlyGin) {
             return handLayout.viewUnusedCards().size() == 0;
         }
-        return handLayout.getDeadwood()<= GameRules.minDeadwoodToKnock;
+        return handLayout.getDeadwood() <= GameRules.minDeadwoodToKnock;
     }
 
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        return remainingCardsInDeck!=0;
+        return remainingCardsInDeck != 0;
     }
 
     @Override
