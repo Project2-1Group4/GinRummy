@@ -1,57 +1,40 @@
 package temp.Extra.GA;
 
+import temp.GamePlayers.GamePlayer;
+
 import java.util.Random;
 
 public class GA {
 
     public static void main(String[] args) {
-        /*GA ga = new GA(0,20,1,0.05f,0);
-        ga.init(new GAPlayer[]{
-                new GAPlayer(0,new TestPlayer())
-        });
+        // Create GA with wanted params
+        GA ga = new GA(0,20,1,0.05f,0);
+        // Initialize with players you want
+        /**ga.init(new TestPlayer());*/
+        // Start GA
         GAPlayer[] winners = ga.train();
-        winners[0].player.printMatrices();*/
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
     ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
     /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
     protected GAPlayer mutate(Random rd, GAPlayer[] winners, int index) {
-        /*TestPlayer p = new TestPlayer();
-        if (winners != null) {
-            GAPlayer parent = winners[rd.nextInt(winners.length)];
-            p.probabilityMatrix = parent.player.probabilityMatrix;
-            p.valueMatrix = parent.player.valueMatrix;
-        }
-        for (int i = 0; i < p.probabilityMatrix.length; i++) {
-            for (int j = 0; j < p.probabilityMatrix.length; j++) {
-                p.probabilityMatrix[i][j]+= getMutation(rd)*1;
-            }
-        }
-        for (int i = 0; i < p.valueMatrix.length; i++) {
-            for (int j = 0; j < p.valueMatrix.length; j++) {
-                p.valueMatrix[i][j]+= getMutation(rd)*1;
-            }
-        }
-        return new GAPlayer(index,p);*/
+        /**GamePlayer p = new TestPlayer();*/
+        // TODO Do modifications
+        /**return new GAPlayer(index,p);*/
         return null;
     }
 
-    protected void updateScores(Result result) {
-        final int winScore = 30;
-        final float turnLoss = 0.1f;
-        final int tieScore = 5;
-        if (result.winner != null) {
-            result.winner.score += winScore;
-        } else {
-            result.player1.score += tieScore;
-            result.player2.score += tieScore;
-        }
-        result.player1.score -= result.nbOfTurns * turnLoss;
-        result.player2.score -= result.nbOfTurns * turnLoss;
+    protected void updateScores(Result result, int player1Index, int player2Index) {
+        float player1 = 0;
+        float player2 = 0;
+        // TODO Update scores
+        competitors[player1Index].score += player1;
+        competitors[player2Index].score += player2;
     }
 
     protected boolean stopCondition() {
+        // TODO Set up stop condition
         return iteration >= 500;
     }
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -73,10 +56,23 @@ public class GA {
         competitors = new GAPlayer[nbOfCompetitors];
     }
 
-    public void init(GAPlayer[] prototypes) {
+    public void init(GamePlayer[] prototypes) {
+        Random rd = new Random(initSeed);
+        GAPlayer[] gaPrototype = new GAPlayer[prototypes.length];
+        int j = 0;
+        for (GamePlayer prototype : prototypes) {
+            gaPrototype[j] = new GAPlayer(j,prototype);
+            j++;
+        }
+        for (int i = 0; i < competitors.length; i++) {
+            competitors[i] = mutate(rd, gaPrototype, i);
+        }
+    }
+
+    public void init(GamePlayer prototype){
         Random rd = new Random(initSeed);
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, null, i);
+            competitors[i] = mutate(rd, new GAPlayer[]{new GAPlayer(0,prototype)}, i);
         }
     }
 
@@ -95,8 +91,8 @@ public class GA {
             for (int i = 0; i < competitors.length; i++) {
                 for (int j = 0; j < competitors.length; j++) {
                     if (i != j) {
-                        Result result = game.play(competitors[i], competitors[j], seed);
-                        updateScores(result);
+                        Result result = game.play(competitors[i].player, competitors[j].player, seed);
+                        updateScores(result, competitors[i].index, competitors[j].index);
                     }
                 }
             }

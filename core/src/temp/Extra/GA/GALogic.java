@@ -16,11 +16,11 @@ public class GALogic {
     private State currentGameState;
     private boolean roundEnd;
 
-    public Result play(GAPlayer player1, GAPlayer player2, int seed) {
+    public Result play(GamePlayer player1, GamePlayer player2, int seed) {
         currentGameState = new StateBuilder()
                 .setSeed(seed)
-                .addPlayer(player1.player)
-                .addPlayer(player2.player)
+                .addPlayer(player1)
+                .addPlayer(player2)
                 .build();
         roundEnd = false;
         currentGameState = Executor.startNewRound(500, currentGameState);
@@ -33,7 +33,7 @@ public class GALogic {
                 break;
             }
         }
-        GAPlayer winner = null;
+        GamePlayer winner = null;
         if (currentGameState.getWinner() != null) {
             winner = currentGameState.getWinner() == 0 ? player1 : player2;
         }

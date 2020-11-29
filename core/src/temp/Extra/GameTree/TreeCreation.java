@@ -23,20 +23,20 @@ public class TreeCreation {
     */
 
     public static void main(String[] args) {
-        /*State startState = new StateBuilder()
+        State startState = new StateBuilder()
                 .setSeed(11)
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .build();
         startState = Executor.startNewRound(500, startState);
 
-        BFSNode root = timedLimitedDepthBFS(startState, 20,50);
-        System.out.println(root.nodesUntilDepth(20));
-        System.out.println(Arrays.toString(root.widthsAtDepths(20)));
-         */
-        Bot b = new Bot();
-        Node root = b.DFS(7);
-        System.out.println(Arrays.toString(root.widthsAtDepths(7)));
+        BFSNode root = timedLimitedDepthBFS(startState, 7,120);
+        System.out.println(root.nodesUntilDepth(8));
+        System.out.println(Arrays.toString(root.widthsAtDepths(8)));
+
+        /*Bot b = new Bot();
+        Node root = b.DFS(6);
+        System.out.println(Arrays.toString(root.widthsAtDepths(6)));*/
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +122,9 @@ public class TreeCreation {
         queue.add(root);
         while(queue.peek()!=null){
             BFSNode v = queue.poll();
+            if(v.depth==wantedDepth){
+                continue;
+            }
             if(v.state==null){
                 if(v.parent==null){
                     v.state = curState;
@@ -144,9 +147,6 @@ public class TreeCreation {
                     BFSNode child = new BFSNode(v.depth + 1, v, action);
                     v.children.add(child);
                 }
-            }
-            if(v.depth==wantedDepth){
-                continue;
             }
             for(Node child: v.children) {
                 BFSNode c = (BFSNode)child;
@@ -176,6 +176,9 @@ public class TreeCreation {
                 break;
             }
             BFSNode v = queue.poll();
+            if(v.depth==wantedDepth){
+                continue;
+            }
             if(v.state==null){
                 if(v.parent==null){
                     v.state = curState;
@@ -198,9 +201,6 @@ public class TreeCreation {
                     BFSNode child = new BFSNode(v.depth + 1, v, action);
                     v.children.add(child);
                 }
-            }
-            if(v.depth==wantedDepth){
-                continue;
             }
             for(Node child: v.children) {
                 BFSNode c = (BFSNode)child;

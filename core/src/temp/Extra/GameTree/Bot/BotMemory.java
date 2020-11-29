@@ -33,6 +33,9 @@ public class BotMemory {
         this.playerTurn = playerTurn;
     }
 
+    public int nbOfCards(){
+        return player.size()+otherPlayer.size()+unknown.size()+discard.size();
+    }
     public void execute(Action action){
         if (playerTurn == 0) {
             if(step == State.StepInTurn.Pick){
