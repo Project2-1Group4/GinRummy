@@ -4,7 +4,11 @@ import java.util.Random;
 
 public class GA {
 
-    public static void main(String[] args) {
+    /*
+    TODO: Uses this to test out the AIs on the game logic here to make sure they're working properly
+     */
+
+    public static void main(String[] args){
         /*GA ga = new GA(0,20,1,0.05f,0);
         ga.init(new GAPlayer[]{
                 new GAPlayer(0,new TestPlayer())
