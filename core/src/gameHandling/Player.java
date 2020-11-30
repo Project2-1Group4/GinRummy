@@ -519,13 +519,7 @@ public class Player {
 
     public List<Card> findDeadwood(List<Card> cardsInMelds){
 
-        List<Card> deadwood = new ArrayList<Card>();
-
-    	/*
-    	if(cardsInMelds.size() == 0){
-    	    deadwood.addAll(this.hand.toList());
-    	    return deadwood;
-        }*/
+        List<Card> deadwood = new ArrayList<>();
 
         deadwood.addAll(this.hand.toList());
 
@@ -552,7 +546,7 @@ public class Player {
             usedCards.addAll(melds);
         }
 
-        return this.findDeadwood(usedCards);
+        return usedCards;
 
     }
 
@@ -660,11 +654,12 @@ public class Player {
             hand.addCard(new Card(i,5));
         }
 
-
+        hand.addCard(new Card(2,9));
 
         Player p = new Player(hand);
         p.bestCombination();
         System.out.println(p.bestCombination);
+        System.out.println(p.scoreHand());
 
         /*
         for (int i = 1; i < 10; i++) {
