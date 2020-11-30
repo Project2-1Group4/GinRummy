@@ -17,6 +17,11 @@ public class basicGreedyTest extends GamePlayer {
         super();
     }
 
+    public basicGreedyTest(boolean debug){
+        this();
+        this.debugRun = debug;
+    }
+
     MyCard opDiscard;
 
     /*
@@ -47,12 +52,19 @@ public class basicGreedyTest extends GamePlayer {
     And if it returns false that means it should pick from the deck instead (as there's a chance something good is there)
     */
 
+    // If debugRun is true, then the thread sleeps will happen
+    // As a debug run is when we're testing out the code for how the AI plays and stuff
+    public boolean debugRun = true;
+
     boolean evaluate(MyCard discardCard) {
         List<MyCard> current = new ArrayList<>(this.allCards);
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
 
+        if(!this.debugRun) {
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+
+            }
         }
         current.add(discardCard);
         return chooseCardToDiscard(current) != discardCard;
@@ -111,10 +123,12 @@ public class basicGreedyTest extends GamePlayer {
     public Boolean knockOrContinue() {
         int currentHand = this.handLayout.getDeadwood();
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
+        if(!this.debugRun) {
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
 
+            }
         }
 
         return currentHand <= this.knockValue;

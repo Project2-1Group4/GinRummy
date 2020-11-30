@@ -1,6 +1,5 @@
 package temp.GamePlayers.AIs;
 
-import cardlogic.SetOfCards;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
@@ -21,10 +20,8 @@ public class meldBuildingGreedy extends GamePlayer {
     TODO: Fix up the inefficient methods to actually be fast
      */
 
-    public meldBuildingGreedy(SetOfCards cards) {
+    public meldBuildingGreedy() {
         super();
-
-        //this.updateMemoryMatrix();
 
     }
 
@@ -324,11 +321,14 @@ public class meldBuildingGreedy extends GamePlayer {
 
     }
 
+    // TODO: Implement this method
     @Override
     public Boolean knockOrContinue() {
         return null;
     }
 
+
+    // TODO: Implement this method
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
 
@@ -336,6 +336,7 @@ public class meldBuildingGreedy extends GamePlayer {
         return null;
     }
 
+    // TODO: Implement this method
     @Override
     public MyCard discardCard() {
         return null;
@@ -356,6 +357,10 @@ public class meldBuildingGreedy extends GamePlayer {
     // TODO: Go over this method to update what happens when the other player picks up a card
     @Override
     public void playerPicked(PickAction pickAction) {
+        if(!pickAction.deck){
+            MyCard aCard = pickAction.card;
+            this.memoryMatrix[aCard.suit.index][aCard.rank.index] = 2;
+        }
 
     }
 }

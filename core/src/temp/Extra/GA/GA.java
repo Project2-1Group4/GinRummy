@@ -1,5 +1,6 @@
 package temp.Extra.GA;
 
+import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.Random;
@@ -12,7 +13,11 @@ public class GA {
         // Initialize with players you want
         /**ga.init(new TestPlayer());*/
         // Start GA
-        GAPlayer[] winners = ga.train();
+
+        GALogic logic = new GALogic();
+        logic.play(new basicGreedyTest(true), new basicGreedyTest(true), 0);
+
+        //GAPlayer[] winners = ga.train();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////

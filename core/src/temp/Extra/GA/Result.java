@@ -21,5 +21,11 @@ public class Result {
         this.player2Layout = player2Layout;
         this.nbOfTurns = nbOfTurns;
 
+        System.out.println("Final Results: Number of Turns: " + nbOfTurns);
+        System.out.println("P1: " + player1);
+        System.out.println("P2: " + player2);
+
+        System.out.println("Winner: " + winner);
+
     }
 }
