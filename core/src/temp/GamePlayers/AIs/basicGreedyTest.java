@@ -67,7 +67,14 @@ public class basicGreedyTest extends GamePlayer {
             }
         }
         current.add(discardCard);
-        return chooseCardToDiscard(current) != discardCard;
+
+        /* 
+        I think this is supposed to be an ==
+        As if the leastValuable card is the discardCard, then I want to pick the deck
+        Which is why I return true
+        Still, need to check this out
+        */
+        return chooseCardToDiscard(current) == discardCard;
 
     }
 
