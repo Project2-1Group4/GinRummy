@@ -3,9 +3,7 @@ package gameHandling;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class MinimaxPruningAI {
@@ -14,6 +12,9 @@ public class MinimaxPruningAI {
     public SetOfCards hand;
     public SetOfCards pile;
     public SetOfCards unknownCards;
+    boolean playerKnock = false;
+    boolean win = true;
+    boolean AIknock = false;
     //public static SetOfCards deck;
 
 
@@ -22,12 +23,6 @@ public class MinimaxPruningAI {
         this.hand = hand;
         this.pile = pile;
         this.unknownCards = unknown; //include deck and opponent hand
-        //unknown card is different from deck so I have a new attribute here (not sure somewhere has it already but I didnt find out)
-        //this.deck = new SetOfCards(unknown.toList());
-
-        //for (int i = 0; i < tree.opponentHand.size(); i++) {
-            //this.deck.discardCard(tree.opponentHand.getCard(i));
-        //}
         AITurn = true;
     }
 
@@ -101,7 +96,9 @@ public class MinimaxPruningAI {
             if the search return the card from pile  -> pick pile otherwise get card from deck (we have the prob that we can pick the likely card but still not sure)
              */
             pickCard = deck.drawTopCard();
+            deck.discardCard(pickCard);
             discardCard = GametreeAI.chooseCardToDiscard(currentHand);
+            System.out.println("AI pick from deck: "+pickCard);
         }
         pile.addCard(discardCard);
         hand.discardCard(discardCard);
@@ -111,13 +108,30 @@ public class MinimaxPruningAI {
         //update tree
     }
 
+    public boolean AIknock() {
+        int score = Player.scoreHand(hand.toList());
+        System.out.println("hand score: "+score);
+        if (score < 10) {
+            System.out.println("Bot wins the game!!");
+            AIknock = true;
+            return true;
+        }
+        else
+            return false;
+    }
+
     public void playGame(SetOfCards opponentHand, SetOfCards deck){
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Scanner sc = new Scanner(System.in);
+        System.out.println("deck size: "+deck.size());
+        System.out.println("deck top card: "+deck.getCard(deck.size()-1));
         // AI's turn
         chooseNode(deck);
         // opponents turn
         System.out.println("Player 2, it's your turn");
-        System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
+        //System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
+        System.out.println("Discard pile:" + pile);
+
         System.out.println("Current hand:" + opponentHand.toList());
         System.out.println("Pick Deck or Pile");
         // get choice of opponent from which pile it gets new card
@@ -127,6 +141,7 @@ public class MinimaxPruningAI {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         // update probs
         Node current = new Node(pile, hand, unknownCards, new SetOfCards(false, false), 0);
         if(choice.equals("pile")){
@@ -140,6 +155,23 @@ public class MinimaxPruningAI {
             opponentHand.addCard(deck.drawTopCard());
         }
         System.out.println("Pick a card to discard");
+        int cardDiscard = sc.nextInt();
+        if (cardDiscard < opponentHand.size()) {
+            Card aCard = opponentHand.getCard(cardDiscard);
+            opponentHand.discardCard(aCard);
+            this.pile.addCard(aCard);
+
+        }
+
+        playerKnock = Player.chooseToKnock(opponentHand);
+
+        if (playerKnock) {
+            System.out.println("yes to knock otherwise continue!!!");
+            String chooseToKnock = sc.nextLine();
+            if (chooseToKnock.equals("yes")) {
+                win = false;
+            }
+        }
 
     }
 
@@ -170,15 +202,13 @@ public class MinimaxPruningAI {
         // create pruning
         MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
 
-        boolean knocked = false;
+        //boolean knocked = false;
 
         // start game
-        while(!knocked){
+        while(!AI.AIknock() && AI.win){
             AI.playGame(opponentHand, copyDeck);
 
         }
 
     }
-
-
 }

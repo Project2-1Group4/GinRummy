@@ -61,13 +61,9 @@ public class SetOfCards {
 
 	}
 
-
-
-
 	public SetOfCards(List<Card> someCards){
 		this.cards = Player.copyList(someCards);
 	}
-
 
 	public List<Card> toList(){
 		return new ArrayList<>(this.cards);
@@ -105,8 +101,6 @@ public class SetOfCards {
 	public boolean discardCard(Card aCard) {
 		return this.cards.remove(aCard);
 	}
-
-
 	
 	public static int scoreGinRummy(List<Card> cardSet) {
 		int totScore = 0;

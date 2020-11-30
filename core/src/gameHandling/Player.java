@@ -485,7 +485,9 @@ public class Player {
 
         List<List<Card>> resultingCards = this.getMelds();
 
-        List<Card> deadwood = this.getDeadwood(resultingCards);
+        List<Card> melds = this.getMelds(resultingCards);
+
+        List<Card> deadwood = this.findDeadwood(melds);
 
         // I also need to find a way to take the deadwood out in some capacity
         // As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
@@ -542,7 +544,7 @@ public class Player {
      * Idea was to overload this guy with findDeadwood, but due to garbage java treatment of generics this happened
      */
 
-    public List<Card> getDeadwood(List<List<Card>> cardsInMelds){
+    public List<Card> getMelds(List<List<Card>> cardsInMelds){
 
         List<Card> usedCards = new ArrayList<Card>();
 
@@ -571,9 +573,6 @@ public class Player {
         return this.bestCombination;
     }
 
-
-
-
     /*
      * Some method that has listeners and stuff
      * It'll add the card to the player's hand, and then ask them to discard a card
@@ -597,7 +596,16 @@ public class Player {
     If he wants to knock:
         return true
     */
-    public boolean chooseToKnock(){
+    public static boolean chooseToKnock(SetOfCards hand){
+        int score = Player.scoreHand(hand.toList());
+        if (score < 10) {
+            System.out.println("Player can knock now!!");
+            return true;
+        }
+        else
+            return false;
+    }
+    public boolean chooseToKnock() {
         return false;
     }
 
