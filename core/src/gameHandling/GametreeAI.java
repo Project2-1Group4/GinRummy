@@ -3,8 +3,7 @@ package gameHandling;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GametreeAI {
     SetOfCards discardPile;
@@ -292,6 +291,7 @@ public class GametreeAI {
 
     public static Card chooseCardToDiscard(List<Card> aHand){
         Card theCard = null;
+        //List<Card> deadwood = Player.
         // starting value of a hand
         int highestVal = Player.scoreHand(aHand);
 
@@ -305,6 +305,7 @@ public class GametreeAI {
                 highestVal = resultingHand;
             }
         }
+
         return theCard;
     }
 

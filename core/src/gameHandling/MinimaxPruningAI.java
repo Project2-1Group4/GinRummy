@@ -87,7 +87,10 @@ public class MinimaxPruningAI {
 
         if(pickCard == pile.getCard(pile.size()-1)){
             pile.discardCard(pickCard);
-            //pile.addCard(discardCard);
+            pile.addCard(discardCard);
+            hand.addCard(pickCard);
+            hand.discardCard(discardCard);
+
         }
         else{
             // should pick from actual deck instead of cardsunknown in tree since in game you get topcard from deck
@@ -97,12 +100,13 @@ public class MinimaxPruningAI {
              */
             pickCard = deck.drawTopCard();
             deck.discardCard(pickCard);
-            discardCard = GametreeAI.chooseCardToDiscard(currentHand);
+            hand.addCard(pickCard);
+            discardCard = GametreeAI.chooseCardToDiscard(hand.toList());
+            hand.discardCard(discardCard);
+            pile.addCard(discardCard);
             System.out.println("AI pick from deck: "+pickCard);
         }
-        pile.addCard(discardCard);
-        hand.discardCard(discardCard);
-        hand.addCard(pickCard);
+
         pickedCard();
         System.out.println("Card discard from bot: "+discardCard);
         //update tree
@@ -126,7 +130,9 @@ public class MinimaxPruningAI {
         System.out.println("deck size: "+deck.size());
         System.out.println("deck top card: "+deck.getCard(deck.size()-1));
         // AI's turn
+        System.out.println("bot hand before turn: "+hand);
         chooseNode(deck);
+        System.out.println("bot hand after turn: "+hand);
         // opponents turn
         System.out.println("Player 2, it's your turn");
         //System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
@@ -207,8 +213,10 @@ public class MinimaxPruningAI {
         // start game
         while(!AI.AIknock() && AI.win){
             AI.playGame(opponentHand, copyDeck);
+            //System.out.println("bot hand: "+hand);
 
         }
+        System.out.println("Bot hand card after game over: "+hand);
 
     }
 }
