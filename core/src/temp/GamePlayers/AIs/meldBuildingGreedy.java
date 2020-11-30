@@ -8,6 +8,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,8 +48,24 @@ public class meldBuildingGreedy extends GamePlayer {
      */
     MyCard topDiscard;
 
+    /*
+    A card is divided into 4 different types:
+    -It's in a meld
+    -It's close to being in a meld
+    -It can never belong to a meld (as the relevant cards are discarded)
+    -It's free
 
-    int[][] createMemoryMatrix(HandLayout layout) {
+    These multipliers are for that, to use them for a GA
+    */
+
+    double cardInMeld = 0.0;
+    double cardCloseToMeld = 1.0;
+    double cardFree = 2.0;
+    double cardNever = 4.0;
+
+    int knockValue = 10;
+
+    static int[][] createMemoryMatrix(HandLayout layout) {
 
         List<Meld> melds = layout.viewMelds();
         List<MyCard> deadwood = layout.viewUnusedCards();
@@ -69,6 +86,15 @@ public class meldBuildingGreedy extends GamePlayer {
 
     }
 
+    // The idea behind when I use it seems solid
+    // I update the internal matrix by using the cloneResetMemMatrix
+    // Which takes care of removing the previous cards in hand, and adding the new cards
+    // Still feel kinda unsure about everything
+    // TODO: Check this part of the code out
+    void updateMemoryMatrix(HandLayout newHand){
+        this.memoryMatrix = cloneResetMemMatrix(this.memoryMatrix, newHand);
+    }
+
     /*
     For a given memory matrix it'll delete all values that are in a meld or in hand
     And then update it with the new values that are in the given hand
@@ -76,11 +102,51 @@ public class meldBuildingGreedy extends GamePlayer {
     This method assumes that the reset cards will be added to the discardPile
      */
     static int[][] cloneResetMemMatrix(int[][] memoryMatrix, HandLayout hand) {
+        
 
-        return null;
+        int[][] newMemMatrix = new int[memoryMatrix.length][memoryMatrix[0].length];
+        for(int i = 0; i<memoryMatrix.length; i++){
+            for(int j = 0; j<memoryMatrix[0].length;j++){
+                int temp = memoryMatrix[i][j];
+
+                if((temp!=-1) && (temp!= 1)){
+                    newMemMatrix[i][j] = temp;
+                } else {
+                    // For now I'll just assume that all of the previous cards in hand are now discarded
+                    newMemMatrix[i][j] = 4;
+                }
+
+            }
+
+        }
+
+        List<Meld> melds = hand.viewMelds();
+        List<MyCard> deadwood = hand.viewUnusedCards();
+
+        for (Meld list : melds) {
+            for (MyCard aCard : list.viewMeld()) {
+                newMemMatrix[aCard.suit.index][aCard.suit.index] = -1;
+            }
+        }
+
+        for (MyCard aCard : deadwood) {
+            newMemMatrix[aCard.suit.index][aCard.suit.index] = 1;
+        }
+
+
+        return newMemMatrix;
     }
 
+    /*
+    This method should only be used at round start
+    It's dangerous because it doesn't take into account the memory of previous turns
+    So using it makes the program lose information
+    */
+
     void resetMemoryMatrix() {
+        this.memoryMatrix = new int[4][13];
+        
+        /*
         List<Meld> melds = this.handLayout.viewMelds();
         List<MyCard> deadwood = this.handLayout.viewUnusedCards();
 
@@ -92,7 +158,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
         for (MyCard aCard : deadwood) {
             memoryMatrix[aCard.suit.index][aCard.suit.index] = 1;
-        }
+        }*/
 
     }
 
@@ -109,7 +175,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
     // Method looks finished
     // TODO: Bugtest
-    static int evaluateSet(int val, int[][] memoryMatrix) {
+    double evaluateSet(int val, int[][] memoryMatrix) {
 
         int setCount = 0;
         int discardCount = 0;
@@ -160,7 +226,7 @@ public class meldBuildingGreedy extends GamePlayer {
     What it's finding is the run value of the specific card in the memory matrix
 
      */
-    static int evaluateRun(int suit, int val, int[][] memoryMatrix) {
+    double evaluateRun(int suit, int val, int[][] memoryMatrix) {
         // I go twice, once forwards and once backwards
         // Because it felt like the easiest way to do it
         // Garbage efficiency though
@@ -235,7 +301,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
     }
 
-    public static int findIfNearbyIsValidWithNegativeOpposite(int val, int nearby, int nxt) {
+    double findIfNearbyIsValidWithNegativeOpposite(int val, int nearby, int nxt) {
         if (nxt >= 2) {
             return heuristicForNever(val);
         } else if ((nxt == 1) && (nearby == 1)) {
@@ -291,8 +357,8 @@ public class meldBuildingGreedy extends GamePlayer {
     This will return a value for when the given card (in this case we only care about its value) is close to creating a meld
     The exact heuristic is probably what's going to be most tested, but for now I'll just create the method elsewhere and make it simple
      */
-    static int heuristicForApprox(int value) {
-        return valInGinRummy(value);
+    double heuristicForApprox(int value) {
+        return valInGinRummy(value)* this.cardCloseToMeld;
     }
     /*
     Another method that'll be changed around going forward
@@ -301,8 +367,8 @@ public class meldBuildingGreedy extends GamePlayer {
     Current punishment is meh, but it'll do
      */
 
-    static int heuristicForNever(int value) {
-        return valInGinRummy(value) * 4;
+    double heuristicForNever(int value) {
+        return valInGinRummy(value) * this.cardNever;
     }
 
     /*
@@ -310,37 +376,125 @@ public class meldBuildingGreedy extends GamePlayer {
     AKA it's in hand, but none of the cards in hand make it close to a meld
      */
 
-    static int heuristicForFree(int value) {
-        return valInGinRummy(value) * 2;
+    double heuristicForFree(int value) {
+        return valInGinRummy(value) * this.cardFree;
+    }
+
+    double heuristicForMeld(int value){
+        return valInGinRummy(value)*this.cardInMeld;
     }
 
 
     void setTopDiscard(MyCard aCard) {
         this.topDiscard = aCard;
+
+        // TODO: Add a quick check to make sure I'm not deleting info about who discarded the card
         memoryMatrix[aCard.suit.index][aCard.rank.index] = 4;
 
+    }
+
+    public MyCard findLeastValuableCard(HandLayout aLayout){
+        return findLeastValuableCard(aLayout.viewAllCards());
+    }
+
+    // I choose the card with the highest value, as high value = bad in Gin Rummy
+    public MyCard findLeastValuableCard(List<MyCard> aList){
+        
+        double handWithHighestScore = -1.0;
+        MyCard worstCard = null;
+        for(MyCard aCard: aList){
+
+            List<MyCard> tempList = new ArrayList<>(aList);
+            tempList.remove(aCard);
+
+            HandLayout layout = Finder.findBestHandLayout(tempList);
+
+            double valOfHand = 0.0;
+
+            int[][] cloneOfMatrix = cloneResetMemMatrix(this.memoryMatrix, layout);
+            
+            // Here I'm adding the value of all the melds to valOfHand
+            for(Meld melds: layout.viewMelds()){
+                for(MyCard card: melds.viewMeld()){
+                    valOfHand += this.heuristicForMeld(card.rank.index);
+                }
+                
+            }
+
+            // Here the method takes care of evaluating all of the cards that are free
+            for(MyCard deadWoodCard: layout.viewUnusedCards()){
+                double runVal = this.evaluateRun(deadWoodCard.suit.index, deadWoodCard.rank.index, cloneOfMatrix);
+                double setVal = this.evaluateSet(deadWoodCard.suit.index, cloneOfMatrix);
+
+                valOfHand+= runVal + setVal;
+            }
+
+            // It's >= because that way the last card can be returned in case it's as valuable as another card
+            // Because in that case it's better to not pick from the deck because you'd give the opponent information
+            if(valOfHand>=handWithHighestScore){
+                handWithHighestScore = valOfHand;
+                worstCard = aCard;
+            }
+
+            
+
+
+        }
+
+        return worstCard;
     }
 
     // TODO: Implement this method
     @Override
     public Boolean knockOrContinue() {
-        return null;
+        if (this.handLayout.getDeadwood() <= this.knockValue){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
     // TODO: Implement this method
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        List<MyCard> temp = this.handLayout.viewAllCards();
+        temp.add(topOfDiscard);
+        MyCard worst = this.findLeastValuableCard(temp);
 
+        if(worst != topOfDiscard){
+            this.topDiscard = worst;
+            return false;
+        } else {
+            return true;
+        }
 
-        return null;
     }
 
     // TODO: Implement this method
     @Override
     public MyCard discardCard() {
-        return null;
+        return this.findLeastValuableCard(this.allCards);
     }
+
+    // I don't think anything else is required for a new round
+    // As anything else that's stored internally gets eliminated elsewhere
+    @Override
+    public void newRound(MyCard topOfDiscard) {
+        this.topDiscard = topOfDiscard;
+        this.resetMemoryMatrix();
+    }
+
+    // TODO: Update this method to update the internal matrix correctly
+    // Always assume that it's when a new set of cards is given
+    // As the update method is handled separately, and has already been implemented
+    @Override
+    public void update(HandLayout realLayout) {
+        allCards = realLayout.viewAllCards();
+        handLayout = Finder.findBestHandLayout(allCards);
+    }
+
+    
 
     static public int findValOfHand(List<MyCard> cardList) {
         HandLayout layout = Finder.findBestHandLayout(cardList);
