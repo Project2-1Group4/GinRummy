@@ -11,6 +11,7 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MyCard;
 import temp.GameLogic.TreeExpander;
 import temp.GamePlayers.CombinePlayer;
+import temp.GameRules;
 
 import java.util.*;
 
@@ -222,7 +223,7 @@ public class TreeCreation {
      * @return all possible hands
      */
     public static List<List<MyCard>> getPossibleHands (List<List<MyCard>> saved, List<MyCard> curHand, List<MyCard> options,int idx) {
-        if(curHand.size()==10){
+        if(curHand.size()== GameRules.baseCardsPerHand){
             if(saved==null){
                 saved = new ArrayList<>();
             }
