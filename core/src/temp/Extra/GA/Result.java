@@ -28,4 +28,33 @@ public class Result {
         System.out.println("Winner: " + winner);
 
     }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        if(winner!= null){
+            sb.append("Winner: Player ");
+            GamePlayer loser;
+            int winnerNb;
+            if(winner.index == player1.index){
+                winnerNb = 1;
+                loser = player2;
+            }else{
+                winnerNb = 2;
+                loser = player1;
+            }
+            sb.append(winnerNb)
+                    .append(" index = ")
+                    .append(winner.index)
+                    .append("\nHand:\n")
+                    .append(winnerNb == 1? player1Layout : player2Layout);
+            sb.append("\n Loser: Player 2, index = ")
+                    .append(loser.index)
+                    .append("\nHand:\n")
+                    .append(winnerNb == 1? player2Layout : player1Layout);
+        }else{
+            sb.append("No winner");
+        }
+        sb.append("\n").append(nbOfTurns).append(" turns");
+        return sb.toString();
+    }
 }

@@ -109,13 +109,12 @@ public class BotMemory {
         Stack<MyCard> discard = new Stack<>();
         Random rd = new Random(10);
         List<MyCard> deck = MyCard.getBasicDeck();
-        int deckSize = deck.size();
         Executor.shuffleList(rd,500,deck);
         for (int i = 0; i < GameRules.baseCardsPerHand; i++) {
             player.add(deck.remove(0));
         }
         discard.add(deck.remove(0));
-        deckSize-= 2*GameRules.baseCardsPerHand+1;
+        int deckSize = deck.size();
         List<MyCard> unknown = new ArrayList<>(deck);
         return new BotMemory(player,otherPlayer,unknown,discard,deckSize,0, State.StepInTurn.Pick);
     }

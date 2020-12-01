@@ -213,6 +213,30 @@ public class TreeCreation {
         return root;
     }
 
+    //TODO move to TreeExpander?
+    /**
+     * Returns a list of all possible hands the enemy player can have given what you know he has and what you don't know
+     * @param saved init with null
+     * @param curHand list of cards you know the enemy has
+     * @param options list of cards of unknown location (deck or part of enemy init hand)
+     * @return all possible hands
+     */
+    public static List<List<MyCard>> getPossibleHands (List<List<MyCard>> saved, List<MyCard> curHand, List<MyCard> options,int idx) {
+        if(curHand.size()==10){
+            if(saved==null){
+                saved = new ArrayList<>();
+            }
+            saved.add(curHand);
+            return saved;
+        }
+        for(int i = idx ; i < options.size(); i++) {
+            List<MyCard> newHand = new ArrayList<>(curHand);
+            newHand.add(options.get(i));
+            saved = getPossibleHands(saved, newHand,options,++idx);
+        }
+        return saved;
+    }
+
     /**
      * All possible picks using unknown cards assuming they're on top of deck
      * @param possibleActions current possible actions
