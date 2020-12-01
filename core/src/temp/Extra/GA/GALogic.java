@@ -24,12 +24,18 @@ public class GALogic {
                 .build();
         roundEnd = false;
         currentGameState = Executor.startNewRound(500, currentGameState);
+
+        final boolean fullGame = false; //TODO change this to play full game
         while (currentGameState.getWinner() == null) {
             update();
             if (roundEnd) {
                 Executor.assignPoints(currentGameState);
+                if(fullGame) {
+                    endOfRound();
+                }
             }
-            if (currentGameState.getRoundTurn() >= 200 || roundEnd) {
+
+            if (!fullGame && (currentGameState.getRoundTurn() >= 200 || roundEnd)) {
                 break;
             }
         }
@@ -41,6 +47,12 @@ public class GALogic {
                 currentGameState.getPlayerStates().get(0).viewHandLayout(),
                 currentGameState.getPlayerStates().get(1).viewHandLayout(),
                 currentGameState.getRoundTurn());
+    }
+
+    private void endOfRound() {
+        Executor.assignPoints(currentGameState);
+        currentGameState = Executor.startNewRound(500, currentGameState);
+        roundEnd = false;
     }
 
     private void update() {
