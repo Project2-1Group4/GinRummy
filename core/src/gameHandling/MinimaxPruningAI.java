@@ -105,6 +105,8 @@ public class MinimaxPruningAI {
             hand.discardCard(discardCard);
             pile.addCard(discardCard);
             System.out.println("AI pick from deck: "+pickCard);
+            //pickCard is now known so remove from unknowncards
+            unknownCards.discardCard(pickCard);
         }
 
         pickedCard();
