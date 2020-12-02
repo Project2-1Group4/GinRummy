@@ -13,7 +13,6 @@ public class MinimaxPruningAI {
     public SetOfCards pile;
     public SetOfCards unknownCards;
     boolean playerKnock = false;
-    boolean win = true;
     boolean AIknock = false;
     //public static SetOfCards deck;
 
@@ -172,13 +171,13 @@ public class MinimaxPruningAI {
 
         }
 
-        playerKnock = Player.chooseToKnock(opponentHand);
+        boolean knock = Player.chooseToKnock(opponentHand);
 
-        if (playerKnock) {
+        if (knock) {
             System.out.println("yes to knock otherwise continue!!!");
             String chooseToKnock = sc.nextLine();
             if (chooseToKnock.equals("yes")) {
-                win = false;
+                playerKnock = true;
             }
             else
                 playerKnock = false;
@@ -216,7 +215,7 @@ public class MinimaxPruningAI {
         //boolean knocked = false;
 
         // start game
-        while(!AI.AIknock() && AI.win){
+        while(!AI.AIknock() && !AI.playerKnock){
             AI.playGame(opponentHand, copyDeck);
             //System.out.println("bot hand: "+hand);
 
