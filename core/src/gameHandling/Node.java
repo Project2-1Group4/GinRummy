@@ -96,12 +96,12 @@ public class Node {
 
     @Override
     public String toString() {
-        return "node";
+        return hand.toString();
     }
 
     public int getHandValue() {
-        return Player.getHandValue(this.hand.toList());
-        //return hand.getHandValue();
+        //return Player.getHandValue(this.hand.toList());
+        return this.handValue;
     }
 
     public void setHandValue(int value) {

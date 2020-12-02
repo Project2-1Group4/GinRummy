@@ -15,7 +15,7 @@ public class GametreeAI {
     private int depthTree = 0;
     private int maxDepth;
     private Node root;
-    //private HashMap<MyCard, double>;
+    static int count = 0; //test the tree
 
     public  GametreeAI (SetOfCards pile, SetOfCards cards, SetOfCards deck, int maxDepth){
         this.discardPile = pile;
@@ -39,7 +39,7 @@ public class GametreeAI {
     }
 
     public Node getRootNode() {
-        copyParent(root);
+        //copyParent(root);
         Node copyRoot = new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand, 0);
         for(Node child : root.getChildren()){
             copyRoot.addChild(child);
@@ -379,6 +379,17 @@ public class GametreeAI {
 
     public SetOfCards getCardsUnknown() {
         return cardsUnknown;
+    }
+
+    public void printOutTree(Node node) {
+        if (node.getChildren().size() == 0) {
+            System.out.println(node);
+        }
+        for (Node child : node.getChildren()) {
+            count++;
+            System.out.println("layer: "+count);
+            printOutTree(child);
+        }
     }
 
 

@@ -25,35 +25,52 @@ public class MinimaxPruningAI {
         AITurn = true;
     }
 
+    public MinimaxPruningAI(GametreeAI tree) {
+        this.tree = tree;
+        this.hand = tree.hand;
+        this.pile = tree.discardPile;
+        this.unknownCards = tree.cardsUnknown;
+    }
+
     public void pickedCard() {
         AITurn = false;
     }
 
     // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
     public Node alphaBetaPruning(Node node, Node alpha, Node beta, boolean maxPlayer) {
-        if ((node.getChildren().size() == 0) || !node.playerStop || !node.AIStop) {
+        if ((node.getChildren().size() == 0) || node.playerStop || node.AIStop) {
             return node;
         }
 
         if (maxPlayer) {
+            //System.out.println("run alpha beta with max player");
             Node maxNode = new Node(false); //node with negative inf hand value
+            //Node maxNode = null;
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, false);
+                //System.out.println("evalNode: "+evalNode);
                 maxNode = Node.getNodeMax(alpha, evalNode);
+                //System.out.println("max node: "+maxNode);
                 alpha = Node.getNodeMax(alpha, evalNode);
+                //System.out.println("alpha: "+alpha);
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
+            //System.out.println("max node: "+maxNode);
             return maxNode;
         } else {
+            //System.out.println("run alpha beta with min player");
             Node minNode = new Node(true); // node with positive inf hand value
+            //Node minNode = null;
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, true);
                 minNode = Node.getNodeMin(beta, evalNode);
+                //System.out.println("min node: "+minNode);
                 beta = Node.getNodeMin(beta, evalNode);
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
+            //System.out.println("min node: "+minNode);
             return minNode;
         }
     }
@@ -63,29 +80,33 @@ public class MinimaxPruningAI {
         //get the current state of AI (game)
         Node parent = tree.getRootNode();
         List<Card> currentHand = Player.copyList(parent.hand.toList());
+        System.out.println("current hand: "+currentHand);
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
+        System.out.println("pick node: "+pickNode);
         unknownCards = pickNode.unknownCards;
 
         List<Card> newHand = Player.copyList(pickNode.hand.toList());
-
+        System.out.println("new hand: "+newHand);
         Card pickCard = null;
 
         //loop through newHand to get the new card
         for (Card card : newHand) {
             if (!currentHand.contains(card)) {
-                System.out.println("pick: new hand differs from old");
+                //System.out.println("pick: new hand differs from old");
                 pickCard = card;
             }
         }
+        System.out.println("pick card: "+pickCard);
         Card discardCard = null;
 
         //loop through old hand to get the card be discarded
         for (Card card : currentHand) {
             if (!newHand.contains(card)) {
-                System.out.println("discard: old differs from new");
                 discardCard = card;
             }
         }
+
+        System.out.println("discard card: "+discardCard);
 
         if(pickCard == pile.getCard(pile.size()-1)){
             pile.discardCard(pickCard);
@@ -111,14 +132,14 @@ public class MinimaxPruningAI {
             unknownCards.discardCard(pickCard);
         }
 
-        pickedCard();
         System.out.println("Card discard from bot: "+discardCard);
         //update tree
     }
 
     public boolean AIknock() {
-        int score = Player.scoreHand(hand.toList());
+        int score = Player.scoreHand(this.hand.toList());
         System.out.println("hand score: "+score);
+        System.out.println(this.hand);
         if (score < 10) {
             System.out.println("Bot wins the game!!");
             AIknock = true;
@@ -189,10 +210,14 @@ public class MinimaxPruningAI {
             else
                 playerKnock = false;
         }
-        GametreeAI gameTree = new GametreeAI(pile, hand,unknownCards, 4);
-        this.tree = gameTree;
-        Node newRoot = new Node(pile, hand, unknownCards, gameTree.opponentHand, 0);
-        gameTree.createNodesOpponent(newRoot, false);
+        //GametreeAI gameTree = new GametreeAI(pile, hand,unknownCards, 4);
+        //this.tree = gameTree;
+        //Node newRoot = new Node(pile, hand, unknownCards, gameTree.opponentHand, 0);
+        //gameTree.createNodesOpponent(newRoot, false);
+        //tree = new GametreeAI(pile, hand,unknownCards, 4);
+        //Node newRoot = new Node(pile, hand, unknownCards, tree.opponentHand, 0);
+        //tree.createNodesOpponent(newRoot, false);
+        //tree.createTree();
 
 
     }
@@ -207,6 +232,8 @@ public class MinimaxPruningAI {
             Card aCard = deck.drawTopCard();
             hand.addCard(aCard);
         }
+        System.out.println("hand: "+hand);
+        System.out.println("score: "+Player.scoreHand(hand.toList()));
         // create pile
         SetOfCards pile = new SetOfCards(false, false);
         Card discardCard = deck.drawTopCard();
@@ -214,6 +241,7 @@ public class MinimaxPruningAI {
         // create tree
         GametreeAI gameTree = new GametreeAI(pile, hand,deck, 4);
         gameTree.createTree();
+
         // create opponenthand
         SetOfCards copyDeck  = new SetOfCards(deck.toList());
         SetOfCards opponentHand = new SetOfCards(false, false);
@@ -223,6 +251,7 @@ public class MinimaxPruningAI {
         }
         // create pruning
         MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
+        //MinimaxPruningAI AI = new MinimaxPruningAI(gameTree);
 
         //boolean knocked = false;
 
@@ -231,6 +260,8 @@ public class MinimaxPruningAI {
             AI.playGame(opponentHand, copyDeck);
         }
         System.out.println("Bot hand card after game over: "+hand);
+
+
 
     }
 }

@@ -186,7 +186,8 @@ public class Player {
     public static List<Card> copyList(List<Card> cards) {
         List<Card> newCard = new ArrayList<>();
         for (Card aCard: cards){
-            newCard.add(new Card(aCard));
+            //newCard.add(new Card(aCard));
+            newCard.add(aCard);
         }
         return newCard;
     }
@@ -433,7 +434,6 @@ public class Player {
 
         List<Card> handCard = this.hand.toList();
         this.deadWood = copyList(handCard);
-        //System.out.println("Raw deadwoood: "+deadWood);
         this.bestCombination();
 
         if (this.bestCombination.size() == 0) {
@@ -441,7 +441,7 @@ public class Player {
         } else {
             for (List<Card> card : this.bestCombination) {
                 for (Card aCard : card) {
-                    if (handCard.contains(aCard)) {
+                    if (this.deadWood.contains(aCard)) {
                         this.deadWood.remove(aCard);
                     }
                 }
@@ -484,12 +484,16 @@ public class Player {
 
     public int scoreHand() {
 
-
+        /*
         List<List<Card>> resultingCards = this.getMelds();
 
         List<Card> melds = this.getMelds(resultingCards);
 
         List<Card> deadwood = this.findDeadwood(melds);
+
+         */
+
+        List<Card> deadwood = this.findDeadwood();
 
         // I also need to find a way to take the deadwood out in some capacity
         // As it's convenient for the player that didn't know, so that I can add the deadwood to any other sets
