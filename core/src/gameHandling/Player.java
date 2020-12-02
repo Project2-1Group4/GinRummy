@@ -181,10 +181,12 @@ public class Player {
         return newCard;
     }
 
-    public static List<Card> copyList(List<Card> card) {
+    // This method should create a deep copy
+    // The main issue is whether the new card constructor is properly working
+    public static List<Card> copyList(List<Card> cards) {
         List<Card> newCard = new ArrayList<>();
-        for (int i = 0; i < card.size(); i++) {
-            newCard.add(card.get(i));
+        for (Card aCard: cards){
+            newCard.add(new Card(aCard));
         }
         return newCard;
     }

@@ -57,6 +57,14 @@ public class Card extends Actor implements Comparable {
 		this.setValue(value);
 	}
 
+	/*
+	This should be able to properly do a deep clone of a given card
+	 */
+	public Card(Card aCard){
+		this.setSuit(aCard.getSuitVal());
+		this.setValue(aCard.getValue());
+	}
+
 	public Card(MyCard aCard){
 		this.setValue(aCard.rank.index);
 
