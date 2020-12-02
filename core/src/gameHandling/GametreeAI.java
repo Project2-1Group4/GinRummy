@@ -12,9 +12,9 @@ public class GametreeAI {
     SetOfCards opponentHand;
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
-    private int simulationNum = 3;
     private int depthTree = 0;
     private int maxDepth;
+    private Node root;
     //private HashMap<MyCard, double>;
 
     public  GametreeAI (SetOfCards pile, SetOfCards cards, SetOfCards deck, int maxDepth){
@@ -26,27 +26,32 @@ public class GametreeAI {
             opponentHand.addCard(cardsUnknown.getCard(i));
         }
         this.maxDepth = maxDepth;
+        root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
     }
 
     public void createTree (){
-        Node first = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
-        depthTree++;
-        Node pass = first.addChild(new Node(discardPile,hand,cardsUnknown, opponentHand, depthTree));
-        Node discard1 = first.addChild(pickDiscard(hand,discardPile));
-        depthTree++;
+        copyParent(root);
+        Node pass = root.addChild(new Node(discardPile,hand,cardsUnknown, opponentHand, depthTree));
+        copyParent(root);
+        Node discard1 = root.addChild(pickDiscard(hand,discardPile));
         createNodesOpponent(pass, true);
         createNodesOpponent(discard1, false);
     }
 
-    public Node getParentNode() {
-        return new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand, depthTree);
+    public Node getRootNode() {
+        copyParent(root);
+        Node copyRoot = new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand, 0);
+        for(Node child : root.getChildren()){
+            copyRoot.addChild(child);
+        }
+        return root;
     }
 
     // we need to determine stop statement for recursion
     // firstRound true if opponent can still pass
     public void createNodesOpponent(Node parent, boolean firstRound){
         if(parent.winOrLose || cardsUnknown.size() < 12 || parent.getDepthTree() == maxDepth){
-            System.out.print("end creating children");
+
         }
         else{
 
@@ -55,7 +60,8 @@ public class GametreeAI {
             List<Node> nodesPile = monteCarloSim(true);
             for(int i = 0; i< nodesPile.size(); i++){
                 parent.addChild(nodesPile.get(i));
-                simulationDiscard(nodesPile.get(i));
+                Card discard = chooseCardToDiscard(nodesPile.get(i).opponentHand.toList());
+                simulationDiscard(nodesPile.get(i), discard);
                 List<Node> nodesDiscard1 = monteCarloSim(false);
                 for(int j = 0; j< nodesDiscard1.size(); j++){
                     nodesPile.get(i).addChild(nodesDiscard1.get(i));
@@ -74,7 +80,8 @@ public class GametreeAI {
             for(int i = 0; i< nodesDeck.size(); i++){
                 parent.addChild(nodesDeck.get(i));
                 if(!firstRound){
-                    simulationDiscard(nodesDeck.get(i));
+                    Card discard = chooseCardToDiscard(nodesDeck.get(i).opponentHand.toList());
+                    simulationDiscard(nodesDeck.get(i), discard);
                     List<Node> nodesDiscard2 = monteCarloSim(false);
                     for(int j = 0; j< nodesDiscard2.size(); j++){
                         nodesDeck.get(j).addChild(nodesDiscard2.get(i));
@@ -88,7 +95,7 @@ public class GametreeAI {
     // we need to determine stop statement for recursion
     public void createNodesAI(Node parent){
         if(parent.winOrLose || cardsUnknown.size() < 12 || parent.getDepthTree() == maxDepth){
-            System.out.print("end creating children");
+
         }
         else{
             copyParent(parent);
@@ -202,9 +209,8 @@ public class GametreeAI {
    }
 
 
-    public void simulationDiscard(Node parent){
+    public void simulationDiscard(Node parent, Card discard){
         copyParent(parent);
-        Card discard = chooseCardToDiscard(parent.opponentHand.toList());
         lookThroughKnownCards(discard);
         discardPile.addCard(discard);
         cardsUnknown.discardCard(discard);
@@ -239,7 +245,7 @@ public class GametreeAI {
         List<Node> nodes = new ArrayList<>();
         List<Card> opponentHandcur;
         // simulate 100 times
-        for(int i= 1; i<= this.simulationNum; i++){
+        for(int i= 1; i<= 10; i++){
             if(pickOrDiscard){
                 opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 11);
             }
@@ -326,6 +332,7 @@ public class GametreeAI {
                 copyList.remove(toSave);
             }
         }
+
         return resultList;
     }
 
@@ -374,35 +381,6 @@ public class GametreeAI {
         return cardsUnknown;
     }
 
-    //demo pruning algo
-    // can it be removed???
-    public int alphabetaPruning(Node node, int alpha, int beta, boolean maximizingPlayer ) {
-        if ((node.getChildren().size() == 0) || !node.playerStop || !node.AIStop)
-            return node.handValue;
-        if (maximizingPlayer) {
-            int maxEval = -100000; // negative infinity
-            for (Node child : node.getChildren()) {
-                //update tree here
-                int eval = alphabetaPruning(child, alpha, beta, false);
-                maxEval = Math.max(maxEval, eval);
-                alpha = Math.max(alpha, eval);
-                if (beta <= alpha)
-                    break;
-            }
-            return maxEval;
-        }
-        else {
-            int minEval = 100000; //positive infinity
-            for (Node child : node.getChildren()) {
-                int eval = alphabetaPruning(child, alpha, beta, true);
-                minEval = Math.min(beta, eval);
-                beta = Math.min(beta, eval);
-                if (beta <= alpha)
-                    break;
-            }
-            return minEval;
-        }
-    }
 
     public static void main(String[] args){
         SetOfCards deck = new SetOfCards(true, false);

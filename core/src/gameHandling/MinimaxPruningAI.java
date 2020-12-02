@@ -61,10 +61,11 @@ public class MinimaxPruningAI {
     public void chooseNode(SetOfCards deck) {
         // this method doesn't get root node, should be changed if that is what you need here!!
         //get the current state of AI (game)
-        Node parent = tree.getParentNode();
-        Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
-
+        Node parent = tree.getRootNode();
         List<Card> currentHand = Player.copyList(parent.hand.toList());
+        Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
+        unknownCards = pickNode.unknownCards;
+
         List<Card> newHand = Player.copyList(pickNode.hand.toList());
 
         Card pickCard = null;
@@ -72,6 +73,7 @@ public class MinimaxPruningAI {
         //loop through newHand to get the new card
         for (Card card : newHand) {
             if (!currentHand.contains(card)) {
+                System.out.println("pick: new hand differs from old");
                 pickCard = card;
             }
         }
@@ -80,6 +82,7 @@ public class MinimaxPruningAI {
         //loop through old hand to get the card be discarded
         for (Card card : currentHand) {
             if (!newHand.contains(card)) {
+                System.out.println("discard: old differs from new");
                 discardCard = card;
             }
         }
@@ -161,13 +164,17 @@ public class MinimaxPruningAI {
             unknownCards = this.tree.getCardsUnknown();
             opponentHand.addCard(deck.drawTopCard());
         }
+        current.unknownCards = unknownCards;
+        System.out.println("Opponent hand:" + opponentHand.toList());
         System.out.println("Pick a card to discard");
         int cardDiscard = sc.nextInt();
         if (cardDiscard < opponentHand.size()) {
             Card aCard = opponentHand.getCard(cardDiscard);
+            this.tree.simulationDiscard(current, aCard);
             opponentHand.discardCard(aCard);
             this.pile.addCard(aCard);
-            this.unknownCards.discardCard(aCard);
+
+            unknownCards = this.tree.getCardsUnknown();
 
         }
 
@@ -182,6 +189,11 @@ public class MinimaxPruningAI {
             else
                 playerKnock = false;
         }
+        GametreeAI gameTree = new GametreeAI(pile, hand,unknownCards, 4);
+        this.tree = gameTree;
+        Node newRoot = new Node(pile, hand, unknownCards, gameTree.opponentHand, 0);
+        gameTree.createNodesOpponent(newRoot, false);
+
 
     }
 
@@ -200,7 +212,7 @@ public class MinimaxPruningAI {
         Card discardCard = deck.drawTopCard();
         pile.addCard(discardCard);
         // create tree
-        GametreeAI gameTree = new GametreeAI(pile, hand,deck, 10);
+        GametreeAI gameTree = new GametreeAI(pile, hand,deck, 4);
         gameTree.createTree();
         // create opponenthand
         SetOfCards copyDeck  = new SetOfCards(deck.toList());
@@ -217,8 +229,6 @@ public class MinimaxPruningAI {
         // start game
         while(!AI.AIknock() && !AI.playerKnock){
             AI.playGame(opponentHand, copyDeck);
-            //System.out.println("bot hand: "+hand);
-
         }
         System.out.println("Bot hand card after game over: "+hand);
 
