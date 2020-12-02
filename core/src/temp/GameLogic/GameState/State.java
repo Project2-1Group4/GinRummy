@@ -3,6 +3,7 @@ package temp.GameLogic.GameState;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
+import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Stack;
  * Saves all game information. Needs to be simplify to make saving/loading easy
  */
 public class State {
+    protected boolean endGame;
+
     protected Random seed;
     protected List<MyCard> initDeck;
     protected List<MyCard> deck;
@@ -48,6 +51,7 @@ public class State {
         this.round = round;
         this.turnInRound = turnInRound;
         this.movesDone = movesDone;
+        endGame = false;
         curTime = secondsPerStep[stepInTurn.index];
 
     }
@@ -66,14 +70,22 @@ public class State {
         discardPile.add(card);
     }
 
+    public void endGame(){
+        if(GameRules.print || GameRules.minPrint){
+            System.out.println("Game Ended");
+        }
+        endGame = true;
+    }
     // GETTERS
-    // TODO, honestly kinda fked myself with all the: only executor has access to inside of state
+
+    public boolean endOfGame(){
+        return endGame;
+    }
+
     public List<PlayerState> getPlayerStates() {
         return playerStates;
     }
 
-    //TODO dont know if I should just make everything public bc
-    // the GamePlayer subclasses will never have direct access to the real State
     public List<MyCard> getDeck(){
         return new ArrayList<>(deck);
     }

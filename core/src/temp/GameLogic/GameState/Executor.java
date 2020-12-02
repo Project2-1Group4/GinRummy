@@ -259,6 +259,7 @@ public class Executor {
             pointsWon += GameRules.undercutBonus;
         }
         curState.scores[winner] += pointsWon;
+        curState.endGame();
     }
 
     /**
@@ -285,7 +286,7 @@ public class Executor {
 
     // TURN HANDLING
     public static boolean execute(Action action, State curState) {
-        if (action == null) {
+        if (action == null || curState.endGame) {
             return false;
         }
         List<? extends Action> possibleActions = TreeExpander.getPossibleActions(curState);

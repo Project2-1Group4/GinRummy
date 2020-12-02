@@ -40,7 +40,7 @@ public class Coordinator extends ScreenAdapter {
     @Override
     public void show() {
         this.currentGameState = Executor.startNewRound(500, currentGameState);
-        if (currentGameState.getWinner() != null) {
+        if (currentGameState.endOfGame()) {
             gameEnded();
         }
     }
@@ -107,9 +107,9 @@ public class Coordinator extends ScreenAdapter {
         if (currentGameState.getDeckSize() <= GameRules.minCardsInDeck) {
             if (GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
             currentGameState = Executor.startNewRound(500, currentGameState);
+            return null;
         }
         if (currentGameState.getRoundTurn() >= GameRules.maxTurnsInARound) {
-            gameEnded();
             roundEnd = true;
             return null;
         }
@@ -196,7 +196,7 @@ public class Coordinator extends ScreenAdapter {
         Executor.assignPoints(currentGameState);
         currentGameState = Executor.startNewRound(500, currentGameState);
         newStep = true;
-        if (currentGameState.getWinner() != null) {
+        if (currentGameState.endOfGame()) {
             gameEnded();
         }
         roundEnd = false;

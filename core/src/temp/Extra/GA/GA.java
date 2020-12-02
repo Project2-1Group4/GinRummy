@@ -14,7 +14,7 @@ public class GA {
         /**ga.init(new TestPlayer());*/
         // Start GA
 
-        GALogic logic = new GALogic();
+        GameLogic logic = new GameLogic();
         logic.play(new basicGreedyTest(true), new basicGreedyTest(true), 0);
 
         //GAPlayer[] winners = ga.train();
@@ -83,7 +83,7 @@ public class GA {
 
     public GAPlayer[] train() {
         assert competitors[0] != null;
-        GALogic game = new GALogic();
+        GameLogic game = new GameLogic();
         int seed = 0;
         do {
             GAPlayer[] winners = getWinners();
