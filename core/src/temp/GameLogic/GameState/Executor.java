@@ -32,6 +32,10 @@ public class Executor {
 
     /* GAME/ROUND INITIALISATION */
 
+    public static State startGame(int shuffles, State curState){
+        curState.round = -1;
+        return startNewRound(shuffles, curState);
+    }
     /**
      * Either creates a new game or starts a new round using the previous game (round)
      *
@@ -44,16 +48,17 @@ public class Executor {
         if (curState == null) {
             newState = new StateBuilder().build();
         } else {
-            for (int i = 0; i < curState.scores.length; i++) {
-                if (curState.scores[i] >= GameRules.pointsToWin) {
-                    System.out.println("Player " + i + " won with " + curState.scores[i] + " points");
-                    System.out.println("Final scores: ");
-                    for (int j = 0; j < curState.scores.length; j++) {
-                        System.out.println("Player " + j + " " + curState.scores[j]);
+            if(curState.endOfGame()) {
+                System.out.println("Player " + curState.getWinner() + " won.");
+                System.out.println("Final scores: ");
+                for (int j = 0; j < curState.scores.length; j++) {
+                    if (curState.getWinner() != null && curState.getWinner().equals(j)) {
+                        System.out.println("Winner, Player: "+ j +" "+ curState.scores[j]);
+                    }else {
+                        System.out.println("Player: " + j + " " + curState.scores[j]);
                     }
-                    curState.winner = i;
-                    return curState;
                 }
+                return curState;
             }
             if (GameRules.printEndOfRound) {
                 Integer winner = getWinner(curState);
@@ -85,7 +90,7 @@ public class Executor {
                     .setSecondsPerStep(curState.secondsPerStep)
                     .build();
         }
-        newState.deck = shuffleList(newState.seed,shuffles, newState.deck);
+        shuffleList(newState.seed, shuffles, newState.deck);
         startDiscardPile(newState);
         distributeCards(GameRules.baseCardsPerHand, newState);
 
@@ -237,17 +242,17 @@ public class Executor {
      * @param curState current game state
      */
     public static void assignPoints(State curState) {
-        Integer winner = getWinner(curState);
-        if (winner == null) {
+        curState.winner = getWinner(curState);
+        if (curState.winner == null) {
             return;
         }
         List<HandLayout> handLayouts = new ArrayList<>();
         for (PlayerState player : curState.playerStates) {
             handLayouts.add(player.viewHandLayout());
         }
-        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(winner).viewHandLayout().getDeadwood());
+        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(curState.winner).viewHandLayout().getDeadwood());
 
-        if (winner.equals(curState.knocker)) {
+        if (curState.winner.equals(curState.knocker)) {
             if (curState.getKnocker().viewHandLayout().getDeadwood() == 0) {
                 if (GameRules.print) System.out.println("Gin");
                 pointsWon += GameRules.ginBonus;
@@ -258,7 +263,7 @@ public class Executor {
             if (GameRules.print) System.out.println("Undercut");
             pointsWon += GameRules.undercutBonus;
         }
-        curState.scores[winner] += pointsWon;
+        curState.scores[curState.winner] += pointsWon;
         curState.endGame();
     }
 

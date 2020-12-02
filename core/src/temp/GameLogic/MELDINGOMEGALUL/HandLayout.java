@@ -108,6 +108,10 @@ public class HandLayout {
         return deadwood;
     }
 
+    public int getNumberOfCardsInDeadwood(){
+        return unusedCards.size();
+    }
+
     public int getValue() {
         return value;
     }

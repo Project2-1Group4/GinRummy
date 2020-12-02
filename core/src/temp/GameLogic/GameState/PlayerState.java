@@ -10,6 +10,7 @@ import java.util.List;
  * Anything that wants to play the game needs to inherit this.
  * Holds the game state. Only modifiable by executor. Visible by all.
  */
+// Can simply extend HandLayout/be replaced by HandLayout where it's used
 public class PlayerState {
 
     protected HandLayout handLayout;
@@ -46,6 +47,13 @@ public class PlayerState {
         return handLayout.deepCopy();
     }
 
+    public int getDeadwood(){
+        return handLayout.getDeadwood();
+    }
+
+    public int getNumberOfCardsInDeadwood(){
+        return handLayout.getNumberOfCardsInDeadwood();
+    }
     public String toString() {
         return handLayout.toString();
     }

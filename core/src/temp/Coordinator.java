@@ -39,7 +39,7 @@ public class Coordinator extends ScreenAdapter {
 
     @Override
     public void show() {
-        this.currentGameState = Executor.startNewRound(500, currentGameState);
+        this.currentGameState = Executor.startGame(500, currentGameState);
         if (currentGameState.endOfGame()) {
             gameEnded();
         }

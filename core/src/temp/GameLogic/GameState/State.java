@@ -216,9 +216,9 @@ public class State {
 
     // EXTRA
     public enum StepInTurn {
-        KnockOrContinue("Knock or not?", 0),
-        Pick("Deck or Discard pile?", 1),
-        Discard("Pick a card to discard", 2),
+        KnockOrContinue("Knock or not?", 2),
+        Pick("Deck or Discard pile?", 0),
+        Discard("Pick a card to discard", 1),
         LayoutConfirmation("Confirm your melds", 3),
         LayOff("Layoff your deadwood cards in knocker melds", 4),
         EndOfRound("Round End", 5);

@@ -29,7 +29,7 @@ public class TreeCreation {
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
                 .build();
-        startState = Executor.startNewRound(500, startState);
+        startState = Executor.startGame(500, startState);
 
         BFSNode root = timedLimitedDepthBFS(startState, 7,120);
         System.out.println(root.nodesUntilDepth(8));

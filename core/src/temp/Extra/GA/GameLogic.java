@@ -1,6 +1,5 @@
 package temp.Extra.GA;
 
-import temp.Coordinator;
 import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.Executor;
 import temp.GameLogic.GameState.State;
@@ -11,11 +10,11 @@ import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 
-// Modify based on the experiment you're running
+// TODO implement Coordinator with this
 public class GameLogic {
 
     private final boolean onlyBot;
-    private final boolean fullGame; //TODO change this to play full game
+    private final boolean fullGame;
 
 
     private boolean roundEnd;
@@ -54,20 +53,30 @@ public class GameLogic {
 
     public State startGame(State startState){
         roundEnd = false;
-        return Executor.startNewRound(500, startState);
+        return newRound(startState);
+    }
+
+    public State newRound(State curState){
+        return Executor.startNewRound(500, curState);
     }
 
     public State update(State curState){
-        GamePlayer player = curState.getPlayer();
-        Action action = getAction(player, curState);
-        boolean executed = Executor.execute(action, curState);
+        if (curState.getDeckSize() <= GameRules.minCardsInDeck) {
+            if (GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
+            roundEnd = true;
+        }
+        if(!roundEnd) {
+            GamePlayer player = curState.getPlayer();
+            Action action = getAction(player, curState);
+            boolean executed = Executor.execute(action, curState);
 
-        if(onlyBot) {
-            if (action == null) {
-                System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
-            }
-            if (!executed) {
-                System.out.println("ERROR ERROR ERRROR BOT RETURNS NON-EXECUTABLE MOVE");
+            if (onlyBot) {
+                if (action == null) {
+                    System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
+                }
+                if (!executed) {
+                    System.out.println("ERROR ERROR ERRROR BOT RETURNS NON-EXECUTABLE MOVE");
+                }
             }
         }
 
@@ -86,18 +95,13 @@ public class GameLogic {
 
     private State endOfRound(State curState) {
         roundEnd = false;
-        Executor.assignPoints(curState);
         if(curState.endOfGame()){
             return curState;
         }
-        return Executor.startNewRound(500, curState);
+        return newRound(curState);
     }
 
     private Action getAction(GamePlayer curPlayer, State curState) {
-        if (curState.getDeckSize() <= GameRules.minCardsInDeck) {
-            if (GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
-            curState = Executor.startNewRound(500, curState);
-        }
 
         Action action = null;
         switch (curState.getStep()) {
