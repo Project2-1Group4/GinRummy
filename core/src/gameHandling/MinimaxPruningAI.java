@@ -168,6 +168,7 @@ public class MinimaxPruningAI {
             Card aCard = opponentHand.getCard(cardDiscard);
             opponentHand.discardCard(aCard);
             this.pile.addCard(aCard);
+            this.unknownCards.discardCard(aCard);
 
         }
 
@@ -179,6 +180,8 @@ public class MinimaxPruningAI {
             if (chooseToKnock.equals("yes")) {
                 win = false;
             }
+            else
+                playerKnock = false;
         }
 
     }
