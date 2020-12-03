@@ -177,10 +177,10 @@ public class SetOfCards {
 
 
 	// Hand out card for each player
-	public static SetOfCards handOutCard(int numberOdCard, SetOfCards deck) {
+	public static SetOfCards handOutCard(int numberOfCard, SetOfCards deck) {
 		deck.shuffleCards();
 		SetOfCards setCard = new SetOfCards();
-		for (int i = 0; i < numberOdCard; i++ ) {
+		for (int i = 0; i < numberOfCard; i++ ) {
 			setCard.addCard(deck.drawTopCard());
 		}
 		return setCard;

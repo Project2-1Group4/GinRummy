@@ -15,7 +15,6 @@ public class GametreeAI {
     private int depthTree = 0;
     private int maxDepth;
     private Node root;
-    static int count = 0; //test the tree
 
     public  GametreeAI (SetOfCards pile, SetOfCards cards, SetOfCards deck, int maxDepth){
         this.discardPile = pile;
@@ -386,8 +385,6 @@ public class GametreeAI {
             System.out.println(node);
         }
         for (Node child : node.getChildren()) {
-            count++;
-            System.out.println("layer: "+count);
             printOutTree(child);
         }
     }
