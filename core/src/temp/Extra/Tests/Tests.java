@@ -78,7 +78,7 @@ public class Tests {
                 If you want to test something every round do it here
 
                  */
-                roundInfo.add(new EndOfRoundInfo(previousState));
+                roundInfo.add(new EndOfRoundInfo(previousState, false));
                 for (int i = 0; i < players.length; i++) {
                     times.get(i).add(new ArrayList<float[]>());
                     deadwood.get(i).add(new ArrayList<int[]>());
@@ -102,11 +102,10 @@ public class Tests {
 
                 if(print){
                     System.out.println("Times: "+Arrays.toString(turnTimes));
-                    System.out.println("Deadwood status: "+Arrays.toString(deadwoodInfo));
+                    System.out.println("Deadwood value="+deadwoodInfo[0]+" Cards in deadwood="+deadwoodInfo[1]);
                 }
-
                 turnTimes = new float[State.StepInTurn.values().length];
-                previousPlayer = curState.getPlayerNumber();
+                previousPlayer = curState.getPlayerIndex();
             }
             else if(previousStep != curState.getStep()){
                 /*
@@ -115,7 +114,7 @@ public class Tests {
 
                  */
                 if(previousStep!=null) {
-                    turnTimes[previousStep.index] = (s - System.currentTimeMillis()) / (float) 1000;
+                    turnTimes[previousStep.index] = (System.currentTimeMillis()-s) / (float) 1000;
                 }
                 previousStep = curState.getStep();
                 s = System.currentTimeMillis();

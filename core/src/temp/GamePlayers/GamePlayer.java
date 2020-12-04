@@ -91,7 +91,6 @@ public abstract class GamePlayer implements PlayerInterface {
      * @return layoff object
      */
     public Layoff automaticLayoff(List<Meld> knockerMelds) {
-
         List<MyCard> unusedCards = handLayout.viewUnusedCards();
         // For all melds
         for (Meld knockerMeld : knockerMelds) {

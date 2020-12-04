@@ -14,7 +14,7 @@ import java.util.Stack;
  * Saves all game information. Needs to be simplify to make saving/loading easy
  */
 public class State {
-    protected boolean endGame;
+    public boolean endGame;
 
     protected Random seed;
     protected List<MyCard> initDeck;
@@ -29,8 +29,9 @@ public class State {
     protected float[] secondsPerStep;
     protected float curTime;
     protected Integer knocker;
-    protected Integer winnerNumber;
-    protected Integer winnerIndex;
+    protected Integer roundWinnerID;
+    protected Integer roundWinnerIndex;
+    protected Integer gameWinnerIndex;
     protected int round;
     protected int turnInRound;
     protected Stack<Action> movesDone;
@@ -52,9 +53,9 @@ public class State {
         this.round = round;
         this.turnInRound = turnInRound;
         this.movesDone = movesDone;
+        gameWinnerIndex = null;
         endGame = false;
         curTime = secondsPerStep[stepInTurn.index];
-
     }
 
     // SETTERS
@@ -71,23 +72,25 @@ public class State {
         discardPile.add(card);
     }
 
-    public void endGame(){
-        if(GameRules.print || GameRules.minPrint){
-            System.out.println("Game Ended");
-        }
-        endGame = true;
-    }
-
     public void setWinnerByIndex(Integer index){
         if(index!=null){
-            winnerNumber = players.get(index).index;
-            winnerIndex = index;
+            roundWinnerID = players.get(index).index;
+            roundWinnerIndex = index;
+            System.out.println(roundWinnerIndex+" ID "+roundWinnerID);
         }
     }
     // GETTERS
 
     public boolean endOfGame(){
-        return endGame;
+        return gameWinnerIndex!=null;
+    }
+
+    public Integer getWinnerIndex(){
+        return gameWinnerIndex;
+    }
+
+    public Integer getWinnerID(){
+        return players.get(gameWinnerIndex).index;
     }
 
     public List<PlayerState> getPlayerStates() {
@@ -104,10 +107,6 @@ public class State {
 
     public int getPlayerIndex(){
         return playerTurn;
-    }
-
-    public Integer getWinner() {
-        return winnerNumber;
     }
 
     public GamePlayer getPlayer() {

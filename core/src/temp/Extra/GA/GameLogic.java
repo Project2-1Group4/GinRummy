@@ -42,8 +42,8 @@ public class GameLogic {
             curState = update(curState);
         }
         GamePlayer winner = null;
-        if (curState.getWinner() != null) {
-            winner = curState.getWinner().equals(player1.index)? player1 : player2;
+        if (curState.getWinnerID() != null) {
+            winner = curState.getWinnerID().equals(player1.index)? player1 : player2;
         }
         return new Result(player1, player2, winner,
                 curState.getPlayerStates().get(0).viewHandLayout(),
@@ -53,7 +53,7 @@ public class GameLogic {
 
     public State startGame(State startState){
         roundEnd = false;
-        return newRound(startState);
+        return Executor.startGame(500, startState);
     }
 
     public State newRound(State curState){
@@ -87,8 +87,8 @@ public class GameLogic {
             }
         }
 
-        if (!fullGame && (curState.getRoundTurn() >= 200 || roundEnd)) {
-            curState.endGame();
+        if (curState.endOfGame() || (!fullGame && (curState.getRoundTurn() >= GameRules.maxTurnsInARound || roundEnd))) {
+            curState.endGame = true;
         }
         return curState;
     }

@@ -5,7 +5,7 @@ public class GameRules {
     public static int minDeadwoodToKnock = 10;
     public static int ginBonus = 25;
     public static int undercutBonus = 25;
-    public static int pointsToWin = 1;
+    public static int pointsToWin = 100;
 
     // Game rules
     public static int minCardsInDeck = 2;
@@ -22,7 +22,7 @@ public class GameRules {
 
     // Command printing specs
     public static boolean print = false;
-    public static boolean printEndOfRound = false;
+    public static boolean printEndOfRound = true;
     public static boolean minPrint = false;
 
     // Visual specs

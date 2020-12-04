@@ -161,7 +161,7 @@ public class HandLayout {
                     cpy.remove(i);
                     i--;
                     otherCpy.remove(j);
-                    j--;
+                    break;
                 }
             }
         }

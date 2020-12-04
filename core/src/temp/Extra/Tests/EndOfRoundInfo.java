@@ -7,12 +7,14 @@ import java.util.List;
 
 public class EndOfRoundInfo {
     public final Integer winner;
+    public final boolean finalRound;
     public final int[] scores;
     public final int[] deadwoodValues;
     public final int[] numberOfCardsInDeadwood;
 
-    public EndOfRoundInfo(State state){
-        winner = state.getWinner();
+    public EndOfRoundInfo(State state, boolean finalRound){
+        this.finalRound = finalRound;
+        winner = state.getWinnerIndex();
         scores = state.getScores();
         List<PlayerState> stateList = state.getPlayerStates();
         deadwoodValues = new int[stateList.size()];
