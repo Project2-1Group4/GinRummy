@@ -1,7 +1,6 @@
 package temp.Extra.Tests;
 
 import temp.Extra.GA.GameLogic;
-import temp.Extra.GA.Result;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GamePlayers.GamePlayer;

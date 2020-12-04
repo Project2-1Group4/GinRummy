@@ -76,6 +76,12 @@ public class State {
         }
         endGame = true;
     }
+
+    public void setWinnerByIndex(Integer index){
+        if(index!=null){
+            winner = players.get(index).index;
+        }
+    }
     // GETTERS
 
     public boolean endOfGame(){

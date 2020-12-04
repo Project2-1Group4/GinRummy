@@ -242,7 +242,7 @@ public class Executor {
      * @param curState current game state
      */
     public static void assignPoints(State curState) {
-        curState.winner = getWinner(curState);
+        curState.setWinnerByIndex(getWinner(curState));
         if (curState.winner == null) {
             return;
         }
@@ -281,12 +281,7 @@ public class Executor {
         if (curState.knocker == null) {
             return null;
         }
-        Integer winner = Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(), curState.getKnockerNumber());
-        if (winner == null) {
-            return curState.getKnockerIndex();
-        } else {
-            return winner;
-        }
+        return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(), curState.getKnockerNumber());
     }
 
     // TURN HANDLING
