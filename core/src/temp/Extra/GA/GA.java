@@ -9,7 +9,7 @@ public class GA {
 
     public static void main(String[] args) {
         // Create GA with wanted params
-        GA ga = new GA(0,20,1,0.05f,0);
+        //GA ga = new GA(0,20,1,0.05f,0);
         // Initialize with players you want
         /**ga.init(new TestPlayer());*/
         // Start GA

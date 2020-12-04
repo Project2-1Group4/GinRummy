@@ -95,13 +95,16 @@ public class basicGreedyTest extends GamePlayer {
 
     /*
     This'll go through the current hand and find the card that'll lower the value the most when discarded
+    The number of items in aHand should be exactly 11, as that's what's expected of the method
     */
 
     public static MyCard chooseCardToDiscard(List<MyCard> aHand) {
+
         MyCard theCard = null;
 
-        // It's just a low number, doesn't really matter what it is
-        int highestVal = -1;
+        // It's just a high number, no hand can be worth more than 101
+        // So that's why it's the starting value
+        int lowestVal = 101;
 
         for (MyCard aCard : aHand) {
             // TODO: Bug-test here to make sure the copies are deep copies and not shallow
@@ -113,9 +116,13 @@ public class basicGreedyTest extends GamePlayer {
 
             int resultingHand = layout.getDeadwood();
 
-            if (resultingHand >= highestVal) {
+            /*
+            So this means that the hand that has the lowest value is the best hand
+            And the card that was discarded from this is automatically assumed to be the worst
+             */
+            if (resultingHand <= lowestVal) {
                 theCard = aCard;
-                highestVal = resultingHand;
+                lowestVal = resultingHand;
             }
 
 
@@ -138,6 +145,8 @@ public class basicGreedyTest extends GamePlayer {
             }
         }
 
+        // So if the value of the hand is less than the knock value, it'll return true
+        // And validate it as it being a good time to knock
         return currentHand <= this.knockValue;
     }
 

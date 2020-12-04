@@ -399,8 +399,10 @@ public class meldBuildingGreedy extends GamePlayer {
 
     // I choose the card with the highest value, as high value = bad in Gin Rummy
     public MyCard findLeastValuableCard(List<MyCard> aList){
-        
-        double handWithHighestScore = -1.0;
+
+        // Value is 101
+        // As it's one worse than the worst possible hand
+        double handWithLowestScore = 101.0;
         MyCard worstCard = null;
         for(MyCard aCard: aList){
 
@@ -429,10 +431,11 @@ public class meldBuildingGreedy extends GamePlayer {
                 valOfHand+= runVal + setVal;
             }
 
-            // It's >= because that way the last card can be returned in case it's as valuable as another card
+            // It's <= because that way the last card can be returned in case it's as valuable as another card
             // Because in that case it's better to not pick from the deck because you'd give the opponent information
-            if(valOfHand>=handWithHighestScore){
-                handWithHighestScore = valOfHand;
+            // This method also assumes that the last card in the list is the card at the top of the discard pile
+            if(valOfHand<=handWithLowestScore){
+                handWithLowestScore = valOfHand;
                 worstCard = aCard;
             }
 

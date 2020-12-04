@@ -22,9 +22,11 @@ public class Result {
         this.nbOfTurns = nbOfTurns;
 
         System.out.println("Final Results: Number of Turns: " + nbOfTurns);
+        System.out.println("");
         System.out.println("P1: " + player1);
+        System.out.println("");
         System.out.println("P2: " + player2);
-
+        System.out.println("");
         System.out.println("Winner: " + winner);
 
     }
