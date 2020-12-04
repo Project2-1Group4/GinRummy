@@ -43,7 +43,7 @@ public class GameLogic {
         }
         GamePlayer winner = null;
         if (curState.getWinner() != null) {
-            winner = curState.getWinner() == player1.index ? player1 : player2;
+            winner = curState.getWinner().equals(player1.index)? player1 : player2;
         }
         return new Result(player1, player2, winner,
                 curState.getPlayerStates().get(0).viewHandLayout(),

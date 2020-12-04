@@ -31,6 +31,9 @@ public class LayoffAction extends Action {
         if ((o.card == null || o.meld == null) && ((card == null || meld == null))) {
             return true;
         }
+        else if (o.card == null || o.meld == null || card == null || meld == null) {
+            return true;
+        }
         return card.same(((LayoffAction) other).card) && meld.same(((LayoffAction) other).meld);
     }
 

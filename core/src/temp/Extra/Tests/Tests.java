@@ -3,6 +3,7 @@ package temp.Extra.Tests;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
+import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
@@ -15,10 +16,11 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                // Add players
+                new basicGreedyTest(false),
+                new basicGreedyTest(false)
         };
-        int games = 10; // Set nb of games
-        Integer seed = null; // Set seed
+        int games = 1; // Set nb of games
+        Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
         // Do what you want with results

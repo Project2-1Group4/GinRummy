@@ -281,7 +281,7 @@ public class Executor {
         if (curState.knocker == null) {
             return null;
         }
-        return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(), curState.getKnockerNumber());
+        return Finder.findLowestDeadwoodIndex(handLayouts, handLayouts.get(curState.getKnockerIndex()).getDeadwood(), curState.getKnockerIndex());
     }
 
     // TURN HANDLING
@@ -310,7 +310,11 @@ public class Executor {
                     if (GameRules.print || GameRules.minPrint) System.out.println("Action saved");
                     curState.movesDone.add(action);
                     curState.getPlayer().executed(executed);
-                    Executor.nextStep(curState);
+                    if(action instanceof KnockAction && ((KnockAction) action).knock){
+                        knocked(action.playerIndex, curState);
+                    }else {
+                        Executor.nextStep(curState);
+                    }
                 }
                 return executed != null;
             }
@@ -322,7 +326,6 @@ public class Executor {
 
     private static KnockAction knock(KnockAction action, State curState) {
         if (action.knock && action.viewLayout().getDeadwood() <= GameRules.minDeadwoodToKnock) {
-            knocked(action.playerIndex, curState);
             return action;
         } else if (!action.knock) {
             return action;

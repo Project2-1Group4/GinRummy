@@ -21,9 +21,7 @@ public class Finder {
     public static Integer findLowestDeadwoodIndex(List<HandLayout> handLayouts, int knockerDeadwood, int knockerIndex) {
         int lowestDeadwood = knockerDeadwood;
         int lowestDeadwoodIndex = knockerIndex;
-        System.out.println(knockerDeadwood+" "+knockerIndex);
         for (int i = 0; i < handLayouts.size(); i++) {
-            System.out.println();
             if (lowestDeadwood > handLayouts.get(i).getDeadwood()) {
                 lowestDeadwood = handLayouts.get(i).getDeadwood();
                 lowestDeadwoodIndex = i;
