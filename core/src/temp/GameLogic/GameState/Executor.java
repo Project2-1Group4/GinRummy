@@ -243,16 +243,16 @@ public class Executor {
      */
     public static void assignPoints(State curState) {
         curState.setWinnerByIndex(getWinner(curState));
-        if (curState.winner == null) {
+        if (curState.getWinner() == null) {
             return;
         }
         List<HandLayout> handLayouts = new ArrayList<>();
         for (PlayerState player : curState.playerStates) {
             handLayouts.add(player.viewHandLayout());
         }
-        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(curState.winner).viewHandLayout().getDeadwood());
+        int pointsWon = Finder.getPointsToAdd(handLayouts, curState.players.get(curState.winnerIndex).viewHandLayout().getDeadwood());
 
-        if (curState.winner.equals(curState.knocker)) {
+        if (curState.getWinner().equals(curState.knocker)) {
             if (curState.getKnocker().viewHandLayout().getDeadwood() == 0) {
                 if (GameRules.print) System.out.println("Gin");
                 pointsWon += GameRules.ginBonus;
@@ -263,7 +263,7 @@ public class Executor {
             if (GameRules.print) System.out.println("Undercut");
             pointsWon += GameRules.undercutBonus;
         }
-        curState.scores[curState.winner] += pointsWon;
+        curState.scores[curState.getWinner()] += pointsWon;
         curState.endGame();
     }
 

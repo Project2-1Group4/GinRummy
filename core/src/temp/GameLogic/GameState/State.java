@@ -29,7 +29,8 @@ public class State {
     protected float[] secondsPerStep;
     protected float curTime;
     protected Integer knocker;
-    protected Integer winner;
+    protected Integer winnerNumber;
+    protected Integer winnerIndex;
     protected int round;
     protected int turnInRound;
     protected Stack<Action> movesDone;
@@ -79,7 +80,8 @@ public class State {
 
     public void setWinnerByIndex(Integer index){
         if(index!=null){
-            winner = players.get(index).index;
+            winnerNumber = players.get(index).index;
+            winnerIndex = index;
         }
     }
     // GETTERS
@@ -105,7 +107,7 @@ public class State {
     }
 
     public Integer getWinner() {
-        return winner;
+        return winnerNumber;
     }
 
     public GamePlayer getPlayer() {
