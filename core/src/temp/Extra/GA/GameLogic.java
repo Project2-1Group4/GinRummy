@@ -70,12 +70,12 @@ public class GameLogic {
             Action action = getAction(player, curState);
             boolean executed = Executor.execute(action, curState);
 
-            if (onlyBot) {
+            if (onlyBot && !roundEnd) {
                 if (action == null) {
                     System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
                 }
                 if (action!=null && !executed) {
-                    System.out.println("ERROR ERROR ERRROR BOT RETURNS NON-EXECUTABLE MOVE");
+                    System.out.println("ERROR ERROR ERROR BOT RETURNS NON-EXECUTABLE MOVE");
                 }
             }
         }
