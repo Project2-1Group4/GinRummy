@@ -74,7 +74,7 @@ public class GameLogic {
                 if (action == null) {
                     System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
                 }
-                if (!executed) {
+                if (action!=null && !executed) {
                     System.out.println("ERROR ERROR ERRROR BOT RETURNS NON-EXECUTABLE MOVE");
                 }
             }

@@ -263,7 +263,7 @@ public class Executor {
             if (GameRules.print) System.out.println("Undercut");
             pointsWon += GameRules.undercutBonus;
         }
-        curState.scores[curState.getWinner()] += pointsWon;
+        curState.scores[curState.winnerIndex] += pointsWon;
         curState.endGame();
     }
 
