@@ -125,12 +125,12 @@ public class meldBuildingGreedy extends GamePlayer {
 
         for (Meld list : melds) {
             for (MyCard aCard : list.viewMeld()) {
-                newMemMatrix[aCard.suit.index][aCard.suit.index] = -1;
+                newMemMatrix[aCard.suit.index][aCard.rank.index] = -1;
             }
         }
 
         for (MyCard aCard : deadwood) {
-            newMemMatrix[aCard.suit.index][aCard.suit.index] = 1;
+            newMemMatrix[aCard.suit.index][aCard.rank.index] = 1;
         }
 
 
@@ -400,9 +400,9 @@ public class meldBuildingGreedy extends GamePlayer {
     // I choose the card with the highest value, as high value = bad in Gin Rummy
     public MyCard findLeastValuableCard(List<MyCard> aList){
 
-        // Value is 101
-        // As it's one worse than the worst possible hand
-        double handWithLowestScore = 101.0;
+        // Value is just an arbitrary high number
+        // Due to the heuristics it's higher than 101
+        double handWithLowestScore = 101000.0;
         MyCard worstCard = null;
         for(MyCard aCard: aList){
 
@@ -464,9 +464,10 @@ public class meldBuildingGreedy extends GamePlayer {
         List<MyCard> temp = this.handLayout.viewAllCards();
         temp.add(topOfDiscard);
         MyCard worst = this.findLeastValuableCard(temp);
+        this.topDiscard = worst;
 
         if(worst != topOfDiscard){
-            this.topDiscard = worst;
+
             return false;
         } else {
             return true;
@@ -486,6 +487,7 @@ public class meldBuildingGreedy extends GamePlayer {
     public void newRound(MyCard topOfDiscard) {
         this.topDiscard = topOfDiscard;
         this.resetMemoryMatrix();
+        this.updateMemoryMatrix(this.handLayout);
     }
 
     // TODO: Update this method to update the internal matrix correctly
@@ -495,6 +497,7 @@ public class meldBuildingGreedy extends GamePlayer {
     public void update(HandLayout realLayout) {
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
+        this.updateMemoryMatrix(handLayout);
     }
 
     
