@@ -5,19 +5,14 @@ import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.AIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO prob something with the laying off
 public class Tests {
 
     public static boolean print = false;
@@ -25,8 +20,8 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new basicGreedyTest(true),
-                new basicGreedyTest(true)
+                new meldBuildingGreedy(),
+                new meldBuildingGreedy()
         };
         int games = 1; // Set nb of games
         Integer seed = 0; // Set seed
@@ -36,93 +31,8 @@ public class Tests {
             System.out.println(results);
         }
         // Do what you want with results
-
-        try(PrintWriter gamewriter = new PrintWriter(new File("game_info.csv"))){
-
-            PrintWriter roundwriter = new PrintWriter(new File("round_info.csv"));
-
-            PrintWriter deadwoodAndTime = new PrintWriter(new File("deadwood_info.csv"));
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("SolverType");
-            sb.append(',');
-            sb.append("PieceTypeUsed");
-            sb.append(',');
-            sb.append("NumberOfPiecesA");
-            sb.append(',');
-            sb.append("NumberOfPiecesB");
-            sb.append(',');
-            sb.append("NumberOfPiecesC");
-            sb.append(',');
-            sb.append("SolutionFound");
-            sb.append(',');
-            sb.append("ProgramDuration");
-            sb.append('\n');
-
-
-
-            gamewriter.write(sb.toString());
-            System.out.println("done!");
-
-        } catch(FileNotFoundException e){
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        CVSWriter.write(results);
     }
-    /*The idea of the format is this:
-    -Winner
-    -Score player 0
-    -Score player 1
-    -Deadwood player 0
-    -Deadwood player 1
-    -Number of cards in deadwood p0
-    -Number of cards in deadwood p1
-     */
-    public static String endGameDecoder(List<GameInfo> results){
-        StringBuilder sb = new StringBuilder();
-        for(GameInfo info: results){
-            // I assume that the last value in the roundInfos is the end of game info
-            // TODO: Make sure the last value in the roundInfo is the end of game info
-            sb.append(info.roundInfos.get(info.roundInfos.size()-1));
-            sb.append('\n');
-        }
-
-
-        return sb.toString();
-    }
-
-    public static String roundDecoder(List<GameInfo> results){
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<results.size();i++){
-            GameInfo info = results.get(i);
-            sb.append("Game: " + (i+1));
-            sb.append('\n');
-
-            for(EndOfRoundInfo roundEnd : info.roundInfos){
-                sb.append(roundEnd.toString());
-                sb.append('\n');
-
-            }
-
-        }
-
-        return sb.toString();
-    }
-
-    // I have to actually think about this one, so I'll leave it for tomorrow properly
-    public static String deadwoodDecoder(List<GameInfo> results){
-        StringBuilder sb = new StringBuilder();
-        for(GameInfo info: results){
-
-
-        }
-
-        return sb.toString();
-    }
-
-    public static boolean print = true;
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){
         Random rd;
@@ -141,8 +51,8 @@ public class Tests {
     public static GameInfo runGame(GameLogic logic, GamePlayer[] players, int seed) {
         StateBuilder builder = new StateBuilder()
                 .setSeed(seed);
-        for(int i=0; i<players.length;i++){
-            builder.addPlayer(players[i]);
+        for (GamePlayer player : players) {
+            builder.addPlayer(player);
         }
         State curState = builder.build();
 
@@ -159,12 +69,13 @@ public class Tests {
         }
 
         double[] turnTimes = new double[State.StepInTurn.values().length];
-        State prevState = curState;
+        State prevState;
         int prevRound = curState.getRound();
         int prevPlayer = curState.getPlayerIndex();
         State.StepInTurn prevStep = curState.getStep();
         while (!curState.endOfGame()) {
 
+            prevState = curState;
             long s = System.currentTimeMillis();
             curState = logic.update(curState);
             double t = (System.currentTimeMillis()-s)/(float) 1000;
@@ -184,11 +95,12 @@ public class Tests {
                 If you want to test something every turn do it here
 
                  */
-                HandLayout bestLayout = Finder.findBestHandLayout(curState.getPlayerStates().get(prevPlayer).viewHand());
+                HandLayout bestLayout = Finder.findBestHandLayout(prevState.getPlayerStates().get(prevPlayer).viewHand());
                 int[] deadwoodInfo = new int[]{
                         bestLayout.getDeadwood(),
                         bestLayout.getNumberOfCardsInDeadwood()
                 };
+
                 if(prevPlayer < times.size()){
                     times.get(prevPlayer).get(prevRound).add(turnTimes);
                     deadwood.get(prevPlayer).get(prevRound).add(deadwoodInfo);
@@ -213,7 +125,6 @@ public class Tests {
                     times.get(i).add(new ArrayList<double[]>());
                     deadwood.get(i).add(new ArrayList<int[]>());
                 }
-                prevState = curState;
                 prevRound = curState.getRound();
             }
         }
