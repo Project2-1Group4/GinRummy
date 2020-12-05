@@ -27,15 +27,26 @@ public class GametreeAI {
         this.maxDepth = maxDepth;
         root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
     }
-
-    public void createTree (){
-        copyParent(root);
-        Node pass = root.addChild(new Node(discardPile,hand,cardsUnknown, opponentHand, depthTree));
-        copyParent(root);
-        Node discard1 = root.addChild(pickDiscard(hand,discardPile));
-        createNodesOpponent(pass, true);
-        createNodesOpponent(discard1, false);
+    //If first round is true then generate first round rules
+    public void createTree (boolean firstRound){
+        if(firstRound) {
+            copyParent(root);
+            Node pass = root.addChild(new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree));
+            copyParent(root);
+            Node discard1 = root.addChild(pickDiscard(hand, discardPile));
+            createNodesOpponent(pass, true);
+            createNodesOpponent(discard1, false);
+        }
+        else{
+            copyParent(root);
+            Node deck = root.addChild(pickDeck(hand,cardsUnknown,discardPile));
+            copyParent(root);
+            Node discard1 = root.addChild(pickDiscard(hand, discardPile));
+            createNodesOpponent(deck, false);
+            createNodesOpponent(discard1, false);
+        }
     }
+
 
     public Node getRootNode() {
         //copyParent(root);
@@ -143,7 +154,7 @@ public class GametreeAI {
         }
         return deck;
     }
-
+    // method for the first layer
     public Node pickDiscard(SetOfCards current, SetOfCards discardPile){
         SetOfCards copyCards = new SetOfCards(current.toList());
         SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
@@ -156,6 +167,25 @@ public class GametreeAI {
         copyCards.discardCard(discardCard);
         copyDiscard.addCard(discardCard);
         Node result = new Node(copyDiscard, copyCards, cardsUnknown, opponentHand, depthTree);
+        return result;
+    }
+
+    // method for the first layer
+    public Node pickDeck(SetOfCards hand, SetOfCards cardsUnknown, SetOfCards discardPile){
+        SetOfCards copyCards = new SetOfCards(hand.toList());
+        SetOfCards copyDeck = new SetOfCards(cardsUnknown.toList());
+        SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
+        Random rd = new Random(); // creating Random object
+        int randomCard = rd.nextInt(copyDeck.size()-1);
+
+        copyCards.addCard(cardsUnknown.getCard(randomCard));
+        copyDeck.discardCard(cardsUnknown.getCard(randomCard));
+
+        List<Card> copyList = copyCards.toList();
+        Card discardCard = chooseCardToDiscard(copyList);
+        copyCards.discardCard(discardCard);
+        copyDiscard.addCard(discardCard);
+        Node result = new Node(copyDiscard, copyCards, copyDeck, opponentHand, depthTree);
         return result;
     }
 
@@ -401,7 +431,7 @@ public class GametreeAI {
         Card discardCard = deck.drawTopCard();
         pile.addCard(discardCard);
         GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
-        AI.createTree();
+        AI.createTree(true);
         System.out.print("heyyyy");
     }
 }
