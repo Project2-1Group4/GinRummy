@@ -17,18 +17,24 @@ public class Node {
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
+
+    private int depthTree;
     protected HashMap<MyCard, Double> probMap = new HashMap<>();
 
     boolean playerStop = false; // when game is over this one turns to be true
     boolean AIStop = false; // turn to be true when game is over
 
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand) {
+    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand, int depth) {
         this.discardPile = pile;
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
+        this.depthTree = depth;
 
-        if(Player.scoreHand(hand.toList()) > Player.scoreHand(opponentHand.toList()) && Player.scoreHand(hand.toList())<=10){
+        int pScore = Player.scoreHand(hand.toList());
+        int opHand = Player.scoreHand(opponentHand.toList());
+
+        if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
         handValue = Player.getHandValue(cards.toList());
@@ -74,6 +80,10 @@ public class Node {
         return parent;
     }
 
+    public int getDepthTree() {
+        return depthTree;
+    }
+
     public Node addChild(Node child){
         child.setParent(this);
         this.children.add(child);
@@ -86,12 +96,12 @@ public class Node {
 
     @Override
     public String toString() {
-        return "node";
+        return hand.toString();
     }
 
     public int getHandValue() {
+        //return Player.getHandValue(this.hand.toList());
         return this.handValue;
-        //return hand.getHandValue();
     }
 
     public void setHandValue(int value) {

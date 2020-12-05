@@ -1,5 +1,7 @@
 package temp.GameLogic;
 
+import cardlogic.Card;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,11 @@ public class MyCard {
     public MyCard(int i, int j) {
         this.suit = Suit.getSuit(i);
         this.rank = Rank.getRank(j);
+    }
+
+    public MyCard(Card aCard){
+        this.suit = Suit.getSuit(aCard.getSuitVal());
+        this.rank = Rank.getRank(aCard.getValue());
     }
 
     // GETTERS
@@ -37,8 +44,8 @@ public class MyCard {
 
     // EXTRA
     public enum Suit {
-        Clubs("clubs", 0),
-        Spades("spades", 1),
+        Clubs("clubs", 1),
+        Spades("spades", 0),
         Hearts("hearts", 2),
         Diamonds("diamonds", 3);
         public int index;

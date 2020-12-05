@@ -57,22 +57,18 @@ public class Card extends Actor implements Comparable {
 		this.setValue(value);
 	}
 
+	/*
+	This should be able to properly do a deep clone of a given card
+	 */
+	public Card(Card aCard){
+		this.setSuit(aCard.getSuitVal());
+		this.setValue(aCard.getValue());
+	}
+
 	public Card(MyCard aCard){
 		this.setValue(aCard.rank.index);
 
-		int suit = aCard.suit.index;
-
-		if(suit == 1) {
-			this.setSuit(SUITS.SPADES);
-		} else if (suit ==0){
-			this.setSuit(SUITS.CLOVERS);
-		} else if (suit == 2) {
-			this.setSuit(SUITS.HEARTS);
-		} else if (suit == 3) {
-			this.setSuit(SUITS.DIAMONDS);
-		} else{
-			System.out.println("An invalid value of " + suit + " has been given as a suit");
-		}
+		this.setSuit(aCard.suit.index);
 
 	}
 
@@ -205,6 +201,10 @@ public class Card extends Actor implements Comparable {
 
 	}
 
+	public boolean equal(Object o) {
+		Card card = (Card) o;
+		return (this.value == card.getValue() && this.suit.equals(card.getSuit()));
+	}
 
 	
 }
