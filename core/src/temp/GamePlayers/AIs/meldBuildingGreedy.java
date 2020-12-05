@@ -26,23 +26,6 @@ public class meldBuildingGreedy extends GamePlayer {
 
     }
 
-    public meldBuildingGreedy(double cardInMeld, double cardCloseToMeld, double cardFree, double cardNever){
-        this();
-        this.cardCloseToMeld = cardCloseToMeld;
-        this.cardInMeld = cardInMeld;
-        this.cardFree = cardFree;
-        this.cardNever = cardNever;
-
-    }
-
-    public meldBuildingGreedy(double[] values){
-        this(values[0],values[1],values[2],values[3]);
-    }
-
-    public double[] heuristicValues(){
-        return new double[]{this.cardInMeld,this.cardCloseToMeld, this.cardFree, this.cardNever};
-    }
-
     /*
     Memory matrix takes into account all of the cards played so far and stores them so that it can decide how to act
     It's a 2d matrix, with the first row representing the suit and the second row representing the value (going from 0-12)
@@ -541,10 +524,6 @@ public class meldBuildingGreedy extends GamePlayer {
 
     @Override
     public String toString() {
-        return "meldBuildingGreedy: " +
-                "CardInMeld: " + this.cardInMeld +
-                "CardCloseToMeld: " + this.cardCloseToMeld +
-                "CardFree" + this.cardFree +
-                "CardNever" + this.cardNever;
+        return "meldBuildingGreedy";
     }
 }
