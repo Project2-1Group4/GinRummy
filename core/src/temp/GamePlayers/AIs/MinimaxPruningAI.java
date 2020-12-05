@@ -133,7 +133,7 @@ public class MinimaxPruningAI extends GamePlayer {
         Card pickCard = pick_discard[0];
         Card discardCard = pick_discard[1];
 
-        if(pickCard == pile.getCard(pile.size()-1)){
+        if(pickCard != null && pickCard.equals(pile.getCard(pile.size()-1))){
             System.out.println("AI pick from pile: "+pickCard);
             pile.discardCard(pickCard);
             pile.addCard(discardCard);
@@ -272,7 +272,7 @@ public class MinimaxPruningAI extends GamePlayer {
         MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
 
         // start game
-        while(!AI.AIknock() && !AI.playerKnock){
+        while(!AI.AIknock() && !AI.playerKnock && !AI.AIknock){
             //Print out some cards to see the probabilities
             /*
             for(int i = 0; i<3; i++) {
@@ -313,7 +313,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         Card[] pick_discard = this.getNodeReturn();
         Card topCard = new Card(topOfDiscard);
-        return pick_discard[0].equals(topCard);
+        return !pick_discard[0].equals(topCard);
     }
 
     /*
