@@ -25,48 +25,90 @@ public class GA {
         //TODO use winners for something
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
-    /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
+    /*
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    Check Results class if it gives what you want (can also substitute Results with EndOfRoundInfo, msg me)
+                                            Update these method to suite your needs
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     */
+    /**
+     *
+     * @param rd random seed to be able to replicate results
+     * @param winners array of GamePlayer(s) that got awarded the most points this iteration
+     * @return new GamePlayer with updated variables
+     */
     protected GamePlayer mutate(Random rd, GamePlayer[] winners) {
         /*
 
         Create new GamePlayer and do modifications based on winners[]
 
-         */
-        return null;
+
+
+        return null;*/
+        return FkThisUpAsMuchAsYoudLike.mutate(rd,winners);
     }
 
-    protected void updateScores(List<Result> results, int player1Index, int player2Index) {
-        float player1 = 0;
+    /**
+     * @param results = list of results of every end of game
+     * @return float[] of scores GamePlayer1 (indexed at 0) and GamePlayer2 (indexed at 1)
+     */
+    protected float[] updateScores(List<Result> results) {
+        /*float player1 = 0;
         float player2 = 0;
-        /*
+
 
         Update player1 (index 0), player2 (index 1) based on performance in results
 
-         */
-        competitors[player1Index].score += player1;
-        competitors[player2Index].score += player2;
+
+        return new float[]{
+                player1,
+                player2
+        };*/
+        return FkThisUpAsMuchAsYoudLike.updateScores(results);
     }
 
+    /**
+     * @return true you want to stop, false if you want do another iteration
+     */
     protected boolean stopCondition() {
         /*
 
         Set stopping condition
 
+
+        return iteration>=500;
          */
-        return iteration >= 500;
+        return FkThisUpAsMuchAsYoudLike.stopCondition(iteration);
     }
-    ////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Value between -1 and 1, 0 if no mutation. Could be useful.
+     *
+     * @param rd randomizer
+     * @return double [-1,1]
+     */
+    protected double getMutation(Random rd) {
+        if (rd.nextDouble() < mutationChance) {
+            if (rd.nextBoolean()) {
+                return rd.nextDouble();
+            }
+            return -rd.nextDouble();
+        }
+        return 0;
+    }
+
+    /*
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            IGNORE EVERYTHING AFTER THIS POINT
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     */
 
     private int iteration = 0;
     private final float mutationChance;
     private final int nbOfWinners;
     private final Random rd;
     private final int nbOfGamesPerPair;
-
     private final GAPlayer[] competitors;
-
 
     public GA(Integer initSeed, int nbOfCompetitors, int nbOfGamesPerPair, int nbOfWinners, float mutationChance) {
         if(initSeed!=null){
@@ -104,7 +146,9 @@ public class GA {
                         for (int k = 0; k < nbOfGamesPerPair; k++) {
                             results.add(game.play(competitors[i].player, competitors[j].player, seed));
                         }
-                        updateScores(results, competitors[i].index, competitors[j].index);
+                        float[] scores = updateScores(results);
+                        competitors[i].score+= scores[i];
+                        competitors[j].score+= scores[j];
                     }
                 }
             }
@@ -145,22 +189,6 @@ public class GA {
         for (int i = 0; i < competitors.length; i++) {
             competitors[i] = new GAPlayer(i, mutate(rd, w));
         }
-    }
-
-    /**
-     * Value between -1 and 1, 0 if no mutation
-     *
-     * @param rd randomizer
-     * @return double [-1,1]
-     */
-    protected double getMutation(Random rd) {
-        if (rd.nextDouble() < mutationChance) {
-            if (rd.nextBoolean()) {
-                return rd.nextDouble();
-            }
-            return -rd.nextDouble();
-        }
-        return 0;
     }
 
     protected GAPlayer[] getWinners() {
