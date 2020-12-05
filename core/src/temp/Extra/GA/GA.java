@@ -1,111 +1,133 @@
 package temp.Extra.GA;
 
+import jdk.internal.org.jline.reader.EndOfFileException;
+import temp.Extra.Tests.EndOfRoundInfo;
 import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.AIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GA {
 
     public static void main(String[] args) {
         // Create GA with wanted params
-        //GA ga = new GA(0,20,1,0.05f,0);
-        // Initialize with players you want
-        /**ga.init(new TestPlayer());*/
-        // Start GA
-
-        GameLogic logic = new GameLogic();
-        logic.play(new basicGreedyTest(true), new meldBuildingGreedy(), 0);
-
-        //GAPlayer[] winners = ga.train();
+        Integer seed = 0;
+        int nbOfCompetitors = 100;
+        int nbOfGamesPerPair = 10;
+        int nbOfWinners = 2;
+        float mutationChance = 0.05f;
+        GA ga = new GA(seed,nbOfCompetitors,nbOfGamesPerPair,nbOfWinners,mutationChance);
+        ga.init(new basicGreedyTest()); //TODO create prototype(s)
+        GamePlayer[] winners = ga.train();
+        //TODO use winners for something
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
     ///////////// Check Results class, GALogic class and GAPlayer are correct ///////////////
     /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
-    protected GAPlayer mutate(Random rd, GAPlayer[] winners, int index) {
-        /**GamePlayer p = new TestPlayer();*/
-        // TODO Do modifications
-        /**return new GAPlayer(index,p);*/
+    protected GamePlayer mutate(Random rd, GamePlayer[] winners) {
+        /*
+
+        Create new GamePlayer and do modifications based on winners[]
+
+         */
         return null;
     }
 
-    protected void updateScores(Result result, int player1Index, int player2Index) {
+    protected void updateScores(List<Result> results, int player1Index, int player2Index) {
         float player1 = 0;
         float player2 = 0;
-        // TODO Update scores
+        /*
+
+        Update player1 (index 0), player2 (index 1) based on performance in results
+
+         */
         competitors[player1Index].score += player1;
         competitors[player2Index].score += player2;
     }
 
     protected boolean stopCondition() {
-        // TODO Set up stop condition
+        /*
+
+        Set stopping condition
+
+         */
         return iteration >= 500;
     }
     ////////////////////////////////////////////////////////////////////////////////////////
 
     private int iteration = 0;
     private final float mutationChance;
-    private final float crossMutationChance;
     private final int nbOfWinners;
-    private final int initSeed;
+    private final Random rd;
+    private final int nbOfGamesPerPair;
 
     private final GAPlayer[] competitors;
 
 
-    public GA(int initSeed, int nbOfCompetitors, int nbOfWinners, float mutationChance, float crossMutationChance) {
-        this.initSeed = initSeed;
+    public GA(Integer initSeed, int nbOfCompetitors, int nbOfGamesPerPair, int nbOfWinners, float mutationChance) {
+        if(initSeed!=null){
+            rd = new Random(initSeed);
+        }else{
+            rd = new Random();
+        }
         this.nbOfWinners = nbOfWinners;
+        this.nbOfGamesPerPair = nbOfGamesPerPair;
         this.mutationChance = mutationChance;
-        this.crossMutationChance = crossMutationChance;
         competitors = new GAPlayer[nbOfCompetitors];
     }
 
     public void init(GamePlayer[] prototypes) {
-        Random rd = new Random(initSeed);
-        GAPlayer[] gaPrototype = new GAPlayer[prototypes.length];
-        int j = 0;
-        for (GamePlayer prototype : prototypes) {
-            gaPrototype[j] = new GAPlayer(j,prototype);
-            j++;
-        }
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, gaPrototype, i);
+            competitors[i] = new GAPlayer(i,mutate(rd, prototypes));
         }
     }
 
     public void init(GamePlayer prototype){
-        Random rd = new Random(initSeed);
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, new GAPlayer[]{new GAPlayer(0,prototype)}, i);
+            competitors[i] = new GAPlayer(i,mutate(rd, new GamePlayer[]{prototype}));
         }
     }
 
-    public GAPlayer[] train() {
+    public GamePlayer[] train() {
         assert competitors[0] != null;
         GameLogic game = new GameLogic();
         int seed = 0;
         do {
-            GAPlayer[] winners = getWinners();
-
-            System.out.println("Iteration: " + iteration);
-            System.out.println(winners[0].score + "\n");
-
-            update(winners);
-            resetScores();
             for (int i = 0; i < competitors.length; i++) {
                 for (int j = 0; j < competitors.length; j++) {
                     if (i != j) {
-                        Result result = game.play(competitors[i].player, competitors[j].player, seed);
-                        updateScores(result, competitors[i].index, competitors[j].index);
+                        List<Result> results = new ArrayList<>();
+                        for (int k = 0; k < nbOfGamesPerPair; k++) {
+                            results.add(game.play(competitors[i].player, competitors[j].player, seed));
+                        }
+                        updateScores(results, competitors[i].index, competitors[j].index);
                     }
                 }
             }
+
+            GAPlayer[] winners = getWinners();
+            System.out.println("Iteration: " + iteration);
+            /*
+
+            If you want to print something every iteration
+
+             */
+            update(winners);
+            resetScores();
+
             seed++;
             iteration++;
         } while (!stopCondition());
-        return getWinners();
+        GAPlayer[] winners = getWinners();
+        GamePlayer[] w = new GamePlayer[winners.length];
+        for (int i = 0; i < winners.length; i++) {
+            w[i] = winners[i].player;
+        }
+        return w;
     }
 
     private void resetScores() {
@@ -116,8 +138,12 @@ public class GA {
 
     private void update(GAPlayer[] winners) {
         Random rd = new Random();
+        GamePlayer[] w = new GamePlayer[winners.length];
+        for (int i = 0; i < winners.length; i++) {
+            w[i] = winners[i].player;
+        }
         for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, winners, i);
+            competitors[i] = new GAPlayer(i, mutate(rd, w));
         }
     }
 
