@@ -290,6 +290,9 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+
+        Card aCard = new Card(topOfDiscard);
+        MyCard myCard = new MyCard(aCard);
         return null;
     }
 
@@ -298,6 +301,7 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public MyCard discardCard() {
+
         return null;
     }
 
@@ -312,6 +316,8 @@ public class MinimaxPruningAI extends GamePlayer {
     public void update(HandLayout realLayout) {
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
+
+        SetOfCards cardList = new SetOfCards(realLayout);
     }
 
     /*
