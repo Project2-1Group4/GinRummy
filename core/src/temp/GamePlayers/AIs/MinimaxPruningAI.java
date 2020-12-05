@@ -1,12 +1,21 @@
-package gameHandling;
+package temp.GamePlayers.AIs;
 
 import cardlogic.Card;
 import cardlogic.SetOfCards;
+import gameHandling.Player;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MyCard;
+import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GametreeAI;
+import temp.GamePlayers.Node;
 
 import java.io.*;
 import java.util.*;
 
-public class MinimaxPruningAI {
+public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
     boolean AITurn;
     public SetOfCards hand;
@@ -265,4 +274,75 @@ public class MinimaxPruningAI {
 
 
     }
+
+    /*
+    If true then the player knocks and the round ends
+    If false then the player doesn't knock
+     */
+    @Override
+    public Boolean knockOrContinue() {
+        return null;
+    }
+
+    /*
+    Retruns true if the deck is picked
+    False if the discard pile is picked
+     */
+    @Override
+    public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        return null;
+    }
+
+    /*
+    Returns the card that wants to be reomved from the current hand
+     */
+    @Override
+    public MyCard discardCard() {
+        return null;
+    }
+
+    /*
+    It's called everytime the player's hand is changed
+    So this means it's called when:
+        Before the player chooses from the discard pile or from the deck
+        The player chooses what to discard
+        After the player has discarded a card (with the new 10 card hand)
+     */
+    @Override
+    public void update(HandLayout realLayout) {
+        allCards = realLayout.viewAllCards();
+        handLayout = Finder.findBestHandLayout(allCards);
+    }
+
+    /*
+    Complete round reset, so it's a new hand and a new deck and a new everything
+     */
+    @Override
+    public void newRound(MyCard topOfDiscard) {
+
+    }
+
+    /*
+    Gives information on the other player's actions
+        Just says what card the other player discarded
+     */
+    @Override
+    public void playerDiscarded(DiscardAction discardAction) {
+        MyCard DisCard = discardAction.card;
+    }
+
+    /*
+    Gives info on the other player's actions
+        If pickAction.deck is not true, then the other player picked from the discard pile
+        So we can know what he picked up
+     */
+    @Override
+    public void playerPicked(PickAction pickAction) {
+        if(!pickAction.deck){
+            MyCard aCard = pickAction.card;
+            //this.memoryMatrix[aCard.suit.index][aCard.rank.index] = 2;
+        }
+
+    }
+
 }
