@@ -187,7 +187,7 @@ public class Player {
         List<Card> newCard = new ArrayList<>();
         for (Card aCard: cards){
             //newCard.add(new Card(aCard));
-            newCard.add(aCard);
+            newCard.add(new Card(aCard));
         }
         return newCard;
     }

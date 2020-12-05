@@ -25,6 +25,9 @@ public class MinimaxPruningAI extends GamePlayer {
     boolean AIknock = false;
     static int round = 0;
     //public static SetOfCards deck;
+    int maxDepthOfTree = 10;
+
+    public List<Card> discardedCards = new ArrayList<>();
 
 
     public MinimaxPruningAI(GametreeAI tree, SetOfCards pile, SetOfCards hand, SetOfCards unknown) {
@@ -44,7 +47,6 @@ public class MinimaxPruningAI extends GamePlayer {
 
     public MinimaxPruningAI(){
         super();
-
     }
 
 
@@ -335,7 +337,11 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public MyCard discardCard() {
 
-        return null;
+        // TODO: Actually choose which card to discard
+        MyCard discardCard = null;
+
+        this.discardedCards.add(new Card(discardCard));
+        return discardCard;
     }
 
     /*
@@ -352,6 +358,32 @@ public class MinimaxPruningAI extends GamePlayer {
         handLayout = Finder.findBestHandLayout(allCards);
 
         SetOfCards cardList = new SetOfCards(realLayout);
+
+        // Here we should have something to update the unknown cards
+        this.unknownCards = new SetOfCards(findRemainingCards(cardList.toList(), this.discardedCards));
+    }
+
+    public void createTree(){
+        this.tree = new GametreeAI(new SetOfCards(this.discardedCards),new SetOfCards(this.allCards, false)
+                , this.unknownCards, this.maxDepthOfTree);
+    }
+
+    public static List<Card> findRemainingCards(List<Card> hand, List<Card> discardPile){
+        List<Card> temp = new ArrayList<>(hand);
+        temp.addAll(discardPile);
+        return findRemainingCards(temp);
+    }
+
+    public static List<Card> findRemainingCards(List<Card> knownCards){
+        SetOfCards allCards = new SetOfCards(true, false);
+        List<Card> cardList = allCards.toList();
+
+        // TODO: Check that this remove method is working properly
+        for(Card aCard: knownCards){
+            cardList.remove(aCard);
+        }
+
+        return cardList;
     }
 
     /*
@@ -359,7 +391,8 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void newRound(MyCard topOfDiscard) {
-
+        this.discardedCards = new ArrayList<>();
+        this.discardedCards.add(new Card(topOfDiscard));
     }
 
     /*
@@ -380,6 +413,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
             MyCard aCard = pickAction.card;
+            this.discardedCards.add(new Card(aCard));
             //this.memoryMatrix[aCard.suit.index][aCard.rank.index] = 2;
         }
 
