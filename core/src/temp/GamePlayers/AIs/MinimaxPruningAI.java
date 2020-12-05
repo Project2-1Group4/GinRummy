@@ -106,6 +106,7 @@ public class MinimaxPruningAI extends GamePlayer {
 
         //loop through newHand to get the new card
         int count = 0;
+        /*
         for (int i = 0; i< newHand.size(); i++) {
             count =0;
             for(int j =  0; j< currentHand.size(); j++){
@@ -117,21 +118,18 @@ public class MinimaxPruningAI extends GamePlayer {
                 pickCard = newHand.get(i);
             }
         }
+        */
+        Card pickCard = newHand.get(newHand.size()-1);
         Card discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
         //at current state
         //loop through old hand to get the card be discarded
         count = 0;
-        for (int i = 0; i< currentHand.size(); i++) {
-            count = 0;
-            for(int j =  0; j< newHand.size(); j++){
-                if (newHand.get(j).getSuit() == currentHand.get(i).getSuit() && newHand.get(j).getValue() == currentHand.get(i).getValue()) {
-                    count++;
-                }
-            }
-            if(count == 0){
+        for(int i = 0; i < currentHand.size(); i++) {
+            if (!((newHand.get(i).getSuit() == currentHand.get(i).getSuit()) && (newHand.get(i).getValue() == currentHand.get(i).getValue()))) {
                 discardCard = currentHand.get(i);
+                break;
             }
         }
 
