@@ -63,6 +63,7 @@ public class Card extends Actor implements Comparable {
 	public Card(Card aCard){
 		this.setSuit(aCard.getSuitVal());
 		this.setValue(aCard.getValue());
+		this.setProb(aCard.getProb());
 	}
 
 	public Card(MyCard aCard){
