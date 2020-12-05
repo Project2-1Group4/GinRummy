@@ -133,7 +133,7 @@ public class MinimaxPruningAI extends GamePlayer {
         Card pickCard = pick_discard[0];
         Card discardCard = pick_discard[1];
 
-        if(pickCard == pile.getCard(pile.size()-1)){
+        if (pickCard != null && pickCard.equals(pile.peekTopCard())){
             System.out.println("AI pick from pile: "+pickCard);
             pile.discardCard(pickCard);
             pile.addCard(discardCard);
@@ -313,21 +313,46 @@ public class MinimaxPruningAI extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         Card[] pick_discard = this.getNodeReturn();
         Card topCard = new Card(topOfDiscard);
-        return pick_discard[0].equals(topCard);
+        return !pick_discard[0].equals(topCard);
     }
 
     /*
     Returns the card that wants to be removed from the current hand
+
+    I dont know this one does not work with this algo cuz we should have deck as param to choose whether bot wants to
+    pick from deck or pile then he will have different options discard card. I will make a different one having param deck
+    but you can always modify it
+
      */
     @Override
     public MyCard discardCard() {
+        /*
         //TODO: make sure that game understands the card that is discarded
+        //This one is only true when bot chooses to pick card from pile
         Card[] pick_discard= this.getNodeReturn();
         // TODO: Actually choose which card to discard
         Card discard = pick_discard[1];
         MyCard discardCard = new MyCard(discard);
         this.discardedCards.add(discard);
-        return discardCard;
+
+         */
+
+        return null;
+    }
+
+    public MyCard discardCard(SetOfCards deck) {
+
+        MyCard topCard = new MyCard(pile.peekTopCard());
+        if (this.pickDeckOrDiscard(unknownCards.size()-10, topCard)) {
+            Card[] pick_discard = this.getNodeReturn();
+            return new MyCard(pick_discard[1]);
+        }
+        else {
+            List<Card> copyHand = Player.copyList(this.hand.toList());
+            copyHand.add(deck.peekTopCard());
+            Card discard = GametreeAI.chooseCardToDiscard(copyHand);
+            return new MyCard(discard);
+        }
     }
 
     /*
