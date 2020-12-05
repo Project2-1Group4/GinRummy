@@ -220,7 +220,7 @@ public class MinimaxPruningAI {
         //tree = new GametreeAI(pile, hand,unknownCards, 4);
         //Node newRoot = new Node(pile, hand, unknownCards, tree.opponentHand, 0);
         //tree.createNodesOpponent(newRoot, false);
-        tree.createTree();
+        tree.createTree(false);
 
 
     }
@@ -239,7 +239,7 @@ public class MinimaxPruningAI {
         pile.addCard(discardCard);
         // create tree
         GametreeAI gameTree = new GametreeAI(pile, hand,deck, 4);
-        gameTree.createTree();
+        gameTree.createTree(true);
 
         // create opponenthand
         SetOfCards copyDeck  = new SetOfCards(deck.toList());
