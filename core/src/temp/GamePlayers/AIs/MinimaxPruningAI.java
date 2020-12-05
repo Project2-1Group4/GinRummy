@@ -313,7 +313,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         Card[] pick_discard = this.getNodeReturn();
         Card topCard = new Card(topOfDiscard);
-        return pick_discard[0].equals(topCard);
+        return !pick_discard[0].equals(topCard);
     }
 
     /*
