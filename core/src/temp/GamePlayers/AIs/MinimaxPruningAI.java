@@ -25,7 +25,7 @@ public class MinimaxPruningAI extends GamePlayer {
     boolean AIknock = false;
     static int round = 0;
     //public static SetOfCards deck;
-    int maxDepthOfTree = 10;
+    int maxDepthOfTree = 4;
 
     public List<Card> discardedCards = new ArrayList<>();
 
@@ -133,7 +133,7 @@ public class MinimaxPruningAI extends GamePlayer {
         Card pickCard = pick_discard[0];
         Card discardCard = pick_discard[1];
 
-        if(pickCard != null && pickCard.equals(pile.getCard(pile.size()-1))){
+        if(pickCard == pile.getCard(pile.size()-1)){
             System.out.println("AI pick from pile: "+pickCard);
             pile.discardCard(pickCard);
             pile.addCard(discardCard);
@@ -272,7 +272,7 @@ public class MinimaxPruningAI extends GamePlayer {
         MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
 
         // start game
-        while(!AI.AIknock() && !AI.playerKnock && !AI.AIknock){
+        while(!AI.AIknock() && !AI.playerKnock){
             //Print out some cards to see the probabilities
             /*
             for(int i = 0; i<3; i++) {
@@ -313,7 +313,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         Card[] pick_discard = this.getNodeReturn();
         Card topCard = new Card(topOfDiscard);
-        return !pick_discard[0].equals(topCard);
+        return pick_discard[0].equals(topCard);
     }
 
     /*
@@ -321,11 +321,12 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public MyCard discardCard() {
-
+        //TODO: make sure that game understands the card that is discarded
+        Card[] pick_discard= this.getNodeReturn();
         // TODO: Actually choose which card to discard
-        MyCard discardCard = null;
-
-        this.discardedCards.add(new Card(discardCard));
+        Card discard = pick_discard[1];
+        MyCard discardCard = new MyCard(discard);
+        this.discardedCards.add(discard);
         return discardCard;
     }
 
@@ -346,11 +347,13 @@ public class MinimaxPruningAI extends GamePlayer {
 
         // Here we should have something to update the unknown cards
         this.unknownCards = new SetOfCards(findRemainingCards(cardList.toList(), this.discardedCards));
+        createTree();
     }
 
     public void createTree(){
         this.tree = new GametreeAI(new SetOfCards(this.discardedCards),new SetOfCards(this.allCards, false)
                 , this.unknownCards, this.maxDepthOfTree);
+        tree.createTree(true);
     }
 
     public static List<Card> findRemainingCards(List<Card> hand, List<Card> discardPile){
@@ -386,7 +389,9 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
-        MyCard DisCard = discardAction.card;
+        MyCard disCard = discardAction.card;
+        Card discardedCard = new Card(disCard);
+        this.discardedCards.add(discardedCard);
     }
 
     /*
@@ -398,7 +403,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
             MyCard aCard = pickAction.card;
-            this.discardedCards.add(new Card(aCard));
+            this.discardedCards.remove(new Card(aCard));
             //this.memoryMatrix[aCard.suit.index][aCard.rank.index] = 2;
         }
 
