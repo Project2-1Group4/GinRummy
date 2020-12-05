@@ -1,22 +1,27 @@
 package temp.Extra.GA;
 
-import temp.GamePlayers.AIs.basicGreedyTest;
+import temp.Extra.Tests.EndOfRoundInfo;
+import temp.Extra.Tests.GameInfo;
+import temp.Extra.Tests.Tests;
 import temp.GamePlayers.AIs.meldBuildingGreedy;
-import temp.GamePlayers.GamePlayer;
 
+import java.util.List;
 import java.util.Random;
 
 public class GA {
 
     public static void main(String[] args) {
-        // Create GA with wanted params
-        //GA ga = new GA(0,20,1,0.05f,0);
-        // Initialize with players you want
-        /**ga.init(new TestPlayer());*/
-        // Start GA
 
-        GameLogic logic = new GameLogic();
-        logic.play(new basicGreedyTest(true), new meldBuildingGreedy(), 0);
+        int numOfGames = 5;
+
+        GA ga = new GA(50,0.02,2,15);
+
+        ga.runForGenerations(3);
+
+        meldBuildingGreedy[] theBest = ga.findNFittestPlayers(10);
+        for(meldBuildingGreedy ai: theBest){
+            System.out.println(theBest.toString());
+        }
 
         //GAPlayer[] winners = ga.train();
     }
@@ -35,8 +40,8 @@ public class GA {
         float player1 = 0;
         float player2 = 0;
         // TODO Update scores
-        competitors[player1Index].score += player1;
-        competitors[player2Index].score += player2;
+        /*competitors[player1Index].score += player1;
+        competitors[player2Index].score += player2;*/
     }
 
     protected boolean stopCondition() {
@@ -46,79 +51,218 @@ public class GA {
     ////////////////////////////////////////////////////////////////////////////////////////
 
     private int iteration = 0;
-    private final float mutationChance;
-    private final float crossMutationChance;
-    private final int nbOfWinners;
-    private final int initSeed;
+    private double mutationChance;
+    int numberOfPlayers;
+    int generationLimit;
+    int numberOfGames;
+    int gamesToWin;
+    //private final int nbOfWinners;
 
-    private final GAPlayer[] competitors;
+    meldBuildingGreedy[] players;
+
+    /*
+    Idea of this is that a val will be modified by at most val*mutMult
+    In positive or negative direction
+    Under the idea that it'll help set some kind of limit on how big the mutation should be
+     */
+    double mutationMultiplier = 0.1;
+
+    /*
+    These two go hand in hand, as the second one says how many wins the first one had
+    Which is helpful later on, trust me
+     */
+    meldBuildingGreedy[] fittestPlayers;
+    int[] numOfWinsForFit;
+
+    GameLogic internalLogic = new GameLogic(true,true);
 
 
-    public GA(int initSeed, int nbOfCompetitors, int nbOfWinners, float mutationChance, float crossMutationChance) {
-        this.initSeed = initSeed;
-        this.nbOfWinners = nbOfWinners;
+    // I assume we always take half the competitors as winners, just cause it makes it easier to calculate stuff
+
+    /*
+    I butchered some of the code here to make it work specifically with meldBuildingGreedy
+    Not good for generalization, but no one else will use a GA for what's missing
+    So yeah, good enough
+     */
+    public GA(int nbOfCompetitors, double mutationChance, int generationLimit, int numberOfGames) {
         this.mutationChance = mutationChance;
-        this.crossMutationChance = crossMutationChance;
-        competitors = new GAPlayer[nbOfCompetitors];
+        this.players = new meldBuildingGreedy[nbOfCompetitors];
+
+        // So I'll just take half of the players as "fittest"
+        this.fittestPlayers = new meldBuildingGreedy[nbOfCompetitors/2];
+        this.numOfWinsForFit = new int[nbOfCompetitors/2];
+
+        this.numberOfPlayers = nbOfCompetitors;
+        this.generationLimit = generationLimit;
+
+        this.numberOfGames = numberOfGames;
+
+        this.gamesToWin = (numberOfGames/2)+1;
+
+        this.init();
     }
 
-    public void init(GamePlayer[] prototypes) {
-        Random rd = new Random(initSeed);
-        GAPlayer[] gaPrototype = new GAPlayer[prototypes.length];
-        int j = 0;
-        for (GamePlayer prototype : prototypes) {
-            gaPrototype[j] = new GAPlayer(j,prototype);
-            j++;
+    public void runForGenerations(int numOfGenerations){
+        int i = 0;
+
+        while(i<numOfGenerations){
+            this.findFittestIndividuals();
+            this.newGeneration();
+
         }
-        for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, gaPrototype, i);
-        }
+
+
     }
 
-    public void init(GamePlayer prototype){
-        Random rd = new Random(initSeed);
-        for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, new GAPlayer[]{new GAPlayer(0,prototype)}, i);
+    public void init() {
+        for(int i=0; i<players.length;i++){
+            double cardInMeld = randomNumberGenerator(0,1);
+            double cardCloseToMeld = randomNumberGenerator(0,2);
+            double cardFree = randomNumberGenerator(0,3);
+            double cardNever = randomNumberGenerator(0,4);
+
+            this.players[i] = new meldBuildingGreedy(cardInMeld,cardCloseToMeld,cardFree,cardNever);
         }
+
     }
 
-    public GAPlayer[] train() {
-        assert competitors[0] != null;
-        GameLogic game = new GameLogic();
-        int seed = 0;
-        do {
-            GAPlayer[] winners = getWinners();
+    public meldBuildingGreedy[] findFittestIndividuals() {
+        // By shuffling the order at the start, I can just pair a player with its immediate neighbor
+        // And they'll be paired with a random opponent for sure
+        shuffleArray(this.players);
 
-            System.out.println("Iteration: " + iteration);
-            System.out.println(winners[0].score + "\n");
+        for(int i = 0; i<this.players.length/2;i+=2){
+            meldBuildingGreedy[] matchedPlayers = {this.players[i], this.players[i+1]};
 
-            update(winners);
-            resetScores();
-            for (int i = 0; i < competitors.length; i++) {
-                for (int j = 0; j < competitors.length; j++) {
-                    if (i != j) {
-                        Result result = game.play(competitors[i].player, competitors[j].player, seed);
-                        updateScores(result, competitors[i].index, competitors[j].index);
-                    }
+            List<GameInfo> results = Tests.runGames(this.internalLogic, matchedPlayers, this.numberOfGames,null);
+
+            int victoriesForP0 = 0;
+            int victoriesForP1 = 0;
+
+            for(GameInfo info: results){
+                EndOfRoundInfo lastGame = info.roundInfos.get(info.roundInfos.size()-1);
+                int win = lastGame.winner;
+                if(win == 0){
+                    victoriesForP0++;
+                } else {
+                    victoriesForP1++;
                 }
+
             }
-            seed++;
-            iteration++;
-        } while (!stopCondition());
-        return getWinners();
+
+            if(victoriesForP0>=this.gamesToWin){
+                this.fittestPlayers[i/2] = matchedPlayers[0];
+                this.numOfWinsForFit[i/2] = victoriesForP0;
+
+            } else {
+                this.fittestPlayers[i/2] = matchedPlayers[1];
+                this.numOfWinsForFit[i/2] = victoriesForP1;
+
+            }
+
+
+        }
+
+        return this.fittestPlayers;
     }
 
-    private void resetScores() {
+    /*private void resetScores() {
         for (GAPlayer competitor : competitors) {
             competitor.score = 0;
         }
+    }*/
+
+    private void newGeneration() {
+        /*
+        First half will be the new generation
+        Second half will be the fittest values of the old generation
+         */
+        for(int i=0; i< fittestPlayers.length;i++){
+
+            // Choose the location of p1 and of p2
+            int p1 = pickRandomNumber(this.numOfWinsForFit);
+            int p2 = pickRandomNumber(this.numOfWinsForFit);
+
+            // Just to make sure they're different
+            while(p2==p1){
+                p1 = pickRandomNumber(this.numOfWinsForFit);
+            }
+
+            this.players[i] = crossover(fittestPlayers[p1],fittestPlayers[p2]);
+
+        }
+
+        for(int i=0 ;i<fittestPlayers.length;i++){
+            this.players[i+ fittestPlayers.length] = fittestPlayers[i];
+        }
+
     }
 
-    private void update(GAPlayer[] winners) {
-        Random rd = new Random();
-        for (int i = 0; i < competitors.length; i++) {
-            competitors[i] = mutate(rd, winners, i);
+    meldBuildingGreedy crossover(meldBuildingGreedy p1, meldBuildingGreedy p2){
+        double[] valsp1 = p1.heuristicValues();
+        double[] valsp2 = p2.heuristicValues();
+        double[] futureVals = new double[valsp1.length];
+
+        for(int i=0; i< valsp1.length;i++){
+            double avg = (valsp1[i]+valsp2[i])/2.0;
+
+            if(this.mutationChance()){
+                avg = mutate(avg);
+            }
+
+            futureVals[i] = avg;
+
         }
+
+        return new meldBuildingGreedy(futureVals);
+    }
+
+    boolean mutationChance(){
+        return randomNumberGenerator(0,1) <= this.mutationChance;
+    }
+
+    double mutate(double valToMutate){
+        double bounds = valToMutate*mutationMultiplier;
+        return valToMutate + randomNumberGenerator(-bounds,bounds);
+    }
+    /*
+    Gist of this method is that an int with a higher value should have a higher chance of being picked
+    So the individual wins are summed up, and based off the total number a random number is generated
+
+    It's the exact same thing I did for picking the random cards with probability, it works just go with it
+     */
+    public static int pickRandomNumber(int[] wins){
+        int maxValue = calculateSum(wins);
+        int desiredNum = (int)randomNumberGenerator(0,maxValue);
+
+        // It's increased by one due to how the numbers are generated
+        // Done so that all of the values have an equal chance
+        // I thought it over, makes sense, so just please trust myself
+        desiredNum++;
+
+        int count = 0;
+
+        for(int i=0; i< wins.length; i++){
+            count+= wins[i];
+
+            if(count>=desiredNum){
+                return i;
+            }
+
+        }
+
+        // Shouldn't happen, but just a sad return 0 in the end
+        System.out.println("Error while calculating probability");
+        return 0;
+
+    }
+
+    public static int calculateSum(int[] toSum){
+        int val = 0;
+        for(int num: toSum){
+            val+=num;
+        }
+        return val;
     }
 
     /**
@@ -135,15 +279,6 @@ public class GA {
             return -rd.nextDouble();
         }
         return 0;
-    }
-
-    protected GAPlayer[] getWinners() {
-        GAPlayer[] sorted = bubbleSort(competitors);
-        GAPlayer[] winners = new GAPlayer[nbOfWinners];
-        for (int i = 0; i < winners.length; i++) {
-            winners[i] = competitors[sorted[i].index];
-        }
-        return winners;
     }
 
     // https://stackabuse.com/sorting-algorithms-in-java/#bubblesort
@@ -165,6 +300,56 @@ public class GA {
             }
         }
         return a;
+    }
+
+    // Implementation of Fisher-Yates shuffle found on stackOverflow
+    // https://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
+    static void shuffleArray(meldBuildingGreedy[] array){
+        Random random = new Random();
+        for(int i= array.length-1;i>0;i-- ){
+            int randomIndex = random.nextInt(i+1);
+            meldBuildingGreedy temp = array[randomIndex];
+            array[randomIndex] = array[i];
+            array[i] = temp;
+        }
+
+
+    }
+
+    public static double randomNumberGenerator(double min, double max){
+        return min+(Math.random()*(max-min));
+    }
+
+    public meldBuildingGreedy[] findNFittestPlayers(int nPlayersToSearch){
+        // I'll save the indexes of the NFittest players first
+
+        int[] indexes = new int[nPlayersToSearch];
+
+        for(int i=0; i<fittestPlayers.length;i++){
+            int numOfWins = numOfWinsForFit[i];
+
+            for(int j=0; j<indexes.length;j++){
+                if(numOfWins > indexes[j]){
+
+                    for(int k = j;k<indexes.length-1;k++){
+                        indexes[k+1] = indexes[k];
+                    }
+
+                    indexes[j] = i;
+
+                    break;
+                }
+            }
+
+        }
+
+        meldBuildingGreedy[] nFittestPlayers = new meldBuildingGreedy[nPlayersToSearch];
+
+        for(int i=0;i< nFittestPlayers.length;i++){
+            nFittestPlayers[i] = fittestPlayers[indexes[i]];
+        }
+
+        return nFittestPlayers;
     }
 
 }
