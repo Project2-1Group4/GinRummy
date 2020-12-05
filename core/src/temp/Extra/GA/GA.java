@@ -16,7 +16,7 @@ public class GA {
         // Start GA
 
         GameLogic logic = new GameLogic();
-        logic.play(new meldBuildingGreedy(), new basicGreedyTest(true), 0);
+        logic.play(new basicGreedyTest(true), new meldBuildingGreedy(), 0);
 
         //GAPlayer[] winners = ga.train();
     }

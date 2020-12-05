@@ -49,4 +49,33 @@ public class EndOfRoundInfo {
         return sb.toString();
 
     }
+
+    /*
+    I modified the toString method to be a bit simpler, as I wanted to just use a version that would work for the CSV file at the end
+    It's also why it has the less clear format, where everything is just separated by a comma
+
+    The idea of the format is this:
+    -Round
+    -Final Round (which is a boolean)
+    -Winner
+    -Score player 0
+    -Score player 1
+    -Deadwood player 0
+    -Deadwood player 1
+    -Number of cards in deadwood p0
+    -Number of cards in deadwood p1
+     */
+
+    public String csvString() {
+        return round + "," +
+                finalRound + "," +
+                winner + "," +
+                scores[0] + "," +
+                scores[1] + "," +
+                deadwoodValues[0] + "," +
+                deadwoodValues[1] + "," +
+                numberOfCardsInDeadwood[0] + "," +
+                numberOfCardsInDeadwood[1];
+    }
+
 }

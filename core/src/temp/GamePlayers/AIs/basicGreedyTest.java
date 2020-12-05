@@ -169,4 +169,9 @@ public class basicGreedyTest extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
 
     }
+
+    @Override
+    public String toString() {
+        return "basicGreedyTest";
+    }
 }

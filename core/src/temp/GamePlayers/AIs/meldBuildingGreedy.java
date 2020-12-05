@@ -523,4 +523,9 @@ public class meldBuildingGreedy extends GamePlayer {
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "meldBuildingGreedy";
+    }
 }
