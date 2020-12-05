@@ -90,7 +90,7 @@ public class EndOfRoundInfo {
         List<List<int[]>> listListInt = new ArrayList<>();
         listListInt.add(listInt);
 
-        //System.out.println(Tests.listOfListIntDecoder(listListInt));
+        System.out.println(Tests.listOfListIntDecoder(listListInt));
 
 
     }

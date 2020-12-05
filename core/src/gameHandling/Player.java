@@ -186,8 +186,8 @@ public class Player {
     public static List<Card> copyList(List<Card> cards) {
         List<Card> newCard = new ArrayList<>();
         for (Card aCard: cards){
-            newCard.add(new Card(aCard));
-            //newCard.add(aCard);
+            //newCard.add(new Card(aCard));
+            newCard.add(aCard);
         }
         return newCard;
     }
@@ -433,8 +433,7 @@ public class Player {
     public List<Card> findDeadwood() {
 
         List<Card> handCard = this.hand.toList();
-        this.deadWood = new ArrayList<>();
-        this.deadWood.addAll(handCard);
+        this.deadWood = copyList(handCard);
         this.bestCombination();
 
         if (this.bestCombination.size() == 0) {

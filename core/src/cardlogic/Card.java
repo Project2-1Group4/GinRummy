@@ -201,8 +201,7 @@ public class Card extends Actor implements Comparable {
 
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equal(Object o) {
 		Card card = (Card) o;
 		return (this.value == card.getValue() && this.suit.equals(card.getSuit()));
 	}

@@ -85,7 +85,9 @@ public class MinimaxPruningAI extends GamePlayer {
         }
     }
 
-    public Card[] getNodeReturn() {
+    public void chooseNode(SetOfCards deck) {
+        // this method doesn't get root node, should be changed if that is what you need here!!
+        //get the current state of AI (game)
         Node parent = tree.getRootNode();
         List<Card> currentHand = Player.copyList(parent.hand.toList());
         System.out.println("current bot hand: "+currentHand);
@@ -95,35 +97,26 @@ public class MinimaxPruningAI extends GamePlayer {
 
         List<Card> newHand = Player.copyList(pickNode.hand.toList());
         Card pickCard = null;
-        for(Card card : newHand) {
+
+        //loop through newHand to get the new card
+        for (Card card : newHand) {
             if (!currentHand.contains(card)) {
                 pickCard = card;
             }
         }
-
-        //loop through newHand to get the new card
-
         System.out.println("pick card: "+pickCard);
         Card discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
         //at current state
         //loop through old hand to get the card be discarded
-        for(Card card : currentHand) {
+        for (Card card : currentHand) {
             if (!newHand.contains(card)) {
                 discardCard = card;
             }
         }
 
         System.out.println("discard card: "+discardCard);
-        return new Card[] {pickCard, discardCard};
-    }
-
-
-    public void chooseNode(SetOfCards deck) {
-        Card[] pick_discard = this.getNodeReturn();
-        Card pickCard = pick_discard[0];
-        Card discardCard = pick_discard[1];
 
         if(pickCard == pile.getCard(pile.size()-1)){
             System.out.println("AI pick from pile: "+pickCard);
@@ -285,34 +278,30 @@ public class MinimaxPruningAI extends GamePlayer {
     /*
     If true then the player knocks and the round ends
     If false then the player doesn't knock
-    */
+     */
     @Override
     public Boolean knockOrContinue() {
-        int score = Player.scoreHand(this.hand.toList());
-        if (score < 10) {
-            AIknock = true;
-            return true;
-        }
-        else
-            return false;
+        return null;
     }
 
     /*
-    Returns true if the deck is picked
+    Retruns true if the deck is picked
     False if the discard pile is picked
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        Card[] pick_discard = this.getNodeReturn();
-        Card topCard = new Card(topOfDiscard);
-        return pick_discard[0].equals(topCard);
+
+        Card aCard = new Card(topOfDiscard);
+        MyCard myCard = new MyCard(aCard);
+        return null;
     }
 
     /*
-    Returns the card that wants to be removed from the current hand
+    Returns the card that wants to be reomved from the current hand
      */
     @Override
     public MyCard discardCard() {
+
         return null;
     }
 
@@ -325,7 +314,6 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void update(HandLayout realLayout) {
-        //chooseNode()
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
 

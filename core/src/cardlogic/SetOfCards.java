@@ -66,8 +66,7 @@ public class SetOfCards {
 	}
 
 	public List<Card> toList(){
-		//return new ArrayList<>(this.cards);
-		return this.cards;
+		return new ArrayList<>(this.cards);
 	}
 
 	public void fromList(List<Card> cards){
