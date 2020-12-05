@@ -5,7 +5,7 @@ import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GamePlayers.AIs.meldBuildingGreedy;
+import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class Tests {
 
-    public static boolean print = false;
+    public static boolean print = true;
 
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
@@ -31,7 +31,41 @@ public class Tests {
             System.out.println(results);
         }
         // Do what you want with results
-        CVSWriter.write(results);
+        System.out.println("Everything's good enough");
+
+        try(PrintWriter gamewriter = new PrintWriter(new File("game_info.csv"))){
+
+            PrintWriter roundwriter = new PrintWriter(new File("round_info.csv"));
+
+            PrintWriter deadwoodAndTime = new PrintWriter(new File("deadwood_info.csv"));
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("SolverType");
+            sb.append(',');
+            sb.append("PieceTypeUsed");
+            sb.append(',');
+            sb.append("NumberOfPiecesA");
+            sb.append(',');
+            sb.append("NumberOfPiecesB");
+            sb.append(',');
+            sb.append("NumberOfPiecesC");
+            sb.append(',');
+            sb.append("SolutionFound");
+            sb.append(',');
+            sb.append("ProgramDuration");
+            sb.append('\n');
+
+
+
+            gamewriter.write(sb.toString());
+            System.out.println("done!");
+
+        } catch(FileNotFoundException e){
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){

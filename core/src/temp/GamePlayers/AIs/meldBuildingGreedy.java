@@ -447,7 +447,6 @@ public class meldBuildingGreedy extends GamePlayer {
         return worstCard;
     }
 
-    // TODO: Implement this method
     @Override
     public Boolean knockOrContinue() {
         if (this.handLayout.getDeadwood() <= this.knockValue){
@@ -467,7 +466,6 @@ public class meldBuildingGreedy extends GamePlayer {
         this.topDiscard = worst;
 
         if(worst != topOfDiscard){
-
             return false;
         } else {
             return true;
