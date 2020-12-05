@@ -42,6 +42,12 @@ public class MinimaxPruningAI extends GamePlayer {
         this.unknownCards = tree.cardsUnknown;
     }
 
+    public MinimaxPruningAI(){
+        super();
+
+    }
+
+
     public void pickedCard() {
         AITurn = false;
     }
@@ -85,7 +91,7 @@ public class MinimaxPruningAI extends GamePlayer {
         }
     }
 
-    public void chooseNode(SetOfCards deck) {
+    public List<MyCard> chooseNode(SetOfCards deck) {
         // this method doesn't get root node, should be changed if that is what you need here!!
         //get the current state of AI (game)
         Node parent = tree.getRootNode();
@@ -99,24 +105,35 @@ public class MinimaxPruningAI extends GamePlayer {
         Card pickCard = null;
 
         //loop through newHand to get the new card
-        for (Card card : newHand) {
-            if (!currentHand.contains(card)) {
-                pickCard = card;
+        int count = 0;
+        for (int i = 0; i< newHand.size(); i++) {
+            count =0;
+            for(int j =  0; j< currentHand.size(); j++){
+                if (newHand.get(i).getSuit() == currentHand.get(j).getSuit() && newHand.get(i).getValue() == currentHand.get(j).getValue()) {
+                    count++;
+                }
+            }
+            if(count ==0){
+                pickCard = newHand.get(i);
             }
         }
-        System.out.println("pick card: "+pickCard);
         Card discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
         //at current state
         //loop through old hand to get the card be discarded
-        for (Card card : currentHand) {
-            if (!newHand.contains(card)) {
-                discardCard = card;
+        count = 0;
+        for (int i = 0; i< currentHand.size(); i++) {
+            count = 0;
+            for(int j =  0; j< newHand.size(); j++){
+                if (newHand.get(j).getSuit() == currentHand.get(i).getSuit() && newHand.get(j).getValue() == currentHand.get(i).getValue()) {
+                    count++;
+                }
+            }
+            if(count == 0){
+                discardCard = currentHand.get(i);
             }
         }
-
-        System.out.println("discard card: "+discardCard);
 
         if(pickCard == pile.getCard(pile.size()-1)){
             System.out.println("AI pick from pile: "+pickCard);
@@ -124,7 +141,6 @@ public class MinimaxPruningAI extends GamePlayer {
             pile.addCard(discardCard);
             hand.addCard(pickCard);
             hand.discardCard(discardCard);
-
         }
         else{
             // should pick from actual deck instead of cardsunknown in tree since in game you get topcard from deck
@@ -145,7 +161,13 @@ public class MinimaxPruningAI extends GamePlayer {
 
         System.out.println("bot hand after play: "+hand);
         System.out.println("Card discard from bot: "+discardCard);
-        //update tree
+
+        MyCard pick = new MyCard(pickCard);
+        MyCard discard = new MyCard(discardCard);
+        List<MyCard> round = new ArrayList<>();
+        round.add(pick);
+        round.add(discard);
+        return round;
     }
 
     public boolean AIknock() {
@@ -281,23 +303,34 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public Boolean knockOrContinue() {
-        return null;
+        int score = Player.scoreHand(this.hand.toList());
+        if (score < 10) {
+            AIknock = true;
+            return true;
+        }
+        else
+            return false;
     }
 
     /*
-    Retruns true if the deck is picked
+    Returns true if the deck is picked
     False if the discard pile is picked
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        Card currentTopHand = hand.getCard(hand.size()-1);
+        MyCard newCard = new MyCard(currentTopHand);
 
-        Card aCard = new Card(topOfDiscard);
-        MyCard myCard = new MyCard(aCard);
-        return null;
+        if(topOfDiscard == newCard){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     /*
-    Returns the card that wants to be reomved from the current hand
+    Returns the card that wants to be removed from the current hand
      */
     @Override
     public MyCard discardCard() {
@@ -314,6 +347,7 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void update(HandLayout realLayout) {
+        //chooseNode()
         allCards = realLayout.viewAllCards();
         handLayout = Finder.findBestHandLayout(allCards);
 
