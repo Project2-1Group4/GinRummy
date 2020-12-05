@@ -5,6 +5,7 @@ import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GamePlayers.AIs.basicGreedyTest;
 import temp.GamePlayers.AIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
@@ -15,7 +16,7 @@ import java.util.Random;
 
 public class Tests {
 
-    public static boolean print = false;
+    public static boolean print = true;
 
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
@@ -32,6 +33,120 @@ public class Tests {
         }
         // Do what you want with results
         CSVWriter.write(results);
+    }
+    /*The idea of the format is this:
+    -Winner
+    -Score player 0
+    -Score player 1
+    -Deadwood player 0
+    -Deadwood player 1
+    -Number of cards in deadwood p0
+    -Number of cards in deadwood p1
+     */
+    public static String endGameDecoder(List<GameInfo> results){
+        StringBuilder sb = new StringBuilder();
+        for(GameInfo info: results){
+            // I assume that the last value in the roundInfos is the end of game info
+            // TODO: Make sure the last value in the roundInfo is the end of game info
+            sb.append(info.roundInfos.get(info.roundInfos.size()-1).csvString());
+            sb.append('\n');
+        }
+
+
+        return sb.toString();
+    }
+
+    public static String roundDecoder(List<GameInfo> results){
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<results.size();i++){
+            GameInfo info = results.get(i);
+            sb.append("Game: " + (i+1));
+            sb.append('\n');
+
+            for(EndOfRoundInfo roundEnd : info.roundInfos){
+                sb.append(roundEnd.csvString());
+                sb.append('\n');
+
+            }
+
+        }
+
+        return sb.toString();
+    }
+
+    // I have to actually think about this one, so I'll leave it for tomorrow properly
+    public static String deadwoodDecoder(List<GameInfo> results){
+        StringBuilder sb = new StringBuilder();
+        for(GameInfo info: results){
+            List<List<int[]>> p1DeadInfo = info.deadwoodOverTurns.get(0);
+
+            // In here I'll see each round as its own mini state
+            // So the rounds are what matter most to some level
+
+            for(List<int[]> roundRes : p1DeadInfo){
+
+                // Then for each round we look at each turn
+                for(int[] turns: roundRes){
+                    // Finally we look at the value in each turn
+                    for(int num: turns){
+                        sb.append(num);
+                        sb.append(",");
+                    }
+
+
+                }
+                // Done to remove the last ,
+                sb.deleteCharAt(sb.length());
+
+                sb.append("\n");
+            }
+
+
+            List<List<double[]>> p1TimeInfo = info.timesOverTurns.get(0);
+
+
+
+        }
+
+        return sb.toString();
+    }
+
+    public static String listOfListIntDecoder(List<List<int[]>> listOfList){
+
+        StringBuilder sb = new StringBuilder();
+        for(List<int[]> roundRes : listOfList){
+
+            // Then for each round we look at each turn
+            for(int[] turns: roundRes){
+                // Finally we look at the value in each turn
+                for(int num: turns){
+                    sb.append(num);
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    public static String listOfListDoubleDecoder(List<List<double[]>> listOfList){
+
+        StringBuilder sb = new StringBuilder();
+        for(List<double[]> roundRes : listOfList){
+
+            // Then for each round we look at each turn
+            for(double[] turns: roundRes){
+                // Finally we look at the value in each turn
+                for(double num: turns){
+                    sb.append(num);
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){
