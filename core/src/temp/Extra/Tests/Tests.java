@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Tests {
 
-    public static boolean print = true;
+    public static boolean print = false;
 
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
@@ -25,16 +25,12 @@ public class Tests {
                 new basicGreedyTest()
         };
         int games = 100; // Set nb of games
-        Integer seed = null; // Set seed
+        Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
-        for (int i = 0; i < results.size(); i++) {
-            System.out.println(results);
-        }
         // Do what you want with results
         CSVWriter.write(results);
     }
-
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){
         Random rd;
@@ -45,7 +41,8 @@ public class Tests {
         }
         List<GameInfo> results = new ArrayList<>();
         for(int i=0; i <numberOfGames; i++){
-             results.add(runGame(logic, players,rd.nextInt()));
+            System.out.println("Game "+i);
+            results.add(runGame(logic, players,rd.nextInt()));
         }
         return results;
     }
