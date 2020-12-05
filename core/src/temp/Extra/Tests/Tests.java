@@ -31,7 +31,7 @@ public class Tests {
             System.out.println(results);
         }
         // Do what you want with results
-        CSVWriter.write(results);
+        CVSWriter.write(results);
     }
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){

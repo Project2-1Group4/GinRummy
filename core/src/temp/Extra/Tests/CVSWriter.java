@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class CSVWriter {
+public class CVSWriter {
 
     public static void write(List<GameInfo> results){
         try(PrintWriter gamewriter = new PrintWriter(new File("game_info.csv"))){
@@ -92,4 +92,5 @@ public class CSVWriter {
 
         return sb.toString();
     }
+
 }
