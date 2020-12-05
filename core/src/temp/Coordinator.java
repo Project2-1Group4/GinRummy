@@ -108,7 +108,7 @@ public class Coordinator extends ScreenAdapter {
             currentGameState = Executor.startNewRound(500, currentGameState);
             return null;
         }
-        if (currentGameState.getRoundTurn() >= GameRules.maxTurnsInARound) {
+        if (currentGameState.getTurn() >= GameRules.maxTurnsInARound) {
             roundEnd = true;
             return null;
         }

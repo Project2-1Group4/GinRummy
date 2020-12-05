@@ -48,7 +48,7 @@ public class GameLogic {
         return new Result(player1, player2, winner,
                 curState.getPlayerStates().get(0).viewHandLayout(),
                 curState.getPlayerStates().get(1).viewHandLayout(),
-                curState.getRoundTurn());
+                curState.getTurn());
     }
 
     public State startGame(State startState){
@@ -87,7 +87,7 @@ public class GameLogic {
             }
         }
 
-        if (curState.endOfGame() || (!fullGame && (curState.getRoundTurn() >= GameRules.maxTurnsInARound || roundEnd))) {
+        if (curState.endOfGame() || (!fullGame && (curState.getTurn() >= GameRules.maxTurnsInARound || roundEnd))) {
             curState.endGame = true;
         }
         return curState;

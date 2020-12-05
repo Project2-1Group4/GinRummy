@@ -3,7 +3,10 @@ package temp.Extra.Tests;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GamePlayers.AIs.basicGreedyTest;
+import temp.GamePlayers.AIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
@@ -11,22 +14,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+//TODO prob something with the laying off
 public class Tests {
 
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new basicGreedyTest(false),
-                new basicGreedyTest(false)
+                new meldBuildingGreedy(),
+                new basicGreedyTest()
         };
         int games = 1; // Set nb of games
         Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println(results);
+        }
         // Do what you want with results
     }
 
-    public static boolean print = true;
+    public static boolean print = false;
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){
         Random rd;
@@ -53,73 +60,75 @@ public class Tests {
         curState = logic.startGame(curState);
 
         List<List<List<int[]>>> deadwood = new ArrayList<>();
-        List<List<List<float[]>>> times = new ArrayList<>();
+        List<List<List<double[]>>> times = new ArrayList<>();
         List<EndOfRoundInfo> roundInfo = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
-            times.add(new ArrayList<List<float[]>>());
-            times.get(i).add(new ArrayList<float[]>());
+            times.add(new ArrayList<List<double[]>>());
+            times.get(i).add(new ArrayList<double[]>());
             deadwood.add(new ArrayList<List<int[]>>());
             deadwood.get(i).add(new ArrayList<int[]>());
         }
 
-        State.StepInTurn previousStep = curState.getStep();
-        int previousPlayer = curState.getPlayerIndex();
-        int previousRound = curState.getRound();
-        State previousState = curState;
-        long s = System.currentTimeMillis();
-        float[] turnTimes = new float[State.StepInTurn.values().length];
+        double[] turnTimes = new double[State.StepInTurn.values().length];
+        State prevState = curState;
+        int prevRound = curState.getRound();
+        int prevPlayer = curState.getPlayerIndex();
+        State.StepInTurn prevStep = curState.getStep();
         while (!curState.endOfGame()) {
+
+            long s = System.currentTimeMillis();
             curState = logic.update(curState);
-            if(previousRound != curState.getRound()){
-                assert previousState != curState;
+            double t = (System.currentTimeMillis()-s)/(float) 1000;
 
-                /*
-
-                If you want to test something every round do it here
-
-                 */
-                roundInfo.add(new EndOfRoundInfo(previousState, false));
-                for (int i = 0; i < players.length; i++) {
-                    times.get(i).add(new ArrayList<float[]>());
-                    deadwood.get(i).add(new ArrayList<int[]>());
-                }
-                previousState = curState;
-            }
-            else if(previousPlayer != curState.getPlayerIndex()){
-                /*
-
-                If you want to test something every turn do it here
-
-                 */
-                int[] deadwoodInfo = new int[]{
-                        curState.getPlayerStates().get(previousPlayer).getDeadwood(),
-                        curState.getPlayerState().getNumberOfCardsInDeadwood()
-                };
-                if(previousPlayer < times.size()){
-                    times.get(previousPlayer).get(previousRound).add(turnTimes);
-                    deadwood.get(previousPlayer).get(previousRound).add(deadwoodInfo);
-                }
-
-                if(print){
-                    System.out.println("Times: "+Arrays.toString(turnTimes));
-                    System.out.println("Deadwood value="+deadwoodInfo[0]+" Cards in deadwood="+deadwoodInfo[1]);
-                }
-                turnTimes = new float[State.StepInTurn.values().length];
-                previousPlayer = curState.getPlayerIndex();
-            }
-            else if(previousStep != curState.getStep()){
+            if(prevStep != curState.getStep()){
                 /*
 
                 If you want to test something every step do it here
 
                  */
-                if(previousStep!=null) {
-                    turnTimes[previousStep.index] = (System.currentTimeMillis()-s) / (float) 1000;
+                turnTimes[prevStep.index] = t;
+                prevStep = curState.getStep();
+            }
+            if(prevPlayer != curState.getPlayerIndex()){
+                /*
+
+                If you want to test something every turn do it here
+
+                 */
+                HandLayout bestLayout = Finder.findBestHandLayout(curState.getPlayerStates().get(prevPlayer).viewHand());
+                int[] deadwoodInfo = new int[]{
+                        bestLayout.getDeadwood(),
+                        bestLayout.getNumberOfCardsInDeadwood()
+                };
+                if(prevPlayer < times.size()){
+                    times.get(prevPlayer).get(prevRound).add(turnTimes);
+                    deadwood.get(prevPlayer).get(prevRound).add(deadwoodInfo);
                 }
-                previousStep = curState.getStep();
-                s = System.currentTimeMillis();
+
+                if(print){
+                    System.out.println("Player index "+prevPlayer);
+                    System.out.println("Times: "+Arrays.toString(turnTimes));
+                    System.out.println("Deadwood value="+deadwoodInfo[0]+" Cards in deadwood="+deadwoodInfo[1]);
+                }
+                turnTimes = new double[State.StepInTurn.values().length];
+                prevPlayer = curState.getPlayerIndex();
+            }
+            if(prevRound != curState.getRound()){
+                /*
+
+                If you want to test something every round do it here
+
+                 */
+                roundInfo.add(new EndOfRoundInfo(prevState, false));
+                for (int i = 0; i < players.length; i++) {
+                    times.get(i).add(new ArrayList<double[]>());
+                    deadwood.get(i).add(new ArrayList<int[]>());
+                }
+                prevState = curState;
+                prevRound = curState.getRound();
             }
         }
-        return new GameInfo(curState, roundInfo, times, deadwood);
+        roundInfo.add(new EndOfRoundInfo(curState,true));
+        return new GameInfo(roundInfo, times, deadwood);
     }
 }

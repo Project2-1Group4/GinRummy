@@ -3,6 +3,7 @@ package temp.Extra.Tests;
 import temp.GameLogic.GameState.State;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameInfo {
@@ -14,15 +15,36 @@ public class GameInfo {
     // float[2] = time for knocking,
     // float[3] = time for layout confirmation,
     // float[4] = time of layoff
-    public final List<List<List<float[]>>> timesOverTurns;
+    public final List<List<List<double[]>>> timesOverTurns;
     // .get(roundIndex)
     public final List<EndOfRoundInfo> roundInfos;
-    public final EndOfRoundInfo finalState;
-
-    public GameInfo(State finalState,List<EndOfRoundInfo> roundInfo, List<List<List<float[]>>> times, List<List<List<int[]>>> deadwood){
-        this.finalState = new EndOfRoundInfo(finalState, true);
+    public GameInfo(List<EndOfRoundInfo> roundInfo, List<List<List<double[]>>> times, List<List<List<int[]>>> deadwood){
         this.deadwoodOverTurns= deadwood;
         this.timesOverTurns = times;
         this.roundInfos = roundInfo;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < deadwoodOverTurns.get(0).size(); j++) {
+            sb.append("R ").append(j).append("\n");
+            for (int i = 0; i < deadwoodOverTurns.size(); i++) {
+                sb.append("P ").append(i).append(":");
+                StringBuilder deadwood = new StringBuilder();
+                StringBuilder time = new StringBuilder();
+                assert deadwoodOverTurns.get(i).get(j).size() == timesOverTurns.get(i).get(j).size();
+                for (int k = 0; k < deadwoodOverTurns.get(i).get(j).size(); k++) {
+                    time.append(Arrays.toString(timesOverTurns.get(i).get(j).get(k)));
+                    deadwood.append(Arrays.toString(deadwoodOverTurns.get(i).get(j).get(k)));
+                }
+                sb.append("\nD ").append(deadwood.toString());
+                sb.append("\nT ").append(time.toString());
+                sb.append("\n");
+            }
+            sb.append("I ").append(roundInfos.get(j));
+            sb.append("\n\n");
+        }
+        return sb.toString();
     }
 }

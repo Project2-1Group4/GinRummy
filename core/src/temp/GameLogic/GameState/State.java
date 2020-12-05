@@ -76,7 +76,6 @@ public class State {
         if(index!=null){
             roundWinnerID = players.get(index).index;
             roundWinnerIndex = index;
-            System.out.println(roundWinnerIndex+" ID "+roundWinnerID);
         }
     }
     // GETTERS
@@ -172,7 +171,7 @@ public class State {
     }
 
     public int[] getScores() {
-        return scores;
+        return scores.clone();
     }
 
     public int getRound() {
@@ -180,10 +179,6 @@ public class State {
     }
 
     public int getTurn() {
-        return turnInRound;
-    }
-
-    public int getRoundTurn() {
         return turnInRound;
     }
 

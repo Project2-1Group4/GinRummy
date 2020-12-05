@@ -22,7 +22,7 @@ public class GameRules {
 
     // Command printing specs
     public static boolean print = false;
-    public static boolean printEndOfRound = true;
+    public static boolean printEndOfRound = false;
     public static boolean minPrint = false;
 
     // Visual specs

@@ -3,9 +3,11 @@ package temp.Extra.Tests;
 import temp.GameLogic.GameState.PlayerState;
 import temp.GameLogic.GameState.State;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class EndOfRoundInfo {
+    public final int round;
     public final Integer winner;
     public final boolean finalRound;
     public final int[] scores;
@@ -13,6 +15,7 @@ public class EndOfRoundInfo {
     public final int[] numberOfCardsInDeadwood;
 
     public EndOfRoundInfo(State state, boolean finalRound){
+        this.round = state.getRound();
         this.finalRound = finalRound;
         winner = state.getWinnerIndex();
         scores = state.getScores();
@@ -23,5 +26,19 @@ public class EndOfRoundInfo {
             deadwoodValues[i] = stateList.get(i).getDeadwood();
             numberOfCardsInDeadwood[i] = stateList.get(i).getNumberOfCardsInDeadwood();
         }
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("R ")
+                .append(round)
+                .append(" F ")
+                .append(finalRound)
+                .append(" Winner ").append(winner);
+        sb.append("\nS ").append(Arrays.toString(scores));
+        sb.append("\nDV ").append(Arrays.toString(deadwoodValues));
+        sb.append("\nD# ").append(Arrays.toString(numberOfCardsInDeadwood));
+        return sb.toString();
+
     }
 }
