@@ -17,7 +17,11 @@ public class EndOfRoundInfo {
     public EndOfRoundInfo(State state, boolean finalRound){
         this.round = state.getRound();
         this.finalRound = finalRound;
-        winner = state.getWinnerIndex();
+        if(!finalRound) {
+            winner = state.getRoundWinnerIndex();
+        }else{
+            winner = state.getWinnerIndex();
+        }
         scores = state.getScores();
         List<PlayerState> stateList = state.getPlayerStates();
         deadwoodValues = new int[stateList.size()];
@@ -28,6 +32,10 @@ public class EndOfRoundInfo {
         }
     }
 
+    /**
+     * @return R = round, F = is final round, S = scores,
+     * DV = deadwood values, D# = nb of cards in deadwood
+     */
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("R ")

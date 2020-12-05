@@ -64,10 +64,11 @@ public class Executor {
                         System.out.println("Player " + i + ":\n" + curState.playerStates.get(i) + "\n");
                     }
                 }
-                System.out.println("\nCurrent scores:");
+                System.out.println("Current scores:");
                 for (int i = 0; i < curState.scores.length; i++) {
                     System.out.println("Player " + i + ": " + curState.scores[i]);
                 }
+                System.out.println();
             }
             int max = 0;
             for (int i = 0; i < curState.scores.length; i++) {

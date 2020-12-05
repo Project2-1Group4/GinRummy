@@ -84,6 +84,9 @@ public class State {
         return gameWinnerIndex!=null;
     }
 
+    public Integer getRoundWinnerIndex(){
+        return roundWinnerIndex;
+    }
     public Integer getWinnerIndex(){
         return gameWinnerIndex;
     }

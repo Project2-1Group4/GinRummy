@@ -188,8 +188,10 @@ public class HandLayout {
             }
             sb.append("\n");
         }
-        sb.append("Deadwood ").append(deadwood).append(" with cards:\n");
-        sb.append(MyCard.toString(unusedCards));
+        sb.append("Deadwood ").append(deadwood).append(" with cards:");
+        if(unusedCards.size()!=0){
+            sb.append("\n").append(MyCard.toString(unusedCards));
+        }
         return sb.toString();
     }
 }

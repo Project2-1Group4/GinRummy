@@ -24,6 +24,10 @@ public class GameInfo {
         this.roundInfos = roundInfo;
     }
 
+    /**
+     * @return R = round, P = player, D = deadwood,
+     * T = time, I = EndOfRoundInfo
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -35,8 +39,8 @@ public class GameInfo {
                 StringBuilder time = new StringBuilder();
                 assert deadwoodOverTurns.get(i).get(j).size() == timesOverTurns.get(i).get(j).size();
                 for (int k = 0; k < deadwoodOverTurns.get(i).get(j).size(); k++) {
-                    time.append(Arrays.toString(timesOverTurns.get(i).get(j).get(k)));
-                    deadwood.append(Arrays.toString(deadwoodOverTurns.get(i).get(j).get(k)));
+                    time.append(" ").append(k).append(Arrays.toString(timesOverTurns.get(i).get(j).get(k)));
+                    deadwood.append(" ").append(k).append(Arrays.toString(deadwoodOverTurns.get(i).get(j).get(k)));
                 }
                 sb.append("\nD ").append(deadwood.toString());
                 sb.append("\nT ").append(time.toString());
