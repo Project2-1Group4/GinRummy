@@ -57,7 +57,13 @@ public class MyCard {
         }
 
         public static Suit getSuit(int i) {
-            return values()[i];
+            for (Suit suit : values()) {
+                if(suit.index==i){
+                    return suit;
+                }
+            }
+            System.out.println("MyCard l65 Wrong index");
+            return null;
         }
     }
 
@@ -86,7 +92,13 @@ public class MyCard {
         }
 
         public static Rank getRank(int i) {
-            return values()[i];
+            for (Rank rank : values()) {
+                if(rank.index ==i){
+                    return rank;
+                }
+            }
+            System.out.println("MyCard l99 Wrong index");
+            return null;
         }
     }
 
