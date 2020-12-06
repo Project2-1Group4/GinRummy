@@ -67,7 +67,7 @@ public class Card extends Actor implements Comparable {
 	}
 
 	public Card(MyCard aCard){
-		this.setValue(aCard.rank.index);
+		this.setValue(aCard.rank.index+1);
 
 		this.setSuit(aCard.suit.index);
 
