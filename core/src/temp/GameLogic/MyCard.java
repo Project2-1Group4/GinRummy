@@ -69,7 +69,7 @@ public class MyCard {
 
     public enum Rank {
         Ace(0),
-        Two(3),
+        Two(1),
         Three(2),
         Four(3),
         Five(4),
