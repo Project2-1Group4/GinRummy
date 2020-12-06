@@ -5,8 +5,8 @@ import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GamePlayers.AIs.basicGreedyTest;
-import temp.GamePlayers.AIs.meldBuildingGreedy;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
+import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;

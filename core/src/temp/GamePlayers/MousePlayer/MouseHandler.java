@@ -1,4 +1,4 @@
-package temp.GamePlayers.MouseStuff;
+package temp.GamePlayers.MousePlayer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

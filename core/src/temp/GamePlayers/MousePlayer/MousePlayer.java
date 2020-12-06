@@ -1,4 +1,4 @@
-package temp.GamePlayers.MouseStuff;
+package temp.GamePlayers.MousePlayer;
 
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;

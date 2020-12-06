@@ -3,6 +3,7 @@ package temp;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
+import temp.Extra.Tests.EndOfRoundInfo;
 import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.Executor;
 import temp.GameLogic.GameState.State;
@@ -11,8 +12,13 @@ import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.CombinePlayer;
+import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
+import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
+import temp.GamePlayers.KeyboardPlayer;
+import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics
@@ -20,7 +26,6 @@ public class Coordinator extends ScreenAdapter {
 
     private final Graphics graphics;
     private State currentGameState;
-    private State previousState;
     private final GinRummy master;
 
     private boolean newStep = true;
@@ -28,6 +33,7 @@ public class Coordinator extends ScreenAdapter {
 
     public Coordinator(GinRummy master) {
         this.master = master;
+
         currentGameState = new StateBuilder()
                 .setSeed(11)
                 .addPlayer(CombinePlayer.getBaseCombinePlayer())
@@ -45,6 +51,13 @@ public class Coordinator extends ScreenAdapter {
     }
 
     public void gameEnded() {
+        System.out.println(new EndOfRoundInfo(currentGameState, true));
+        if(currentGameState.getWinnerIndex()==0){
+            master.winner = "Player 1 "+master.name1;
+        }
+        else if(currentGameState.getWinnerIndex()==1){
+            master.winner = "Player 2 "+master.name2;
+        }
         master.changeScreen(GinRummy.END);
     }
 
@@ -191,7 +204,6 @@ public class Coordinator extends ScreenAdapter {
      * Assigns points and starts a new round
      */
     private void endOfRound() {
-        previousState = currentGameState;
         Executor.assignPoints(currentGameState);
         currentGameState = Executor.startNewRound(500, currentGameState);
         newStep = true;

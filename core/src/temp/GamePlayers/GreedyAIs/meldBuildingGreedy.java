@@ -1,4 +1,4 @@
-package temp.GamePlayers.AIs;
+package temp.GamePlayers.GreedyAIs;
 
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;

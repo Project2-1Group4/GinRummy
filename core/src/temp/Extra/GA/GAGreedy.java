@@ -3,7 +3,7 @@ package temp.Extra.GA;
 import temp.Extra.Tests.EndOfRoundInfo;
 import temp.Extra.Tests.GameInfo;
 import temp.Extra.Tests.Tests;
-import temp.GamePlayers.AIs.meldBuildingGreedy;
+import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 
 import java.io.File;
 import java.io.FileNotFoundException;

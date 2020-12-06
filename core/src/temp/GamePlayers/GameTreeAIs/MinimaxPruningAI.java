@@ -1,4 +1,4 @@
-package temp.GamePlayers.AIs;
+package temp.GamePlayers.GameTreeAIs;
 
 import cardlogic.Card;
 import cardlogic.SetOfCards;
@@ -6,14 +6,10 @@ import gameHandling.Player;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GametreeAI;
-import temp.GamePlayers.Node;
 
-import java.io.*;
 import java.util.*;
 
 public class MinimaxPruningAI extends GamePlayer {
@@ -102,7 +98,7 @@ public class MinimaxPruningAI extends GamePlayer {
         List<Card> currentHand = Player.copyList(parent.hand.toList(), false);
         System.out.println("current bot hand: "+currentHand);
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
-        System.out.println("pick node (hoping hand): "+pickNode);
+        //System.out.println("pick node (hoping hand): "+pickNode);
 
 
         for(Card card : unknownCards.toList()){
@@ -258,7 +254,6 @@ public class MinimaxPruningAI extends GamePlayer {
     public static void main(String[] args) {
         GameLogic g = new GameLogic(true, true);
         g.play(new MinimaxPruningAI(), new MinimaxPruningAI(), 0);
-
     }
 
 /*
@@ -305,10 +300,10 @@ public class MinimaxPruningAI extends GamePlayer {
     */
     @Override
     public Boolean knockOrContinue() {
-        System.out.println("problem score "+new SetOfCards(this.allCards, false).toList());
+        //System.out.println("problem score "+new SetOfCards(this.allCards, false).toList());
         int score = Player.scoreHand(new SetOfCards(this.allCards, false).toList());
         if (score < 10) {
-            System.out.println("Score AI " + score);
+            //System.out.println("Score AI " + score);
             return true;
         }
         else
@@ -370,7 +365,7 @@ public class MinimaxPruningAI extends GamePlayer {
                 }
             }
         }
-        System.out.println("problem discard "+ new SetOfCards(this.allCards, false).toList());
+        //System.out.println("problem discard "+ new SetOfCards(this.allCards, false).toList());
         Card aCard = GametreeAI.chooseCardToDiscard(new SetOfCards(this.allCards, false).toList());
         this.discardedCards.add(aCard);
         MyCard discard = new MyCard(aCard);
@@ -400,10 +395,7 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void update(HandLayout realLayout) {
-        //all cards in the hand of the AI
-        allCards = realLayout.viewAllCards();
-        //Sort the hand of the player
-        handLayout = Finder.findBestHandLayout(allCards);
+        super.update(realLayout);
         SetOfCards cardList = new SetOfCards(realLayout);
 
     }

@@ -3,7 +3,6 @@ package temp.Extra.Tests;
 import temp.GameLogic.GameState.PlayerState;
 import temp.GameLogic.GameState.State;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,21 +77,4 @@ public class EndOfRoundInfo {
                 numberOfCardsInDeadwood[0] + "," +
                 numberOfCardsInDeadwood[1];
     }
-
-    public static void main(String[] args){
-
-        int[] ints = {1,2,3,4,5};
-        double[] dubs = {0.5,1.0,1.5,2.0,2.5};
-
-        List<int[]> listInt = new ArrayList<>();
-        listInt.add(ints);
-
-        List<List<int[]>> listListInt = new ArrayList<>();
-        listListInt.add(listInt);
-
-        System.out.println(CSVWriter.listOfListIntDecoder(listListInt));
-
-
-    }
-
 }

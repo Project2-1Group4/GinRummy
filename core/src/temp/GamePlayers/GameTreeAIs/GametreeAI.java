@@ -1,4 +1,4 @@
-package temp.GamePlayers;
+package temp.GamePlayers.GameTreeAIs;
 
 import cardlogic.Card;
 import cardlogic.SetOfCards;

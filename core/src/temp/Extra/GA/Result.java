@@ -59,12 +59,4 @@ public class Result {
         sb.append("\n").append(nbOfTurns).append(" turns");
         return sb.toString();
     }
-
-    public static void main(String args[]){
-        int i = 10;
-
-        System.out.println("Yo " + i);
-        System.out.println("Yo " + (i+1));
-    }
-
 }

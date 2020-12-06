@@ -7,7 +7,7 @@ import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.MouseStuff.MousePlayer;
+import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
