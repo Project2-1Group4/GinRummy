@@ -194,8 +194,10 @@ public class GametreeAI {
     public void simulationPickPile(Node parent){
         // if opponent picks card from pile
         copyParent(parent);
+
         opponentHand = new SetOfCards();
         Card chosen = discardPile.getCard((discardPile.size()-1));
+        discardPile.discardCard(chosen);
         lookThroughKnownCards(chosen);
         // update prob of unknown cards
         for(int j = 0; j<cardsUnknown.size(); j++) {
@@ -212,9 +214,8 @@ public class GametreeAI {
                 cardsUnknown.getCard(j).setProb(runProb);
             }
         }
-        chosen.setProb(1.0);
         cardsUnknown.addCard(chosen);
-        discardPile.discardCard(chosen);
+        chosen.setProb(1.0);
     }
 
    public void simulationPickDeck(Node parent) {
@@ -275,7 +276,7 @@ public class GametreeAI {
         List<Node> nodes = new ArrayList<>();
         List<Card> opponentHandcur;
         // simulate 100 times
-        for(int i= 1; i<= 10; i++){
+        for(int i= 1; i<= 100; i++){
             if(pickOrDiscard){
                 opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 11);
             }
@@ -419,6 +420,50 @@ public class GametreeAI {
             printOutTree(child);
         }
     }
+    public SetOfCards updateProbDiscard(Node current, Card discardCard){
+        copyParent(current);
+        lookThroughKnownCards(discardCard);
+        // OPPONENT DISCARDS CARD
+        for(int j = 0; j<cardsUnknown.size(); j++){
+            double setProb = 0.0;
+            double runProb = 0.0;
+            // decrease prob of cards that form set with discarded card
+            if(cardsUnknown.getCard(j).getValue() == discardCard.getValue()){
+                setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
+                cardsUnknown.getCard(j).setProb(setProb);
+            }
+            // decrease prob of cards that form run with discarded card
+            if(cardsUnknown.getCard(j).getSuit() == discardCard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discardCard.getValue()) == 1){
+                runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
+                cardsUnknown.getCard(j).setProb(runProb);
+            }
+        }
+        return cardsUnknown;
+    }
+    public SetOfCards updateProbPickPile(Node current, Card topOfDiscard){
+        // if opponent picks card from pile
+        copyParent(current);
+        lookThroughKnownCards(topOfDiscard);
+        // update prob of unknown cards
+        for(int j = 0; j<cardsUnknown.size(); j++) {
+            double setProb = 0;
+            double runProb = 0;
+            // increase prob for cards that form set with chosen card
+            if (cardsUnknown.getCard(j).getValue() == topOfDiscard.getValue()) {
+                setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
+                cardsUnknown.getCard(j).setProb(setProb);
+            }
+            // increase prob for cards that form run with chosen card
+            else if (cardsUnknown.getCard(j).getSuit() == topOfDiscard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - topOfDiscard.getValue()) == 1) {
+                runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
+                cardsUnknown.getCard(j).setProb(runProb);
+            }
+        }
+        cardsUnknown.addCard(topOfDiscard);
+        topOfDiscard.setProb(1.0);
+        return cardsUnknown;
+    }
+
 
 
     public static void main(String[] args){
