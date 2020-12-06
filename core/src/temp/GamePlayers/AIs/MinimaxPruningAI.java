@@ -95,13 +95,13 @@ public class MinimaxPruningAI extends GamePlayer {
 
     public Card[] getNodeReturn() {
         Node parent = tree.getRootNode();
-        List<Card> currentHand = Player.copyList(parent.hand.toList());
+        List<Card> currentHand = Player.copyList(parent.hand.toList(), false);
         System.out.println("current bot hand: "+currentHand);
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
         System.out.println("pick node (hoping hand): "+pickNode);
         unknownCards = pickNode.unknownCards;
 
-        List<Card> newHand = Player.copyList(pickNode.hand.toList());
+        List<Card> newHand = Player.copyList(pickNode.hand.toList(), false);
         Card pickCard = null;
         for(Card card : newHand) {
             if (!currentHand.contains(card)) {
@@ -348,7 +348,7 @@ public class MinimaxPruningAI extends GamePlayer {
             return new MyCard(pick_discard[1]);
         }
         else {
-            List<Card> copyHand = Player.copyList(this.hand.toList());
+            List<Card> copyHand = Player.copyList(this.hand.toList(), false);
             copyHand.add(deck.peekTopCard());
             Card discard = GametreeAI.chooseCardToDiscard(copyHand);
             return new MyCard(discard);

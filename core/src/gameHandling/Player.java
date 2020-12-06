@@ -64,7 +64,7 @@ public class Player {
         //Note: (make also sure that there is in the loop at least one empty sequence, that doesnt remove anything)
 
         SetOfCards SequenceSet = new SetOfCards();
-        SequenceSet.fromList(copyList(sequence));
+        SequenceSet.fromList(copyList(sequence, false));
 
 
         int Value = valueOfLists(findRuns(SequenceSet)) + valueOfLists(removed);
@@ -176,7 +176,7 @@ public class Player {
     public static List<List<Card>> copyListOfList(List<List<Card>> card) {
         List<List<Card>> newCard = new ArrayList<>();
         for (int i = 0; i < card.size(); i++) {
-            newCard.add(copyList(card.get(i)));
+            newCard.add(copyList(card.get(i), false));
         }
         return newCard;
     }
@@ -188,6 +188,19 @@ public class Player {
         for (Card aCard: cards){
             //newCard.add(new Card(aCard));
             newCard.add(new Card(aCard));
+        }
+        return newCard;
+    }
+
+    public static List<Card> copyList(List<Card> cards, boolean deepCopy) {
+        List<Card> newCard = new ArrayList<>();
+        if (deepCopy) {
+            newCard = Player.copyList(cards);
+        }
+        else {
+            for (Card aCard: cards){
+                newCard.add(aCard);
+            }
         }
         return newCard;
     }
@@ -433,7 +446,7 @@ public class Player {
     public List<Card> findDeadwood() {
 
         List<Card> handCard = this.hand.toList();
-        this.deadWood = copyList(handCard);
+        this.deadWood = copyList(handCard, false);
         this.bestCombination();
 
         if (this.bestCombination.size() == 0) {
