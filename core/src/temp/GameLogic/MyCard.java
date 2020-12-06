@@ -22,7 +22,7 @@ public class MyCard {
 
     public MyCard(Card aCard){
         this.suit = Suit.getSuit(aCard.getSuitVal());
-        this.rank = Rank.getRank(aCard.getValue());
+        this.rank = Rank.getRank(aCard.getValue()-1) ;
     }
 
     // GETTERS
@@ -69,7 +69,7 @@ public class MyCard {
 
     public enum Rank {
         Ace(0),
-        Two(1),
+        Two(3),
         Three(2),
         Four(3),
         Five(4),
