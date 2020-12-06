@@ -35,13 +35,32 @@ public class Coordinator extends ScreenAdapter {
         this.master = master;
 
         currentGameState = new StateBuilder()
-                .setSeed(11)
-                .addPlayer(CombinePlayer.getBaseCombinePlayer())
-                .addPlayer(CombinePlayer.getBaseCombinePlayer())
+                .addPlayer(getPlayer(master.name1))
+                .addPlayer(getPlayer(master.name2))
                 .build();
         graphics = new Graphics();
     }
 
+    private GamePlayer getPlayer(String s){
+        switch (s.toLowerCase()) {
+            case "minimax":
+            case "minimaxpruningai":
+                return new MinimaxPruningAI();
+            case "basic greedy":
+            case "basicgreedy":
+                return new basicGreedyTest();
+            case "meld greedy":
+            case "meldgreedy":
+            case "greedy":
+                return new meldBuildingGreedy();
+            case "keyboard":
+                return new KeyboardPlayer();
+            case "mouse":
+                return new MousePlayer();
+            default:
+                return CombinePlayer.getBaseCombinePlayer();
+        }
+    }
     @Override
     public void show() {
         this.currentGameState = Executor.startGame(500, currentGameState);
