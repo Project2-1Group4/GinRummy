@@ -3,6 +3,7 @@ package temp.GameLogic.MELDINGOMEGALUL;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -50,22 +51,26 @@ class MeldCreator {
             for (int j = 0; j < hand[i].length; j++) {
                 if (hand[i][j] == 1) {
                     int offset = 0;
-                    int consecutive = 0;
+                    // Does a run start from this [i,j]?
+                    List<Integer> consecutive = new ArrayList<>();
                     while (j + offset < hand[i].length && hand[i][j + offset] == 1) {
-                        consecutive++;
+                        consecutive.add(j+offset);
                         offset++;
                     }
-                    if (consecutive >= 3) {
-                        melds.add(createMeld(i, j, consecutive, 0));
+                    if (consecutive.size() >= 3) {
+                        melds.add(createMeld(i, j, consecutive, null));
                     }
                     offset = 0;
-                    consecutive = 0;
-                    while (i + offset < hand.length && hand[i + offset][j] == 1) {
-                        consecutive++;
+                    consecutive.clear();
+                    // Does a set start from this [i,j]?
+                    while (i + offset < hand.length) {
+                        if(hand[i + offset][j] == 1) {
+                            consecutive.add(i+offset);
+                        }
                         offset++;
                     }
-                    if (consecutive >= 3) {
-                        melds.add(createMeld(i, j, 0, consecutive));
+                    if (consecutive.size() >= 3) {
+                        melds.add(createMeld(i, j, null, consecutive));
                     }
                 }
             }
@@ -82,15 +87,18 @@ class MeldCreator {
      * @param kDown  direction of meld.== 0 if kRight != 0
      * @return created meld
      */
-    private static Meld createMeld(int i, int j, int kRight, int kDown) {
-        assert (kRight == 0 || kDown == 0);
+    private static Meld createMeld(int i, int j, List<Integer> kRight, List<Integer> kDown) {
+        assert kRight !=null || kDown != null;
 
         Meld meld = new Meld();
-        for (int kD = 0; kD < kDown; kD++) {
-            meld.addCard(new MyCard(i + kD, j));
-        }
-        for (int kR = 0; kR < kRight; kR++) {
-            meld.addCard(new MyCard(i, j + kR));
+        if(kRight!=null) {
+            for (Integer integer : kRight) {
+                meld.addCard(new MyCard(i, integer));
+            }
+        }else {
+            for (Integer integer : kDown) {
+                meld.addCard(new MyCard(integer, j));
+            }
         }
         return meld;
     }
