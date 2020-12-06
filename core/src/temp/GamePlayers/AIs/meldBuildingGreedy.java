@@ -356,6 +356,8 @@ public class meldBuildingGreedy extends GamePlayer {
         If it's out of bounds, return 3
         If it's already in another meld (which is more valuable) then return 3
      */
+
+    // This seems to be a major speed obstacle for the AI
     static int checkCardNearby(int suit, int val, int loc, int[][] memoryMatrix) {
         try {
             int res = memoryMatrix[suit][val + loc];
@@ -542,9 +544,9 @@ public class meldBuildingGreedy extends GamePlayer {
     @Override
     public String toString() {
         return "meldBuildingGreedy: " +
-                "CardInMeld: " + this.cardInMeld +
-                "CardCloseToMeld: " + this.cardCloseToMeld +
-                "CardFree" + this.cardFree +
-                "CardNever" + this.cardNever;
+                " CardInMeld: " + this.cardInMeld +
+                " CardCloseToMeld: " + this.cardCloseToMeld +
+                " CardFree: " + this.cardFree +
+                " CardNever: " + this.cardNever;
     }
 }

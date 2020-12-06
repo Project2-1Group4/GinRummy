@@ -5,6 +5,10 @@ import temp.Extra.Tests.GameInfo;
 import temp.Extra.Tests.Tests;
 import temp.GamePlayers.AIs.meldBuildingGreedy;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,16 +16,38 @@ public class GAGreedy {
 
     public static void main(String[] args) {
 
-        int numOfGames = 5;
 
-        GAGreedy ga = new GAGreedy(50,0.02,2,15);
+        GAGreedy ga = new GAGreedy(200,0.1,2,11);
 
-        ga.runForGenerations(3);
+        ga.runForGenerations(1000);
+
+        System.out.println("Done with the generations");
 
         meldBuildingGreedy[] theBest = ga.findNFittestPlayers(10);
         for(meldBuildingGreedy ai: theBest){
-            System.out.println(theBest.toString());
+            System.out.println(ai.toString());
         }
+
+
+        try(PrintWriter gamewriter = new PrintWriter(new File("game_info.txt"))){
+
+            StringBuilder sb = new StringBuilder();
+
+            for(meldBuildingGreedy ai: theBest){
+                sb.append(ai.toString());
+                sb.append('\n');
+            };
+
+            gamewriter.write(sb.toString());
+            System.out.println("done with saving the info");
+
+        } catch(FileNotFoundException e){
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         //GAPlayer[] winners = ga.train();
     }
@@ -108,6 +134,14 @@ public class GAGreedy {
         while(i<numOfGenerations){
             this.findFittestIndividuals();
             this.newGeneration();
+            i++;
+            meldBuildingGreedy[] best = this.findNFittestPlayers(3);
+            System.out.println("For generation " + i + " the best were:");
+            for(meldBuildingGreedy ai : best){
+                System.out.println(ai.toString());
+            }
+            System.out.println("\n");
+
 
         }
 
@@ -116,10 +150,11 @@ public class GAGreedy {
 
     public void init() {
         for(int i=0; i<players.length;i++){
-            double cardInMeld = randomNumberGenerator(0,1);
-            double cardCloseToMeld = randomNumberGenerator(0,2);
-            double cardFree = randomNumberGenerator(0,3);
-            double cardNever = randomNumberGenerator(0,4);
+            // I make card in meld slightly negative, because I think it's a worthwhile space to search
+            double cardInMeld = randomNumberGenerator(-0.5,4);
+            double cardCloseToMeld = randomNumberGenerator(-0.5,4);
+            double cardFree = randomNumberGenerator(-0.5,4);
+            double cardNever = randomNumberGenerator(-0.5,4);
 
             this.players[i] = new meldBuildingGreedy(cardInMeld,cardCloseToMeld,cardFree,cardNever);
         }
@@ -131,7 +166,7 @@ public class GAGreedy {
         // And they'll be paired with a random opponent for sure
         shuffleArray(this.players);
 
-        for(int i = 0; i<this.players.length/2;i+=2){
+        for(int i = 0; i<this.players.length;i+=2){
             meldBuildingGreedy[] matchedPlayers = {this.players[i], this.players[i+1]};
 
             List<GameInfo> results = Tests.runGames(this.internalLogic, matchedPlayers, this.numberOfGames,null);
@@ -193,7 +228,8 @@ public class GAGreedy {
         }
 
         for(int i=0 ;i<fittestPlayers.length;i++){
-            this.players[i+ fittestPlayers.length] = fittestPlayers[i];
+            int toMod = i+ fittestPlayers.length;
+            this.players[toMod] = fittestPlayers[i];
         }
 
     }
@@ -222,8 +258,7 @@ public class GAGreedy {
     }
 
     double mutate(double valToMutate){
-        double bounds = valToMutate*mutationMultiplier;
-        return valToMutate + randomNumberGenerator(-bounds,bounds);
+        return valToMutate + randomNumberGenerator(-1,1);
     }
     /*
     Gist of this method is that an int with a higher value should have a higher chance of being picked
@@ -323,33 +358,68 @@ public class GAGreedy {
     public meldBuildingGreedy[] findNFittestPlayers(int nPlayersToSearch){
         // I'll save the indexes of the NFittest players first
 
-        int[] indexes = new int[nPlayersToSearch];
+        List<Integer> list = new ArrayList<>();
 
-        for(int i=0; i<fittestPlayers.length;i++){
-            int numOfWins = numOfWinsForFit[i];
+        /*
+        So I store the first n elements in a list
+         */
+        for(int i=0; i<nPlayersToSearch;i++){
+            list.add(i);
+        }
 
-            for(int j=0; j<indexes.length;j++){
-                if(numOfWins > indexes[j]){
+        /*
+        Then I go through the entire fittest player list
+        If I find a value that is fitter than the weakest element in the list
+        Remove the weakest element and add that value
 
-                    for(int k = j;k<indexes.length-1;k++){
-                        indexes[k+1] = indexes[k];
-                    }
+        Go through entire list and boom
+         */
 
-                    indexes[j] = i;
+        int weakestIndex = findWeakestIndexValue(list);
+        int weakestValue = this.numOfWinsForFit[weakestIndex];
 
-                    break;
-                }
+        // I should be able to make this start at nPlayers and it should work perfectly
+        for(int i=nPlayersToSearch; i<fittestPlayers.length;i++){
+            int valueToCheck = this.numOfWinsForFit[i];
+
+            if(valueToCheck>weakestValue){
+                boolean rem = list.remove(new Integer(weakestIndex));
+                list.add(i);
+
+                weakestIndex = findWeakestIndexValue(list);
+                weakestValue = this.numOfWinsForFit[weakestIndex];
             }
 
         }
 
         meldBuildingGreedy[] nFittestPlayers = new meldBuildingGreedy[nPlayersToSearch];
 
-        for(int i=0;i< nFittestPlayers.length;i++){
-            nFittestPlayers[i] = fittestPlayers[indexes[i]];
+        for(int i=0; i< nFittestPlayers.length;i++){
+            nFittestPlayers[i] = this.fittestPlayers[list.get(i)];
         }
 
         return nFittestPlayers;
+    }
+
+    int findWeakestIndexValue(List<Integer> list){
+        int weakIndex = list.get(0);
+        int weakVal = this.numOfWinsForFit[weakIndex];
+
+        for(int i=0;i<list.size();i++){
+            int indToCheck = list.get(i);
+            int valToCheck = this.numOfWinsForFit[indToCheck];
+
+            if(valToCheck < weakVal){
+                weakIndex = indToCheck;
+                weakVal = valToCheck;
+
+            }
+
+
+        }
+
+        return weakIndex;
+
     }
 
 }

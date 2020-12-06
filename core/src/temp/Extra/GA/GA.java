@@ -1,9 +1,6 @@
 package temp.Extra.GA;
 
-import jdk.internal.org.jline.reader.EndOfFileException;
-import temp.Extra.Tests.EndOfRoundInfo;
 import temp.GamePlayers.AIs.basicGreedyTest;
-import temp.GamePlayers.AIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;

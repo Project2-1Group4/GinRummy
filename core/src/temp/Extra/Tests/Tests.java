@@ -41,7 +41,7 @@ public class Tests {
         }
         List<GameInfo> results = new ArrayList<>();
         for(int i=0; i <numberOfGames; i++){
-            System.out.println("Game "+i);
+            //System.out.println("Game "+i);
             results.add(runGame(logic, players,rd.nextInt()));
         }
         return results;
