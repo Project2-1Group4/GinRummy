@@ -1,5 +1,6 @@
 package temp.Extra.GA;
 
+import temp.Extra.Tests.EndOfRoundInfo;
 import temp.GameLogic.GameActions.*;
 import temp.GameLogic.GameState.Executor;
 import temp.GameLogic.GameState.State;
@@ -7,7 +8,6 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.AIs.MinimaxPruningAI;
 import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 
@@ -19,6 +19,7 @@ public class GameLogic {
 
 
     private boolean roundEnd;
+    private boolean printEndOfRound = true;
 
     public GameLogic(){
         onlyBot = true;
@@ -36,7 +37,6 @@ public class GameLogic {
                 .addPlayer(player1)
                 .addPlayer(player2)
                 .build();
-
         curState = startGame(curState);
 
         while (!curState.endOfGame()) {
@@ -76,13 +76,16 @@ public class GameLogic {
                     System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
                 }
                 if (action!=null && !executed) {
-                    System.out.println("ERROR ERROR ERROR BOT RETURNS NON-EXECUTABLE MOVE");
+                    System.out.println("ERROR ERROR ERROR BOT RETURNS NON-EXECUTABLE MOVE: "+action);
                 }
             }
         }
 
         if (roundEnd) {
             Executor.assignPoints(curState);
+            if(printEndOfRound) {
+                System.out.println(new EndOfRoundInfo(curState, false));
+            }
             if(fullGame) {
                 curState = endOfRound(curState);
             }

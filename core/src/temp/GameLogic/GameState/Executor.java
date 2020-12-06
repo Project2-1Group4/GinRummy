@@ -165,7 +165,6 @@ public class Executor {
     public static void nextStep(State curState) {
 
         curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
-
         if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
 
         Action a = curState.viewLastAction();
@@ -370,6 +369,8 @@ public class Executor {
                 curState.getPlayerState().handLayout = action.layout;
                 return action;
             }
+        }else{
+            System.out.println("NOT VALID");
         }
         System.out.println("Executor.layoutConfirmation() ERROR ERROR ERROR");
         return null;
