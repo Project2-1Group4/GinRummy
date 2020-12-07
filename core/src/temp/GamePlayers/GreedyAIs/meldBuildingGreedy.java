@@ -75,10 +75,11 @@ public class meldBuildingGreedy extends GamePlayer {
     These multipliers are for that, to use them for a GA
     */
 
-    double cardInMeld = 0.0;
-    double cardCloseToMeld = 1.0;
-    double cardFree = 2.0;
-    double cardNever = 4.0;
+    // These were tha values obtained after running the GA for a while
+    double cardInMeld = 0.5342849458886937;
+    double cardCloseToMeld = 3.43501263871715;
+    double cardFree = 4.592593036604112;
+    double cardNever = 5.002065914031019;
 
     int knockValue = 10;
 
