@@ -145,6 +145,9 @@ public class CSVWriter {
             sb.append(listOfListIntDecoder(p1DeadInfo));
         }
 
+        sb.append("\n");
+
+
         sb.append("Player 1 Time: \n");
 
         for(GameInfo info: results){

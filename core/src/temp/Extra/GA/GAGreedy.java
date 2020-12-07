@@ -17,9 +17,9 @@ public class GAGreedy {
     public static void main(String[] args) {
 
 
-        GAGreedy ga = new GAGreedy(200,0.1,2,11);
+        GAGreedy ga = new GAGreedy(300,0.1,2,15);
 
-        ga.runForGenerations(1000);
+        ga.runForGenerations(2000);
 
         System.out.println("Done with the generations");
 
@@ -151,10 +151,10 @@ public class GAGreedy {
     public void init() {
         for(int i=0; i<players.length;i++){
             // I make card in meld slightly negative, because I think it's a worthwhile space to search
-            double cardInMeld = randomNumberGenerator(-0.5,4);
-            double cardCloseToMeld = randomNumberGenerator(-0.5,4);
-            double cardFree = randomNumberGenerator(-0.5,4);
-            double cardNever = randomNumberGenerator(-0.5,4);
+            double cardInMeld = randomNumberGenerator(-2,4);
+            double cardCloseToMeld = randomNumberGenerator(-2,4);
+            double cardFree = randomNumberGenerator(-2,4);
+            double cardNever = randomNumberGenerator(-2,4);
 
             this.players[i] = new meldBuildingGreedy(cardInMeld,cardCloseToMeld,cardFree,cardNever);
         }

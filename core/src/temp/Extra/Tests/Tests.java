@@ -24,7 +24,7 @@ public class Tests {
                 new meldBuildingGreedy(),
                 new basicGreedyTest()
         };
-        int games = 100; // Set nb of games
+        int games = 1000; // Set nb of games
         Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
