@@ -5,9 +5,9 @@ import temp.GameLogic.GameState.State;
 import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GamePlayers.GreedyAIs.basicGreedyTest;
-import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +21,10 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new meldBuildingGreedy(),
+                new MinimaxPruningAI(),
                 new basicGreedyTest()
         };
-        int games = 1000; // Set nb of games
+        int games = 60; // Set nb of games
         Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
