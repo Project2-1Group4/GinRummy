@@ -21,15 +21,15 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new MinimaxPruningAI(),
+                new basicGreedyTest(),
                 new basicGreedyTest()
         };
-        int games = 60; // Set nb of games
+        int games = 5; // Set nb of games
         Integer seed = 0; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
         // Do what you want with results
-        CSVWriter.write(results);
+        CSVWriter.write(results, "Results/basic_greedy_minimax");
     }
 
     public static List<GameInfo> runGames(GameLogic logic, GamePlayer[] players, int numberOfGames, Integer seed){

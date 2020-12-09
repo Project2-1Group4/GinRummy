@@ -7,8 +7,8 @@ import java.util.List;
 
 public class CSVWriter {
 
-    public static void write(List<GameInfo> results){
-        try(PrintWriter gamewriter = new PrintWriter(new File("game_info.csv"))){
+    public static void write(List<GameInfo> results, String fileName){
+        try(PrintWriter gamewriter = new PrintWriter(new File(fileName+"_results.csv"))){
 
             StringBuilder sbGame = new StringBuilder();
             sbGame.append("RoundNumber");
@@ -41,7 +41,7 @@ public class CSVWriter {
             e.printStackTrace();
         }
 
-        try(PrintWriter roundwriter = new PrintWriter(new File("round_info.csv"))){
+        try(PrintWriter roundwriter = new PrintWriter(new File(fileName+"_round_info.csv"))){
             StringBuilder sb = new StringBuilder();
 
             sb.append("Winner");
@@ -71,7 +71,7 @@ public class CSVWriter {
             e.printStackTrace();
         }
 
-        try(PrintWriter deadwoodAndTime = new PrintWriter(new File("deadwood_info.csv"))){
+        try(PrintWriter deadwoodAndTime = new PrintWriter(new File(fileName+"_deadwood_info.csv"))){
             StringBuilder sb = new StringBuilder();
             /*
             In this case there's not really much order to the data
