@@ -7,7 +7,10 @@ import java.util.List;
 
 public class CSVWriter {
 
-    public static void write(List<GameInfo> results, String fileName){
+    public static void write(List<GameInfo> results, String directory, String fileName){
+        File dir = new File(directory);
+        dir.mkdirs();
+        fileName = directory+fileName;
         try(PrintWriter gamewriter = new PrintWriter(new File(fileName+"_results.csv"))){
 
             StringBuilder sbGame = new StringBuilder();
