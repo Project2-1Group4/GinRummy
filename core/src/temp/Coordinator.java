@@ -11,13 +11,10 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.CombinePlayer;
+import temp.GamePlayers.*;
 import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
-import temp.GamePlayers.ForcePlayer;
-import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
-import temp.GamePlayers.KeyboardPlayer;
 import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.Graphics;
 
@@ -33,34 +30,13 @@ public class Coordinator extends ScreenAdapter {
 
     public Coordinator(GinRummy master) {
         this.master = master;
-
         currentGameState = new StateBuilder()
-                .addPlayer(getPlayer(master.name1))
-                .addPlayer(getPlayer(master.name2))
+                .addPlayer(StringToGamePlayer.getPlayer(master.name1))
+                .addPlayer(StringToGamePlayer.getPlayer(master.name2))
                 .build();
         graphics = new Graphics();
     }
 
-    private GamePlayer getPlayer(String s){
-        switch (s.toLowerCase()) {
-            case "minimax":
-            case "minimaxpruningai":
-                return new MinimaxPruningAI();
-            case "basic greedy":
-            case "basicgreedy":
-                return new basicGreedyTest();
-            case "meld greedy":
-            case "meldgreedy":
-            case "greedy":
-                return new meldBuildingGreedy();
-            case "keyboard":
-                return new KeyboardPlayer();
-            case "mouse":
-                return new MousePlayer();
-            default:
-                return CombinePlayer.getBaseCombinePlayer();
-        }
-    }
     @Override
     public void show() {
         this.currentGameState = Executor.startGame(500, currentGameState);
