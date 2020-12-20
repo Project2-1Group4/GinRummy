@@ -6,7 +6,6 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 
@@ -22,11 +21,11 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new meldBuildingGreedy(),
-                new meldBuildingGreedy(0, 1, 2, 3)
+                new basicGreedyTest(),
+                new meldBuildingGreedy()
         };
-        int games = 5000; // Set nb of games
-        Integer seed = 0; // Set seed
+        int games = 1000; // Set nb of games
+        Integer seed = null; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
 
