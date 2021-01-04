@@ -29,8 +29,9 @@ public class MinimaxPruningAI extends GamePlayer {
     boolean AIknock = false;
     static int round = 0;
     //public static SetOfCards deck;
-    int maxDepthOfTree = 4;
+    int maxDepthOfTree = 3;
     private List<MyCard> backupHand;
+    private double[][] probMap = new double[4][13];
 
 
     public List<MyCard> discardedCards = new ArrayList<>();
@@ -105,6 +106,7 @@ public class MinimaxPruningAI extends GamePlayer {
 
         List<MyCard> currentHand = GametreeAI.deepCloneMyCardList(parent.hand);
         System.out.println("current bot hand: "+currentHand);
+        System.out.println("deadwood = "+handLayout.getDeadwood());
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
         //System.out.println("pick node (hoping hand): "+pickNode);
 
@@ -115,7 +117,7 @@ public class MinimaxPruningAI extends GamePlayer {
             }
         }
         unknownCards = pickNode.unknownCards;
-
+        probMap = pickNode.getProbMap();
         List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
         MyCard pickCard = null;
         for(MyCard card : newHand) {
@@ -126,7 +128,7 @@ public class MinimaxPruningAI extends GamePlayer {
 
         //loop through newHand to get the new card
 
-        System.out.println("pick card: "+pickCard);
+        //System.out.println("pick card: "+pickCard);
         MyCard discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
@@ -138,7 +140,7 @@ public class MinimaxPruningAI extends GamePlayer {
             }
         }
 
-        System.out.println("discard card: "+discardCard);
+        //System.out.println("discard card: "+discardCard);
 
         return new MyCard[] {pickCard, discardCard};
     }
@@ -211,6 +213,7 @@ public class MinimaxPruningAI extends GamePlayer {
 
         //int score = Player.scoreHand(new SetOfCards(this.allCards, false).toList());
         if (this.handLayout.getDeadwood() <= 10){
+            System.out.println("end Round");
             return true;
         } else {
             return false;
@@ -233,6 +236,7 @@ public class MinimaxPruningAI extends GamePlayer {
                 backupHand.add(allCards.get(i));
 
             }
+
             return true;
         }
         else if(!pick_discard[0].equals(topCard)){
@@ -240,10 +244,12 @@ public class MinimaxPruningAI extends GamePlayer {
                 backupHand.add(allCards.get(i));
 
             }
+
             return true;
         }
 
         else {
+            System.out.println("DiscardPile");
             this.discardedCards.remove(pick_discard[0]);
             return false;
         }
@@ -266,6 +272,7 @@ public class MinimaxPruningAI extends GamePlayer {
                     if(unknownCards.contains(card)){
                         //does it remove the card!!
                         unknownCards.remove(card);
+                        this.setProbability(card, 0.0);
                         }
                     }
                 }
@@ -290,7 +297,7 @@ public class MinimaxPruningAI extends GamePlayer {
     }
 
     public void createTree(){
-        this.tree = new GametreeAI(this.discardedCards,this.allCards, this.unknownCards, this.maxDepthOfTree);
+        this.tree = new GametreeAI(this.discardedCards,this.allCards, this.unknownCards, this.maxDepthOfTree, this.probMap);
 
     }
 
@@ -316,8 +323,20 @@ public class MinimaxPruningAI extends GamePlayer {
         this.discardedCards = new ArrayList<>();
         this.discardedCards.add(new MyCard(topOfDiscard));
         this.unknownCards = findRemainingCards(this.allCards, this.discardedCards);
+        for(MyCard card: unknownCards){
+            this.setProbability(card, 1.0/41.0);
+        }
         createTree();
         this.tree.createTree(true);
+    }
+
+    void setProbability(MyCard card, double val){
+        if(val >= 1.0){
+            probMap[card.suit.index][card.rank.index] = 1.0;
+        } else {
+            probMap[card.suit.index][card.rank.index] = val;
+        }
+
     }
 
     /*
@@ -332,6 +351,7 @@ public class MinimaxPruningAI extends GamePlayer {
         for(int i =0; i<unknownCards.size();i++){
             if(disCard.suit.index ==unknownCards.get(i).suit.index&& disCard.rank.index == unknownCards.get(i).rank.index){
                 this.unknownCards = this.tree.updateProbDiscard(current,disCard);
+                this.probMap = this.tree.probMap;
                 this.unknownCards.remove(unknownCards.get(i));
             }
         }
@@ -350,11 +370,13 @@ public class MinimaxPruningAI extends GamePlayer {
             this.discardedCards.remove(pickedCard);
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0 );
             this.unknownCards = this.tree.updateProbPickPile(current,pickedCard);
+            this.probMap= this.tree.probMap;
         }
         else{
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0 );
             MyCard notChosen = new MyCard(this.discardedCards.get(discardedCards.size()-1));
             this.unknownCards = this.tree.updateProbDiscard(current,notChosen);
+            this.probMap= this.tree.probMap;
         }
     }
 

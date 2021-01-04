@@ -29,7 +29,7 @@ public class GametreeAI {
     private int maxDepth;
     private Node root;
 
-    public  GametreeAI (List<MyCard> pile, List<MyCard> cards, List<MyCard> deck, int maxDepth){
+    public  GametreeAI (List<MyCard> pile, List<MyCard> cards, List<MyCard> deck, int maxDepth, double [][] probMap){
         this.discardPile = pile;
         this.hand = cards;
         this.cardsUnknown = deck;
@@ -38,9 +38,10 @@ public class GametreeAI {
             opponentHand.add(cardsUnknown.get(i));
         }
         this.maxDepth = maxDepth;
+        this.probMap = probMap;
 
         // TODO: Bugtest and make sure all of the nodes have the correct relevant probabilities
-        root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
+        root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree, probMap);
     }
     //If first round is true then generate first round rules
     public void createTree (boolean firstRound){
@@ -65,7 +66,7 @@ public class GametreeAI {
 
     public Node getRootNode() {
         //copyParent(root);
-        Node copyRoot = new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand, 0);
+        Node copyRoot = new Node(this.discardPile, this.hand, this.cardsUnknown, this.opponentHand, 0, this.probMap);
         for(Node child : root.getChildren()){
             copyRoot.addChild(child);
         }
@@ -342,7 +343,7 @@ public class GametreeAI {
         // 4 suits
         leftInUnknownSet = 3;
         // if chosen card is Ace or King you only have 1 'neighbour' for run
-        if(chosen.rank.value == 1 || chosen.rank.value == 13){
+        if(chosen.rank.value == 0 || chosen.rank.value == 12){
             leftInUnknownRun = 1;
         }
         else{
