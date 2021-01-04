@@ -155,4 +155,11 @@ public class MyCard {
         }
         return deck;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        MyCard card = (MyCard) o;
+        return (this.rank.index == card.rank.index && this.suit.index == card.suit.index);
+    }
+
 }
