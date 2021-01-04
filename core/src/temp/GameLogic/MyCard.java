@@ -23,12 +23,7 @@ public class MyCard {
     // TODO: Make sure that these deep copies are properly done
     public MyCard(MyCard aCard){
         this.suit = Suit.getSuit(aCard.suit.index);
-        this.rank = Rank.getRank(aCard.rank.value);
-    }
-
-    public MyCard(Card aCard){
-        this.suit = Suit.getSuit(aCard.getSuitVal());
-        this.rank = Rank.getRank(aCard.getValue()-1) ;
+        this.rank = Rank.getRank(aCard.rank.index);
     }
 
     // GETTERS
@@ -93,7 +88,7 @@ public class MyCard {
 
         Rank(int index) {
             this.index = index;
-            this.value = index + 1;
+            this.value = index +1;
             this.ginValue = Math.min(value, 10);
         }
 
