@@ -203,10 +203,10 @@ public class Executor {
      * @param curState current game state
      */
     private static void getNextPlayer(State curState) {
-        if (curState.playerTurn == 0) {
+        curState.playerTurn = (curState.playerTurn + 1) % curState.numberOfPlayers;
+        if (curState.playerTurn == curState.startingPlayer) {
             curState.turnInRound++;
         }
-        curState.playerTurn = (curState.playerTurn + 1) % curState.numberOfPlayers;
     }
 
     /**

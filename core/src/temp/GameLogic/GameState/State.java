@@ -16,7 +16,7 @@ import java.util.Stack;
 public class State {
     public boolean endGame;
 
-    protected int startingPlayer;
+    public int startingPlayer;
     protected Random seed;
     protected List<MyCard> initDeck;
     protected List<MyCard> deck;
