@@ -33,9 +33,9 @@ public class MinimaxPruningAI extends GamePlayer {
     private List<MyCard> backupHand;
 
 
-    public List<Card> discardedCards = new ArrayList<>();
+    public List<MyCard> discardedCards = new ArrayList<>();
 
-
+/*
     public MinimaxPruningAI(GametreeAI tree, SetOfCards pile, SetOfCards hand, SetOfCards unknown) {
         this.tree = tree;
         this.hand = hand;
@@ -43,7 +43,7 @@ public class MinimaxPruningAI extends GamePlayer {
         this.unknownCards = unknown; //include deck and opponent hand
         AITurn = true;
     }
-
+*/
     public MinimaxPruningAI(GametreeAI tree) {
         this.tree = tree;
         this.hand = tree.hand;
@@ -99,25 +99,26 @@ public class MinimaxPruningAI extends GamePlayer {
         }
     }
 
-    public Card[] getNodeReturn() {
+    public MyCard[] getNodeReturn() {
         //create the tree
         Node parent = tree.getRootNode();
-        List<Card> currentHand = Player.copyList(parent.hand.toList(), false);
+
+        List<MyCard> currentHand = GametreeAI.deepCloneMyCardList(parent.hand);
         System.out.println("current bot hand: "+currentHand);
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
         //System.out.println("pick node (hoping hand): "+pickNode);
 
 
-        for(Card card : unknownCards.toList()){
+        for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
-                pickNode.unknownCards.addCard(card);
+                pickNode.unknownCards.add(card);
             }
         }
         unknownCards = pickNode.unknownCards;
 
-        List<Card> newHand = Player.copyList(pickNode.hand.toList(), false);
-        Card pickCard = null;
-        for(Card card : newHand) {
+        List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
+        MyCard pickCard = null;
+        for(MyCard card : newHand) {
             if (!currentHand.contains(card)) {
                 pickCard = card;
             }
@@ -126,12 +127,12 @@ public class MinimaxPruningAI extends GamePlayer {
         //loop through newHand to get the new card
 
         System.out.println("pick card: "+pickCard);
-        Card discardCard = null;
+        MyCard discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
         //at current state
         //loop through old hand to get the card be discarded
-        for(Card card : currentHand) {
+        for(MyCard card : currentHand) {
             if (!newHand.contains(card)) {
                 discardCard = card;
             }
@@ -139,45 +140,11 @@ public class MinimaxPruningAI extends GamePlayer {
 
         System.out.println("discard card: "+discardCard);
 
-        return new Card[] {pickCard, discardCard};
+        return new MyCard[] {pickCard, discardCard};
     }
+
 
 /*
-    public void chooseNode() {
-        Card[] pick_discard = this.getNodeReturn();
-        Card pickCard = pick_discard[0];
-        Card discardCard = pick_discard[1];
-
-        if (pickCard != null && pickCard.equals(pile.peekTopCard())){
-            System.out.println("AI pick from pile: "+pickCard);
-            pile.discardCard(pickCard);
-            pile.addCard(discardCard);
-            hand.addCard(pickCard);
-            hand.discardCard(discardCard);
-
-        }
-        else{
-            // should pick from actual deck instead of cardsunknown in tree since in game you get topcard from deck
-            // discard card then also should be changed instead of the node one because your new card is probably different
-             this one changes to the rule below (I am not really sure this one makes any senses or not)
-            if the search return the card from pile  -> pick pile otherwise get card from deck (we have the prob that we can pick the likely card but still not sure)
-
-            pickCard = deck.drawTopCard();
-            deck.discardCard(pickCard);
-            hand.addCard(pickCard);
-            discardCard = GametreeAI.chooseCardToDiscard(hand.toList());
-            hand.discardCard(discardCard);
-            pile.addCard(discardCard);
-            System.out.println("AI pick from deck: "+pickCard);
-            //pickCard is now known so remove from unknowncards
-            unknownCards.discardCard(pickCard);
-        }
-
-        System.out.println("bot hand after play: "+hand);
-        System.out.println("Card discard from bot: "+discardCard);
-        //update tree
-    }
-*/
     public boolean AIknock() {
         int score = Player.scoreHand(this.hand.toList());
         System.out.println("hand score: "+score);
@@ -188,73 +155,6 @@ public class MinimaxPruningAI extends GamePlayer {
         }
         else
             return false;
-    }
-/*
-    public void playGame(SetOfCards opponentHand, SetOfCards deck){
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Scanner sc = new Scanner(System.in);
-        System.out.println("deck size: "+deck.size());
-        System.out.println("deck top card: "+deck.getCard(deck.size()-1));
-        // AI's turn
-        //System.out.println("bot hand before turn: "+hand);
-        System.out.println("Discard pile before bot discard: " + pile);
-        chooseNode(deck);
-        //System.out.println("bot hand after turn: "+hand);
-        // opponents turn
-        System.out.println("Player 2, it's your turn");
-        //System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
-        System.out.println("Discard pile:" + pile);
-
-        System.out.println("Current player hand:" + opponentHand.toList());
-        System.out.println("Pick Deck or Pile");
-        // get choice of opponent from which pile it gets new card
-        String choice = "pile";
-        try {
-            choice = reader.readLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // update probs
-        Node current = new Node(pile, hand, unknownCards, new SetOfCards(false, false), 0);
-        if(choice.equals("pile")){
-            this.tree.simulationPickPile(current);
-            unknownCards = this.tree.getCardsUnknown();
-            opponentHand.addCard(pile.drawTopCard());
-        }
-        else{
-            this.tree.simulationPickDeck(current);
-            unknownCards = this.tree.getCardsUnknown();
-            opponentHand.addCard(deck.drawTopCard());
-        }
-        //current.unknownCards = unknownCards;
-        System.out.println("New player hand: " + opponentHand.toList());
-        System.out.println("Pick a card to discard");
-        int cardDiscard = sc.nextInt();
-        if (cardDiscard < opponentHand.size()) {
-            Card aCard = opponentHand.getCard(cardDiscard);
-            this.tree.simulationDiscard(current, aCard);
-            opponentHand.discardCard(aCard);
-            this.pile.addCard(aCard);
-            unknownCards.discardCard(aCard);
-            //unknownCards = this.tree.getCardsUnknown();
-
-        }
-
-        boolean knock = Player.chooseToKnock(opponentHand);
-
-        if (knock) {
-            System.out.println("yes to knock otherwise continue!!!");
-            String chooseToKnock = sc.nextLine();
-            if (chooseToKnock.equals("yes")) {
-                playerKnock = true;
-            }
-            else
-                playerKnock = false;
-        }
-        tree.createTree(false);
-
-
     }
 */
 
@@ -325,8 +225,8 @@ public class MinimaxPruningAI extends GamePlayer {
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         createTree();
         this.tree.createTree(false);
-        Card[] pick_discard = this.getNodeReturn();
-        Card topCard = new Card(topOfDiscard);
+        MyCard[] pick_discard = this.getNodeReturn();
+        MyCard topCard = new MyCard(topOfDiscard);
         backupHand = new ArrayList<>();
         if(pick_discard[0]==null){
             for(int i=0; i<allCards.size();i++){
@@ -363,36 +263,18 @@ public class MinimaxPruningAI extends GamePlayer {
         if(backupHand.size()!=0){
             for(MyCard card : allCards){
                 if(!backupHand.contains(card)){
-                    Card aCard = new Card(card);
-                    for(int i =0; i<unknownCards.size();i++) {
-                        if (aCard.getSuit() == unknownCards.getCard(i).getSuit() && aCard.getValue() == unknownCards.getCard(i).getValue()) {
-                            unknownCards.discardCard(unknownCards.getCard(i));
+                    if(unknownCards.contains(card)){
+                        //does it remove the card!!
+                        unknownCards.remove(card);
                         }
                     }
                 }
             }
-        }
-        //System.out.println("problem discard "+ new SetOfCards(this.allCards, false).toList());
-        Card aCard = GametreeAI.chooseCardToDiscard(new SetOfCards(this.allCards, false).toList());
+        MyCard aCard = GametreeAI.chooseCardToDiscard(this.allCards);
         this.discardedCards.add(aCard);
-        MyCard discard = new MyCard(aCard);
-        return discard;
+        return aCard;
     }
-    /*
-    public MyCard discardCard(SetOfCards deck) {
-        MyCard topCard = new MyCard(pile.peekTopCard());
-        if (this.pickDeckOrDiscard(unknownCards.size()-10, topCard)) {
-            Card[] pick_discard = this.getNodeReturn();
-            return new MyCard(pick_discard[1]);
-        }
-        else {
-            List<Card> copyHand = Player.copyList(this.hand.toList(), false);
-            copyHand.add(deck.peekTopCard());
-            Card discard = GametreeAI.chooseCardToDiscard(copyHand);
-            return new MyCard(discard);
-        }
-    }
-*/
+
     /*
     It's called everytime the player's hand is changed
     So this means it's called when:
@@ -408,23 +290,18 @@ public class MinimaxPruningAI extends GamePlayer {
     }
 
     public void createTree(){
-        this.tree = new GametreeAI(new SetOfCards(this.discardedCards),new SetOfCards(this.allCards, false)
-                , this.unknownCards, this.maxDepthOfTree);
+        this.tree = new GametreeAI(this.discardedCards,this.allCards, this.unknownCards, this.maxDepthOfTree);
 
     }
 
-    public static List<Card> findRemainingCards(List<Card> hand, List<Card> discardPile){
-        List<Card> temp = new ArrayList<>(hand);
-        temp.addAll(discardPile);
-        return findRemainingCards(temp);
-    }
+    public static List<MyCard> findRemainingCards(List<MyCard> hand, List<MyCard> discardPile){
+        List<MyCard> knownCards = new ArrayList<>(hand);
+        knownCards.addAll(discardPile);
 
-    public static List<Card> findRemainingCards(List<Card> knownCards){
-        SetOfCards allCards = new SetOfCards(true, false);
-        List<Card> cardList = allCards.toList();
+        List<MyCard> cardList = MyCard.getBasicDeck();
 
         // TODO: Check that this remove method is working properly
-        for(Card aCard: knownCards){
+        for(MyCard aCard: knownCards){
             cardList.remove(aCard);
         }
 
@@ -437,8 +314,8 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void newRound(MyCard topOfDiscard) {
         this.discardedCards = new ArrayList<>();
-        this.discardedCards.add(new Card(topOfDiscard));
-        this.unknownCards = new SetOfCards(findRemainingCards(new SetOfCards(this.allCards, false).toList(), this.discardedCards));
+        this.discardedCards.add(new MyCard(topOfDiscard));
+        this.unknownCards = findRemainingCards(this.allCards, this.discardedCards);
         createTree();
         this.tree.createTree(true);
     }
@@ -450,13 +327,12 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
         MyCard disCard = discardAction.card;
-        Card discardedCard = new Card(disCard);
-        this.discardedCards.add(discardedCard);
-        Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
+        this.discardedCards.add(disCard);
+        Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0 );
         for(int i =0; i<unknownCards.size();i++){
-            if(discardedCard.getSuit()==unknownCards.getCard(i).getSuit()&& discardedCard.getValue() == unknownCards.getCard(i).getValue()){
-                this.unknownCards = this.tree.updateProbDiscard(current,discardedCard);
-                this.unknownCards.discardCard(unknownCards.getCard(i));
+            if(disCard.suit.index ==unknownCards.get(i).suit.index&& disCard.rank.index == unknownCards.get(i).rank.index){
+                this.unknownCards = this.tree.updateProbDiscard(current,disCard);
+                this.unknownCards.remove(unknownCards.get(i));
             }
         }
     }
@@ -470,15 +346,14 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
 
         if(!pickAction.deck){
-            MyCard aCard = pickAction.card;
-            Card pickedCard = new Card(aCard);
+            MyCard pickedCard = pickAction.card;
             this.discardedCards.remove(pickedCard);
-            Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
+            Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0 );
             this.unknownCards = this.tree.updateProbPickPile(current,pickedCard);
         }
         else{
-            Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
-            Card notChosen = new Card(this.discardedCards.get(discardedCards.size()-1));
+            Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0 );
+            MyCard notChosen = new MyCard(this.discardedCards.get(discardedCards.size()-1));
             this.unknownCards = this.tree.updateProbDiscard(current,notChosen);
         }
     }
