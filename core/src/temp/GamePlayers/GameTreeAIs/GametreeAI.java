@@ -3,11 +3,10 @@ package temp.GamePlayers.GameTreeAIs;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 import gameHandling.Player;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GametreeAI {
     public SetOfCards discardPile;
@@ -470,7 +469,29 @@ public class GametreeAI {
 
 
     public static void main(String[] args){
-        List<MyCard> cards = new ArrayList<>();
+
+        SetOfCards deck = new SetOfCards(true, false);
+        SetOfCards hand = new SetOfCards(false, false);
+        for(int i = 0; i < 10; i++){
+            Card aCard = deck.drawTopCard();
+            hand.addCard(aCard);
+        }
+        SetOfCards pile = new SetOfCards(false, false);
+        Card discardCard = deck.drawTopCard();
+        pile.addCard(discardCard);
+        GametreeAI AI = new GametreeAI(pile, hand,deck, 4);
+
+        long startTime = System.nanoTime();
+        AI.createTree(true);
+        long endTime = System.nanoTime();
+
+        long totalTime = endTime-startTime;
+        System.out.print("Total time for depth 4 was " + totalTime);
+
+
+
+
+        /*List<MyCard> cards = new ArrayList<>();
 
         for(int i=0; i<4; i++){
             cards.add(new MyCard(0,i));
@@ -515,19 +536,6 @@ public class GametreeAI {
         endTime = System.nanoTime();
         length = (endTime-startTime);
 
-        System.out.println("To pick whether deck or pile it took " + length);
-
-        /*SetOfCards deck = new SetOfCards(true, false);
-        SetOfCards hand = new SetOfCards(false, false);
-        for(int i = 0; i < 10; i++){
-            Card aCard = deck.drawTopCard();
-            hand.addCard(aCard);
-        }
-        SetOfCards pile = new SetOfCards(false, false);
-        Card discardCard = deck.drawTopCard();
-        pile.addCard(discardCard);
-        GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
-        AI.createTree(true);
-        System.out.print("heyyyy");*/
+        System.out.println("To pick whether deck or pile it took " + length);*/
     }
 }
