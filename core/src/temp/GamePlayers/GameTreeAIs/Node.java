@@ -61,6 +61,33 @@ public class Node {
         }
     }
 
+    /*
+    Assume no other information is known whatsoever
+     */
+    static double[][] getDefaultProbabilities(List<MyCard> hand, List<MyCard> pile){
+        int unknownSize = 52 - hand.size() - pile.size();
+
+        double[][] probMap = new double[4][13];
+
+        for(int i = 0; i <4; i++){
+            for(int j = 0; j < 13; j++){
+                probMap[i][j] = 1.0/unknownSize;
+            }
+        }
+
+        // If they're in the hand or in the pile then their prob is 0
+        for(MyCard card: hand){
+            probMap[card.suit.index][card.rank.value] = 0;
+        }
+
+        for(MyCard card: pile){
+            probMap[card.suit.index][card.rank.value] = 0;
+        }
+
+        return probMap;
+
+    }
+
     public Node(boolean positiveInf) {
         this.discardPile = new ArrayList<>();
         this.hand = new ArrayList<>();
