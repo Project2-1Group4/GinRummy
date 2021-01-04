@@ -27,7 +27,7 @@ public class Node {
 
     private int depthTree;
     //protected HashMap<MyCard, Double> probMap = new HashMap<>();
-    public double[][] probMap = new double[4][13];
+    private double[][] probMap = new double[4][13];
 
     public boolean playerStop = false; // when game is over this one turns to be true
     public boolean AIStop = false; // turn to be true when game is over
@@ -46,6 +46,19 @@ public class Node {
             this.winOrLose = true;
         }
         handValue = Node.getHandValue(cards);
+
+        this.setDefaultProbabilities();
+    }
+
+    public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth, double[][] probMap){
+        this(pile, cards, unknownCards, opponentHand, depth);
+        this.probMap = probMap;
+    }
+
+    void setDefaultProbabilities(){
+        for(MyCard card: unknownCards){
+            this.setProbability(card, 1.0/41.0);
+        }
     }
 
     public Node(boolean positiveInf) {
@@ -67,6 +80,15 @@ public class Node {
 
     void updateProbability(MyCard aCard, double aVal){
         probMap[aCard.suit.index][aCard.rank.index] = probMap[aCard.suit.index][aCard.rank.index]*aVal;
+    }
+
+    void setProbability(MyCard card, double val){
+        probMap[card.suit.index][card.rank.index] = val;
+    }
+
+    // TODO: Make sure it's a deep copy being made
+    double[][] getProbMap(){
+        return this.probMap.clone();
     }
 
     //we already have static method in Player class

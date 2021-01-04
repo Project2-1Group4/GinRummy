@@ -2,11 +2,12 @@ package temp.GamePlayers.GameTreeAIs;
 
 import cardlogic.Card;
 import cardlogic.SetOfCards;
-import gameHandling.Player;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GametreeAI {
     /*
@@ -19,6 +20,9 @@ public class GametreeAI {
     public List<MyCard> hand;
     public List<MyCard> cardsUnknown;
     public List<MyCard> opponentHand;
+
+    public double[][] probMap = new double[4][13];
+
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private int depthTree = 0;
@@ -34,13 +38,15 @@ public class GametreeAI {
             opponentHand.add(cardsUnknown.get(i));
         }
         this.maxDepth = maxDepth;
+
+        // TODO: Bugtest and make sure all of the nodes have the correct relevant probabilities
         root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
     }
     //If first round is true then generate first round rules
     public void createTree (boolean firstRound){
         if(firstRound) {
             copyParent(root);
-            Node pass = root.addChild(new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree));
+            Node pass = root.addChild(new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree, this.probMap));
             copyParent(root);
             Node discard1 = root.addChild(pickDiscard(hand, discardPile));
             createNodesOpponent(pass, true);
@@ -120,29 +126,33 @@ public class GametreeAI {
             copyParent(parent);
             MyCard topPile = discardPile.get(discardPile.size()-1);
             if(evaluate(topPile, parent.hand)){
-                hand.addCard(topPile);
-                discardPile.discardCard(topPile);
-                Card discard = chooseCardToDiscard(hand.toList());
-                hand.discardCard(discard);
-                discardPile.addCard(discard);
-                Node child = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
+                hand.add(topPile);
+                discardPile.remove(topPile);
+                MyCard discard = chooseCardToDiscard(hand);
+                hand.remove(discard);
+                discardPile.add(discard);
+                Node child = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree, this.probMap);
                 parent.addChild(child);
                 createNodesOpponent(child, false);
             }
             else{
 
-                List<Card> deck = makeDeck(cardsUnknown.toList(), opponentHand.toList());
-                SetOfCards copyHand = new SetOfCards(hand.toList());
-                SetOfCards copyCardUnknown = new SetOfCards(cardsUnknown.toList());
-                SetOfCards copyPile = new SetOfCards(discardPile.toList());
+                List<MyCard> deck = makeDeck(cardsUnknown, opponentHand);
+
+                List<MyCard> copyHand = new ArrayList<>(hand);
+                        //new SetOfCards(hand.toList());
+                List<MyCard> copyCardUnknown = new ArrayList<>(cardsUnknown);
+                        //new SetOfCards(cardsUnknown.toList());
+                List<MyCard> copyPile = new ArrayList<>(discardPile);
+                        //new SetOfCards(discardPile.toList());
 
                 for(int i = 0; i< deck.size(); i++){
-                    hand.addCard(deck.get(i));
-                    cardsUnknown.discardCard(deck.get(i));
-                    Card discard = chooseCardToDiscard(hand.toList());
-                    hand.discardCard(discard);
-                    discardPile.addCard(discard);
-                    Node child = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
+                    hand.add(deck.get(i));
+                    cardsUnknown.remove(deck.get(i));
+                    MyCard discard = chooseCardToDiscard(hand);
+                    hand.remove(discard);
+                    discardPile.add(discard);
+                    Node child = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree, this.probMap);
                     parent.addChild(child);
                     createNodesOpponent(child, false);
                     //reset setofcards for next possible card in deck
@@ -156,8 +166,8 @@ public class GametreeAI {
 
     }
 
-    public List<Card> makeDeck(List<Card> unknown, List<Card> opponent){
-        List<Card> deck = Player.copyList(unknown);
+    public List<MyCard> makeDeck(List<MyCard> unknown, List<MyCard> opponent){
+        List<MyCard> deck = GametreeAI.deepCloneMyCardList(unknown);
         for(int i = 0; i<opponent.size(); i++){
             deck.remove(opponent.get(i));
         }
@@ -175,7 +185,7 @@ public class GametreeAI {
         MyCard discardCard = chooseCardToDiscard(copyList);
         copyCards.remove(discardCard);
         copyDiscard.add(discardCard);
-        Node result = new Node(copyDiscard, copyCards, cardsUnknown, opponentHand, depthTree);
+        Node result = new Node(copyDiscard, copyCards, cardsUnknown, opponentHand, depthTree, this.probMap);
         return result;
     }
 
@@ -190,20 +200,23 @@ public class GametreeAI {
 
     // method for the first layer
     public Node pickDeck(List<MyCard> hand, List<MyCard> cardsUnknown, List<MyCard> discardPile){
-        SetOfCards copyCards = new SetOfCards(hand.toList());
-        SetOfCards copyDeck = new SetOfCards(cardsUnknown.toList());
-        SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
+        List<MyCard> copyCards = new ArrayList<>(hand);
+                //new SetOfCards(hand.toList());
+        List<MyCard> copyDeck = new ArrayList<>(cardsUnknown);
+                //new SetOfCards(cardsUnknown.toList());
+        List<MyCard> copyDiscard = new ArrayList<>(discardPile);
+                //new SetOfCards(discardPile.toList());
         Random rd = new Random(); // creating Random object
         int randomCard = rd.nextInt(copyDeck.size()-1);
 
-        copyCards.addCard(cardsUnknown.getCard(randomCard));
-        copyDeck.discardCard(cardsUnknown.getCard(randomCard));
+        copyCards.add(cardsUnknown.get(randomCard));
+        copyDeck.remove(cardsUnknown.get(randomCard));
 
-        List<Card> copyList = copyCards.toList();
-        Card discardCard = chooseCardToDiscard(copyList);
-        copyCards.discardCard(discardCard);
-        copyDiscard.addCard(discardCard);
-        Node result = new Node(copyDiscard, copyCards, copyDeck, opponentHand, depthTree);
+        //List<MyCard> copyList = copyCards.toList();
+        MyCard discardCard = chooseCardToDiscard(copyCards);
+        copyCards.remove(discardCard);
+        copyDiscard.add(discardCard);
+        Node result = new Node(copyDiscard, copyCards, copyDeck, opponentHand, depthTree, this.probMap);
         return result;
     }
 
@@ -212,46 +225,54 @@ public class GametreeAI {
         // if opponent picks card from pile
         copyParent(parent);
 
-        opponentHand = new SetOfCards();
-        Card chosen = discardPile.getCard((discardPile.size()-1));
-        discardPile.discardCard(chosen);
+        opponentHand = new ArrayList<>();
+        MyCard chosen = discardPile.get((discardPile.size()-1));
+        discardPile.remove(chosen);
         lookThroughKnownCards(chosen);
         // update prob of unknown cards
+
         for(int j = 0; j<cardsUnknown.size(); j++) {
-            double setProb = 0;
-            double runProb = 0;
+            MyCard currentCard = cardsUnknown.get(j);
+
                 // increase prob for cards that form set with chosen card
-            if (cardsUnknown.getCard(j).getValue() == chosen.getValue()) {
-                setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
-                cardsUnknown.getCard(j).setProb(setProb);
+            if (currentCard.rank.index == chosen.rank.index) {
+                double prob = parent.getProbability(currentCard) / (1.0 / (2.0 * leftInUnknownSet));
+
+                this.setProbability(currentCard, prob);
+                //cardsUnknown.getCard(j).setProb(prob);
             }
             // increase prob for cards that form run with chosen card
-            else if (cardsUnknown.getCard(j).getSuit() == chosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - chosen.getValue()) == 1) {
-                runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
-                cardsUnknown.getCard(j).setProb(runProb);
+            else if (currentCard.suit.index == chosen.suit.index && Math.abs(currentCard.rank.index - chosen.rank.index) == 1) {
+                double prob = parent.getProbability(currentCard) / (1.0 / (2.0 * leftInUnknownRun));
+                this.setProbability(currentCard, prob);
+                /*double prob = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
+                cardsUnknown.getCard(j).setProb(prob);*/
             }
         }
-        cardsUnknown.addCard(chosen);
-        chosen.setProb(1.0);
+        cardsUnknown.add(chosen);
+        this.setProbability(chosen, 1.0);
+        //chosen.setProb(1.0);
     }
 
    public void simulationPickDeck(Node parent) {
        copyParent(parent);
-       opponentHand = new SetOfCards();
-       Card notChosen = discardPile.getCard(discardPile.size() - 1);
+       opponentHand = new ArrayList<>();
+       MyCard notChosen = discardPile.get(discardPile.size() - 1);
        lookThroughKnownCards(notChosen);
        for (int j = 0; j < cardsUnknown.size(); j++) {
-           double setProb = 0;
-           double runProb = 0;
            // decrease prob of cards that form set with not chosen card
-           if (cardsUnknown.getCard(j).getValue() == notChosen.getValue()) {
-               setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
-               cardsUnknown.getCard(j).setProb(setProb);
+           MyCard currentCard = cardsUnknown.get(j);
+
+           if (currentCard.rank.value == notChosen.rank.value) {
+               double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
+               this.setProbability(currentCard, prob);
+               //cardsUnknown.getCard(j).setProb(setProb);
            }
            // decrease prob of cards that form run with chosen card
-           if (cardsUnknown.getCard(j).getSuit() == notChosen.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - notChosen.getValue()) == 1) {
-               runProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownRun));
-               cardsUnknown.getCard(j).setProb(runProb);
+           if (currentCard.suit.index == notChosen.suit.index && Math.abs(currentCard.rank.index - notChosen.suit.index) == 1) {
+               double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
+               this.setProbability(currentCard, prob);
+               //cardsUnknown.getCard(j).setProb(runProb);
            }
        }
    }
@@ -265,46 +286,52 @@ public class GametreeAI {
         opponentHand.remove(discard);
         // OPPONENT DISCARDS CARD
         for(int j = 0; j<cardsUnknown.size(); j++){
-            double setProb = 0.0;
-            double runProb = 0.0;
-            // decrease prob of cards that form set with discarded card
-            if(cardsUnknown.getCard(j).getValue() == discard.getValue()){
-                setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
-                cardsUnknown.getCard(j).setProb(setProb);
+            // decrease prob of cards that form set with not chosen card
+            MyCard currentCard = cardsUnknown.get(j);
+
+            if (currentCard.rank.value == discard.rank.value) {
+                double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
+                this.setProbability(currentCard, prob);
+                //cardsUnknown.getCard(j).setProb(setProb);
             }
-            // decrease prob of cards that form run with discarded card
-            if(cardsUnknown.getCard(j).getSuit() == discard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discard.getValue()) == 1){
-                runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
-                cardsUnknown.getCard(j).setProb(runProb);
+            // decrease prob of cards that form run with chosen card
+            if (currentCard.suit.index == discard.suit.index && Math.abs(currentCard.rank.index - discard.suit.index) == 1) {
+                double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
+                this.setProbability(currentCard, prob);
+                //cardsUnknown.getCard(j).setProb(runProb);
             }
         }
     }
 
     public void copyParent(Node parent){
-        this.discardPile = new SetOfCards(parent.discardPile.toList());
-        this.cardsUnknown = new SetOfCards(parent.unknownCards.toList());
-        this.hand = new SetOfCards(parent.hand.toList());
-        this.opponentHand = new SetOfCards(parent.opponentHand.toList());
+        this.discardPile = GametreeAI.deepCloneMyCardList(parent.discardPile);
+                //new SetOfCards(parent.discardPile.toList());
+        this.cardsUnknown = GametreeAI.deepCloneMyCardList(parent.unknownCards);
+        this.hand = GametreeAI.deepCloneMyCardList(parent.hand);
+        this.opponentHand = GametreeAI.deepCloneMyCardList(parent.opponentHand);
         this.depthTree = parent.getDepthTree() + 1;
+
+        this.probMap = parent.getProbMap();
+
     }
 
     // pickOrDiscard variable to indicate if you need to create hand of 10 or 11 cards, true if 11 (= picking process)
     public List<Node> monteCarloSim(boolean pickOrDiscard){
         List<Node> nodes = new ArrayList<>();
-        List<Card> opponentHandcur;
+        List<MyCard> opponentHandcur;
         // simulate 100 times
         for(int i= 1; i<= 100; i++){
             if(pickOrDiscard){
-                opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 11);
+                opponentHandcur = chooseRandomCards(cardsUnknown, 11);
             }
             else{
-                opponentHandcur = chooseRandomCards(cardsUnknown.toList(), 10);
+                opponentHandcur = chooseRandomCards(cardsUnknown, 10);
             }
-            SetOfCards opponent = new SetOfCards(false, false);
+            /*SetOfCards opponent = new SetOfCards(false, false);
             for(int j= 0; j< opponentHandcur.size(); j++){
                 opponent.addCard(opponentHandcur.get(j));
-            }
-            Node node = new Node(discardPile,hand, cardsUnknown, opponent, depthTree);
+            }*/
+            Node node = new Node(discardPile,hand, cardsUnknown, opponentHandcur, depthTree, this.probMap);
             nodes.add(node);
         }
         return nodes;
@@ -362,18 +389,24 @@ public class GametreeAI {
         return theCard;
     }
 
-    public static List<Card> chooseRandomCards(List<Card> totalCards, int size){
-        List<Card> copyList = Player.copyList(totalCards);
-        List<Card> resultList = new ArrayList<>();
+    // TODO: Check that the probabilities are correctly passed over
+    // For now I'm assuming that the probabilities are being obtained directly from the current GameTree
+    // But obviously I should ask and make sure that it's the case
+    // I changed it from static to class based due to this, but yeah this is definitely something I'm not 100% confident in
+    public List<MyCard> chooseRandomCards(List<MyCard> totalCards, int size){
+        List<MyCard> copyList = deepCloneMyCardList(totalCards);
+                //Player.copyList(totalCards);
+        List<MyCard> resultList = new ArrayList<>();
         for(int i = 0; i < copyList.size();i++){
             // Might be changed to is greater than or equals
-            if(copyList.get(i).getProb() == 1){
+            MyCard card = copyList.get(i);
+            if(this.getProbability(card) >= 1.0){
                 resultList.add(copyList.get(i));
                 copyList.remove(copyList.get(i));
             }
         }
         while(resultList.size() < size){
-            Card toSave = pickRandomCard(copyList);
+            MyCard toSave = pickRandomCard(copyList);
             if(toSave != null) {
                 resultList.add(toSave);
                 copyList.remove(toSave);
@@ -383,22 +416,27 @@ public class GametreeAI {
         return resultList;
     }
 
-    public static double calcTotalProb(List<Card> setOfCards){
+    // Changed it from static to class based
+    // TODO: Make sure this doesn't end up screwing the probabilities in some way
+    public double calcTotalProb(List<MyCard> setOfCards){
         double val = 0.0;
-        for(Card aCard: setOfCards){
-            val+=aCard.getProb();
+        for(MyCard aCard: setOfCards){
+            val+=this.getProbability(aCard);
         }
         return val;
 
     }
 
-    public static Card pickRandomCard(List<Card> setOfCard){
+    // Changed from static to class
+    // Made so that I could retrieve the probability properly
+    // TODO: Make sure this is done correctly
+    public MyCard pickRandomCard(List<MyCard> setOfCard){
         double val = calcTotalProb(setOfCard);
         double objective = randomNumberGenerator(0,val);
         double curVal = 0.0;
-        Card finCard = null;
-        for(Card aCard: setOfCard){
-            curVal += aCard.getProb();
+        MyCard finCard = null;
+        for(MyCard aCard: setOfCard){
+            curVal += this.getProbability(aCard);
             if(curVal >= objective){
                 finCard = aCard;
                 break;
@@ -412,8 +450,8 @@ public class GametreeAI {
     }
 
     // returns true if you want to pick from discard pile
-    public boolean evaluate(Card discardCard, SetOfCards hand){
-        List<Card> current = Player.copyList(hand.toList());
+    public boolean evaluate(MyCard discardCard, List<MyCard> hand){
+        List<MyCard> current = Finder.findBestHandLayout(hand).viewAllCards();
         current.add(discardCard);
         if(chooseCardToDiscard(current) == discardCard){
             return false;
@@ -424,7 +462,7 @@ public class GametreeAI {
     }
 
 
-    public SetOfCards getCardsUnknown() {
+    public List<MyCard> getCardsUnknown() {
         return cardsUnknown;
     }
 
@@ -436,48 +474,75 @@ public class GametreeAI {
             printOutTree(child);
         }
     }
-    public SetOfCards updateProbDiscard(Node current, Card discardCard){
+    public List<MyCard> updateProbDiscard(Node current, MyCard discardCard){
         copyParent(current);
         lookThroughKnownCards(discardCard);
         // OPPONENT DISCARDS CARD
         for(int j = 0; j<cardsUnknown.size(); j++){
-            double setProb = 0.0;
-            double runProb = 0.0;
+
+            MyCard currentCard = cardsUnknown.get(j);
             // decrease prob of cards that form set with discarded card
-            if(cardsUnknown.getCard(j).getValue() == discardCard.getValue()){
-                setProb = cardsUnknown.getCard(j).getProb() * (1.0 / (2.0 * leftInUnknownSet));
-                cardsUnknown.getCard(j).setProb(setProb);
+            if(currentCard.rank.value == discardCard.rank.value){
+                double prob = current.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
+                current.updateProbability(cardsUnknown.get(j), prob);
+                //cardsUnknown.getCard(j).setProb(setProb);
+
+
             }
             // decrease prob of cards that form run with discarded card
-            if(cardsUnknown.getCard(j).getSuit() == discardCard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - discardCard.getValue()) == 1){
-                runProb = cardsUnknown.getCard(j).getProb()*(1.0 / (2.0 * leftInUnknownRun));
-                cardsUnknown.getCard(j).setProb(runProb);
+            if(currentCard.suit.index == discardCard.suit.index && Math.abs(currentCard.rank.index - discardCard.rank.index) == 1){
+                double prob = current.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
+                current.updateProbability(cardsUnknown.get(j), prob);
             }
         }
         return cardsUnknown;
     }
-    public SetOfCards updateProbPickPile(Node current, Card topOfDiscard){
+    /*
+    Uhh wait, so there are sometimes where the update happens in current
+    And sometimes where it happens in the parent
+    I'm doing the same thing no matter what, but is it something I should worry about?
+     */
+    public List<MyCard> updateProbPickPile(Node current, MyCard topOfDiscard){
         // if opponent picks card from pile
         copyParent(current);
         lookThroughKnownCards(topOfDiscard);
         // update prob of unknown cards
         for(int j = 0; j<cardsUnknown.size(); j++) {
-            double setProb = 0;
-            double runProb = 0;
-            // increase prob for cards that form set with chosen card
-            if (cardsUnknown.getCard(j).getValue() == topOfDiscard.getValue()) {
-                setProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownSet));
-                cardsUnknown.getCard(j).setProb(setProb);
+            // decrease prob of cards that form set with not chosen card
+            MyCard currentCard = cardsUnknown.get(j);
+
+            if (currentCard.rank.value == topOfDiscard.rank.value) {
+                double prob = current.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
+                this.setProbability(currentCard, prob);
+                //cardsUnknown.getCard(j).setProb(setProb);
             }
-            // increase prob for cards that form run with chosen card
-            else if (cardsUnknown.getCard(j).getSuit() == topOfDiscard.getSuit() && Math.abs(cardsUnknown.getCard(j).getValue() - topOfDiscard.getValue()) == 1) {
-                runProb = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
-                cardsUnknown.getCard(j).setProb(runProb);
+            // decrease prob of cards that form run with chosen card
+            if (currentCard.suit.index == topOfDiscard.suit.index && Math.abs(currentCard.rank.index - topOfDiscard.suit.index) == 1) {
+                double prob = current.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
+                this.setProbability(currentCard, prob);
+                //cardsUnknown.getCard(j).setProb(runProb);
             }
         }
-        cardsUnknown.addCard(topOfDiscard);
-        topOfDiscard.setProb(1.0);
+        cardsUnknown.add(topOfDiscard);
+        this.setProbability(topOfDiscard, 1.0);
         return cardsUnknown;
+    }
+
+    double getProbability(MyCard aCard){
+        return probMap[aCard.suit.index][aCard.rank.index];
+    }
+
+    void updateProbability(MyCard aCard, double aVal){
+        probMap[aCard.suit.index][aCard.rank.index] = probMap[aCard.suit.index][aCard.rank.index]*aVal;
+    }
+
+    void setProbability(MyCard card, double val){
+        if(val >= 1.0){
+            probMap[card.suit.index][card.rank.index] = 1.0;
+        } else {
+            probMap[card.suit.index][card.rank.index] = val;
+        }
+        
     }
 
 
@@ -489,11 +554,11 @@ public class GametreeAI {
             Card aCard = deck.drawTopCard();
             hand.addCard(aCard);
         }
-        SetOfCards pile = new SetOfCards(false, false);
+        /*SetOfCards pile = new SetOfCards(false, false);
         Card discardCard = deck.drawTopCard();
         pile.addCard(discardCard);
         GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
-        AI.createTree(true);
+        AI.createTree(true);*/
         System.out.print("heyyyy");
     }
 }
