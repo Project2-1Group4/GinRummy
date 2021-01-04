@@ -87,12 +87,13 @@ public class Executor {
                     .setScores(curState.scores)
                     .setRound(curState.round + 1)
                     .setSecondsPerStep(curState.secondsPerStep)
+                    .setStartingPlayer((curState.startingPlayer + 1) % curState.numberOfPlayers)
                     .build();
         }
         shuffleList(newState.seed, shuffles, newState.deck);
         startDiscardPile(newState);
         distributeCards(GameRules.baseCardsPerHand, newState);
-
+        newState.playerTurn = newState.startingPlayer;;
         return newState;
     }
 

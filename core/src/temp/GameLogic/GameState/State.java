@@ -16,6 +16,7 @@ import java.util.Stack;
 public class State {
     public boolean endGame;
 
+    protected int startingPlayer;
     protected Random seed;
     protected List<MyCard> initDeck;
     protected List<MyCard> deck;
@@ -36,8 +37,9 @@ public class State {
     protected int turnInRound;
     protected Stack<Action> movesDone;
 
-    protected State(Random seed, List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
+    protected State(int startingPlayer, Random seed, List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
+        this.startingPlayer = startingPlayer;
         this.seed = seed;
         this.initDeck = new ArrayList<>(deck);
         this.deck = deck;
@@ -258,7 +260,7 @@ public class State {
         for (PlayerState playerState : playerStates) {
             pStates.add(playerState.copy());
         }
-        return new State(seed, new ArrayList<MyCard>(deck), (Stack<MyCard>) discardPile.clone(),
+        return new State(startingPlayer, seed, new ArrayList<MyCard>(deck), (Stack<MyCard>) discardPile.clone(),
                 new ArrayList<GamePlayer>(players), pStates,
                 numberOfPlayers, playerTurn, stepInTurn, scores.clone(), secondsPerStep.clone(), knocker, round,
                 turnInRound, (Stack<Action>) movesDone.clone());

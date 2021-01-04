@@ -16,6 +16,7 @@ public class StateBuilder {
     /**
      * new Statebuilder().build() returns normal 2 player game. No AI. From starting space
      */
+    private int startingPlayer;
     private Integer seed;
     private Random random;
     private List<MyCard> deck;
@@ -34,6 +35,7 @@ public class StateBuilder {
 
     public StateBuilder() {
         deck = MyCard.getBasicDeck();
+        startingPlayer = 0;
         numberOfPlayers = 0;
         playerTurn = 0;
         round = 0;
@@ -138,6 +140,11 @@ public class StateBuilder {
         return this;
     }
 
+    public StateBuilder setStartingPlayer(int startingPlayer){
+        this.startingPlayer = startingPlayer;
+        return this;
+    }
+
     public State build() {
         if (numberOfPlayers == 0) {
             numberOfPlayers = 2;
@@ -170,6 +177,6 @@ public class StateBuilder {
                 random = new Random();
             }
         }
-        return new State(random, deck, discardPile, players, playerStates, numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker, round, turnInRound, actions);
+        return new State(startingPlayer, random, deck, discardPile, players, playerStates, numberOfPlayers, playerTurn, stepInTurn, scores, secondsPerStep, knocker, round, turnInRound, actions);
     }
 }
