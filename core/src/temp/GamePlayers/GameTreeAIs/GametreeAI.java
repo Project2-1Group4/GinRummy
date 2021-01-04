@@ -1,9 +1,12 @@
 package temp.GamePlayers.GameTreeAIs;
 
+import cardlogic.Card;
+import cardlogic.SetOfCards;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -37,7 +40,8 @@ public class GametreeAI {
         }
         this.maxDepth = maxDepth;
         this.probMap = probMap;
-
+        System.out.println("probabilitiesTree = " + Arrays.deepToString(probMap));
+        System.out.println(" ");
         // TODO: Bugtest and make sure all of the nodes have the correct relevant probabilities
         root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree, probMap);
     }
@@ -238,12 +242,14 @@ public class GametreeAI {
                 double prob = parent.getProbability(currentCard) / (1.0 / (2.0 * leftInUnknownSet));
 
                 this.setProbability(currentCard, prob);
+
                 //cardsUnknown.getCard(j).setProb(prob);
             }
             // increase prob for cards that form run with chosen card
             else if (currentCard.suit.index == chosen.suit.index && Math.abs(currentCard.rank.index - chosen.rank.index) == 1) {
                 double prob = parent.getProbability(currentCard) / (1.0 / (2.0 * leftInUnknownRun));
                 this.setProbability(currentCard, prob);
+
                 /*double prob = cardsUnknown.getCard(j).getProb() / (1.0 / (2.0 * leftInUnknownRun));
                 cardsUnknown.getCard(j).setProb(prob);*/
             }
@@ -256,6 +262,7 @@ public class GametreeAI {
    public void simulationPickDeck(Node parent) {
        copyParent(parent);
        opponentHand = new ArrayList<>();
+
        MyCard notChosen = discardPile.get(discardPile.size() - 1);
        lookThroughKnownCards(notChosen);
        for (int j = 0; j < cardsUnknown.size(); j++) {
@@ -265,12 +272,14 @@ public class GametreeAI {
            if (currentCard.rank.value == notChosen.rank.value) {
                double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
                this.setProbability(currentCard, prob);
+
                //cardsUnknown.getCard(j).setProb(setProb);
            }
            // decrease prob of cards that form run with chosen card
            if (currentCard.suit.index == notChosen.suit.index && Math.abs(currentCard.rank.index - notChosen.suit.index) == 1) {
                double prob = parent.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
                this.setProbability(currentCard, prob);
+
                //cardsUnknown.getCard(j).setProb(runProb);
            }
        }
@@ -482,16 +491,16 @@ public class GametreeAI {
             MyCard currentCard = cardsUnknown.get(j);
             // decrease prob of cards that form set with discarded card
             if(currentCard.rank.value == discardCard.rank.value){
-                double prob = current.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
-                current.updateProbability(cardsUnknown.get(j), prob);
+                double prob = this.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
+                this.setProbability(cardsUnknown.get(j), prob);
                 //cardsUnknown.getCard(j).setProb(setProb);
 
 
             }
             // decrease prob of cards that form run with discarded card
             if(currentCard.suit.index == discardCard.suit.index && Math.abs(currentCard.rank.index - discardCard.rank.index) == 1){
-                double prob = current.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
-                current.updateProbability(cardsUnknown.get(j), prob);
+                double prob = this.getProbability(cardsUnknown.get(j)) * (1.0 / (2.0 * leftInUnknownSet));
+                this.setProbability(cardsUnknown.get(j), prob);
             }
         }
         return cardsUnknown;
@@ -538,34 +547,30 @@ public class GametreeAI {
     void setProbability(MyCard card, double val){
         if(val >= 1.0){
             probMap[card.suit.index][card.rank.index] = 1.0;
-        } else {
+        }
+        else if(val <= 0.0) {
+
+            probMap[card.suit.index][card.rank.index] = 0.0;
+        }
+        else {
             probMap[card.suit.index][card.rank.index] = val;
         }
-
     }
 
 
 
     public static void main(String[] args){
-        List<MyCard> deck = MyCard.getBasicDeck();
-        List<MyCard> hand = new ArrayList<>();
+        SetOfCards deck = new SetOfCards(true, false);
+        SetOfCards hand = new SetOfCards(false, false);
         for(int i = 0; i < 10; i++){
-            // I don't think this is the top of the deck, but it doesn't really matter that much
-            MyCard card = deck.remove(0);
-            hand.add(card);
+            Card aCard = deck.drawTopCard();
+            hand.addCard(aCard);
         }
-
-        MyCard discardCard = deck.remove(0);
-        List<MyCard> pile = new ArrayList<>();
-
-        pile.add(discardCard);
-
-        double[][] probMap = Node.getDefaultProbabilities(hand,pile);
-
-        GametreeAI AI = new GametreeAI(pile, hand, deck, 4, probMap);
-
-        AI.createTree(true);
-        
+        /*SetOfCards pile = new SetOfCards(false, false);
+        Card discardCard = deck.drawTopCard();
+        pile.addCard(discardCard);
+        GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
+        AI.createTree(true);*/
         System.out.print("heyyyy");
     }
 }
