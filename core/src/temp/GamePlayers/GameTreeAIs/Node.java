@@ -4,7 +4,6 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Node {
@@ -27,7 +26,8 @@ public class Node {
     public static int constantScore = 100;
 
     private int depthTree;
-    protected HashMap<MyCard, Double> probMap = new HashMap<>();
+    //protected HashMap<MyCard, Double> probMap = new HashMap<>();
+    public double[][] probMap = new double[4][13];
 
     public boolean playerStop = false; // when game is over this one turns to be true
     public boolean AIStop = false; // turn to be true when game is over
@@ -62,11 +62,11 @@ public class Node {
     }
 
     double getProbability(MyCard aCard){
-        return this.probMap.get(aCard);
+        return probMap[aCard.suit.index][aCard.rank.index];
     }
 
     void updateProbability(MyCard aCard, double aVal){
-        this.probMap.put(aCard, aVal);
+        probMap[aCard.suit.index][aCard.rank.index] = probMap[aCard.suit.index][aCard.rank.index]*aVal;
     }
 
     //we already have static method in Player class
