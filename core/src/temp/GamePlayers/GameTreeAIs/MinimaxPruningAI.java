@@ -15,9 +15,16 @@ import java.util.*;
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
     boolean AITurn;
-    public SetOfCards hand;
-    public SetOfCards pile;
-    public SetOfCards unknownCards;
+
+    /*
+    Main change I did was change from set of cards into List<MyCard>
+    From there on I went through the code and tried to fix all of the red lines that appeared
+    That's the gist of it tbh
+     */
+
+    public List<MyCard> hand;
+    public List<MyCard> pile;
+    public List<MyCard> unknownCards;
     boolean playerKnock = false;
     boolean AIknock = false;
     static int round = 0;
@@ -301,13 +308,13 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public Boolean knockOrContinue() {
         //System.out.println("problem score "+new SetOfCards(this.allCards, false).toList());
-        int score = Player.scoreHand(new SetOfCards(this.allCards, false).toList());
-        if (score < 10) {
-            //System.out.println("Score AI " + score);
+
+        //int score = Player.scoreHand(new SetOfCards(this.allCards, false).toList());
+        if (this.handLayout.getDeadwood() <= 10){
             return true;
-        }
-        else
+        } else {
             return false;
+        }
     }
 
     /*
@@ -396,7 +403,7 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void update(HandLayout realLayout) {
         super.update(realLayout);
-        SetOfCards cardList = new SetOfCards(realLayout);
+        //SetOfCards cardList = new SetOfCards(realLayout);
 
     }
 

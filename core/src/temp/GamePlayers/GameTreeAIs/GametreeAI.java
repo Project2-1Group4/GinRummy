@@ -3,27 +3,35 @@ package temp.GamePlayers.GameTreeAIs;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 import gameHandling.Player;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MyCard;
 
 import java.util.*;
 
 public class GametreeAI {
-    public SetOfCards discardPile;
-    public SetOfCards hand;
-    public SetOfCards cardsUnknown;
-    public SetOfCards opponentHand;
+    /*
+    Main change I did was change from set of cards into List<MyCard>
+    From there on I went through the code and tried to fix all of the red lines that appeared
+    That's the gist of it tbh
+     */
+
+    public List<MyCard> discardPile;
+    public List<MyCard> hand;
+    public List<MyCard> cardsUnknown;
+    public List<MyCard> opponentHand;
     private int leftInUnknownSet = 4;
     private int leftInUnknownRun = 2;
     private int depthTree = 0;
     private int maxDepth;
     private Node root;
 
-    public  GametreeAI (SetOfCards pile, SetOfCards cards, SetOfCards deck, int maxDepth){
+    public  GametreeAI (List<MyCard> pile, List<MyCard> cards, List<MyCard> deck, int maxDepth){
         this.discardPile = pile;
         this.hand = cards;
         this.cardsUnknown = deck;
-        opponentHand = new SetOfCards();
+        opponentHand = new ArrayList<>();
         for(int i = 0; i< 10; i++){
-            opponentHand.addCard(cardsUnknown.getCard(i));
+            opponentHand.add(cardsUnknown.get(i));
         }
         this.maxDepth = maxDepth;
         root = new Node(discardPile, hand, cardsUnknown, opponentHand, depthTree);
@@ -71,7 +79,7 @@ public class GametreeAI {
             List<Node> nodesPile = monteCarloSim(true);
             for(int i = 0; i< nodesPile.size(); i++){
                 parent.addChild(nodesPile.get(i));
-                Card discard = chooseCardToDiscard(nodesPile.get(i).opponentHand.toList());
+                MyCard discard = chooseCardToDiscard(nodesPile.get(i).opponentHand);
                 simulationDiscard(nodesPile.get(i), discard);
                 List<Node> nodesDiscard1 = monteCarloSim(false);
                 for(int j = 0; j< nodesDiscard1.size(); j++){
@@ -91,7 +99,7 @@ public class GametreeAI {
             for(int i = 0; i< nodesDeck.size(); i++){
                 parent.addChild(nodesDeck.get(i));
                 if(!firstRound){
-                    Card discard = chooseCardToDiscard(nodesDeck.get(i).opponentHand.toList());
+                    MyCard discard = chooseCardToDiscard(nodesDeck.get(i).opponentHand);
                     simulationDiscard(nodesDeck.get(i), discard);
                     List<Node> nodesDiscard2 = monteCarloSim(false);
                     for(int j = 0; j< nodesDiscard2.size(); j++){
@@ -110,7 +118,7 @@ public class GametreeAI {
         }
         else{
             copyParent(parent);
-            Card topPile = discardPile.getCard(discardPile.size()-1);
+            MyCard topPile = discardPile.get(discardPile.size()-1);
             if(evaluate(topPile, parent.hand)){
                 hand.addCard(topPile);
                 discardPile.discardCard(topPile);
@@ -156,23 +164,32 @@ public class GametreeAI {
         return deck;
     }
     // method for the first layer
-    public Node pickDiscard(SetOfCards current, SetOfCards discardPile){
-        SetOfCards copyCards = new SetOfCards(current.toList());
-        SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
+    public Node pickDiscard(List<MyCard> current, List<MyCard> discardPile){
+        List<MyCard> copyCards = deepCloneMyCardList(current);
+        List<MyCard> copyDiscard = deepCloneMyCardList(discardPile);
 
-        copyCards.addCard(discardPile.getCard(discardPile.size()-1));
-        copyDiscard.discardCard(discardPile.getCard(discardPile.size()-1));
+        copyCards.add(discardPile.get(discardPile.size()-1));
+        copyDiscard.remove(discardPile.get(discardPile.size()-1));
 
-        List<Card> copyList = copyCards.toList();
-        Card discardCard = chooseCardToDiscard(copyList);
-        copyCards.discardCard(discardCard);
-        copyDiscard.addCard(discardCard);
+        List<MyCard> copyList = deepCloneMyCardList(copyCards);
+        MyCard discardCard = chooseCardToDiscard(copyList);
+        copyCards.remove(discardCard);
+        copyDiscard.add(discardCard);
         Node result = new Node(copyDiscard, copyCards, cardsUnknown, opponentHand, depthTree);
         return result;
     }
 
+    public static List<MyCard> deepCloneMyCardList(List<MyCard> aList){
+        List<MyCard> deepClone = new ArrayList<>();
+        for(MyCard card:aList){
+            deepClone.add(new MyCard(card));
+        }
+
+        return deepClone;
+    }
+
     // method for the first layer
-    public Node pickDeck(SetOfCards hand, SetOfCards cardsUnknown, SetOfCards discardPile){
+    public Node pickDeck(List<MyCard> hand, List<MyCard> cardsUnknown, List<MyCard> discardPile){
         SetOfCards copyCards = new SetOfCards(hand.toList());
         SetOfCards copyDeck = new SetOfCards(cardsUnknown.toList());
         SetOfCards copyDiscard = new SetOfCards(discardPile.toList());
@@ -240,12 +257,12 @@ public class GametreeAI {
    }
 
 
-    public void simulationDiscard(Node parent, Card discard){
+    public void simulationDiscard(Node parent, MyCard discard){
         copyParent(parent);
         lookThroughKnownCards(discard);
-        discardPile.addCard(discard);
-        cardsUnknown.discardCard(discard);
-        opponentHand.discardCard(discard);
+        discardPile.add(discard);
+        cardsUnknown.remove(discard);
+        opponentHand.remove(discard);
         // OPPONENT DISCARDS CARD
         for(int j = 0; j<cardsUnknown.size(); j++){
             double setProb = 0.0;
@@ -294,11 +311,11 @@ public class GametreeAI {
     }
 
     // method that looks in known cards (hand + discardpile) for usefull cards
-    public void lookThroughKnownCards(Card chosen){
+    public void lookThroughKnownCards(MyCard chosen){
         // 4 suits
         leftInUnknownSet = 3;
         // if chosen card is Ace or King you only have 1 'neighbour' for run
-        if(chosen.getValue() == 1 || chosen.getValue() == 13){
+        if(chosen.rank.value == 1 || chosen.rank.value == 13){
             leftInUnknownRun = 1;
         }
         else{
@@ -306,37 +323,36 @@ public class GametreeAI {
         }
         for(int k = 0; k< hand.size(); k++){
             // look through hand for cards that form set with given card
-            if(hand.getCard(k).getValue() == chosen.getValue() && leftInUnknownSet > 0){
+            if(hand.get(k).rank.value == chosen.rank.value && leftInUnknownSet > 0){
                 leftInUnknownSet--;
             }
             // look through hand for cards that form run with given card
-            if(hand.getCard(k).getSuit() == chosen.getSuit() && Math.abs(hand.getCard(k).getValue() - chosen.getValue()) == 1 && leftInUnknownRun > 0){
+            if(hand.get(k).suit == chosen.suit && Math.abs(hand.get(k).rank.value - chosen.rank.value) == 1 && leftInUnknownRun > 0){
                 leftInUnknownRun--;
             }
         }
         // look through pile, same as hand
         for(int k = 0; k< discardPile.size(); k++){
-            if(discardPile.getCard(k).getValue() == chosen.getValue() && leftInUnknownSet > 0){
+            if(discardPile.get(k).rank.value == chosen.rank.value && leftInUnknownSet > 0){
                 leftInUnknownSet--;
             }
-            if(discardPile.getCard(k).getSuit() == chosen.getSuit() && Math.abs(discardPile.getCard(k).getValue() - chosen.getValue()) == 1 && leftInUnknownRun > 0){
+            if(discardPile.get(k).suit == chosen.suit && Math.abs(discardPile.get(k).rank.value - chosen.rank.value) == 1 && leftInUnknownRun > 0){
                 leftInUnknownRun--;
             }
         }
     }
 
+    public static MyCard chooseCardToDiscard(List<MyCard> aHand){
+        MyCard theCard = null;
+        // starting value is set at a number that's higher than attainable
+        // 1000 is enough
+        int highestVal = 1000;
 
-    public static Card chooseCardToDiscard(List<Card> aHand){
-        Card theCard = null;
-        //List<Card> deadwood = Player.
-        // starting value of a hand
-        int highestVal = Player.scoreHand(aHand);
-
-        for(Card aCard : aHand){
+        for(MyCard aCard : aHand){
             //deep copy aList (method is in Player class already)
-            List<Card> aList = Player.copyList(aHand);
+            List<MyCard> aList = deepCloneMyCardList(aHand);
             aList.remove(aCard);
-            int resultingHand = Player.scoreHand(aList);
+            int resultingHand = Finder.findBestHandLayout(aList).getDeadwood();
             if(resultingHand <= highestVal){    //the result from scoreHand is counting deadwood value so it should be smaller than the previous step
                 theCard = aCard;
                 highestVal = resultingHand;

@@ -20,6 +20,12 @@ public class MyCard {
         this.rank = Rank.getRank(j);
     }
 
+    // TODO: Make sure that these deep copies are properly done
+    public MyCard(MyCard aCard){
+        this.suit = Suit.getSuit(aCard.suit.index);
+        this.rank = Rank.getRank(aCard.rank.value);
+    }
+
     public MyCard(Card aCard){
         this.suit = Suit.getSuit(aCard.getSuitVal());
         this.rank = Rank.getRank(aCard.getValue()-1) ;

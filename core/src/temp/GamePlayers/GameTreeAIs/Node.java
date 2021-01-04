@@ -1,7 +1,6 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.SetOfCards;
-import gameHandling.Player;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
@@ -9,15 +8,23 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Node {
-    public SetOfCards discardPile;
-    public SetOfCards hand;
-    public SetOfCards unknownCards;
-    public SetOfCards opponentHand;
+    /*
+    Main change I did was change from set of cards into List<MyCard>
+    From there on I went through the code and tried to fix all of the red lines that appeared
+    That's the gist of it tbh
+     */
+
+    public List<MyCard> discardPile;
+    public List<MyCard> hand;
+    public List<MyCard> unknownCards;
+    public List<MyCard> opponentHand;
     public boolean winOrLose;
     public int handValue; //not deadwood value, constant - deadwood, (for easier implementation pruning)
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
+
+    public static int constantScore = 100;
 
     private int depthTree;
     protected HashMap<MyCard, Double> probMap = new HashMap<>();
@@ -25,27 +32,27 @@ public class Node {
     public boolean playerStop = false; // when game is over this one turns to be true
     public boolean AIStop = false; // turn to be true when game is over
 
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand, int depth) {
+    public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth) {
         this.discardPile = pile;
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
         this.depthTree = depth;
 
-        int pScore = Player.scoreHand(hand.toList());
-        int opHand = Player.scoreHand(opponentHand.toList());
+        int pScore = Finder.findBestHandLayout(hand).getDeadwood(); //Player.scoreHand(hand.toList());
+        int opHand = Finder.findBestHandLayout(opponentHand).getDeadwood();//Player.scoreHand(opponentHand.toList());
 
         if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
-        handValue = Player.getHandValue(cards.toList());
+        handValue = Node.getHandValue(cards);
     }
 
     public Node(boolean positiveInf) {
-        this.discardPile = new SetOfCards(false, false);
-        this.hand = new SetOfCards(false, false);
-        this.opponentHand = new SetOfCards(false, false);
-        this.unknownCards = new SetOfCards(false, false);
+        this.discardPile = new ArrayList<>();
+        this.hand = new ArrayList<>();
+        this.opponentHand = new ArrayList<>();
+        this.unknownCards = new ArrayList<>();
 
         if (positiveInf) {
             this.setHandValue(100000);
@@ -121,6 +128,16 @@ public class Node {
             return node1;
         else
             return node2;
+    }
+
+    /*
+    No idea why the original handValue method was implemented as it is, but this is my attempt at bringing it to the new game system
+    All I did was copy the code and alter the deadwood method to use what exists in the new game logic
+    So hopefully this works perfectly
+     */
+    public static int getHandValue(List<MyCard> aHand) {
+        int scoreHand = Finder.findBestHandLayout(aHand).getDeadwood();
+        return constantScore - scoreHand;
     }
 
     public static void main(String[] args) {
