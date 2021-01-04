@@ -396,7 +396,7 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void update(HandLayout realLayout) {
         super.update(realLayout);
-        SetOfCards cardList = new SetOfCards(realLayout);
+        //SetOfCards cardList = new SetOfCards(realLayout);
 
     }
 

@@ -3,6 +3,9 @@ package temp.GamePlayers.GameTreeAIs;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 import gameHandling.Player;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.MyCard;
 
 import java.util.*;
 
@@ -467,7 +470,54 @@ public class GametreeAI {
 
 
     public static void main(String[] args){
-        SetOfCards deck = new SetOfCards(true, false);
+        List<MyCard> cards = new ArrayList<>();
+
+        for(int i=0; i<4; i++){
+            cards.add(new MyCard(0,i));
+        }
+
+        for(int i =1;i<4;i++){
+            cards.add(new MyCard(i,4));
+        }
+
+        cards.add(new MyCard(1,10));
+        cards.add(new MyCard(3,10));
+
+        HandLayout handLayout = Finder.findBestHandLayout(cards);
+
+        MyCard discard = new MyCard(0,4);
+
+        MinimaxPruningAI ai = new MinimaxPruningAI();
+
+
+
+
+
+        long startTime = System.nanoTime();
+        ai.update(handLayout);
+        long endTime = System.nanoTime();
+        long length = (endTime-startTime);
+
+        System.out.println("To update internally, it took " + length);
+
+
+
+        startTime = System.nanoTime();
+        ai.newRound(discard);
+        endTime = System.nanoTime();
+        length = (endTime-startTime);
+
+        System.out.println("For a new round, it took " + length);
+
+
+        startTime = System.nanoTime();
+        ai.pickDeckOrDiscard(40,discard);
+        endTime = System.nanoTime();
+        length = (endTime-startTime);
+
+        System.out.println("To pick whether deck or pile it took " + length);
+
+        /*SetOfCards deck = new SetOfCards(true, false);
         SetOfCards hand = new SetOfCards(false, false);
         for(int i = 0; i < 10; i++){
             Card aCard = deck.drawTopCard();
@@ -478,6 +528,6 @@ public class GametreeAI {
         pile.addCard(discardCard);
         GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
         AI.createTree(true);
-        System.out.print("heyyyy");
+        System.out.print("heyyyy");*/
     }
 }
