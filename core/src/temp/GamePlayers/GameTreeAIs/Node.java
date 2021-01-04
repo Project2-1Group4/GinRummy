@@ -4,6 +4,7 @@ import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Node {
@@ -41,7 +42,8 @@ public class Node {
 
         int pScore = Finder.findBestHandLayout(hand).getDeadwood(); //Player.scoreHand(hand.toList());
         int opHand = Finder.findBestHandLayout(opponentHand).getDeadwood();//Player.scoreHand(opponentHand.toList());
-
+       // System.out.println("probabilities = " + Arrays.deepToString(probMap));
+        //System.out.println(" ");
         if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
@@ -59,33 +61,6 @@ public class Node {
         for(MyCard card: unknownCards){
             this.setProbability(card, 1.0/41.0);
         }
-    }
-
-    /*
-    Assume no other information is known whatsoever
-     */
-    static double[][] getDefaultProbabilities(List<MyCard> hand, List<MyCard> pile){
-        int unknownSize = 52 - hand.size() - pile.size();
-
-        double[][] probMap = new double[4][13];
-
-        for(int i = 0; i <4; i++){
-            for(int j = 0; j < 13; j++){
-                probMap[i][j] = 1.0/unknownSize;
-            }
-        }
-
-        // If they're in the hand or in the pile then their prob is 0
-        for(MyCard card: hand){
-            probMap[card.suit.index][card.rank.value] = 0;
-        }
-
-        for(MyCard card: pile){
-            probMap[card.suit.index][card.rank.value] = 0;
-        }
-
-        return probMap;
-
     }
 
     public Node(boolean positiveInf) {
@@ -110,7 +85,15 @@ public class Node {
     }
 
     void setProbability(MyCard card, double val){
-        probMap[card.suit.index][card.rank.index] = val;
+        if(val >= 1.0){
+            probMap[card.suit.index][card.rank.index] = 1.0;
+        }
+        else if(val <= 0.0) {
+            probMap[card.suit.index][card.rank.index] = 0.0;
+        }
+        else {
+            probMap[card.suit.index][card.rank.index] = val;
+        }
     }
 
     // TODO: Make sure it's a deep copy being made
