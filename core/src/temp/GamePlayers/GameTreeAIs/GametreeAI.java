@@ -1,7 +1,5 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.Card;
-import cardlogic.SetOfCards;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
@@ -543,23 +541,31 @@ public class GametreeAI {
         } else {
             probMap[card.suit.index][card.rank.index] = val;
         }
-        
+
     }
 
 
 
     public static void main(String[] args){
-        SetOfCards deck = new SetOfCards(true, false);
-        SetOfCards hand = new SetOfCards(false, false);
+        List<MyCard> deck = MyCard.getBasicDeck();
+        List<MyCard> hand = new ArrayList<>();
         for(int i = 0; i < 10; i++){
-            Card aCard = deck.drawTopCard();
-            hand.addCard(aCard);
+            // I don't think this is the top of the deck, but it doesn't really matter that much
+            MyCard card = deck.remove(0);
+            hand.add(card);
         }
-        /*SetOfCards pile = new SetOfCards(false, false);
-        Card discardCard = deck.drawTopCard();
-        pile.addCard(discardCard);
-        GametreeAI AI = new GametreeAI(pile, hand,deck, 10);
-        AI.createTree(true);*/
+
+        MyCard discardCard = deck.remove(0);
+        List<MyCard> pile = new ArrayList<>();
+
+        pile.add(discardCard);
+
+        double[][] probMap = Node.getDefaultProbabilities(hand,pile);
+
+        GametreeAI AI = new GametreeAI(pile, hand, deck, 4, probMap);
+
+        AI.createTree(true);
+        
         System.out.print("heyyyy");
     }
 }

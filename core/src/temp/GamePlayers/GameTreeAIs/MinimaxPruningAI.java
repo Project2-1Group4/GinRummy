@@ -1,16 +1,15 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.Card;
-import cardlogic.SetOfCards;
-import gameHandling.Player;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
@@ -162,7 +161,7 @@ public class MinimaxPruningAI extends GamePlayer {
 
     public static void main(String[] args) {
         GameLogic g = new GameLogic(true, true);
-        g.play(new MinimaxPruningAI(), new MinimaxPruningAI(), 0);
+        g.play(new MinimaxPruningAI(), new basicGreedyTest(), 0);
     }
 
 /*
