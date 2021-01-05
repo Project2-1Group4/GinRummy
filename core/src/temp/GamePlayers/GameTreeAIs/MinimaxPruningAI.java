@@ -1,12 +1,14 @@
 package temp.GamePlayers.GameTreeAIs;
 
+import cardlogic.Card;
+import cardlogic.SetOfCards;
+import gameHandling.Player;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +123,8 @@ public class MinimaxPruningAI extends GamePlayer {
 
         unknownCards = pickNode.unknownCards;
         probMap = pickNode.getProbMap();
+        System.out.println("probabilitiesCalc = " + Arrays.deepToString(probMap));
+        System.out.println(" ");
         List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
         MyCard pickCard = null;
         for(MyCard card : newHand) {
@@ -149,62 +153,10 @@ public class MinimaxPruningAI extends GamePlayer {
     }
 
 
-/*
-    public boolean AIknock() {
-        int score = Player.scoreHand(this.hand.toList());
-        System.out.println("hand score: "+score);
-        if (score < 10) {
-            System.out.println("Bot wins the game!!");
-            AIknock = true;
-            return true;
-        }
-        else
-            return false;
-    }
-*/
-
     public static void main(String[] args) {
         GameLogic g = new GameLogic(true, true);
-        g.play(new MinimaxPruningAI(), new basicGreedyTest(), 0);
+        g.play(new MinimaxPruningAI(), new MinimaxPruningAI(), 0);
     }
-
-/*
-    public static void main (String [] args){
-        // create cards for game
-        SetOfCards deck = new SetOfCards(true, false);
-        // create hand AI
-        SetOfCards hand = SetOfCards.handOutCard(10, deck);
-        System.out.println("hand: "+hand);
-        System.out.println("score: "+Player.scoreHand(hand.toList()));
-        // create pile
-        SetOfCards pile = new SetOfCards(false, false);
-        Card discardCard = deck.drawTopCard();
-        pile.addCard(discardCard);
-        // create tree
-        GametreeAI gameTree = new GametreeAI(pile, hand,deck, 4);
-        gameTree.createTree(true);
-
-        // create opponenthand
-        SetOfCards copyDeck  = new SetOfCards(deck.toList());
-        SetOfCards opponentHand = SetOfCards.handOutCard(10, copyDeck);
-        // create pruning
-        MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
-
-        // start game
-        while(!AI.AIknock() && !AI.playerKnock){
-            //Print out some cards to see the probabilities
-
-            for(int i = 0; i<3; i++) {
-                System.out.println("test prob: "+gameTree.cardsUnknown.getCard(i+3)+" "+gameTree.cardsUnknown.getCard(i+3).getProb());
-            }
-
-
-
-        }
-        System.out.println("Bot hand card after game over: "+hand);
-        System.out.println("Win after: "+round+" rounds");
-    }
-*/
 
     /*
     If true then the player knocks and the round ends
@@ -247,7 +199,6 @@ public class MinimaxPruningAI extends GamePlayer {
                 backupHand.add(allCards.get(i));
 
             }
-
             return true;
         }
 
@@ -323,12 +274,16 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void newRound(MyCard topOfDiscard) {
+
         this.discardedCards = new ArrayList<>();
         this.discardedCards.add(new MyCard(topOfDiscard));
         this.unknownCards = findRemainingCards(this.allCards, this.discardedCards);
+        probMap = new double[4][13];
         for(MyCard card: unknownCards){
             this.setProbability(card, 1.0/41.0);
         }
+        System.out.println("probabilities = " + Arrays.deepToString(probMap));
+        System.out.println(" ");
         createTree();
         this.tree.createTree(true);
     }
@@ -336,10 +291,13 @@ public class MinimaxPruningAI extends GamePlayer {
     void setProbability(MyCard card, double val){
         if(val >= 1.0){
             probMap[card.suit.index][card.rank.index] = 1.0;
-        } else {
+        }
+        else if(val <= 0.0) {
+            probMap[card.suit.index][card.rank.index] = 0.0;
+        }
+        else {
             probMap[card.suit.index][card.rank.index] = val;
         }
-
     }
 
     /*
