@@ -13,16 +13,8 @@ import java.util.Stack;
 public class MCTSV2 extends MCTS{
 
     @Override
-    protected Action getBestAction(State.StepInTurn step){
-        rollouts = 0;
-
-        Knowledge knowledge = unpackMemory();
-        MCTSNode root = getPossibleMoves(knowledge);
-        monteCarloTreeSearch(root, knowledge);
-
-        int best = findBestAction(root.children);
-        print(root.children,best);
-        return root.children.get(best).action;
+    protected void monteCarloTreeSearch(MCTSNode root, Knowledge knowledge) {
+        mcts(root,knowledge);
     }
 
     @Override

@@ -29,6 +29,22 @@ public abstract class MCTS extends MemoryPlayer{
         rd = new Random();
     }
 
+    /**
+     * Whatever specific thing you want to do.
+     *
+     * @param root node with all possible moves as children
+     */
+    protected abstract void monteCarloTreeSearch(MCTSNode root, Knowledge knowledge);
+
+    /**
+     * Does rollout part of MCTS (play till end).
+     * Can be done either randomly or with a some other algorithm (BasicGreedy or ForcePlayer?).
+     *
+     * @param state that needs to be played out
+     * @return true if this player wins, false if other wins
+     */
+    protected abstract boolean rollOut(Knowledge state);
+
     @Override
     public Boolean knockOrContinue() {
         KnockAction action = (KnockAction) getBestAction(State.StepInTurn.KnockOrContinue);
@@ -48,12 +64,12 @@ public abstract class MCTS extends MemoryPlayer{
     }
 
     /**
-     * Executes the MCTS given a perfect information state.
+     * Executes the MCTS on given knowledge.
      *
      * @param root containing all possible moves as children
      * @param state imagined state of game
      */
-    protected void monteCarloTreeSearch(MCTSNode root, Knowledge state){
+    protected void mcts(MCTSNode root, Knowledge state){
         while(!stopCondition()){
             MCTSNode n = root;
             while(n.children.isEmpty()){
@@ -198,16 +214,19 @@ public abstract class MCTS extends MemoryPlayer{
      * @param step current step
      * @return best action
      */
-    protected abstract Action getBestAction(State.StepInTurn step);
+    protected Action getBestAction(State.StepInTurn step){
+        rollouts = 0;
+        Knowledge knowledge = unpackMemory();
+        knowledge.step = step;
+        knowledge.turn = 0;
+        MCTSNode root = getPossibleMoves(knowledge);
 
-    /**
-     * Does rollout part of MCTS (play till end).
-     * Can be done either randomly or with a some other algorithm (BasicGreedy or ForcePlayer?).
-     *
-     * @param state that needs to be played out
-     * @return true if this player wins, false if other wins
-     */
-    protected abstract boolean rollOut(Knowledge state);
+        monteCarloTreeSearch(root, knowledge);
+
+        int best = findBestAction(root.children);
+        print(root.children,best);
+        return root.children.get(best).action;
+    }
 
     /**
      * Helper method. Prints. To be deleted.

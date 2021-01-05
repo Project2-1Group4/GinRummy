@@ -18,18 +18,13 @@ public class MCTSV1 extends MCTS{
     private final int simulations = 100; // Nb of perfect games simulated
 
     @Override
-    protected Action getBestAction(State.StepInTurn step){
-        rollouts = 0;
-
-        MCTSNode root = getPossibleMoves(unpackMemory());
+    protected void monteCarloTreeSearch(MCTSNode root, Knowledge knowledge){
         List<Knowledge> states = generateStates();
-
         for (Knowledge miniState : states) {
-            monteCarloTreeSearch(root, miniState);
+            miniState.step = knowledge.step;
+            miniState.turn = knowledge.turn;
+            mcts(root, miniState);
         }
-        int best = findBestAction(root.children);
-        print(root.children,best);
-        return root.children.get(best).action;
     }
 
     /**
