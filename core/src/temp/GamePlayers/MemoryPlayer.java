@@ -5,7 +5,10 @@ import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.GameTreeAIs.MCTS.Knowledge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public abstract class MemoryPlayer extends GamePlayer {
@@ -17,6 +20,22 @@ public abstract class MemoryPlayer extends GamePlayer {
     public MemoryPlayer() {
         memory = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
         discardMemory = new Stack<>();
+    }
+
+    protected Knowledge unpackMemory(){
+        List<MyCard> otherPlayer = new ArrayList<>();
+        List<MyCard> unknown = new ArrayList<>();
+        for (int suit = 0; suit < memory.length; suit++) {
+            for (int rank = 0; rank < memory[suit].length; rank++) {
+                if(memory[suit][rank]==index+1 || (memory[suit][rank] == 1 && index != 1)){
+                    otherPlayer.add(new MyCard(suit,rank));
+                }
+                if(memory[suit][rank]==0){
+                    unknown.add(new MyCard(suit,rank));
+                }
+            }
+        }
+        return new Knowledge(viewHand(), otherPlayer, null, unknown, (Stack<MyCard>) discardMemory.clone());
     }
 
     @Override
