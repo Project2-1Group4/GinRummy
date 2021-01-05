@@ -35,7 +35,7 @@ public abstract class MemoryPlayer extends GamePlayer {
                 }
             }
         }
-        return new Knowledge(viewHand(), otherPlayer, null, unknown, (Stack<MyCard>) discardMemory.clone());
+        return new Knowledge(null, -1, viewHand(), otherPlayer, null, unknown, (Stack<MyCard>) discardMemory.clone());
     }
 
     @Override
@@ -59,7 +59,7 @@ public abstract class MemoryPlayer extends GamePlayer {
 
     @Override
     public void playerPicked(PickAction pickAction) {
-        if (!pickAction.deck) {
+        if (!pickAction.deck || pickAction.card!=null) {
             set(pickAction.card, pickAction.playerIndex);
         }
     }

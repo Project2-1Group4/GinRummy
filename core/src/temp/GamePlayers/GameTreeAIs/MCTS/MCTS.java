@@ -46,9 +46,8 @@ public abstract class MCTS extends MemoryPlayer{
      * Can be done either randomly or with a some other algorithm (BasicGreedy or ForcePlayer?).
      *
      * @param state that needs to be played out
-     * @return true if this player wins, false if other wins
      */
-    protected abstract boolean rollOut(Knowledge state);
+    protected abstract void rollout(MCTSNode node, Knowledge state);
 
     @Override
     public Boolean knockOrContinue() {
@@ -77,19 +76,20 @@ public abstract class MCTS extends MemoryPlayer{
     protected void mcts(MCTSNode root, Knowledge state){
         while(!stopCondition()){
             MCTSNode n = root;
-            while(n.children.isEmpty()){
-                n = n.getChildToExplore(rollouts);
-                state.execute(n.action);
+            while(!n.children.isEmpty()){
                 if(state.step== State.StepInTurn.Pick && n.children.size()>2){
                     averageOutDeckPicks(n);
                 }
+                n = n.getChildToExplore(rollouts);
+                state.execute(n.action);
             }
-            n.children.addAll(getPossibleMoves(state).children);
-            rollOut(state);
-            while(n!=root){
+            n.children.addAll(getPossibleMoves(new MCTSNode(null, null), state).children);
+            print(n.children, null);
+            rollout(n, state);
+            do{
                 state.undo(n.action);
                 n = n.parent;
-            }
+            }while(n!=root);
         }
     }
 
@@ -102,8 +102,8 @@ public abstract class MCTS extends MemoryPlayer{
      * @param seed to allow replication
      * @return true if you win, false if other wins
      */
-    protected boolean rollout(GamePlayer player1, GamePlayer player2, Knowledge knowledge, int seed) {
-        GameLogic g = new GameLogic();
+    protected double executeRollout(GamePlayer player1, GamePlayer player2, Knowledge knowledge, int seed) {
+        GameLogic g = new GameLogic(true, false);
         State curState = new StateBuilder()
                 .setSeed(seed)
                 .addPlayer(player1)
@@ -115,10 +115,25 @@ public abstract class MCTS extends MemoryPlayer{
         curState.playerStates.get(0).handLayout = new HandLayout(knowledge.player);
         curState.playerStates.get(1).handLayout = new HandLayout(knowledge.otherPlayer);
         curState.discardPile = (Stack<MyCard>) knowledge.discardPile.clone();
+        curState.stepInTurn = knowledge.step;
+        for (int i = 0; i < curState.playerStates.size(); i++) {
+            curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
+            curState.players.get(i).newRound(curState.peekDiscardTop());
+        }
         while (!curState.endOfGame()) {
             curState = g.update(curState);
         }
-        return curState.getWinnerIndex()==0;
+        double win;
+        if(curState.getWinnerIndex()==null){
+            win = 0.5; // TIE
+        }
+        else if(curState.getWinnerIndex()==0){
+            win = 1;
+        }
+        else{
+            win = 0;
+        }
+        return win;
     }
 
     /**
@@ -127,18 +142,17 @@ public abstract class MCTS extends MemoryPlayer{
      * @param knowledge current knowledge of the game
      * @return list of possible moves
      */
-    protected MCTSNode getPossibleMoves(Knowledge knowledge){
-        MCTSNode root = new MCTSNode(null, null);
+    protected MCTSNode getPossibleMoves(MCTSNode parent, Knowledge knowledge){
         if(knowledge.step == State.StepInTurn.Pick){
-            getPickMoves(root, knowledge);
+            getPickMoves(parent, knowledge);
         }
         else if(knowledge.step == State.StepInTurn.Discard){
-            getDiscardMoves(root, knowledge);
+            getDiscardMoves(parent, knowledge);
         }
         else if(knowledge.step == State.StepInTurn.KnockOrContinue){
-            getKnockMoves(root, knowledge);
+            getKnockMoves(parent, knowledge);
         }
-        return root;
+        return parent;
     }
 
     private void getPickMoves(MCTSNode root, Knowledge knowledge){
@@ -207,8 +221,8 @@ public abstract class MCTS extends MemoryPlayer{
         }
         for (MCTSNode child : node.children) {
             if(((PickAction)child.action).deck) {
-                child.rollouts = rollouts / child.children.size();
-                child.wins = wins / child.children.size();
+                child.rollouts = rollouts / node.children.size();
+                child.wins = wins / node.children.size();
             }
         }
     }
@@ -220,7 +234,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if stop, false if not
      */
     protected boolean stopCondition(){
-        return rollouts<=maximumAmountOfRollouts;
+        return rollouts>=maximumAmountOfRollouts;
     }
 
     /**
@@ -252,13 +266,25 @@ public abstract class MCTS extends MemoryPlayer{
         Knowledge knowledge = unpackMemory();
         knowledge.step = step;
         knowledge.turn = 0;
-        MCTSNode root = getPossibleMoves(knowledge);
-
+        MCTSNode root = getPossibleMoves(new MCTSNode(null, null), knowledge);
         monteCarloTreeSearch(root, knowledge);
 
         int best = findBestAction(root.children);
-        print(root.children,best);
         return root.children.get(best).action;
+    }
+
+    /**
+     * Back propagate results of rollout.
+     *
+     * @param node that has been rolled out
+     */
+    protected void backPropagate(MCTSNode node){
+        while(node.parent!=null){
+            MCTSNode temp = node.parent;
+            temp.rollouts+=node.rollouts;
+            temp.wins+=node.wins;
+            node = temp;
+        }
     }
 
     /**
@@ -267,8 +293,8 @@ public abstract class MCTS extends MemoryPlayer{
      * @param actions list of actions that can be done now
      * @param chosen index of action that has been chosen
      */
-    protected void print(List<MCTSNode> actions, int chosen){
-        System.out.println("Chose "+chosen+" out of:\n");
+    protected void print(List<MCTSNode> actions, Integer chosen){
+        System.out.println("Chose "+chosen+" out of:");
         for (int i = 0; i < actions.size(); i++) {
             System.out.println("\t"+i+". "+actions.get(i).action);
         }

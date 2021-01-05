@@ -70,7 +70,7 @@ public class GameLogic {
             GamePlayer player = curState.getPlayer();
             Action action = getAction(player, curState);
             boolean executed = Executor.execute(action, curState);
-            if (onlyBot && !roundEnd) {
+            if (!executed) {
                 if (action == null) {
                     System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
                 }
@@ -89,7 +89,6 @@ public class GameLogic {
                 curState = endOfRound(curState);
             }
         }
-
         if (curState.endOfGame() || (!fullGame && (curState.getTurn() >= GameRules.maxTurnsInARound || roundEnd))) {
             curState.endGame = true;
         }
