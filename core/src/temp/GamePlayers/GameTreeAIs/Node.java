@@ -115,12 +115,10 @@ public class Node {
 
     // TODO: Make sure it's a deep copy being made
     double[][] getProbMap(){
-        double[][] cloneMap = new double[probMap.length][probMap[0].length];
+        double[][] cloneMap = new double[probMap.length][];
 
         for(int i=0;i<probMap.length;i++){
-            for(int j=0;j<probMap[0].length;j++){
-                cloneMap[i][j] = probMap[i][j];
-            }
+            cloneMap[i] = this.probMap[i].clone();
         }
 
         return cloneMap;

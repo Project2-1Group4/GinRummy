@@ -9,6 +9,7 @@ import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MinimaxPruningAI extends GamePlayer {
@@ -115,6 +116,9 @@ public class MinimaxPruningAI extends GamePlayer {
                 pickNode.unknownCards.add(card);
             }
         }
+
+        System.out.println("ProbNode : " + Arrays.deepToString(this.probMap));
+
         unknownCards = pickNode.unknownCards;
         probMap = pickNode.getProbMap();
         List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
