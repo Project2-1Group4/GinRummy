@@ -6,8 +6,11 @@ import java.util.*;
 
 //the structure, parameters are the same as depth first search so I will reuse all basic methods from depth minimax
 public class BestFirstMinimaxAI extends MinimaxPruningAI {
+    double heuristicValue;
+
     public BestFirstMinimaxAI() {
         super();
+        this.heuristicValue = (double) Finder.findBestHandLayout(this.hand).getDeadwood();
     }
 
     public double newEvaluation(Node nodeChecking) {
@@ -16,22 +19,22 @@ public class BestFirstMinimaxAI extends MinimaxPruningAI {
         int scoreHand = Finder.findBestHandLayout(attemptHand).getDeadwood();
 
         //get possible new hand cards
-        MyCard[] pick_discard = this.pick_discard(nodeChecking);
+        MyCard[] pick_discard = this.pick_discard(nodeChecking.hand);
         MyCard pickCard = pick_discard[0];
 
         //get probability of each card
         double[][] probMap = this.tree.probMap;
         double cardPickedProb = probMap[pickCard.suit.index][pickCard.rank.index];
 
-        return 0;
+        double finalValue = scoreHand + cardPickedProb*100;
+        return finalValue;
     }
 
-    public MyCard[] pick_discard(Node nodeChecking) {
-        List<MyCard> newHand = nodeChecking.hand;
+    public MyCard[] pick_discard(List<MyCard> newAttemptHand) {
 
         //card pick
         MyCard pickCard = null;
-        for (MyCard card : newHand) {
+        for (MyCard card : newAttemptHand) {
             if (!this.hand.contains(card)) {
                 pickCard = card;
             }
@@ -39,10 +42,14 @@ public class BestFirstMinimaxAI extends MinimaxPruningAI {
         //card discard
         MyCard discardCard = null;
         for (MyCard card : this.hand) {
-            if (!newHand.contains(card)) {
+            if (!newAttemptHand.contains(card)) {
                 discardCard = card;
             }
         }
         return new MyCard[] {pickCard, discardCard};
+    }
+
+    public void searching() {
+
     }
 }
