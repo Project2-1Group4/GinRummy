@@ -22,6 +22,7 @@ public abstract class Action {
         return false;
     }
 
+    public abstract State.StepInTurn getStep();
     protected abstract boolean specificSame(Action other);
 
     public abstract String toString();

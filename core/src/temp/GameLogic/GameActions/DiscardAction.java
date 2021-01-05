@@ -13,6 +13,11 @@ public class DiscardAction extends Action {
     }
 
     @Override
+    public State.StepInTurn getStep() {
+        return State.StepInTurn.Discard;
+    }
+
+    @Override
     protected boolean specificSame(Action other) {
         return card.same(((DiscardAction) other).card);
     }

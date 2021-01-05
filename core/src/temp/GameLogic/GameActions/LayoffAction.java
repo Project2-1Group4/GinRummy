@@ -26,6 +26,11 @@ public class LayoffAction extends Action {
     }
 
     @Override
+    public State.StepInTurn getStep() {
+        return State.StepInTurn.LayOff;
+    }
+
+    @Override
     protected boolean specificSame(Action other) {
         LayoffAction o = (LayoffAction) other;
         if ((o.card == null || o.meld == null) && ((card == null || meld == null))) {

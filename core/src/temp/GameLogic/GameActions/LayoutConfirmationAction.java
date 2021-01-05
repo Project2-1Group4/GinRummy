@@ -18,6 +18,11 @@ public class LayoutConfirmationAction extends Action {
     }
 
     @Override
+    public State.StepInTurn getStep() {
+        return State.StepInTurn.LayoutConfirmation;
+    }
+
+    @Override
     protected boolean specificSame(Action other) {
         return layout.same(((LayoutConfirmationAction) other).layout);
     }

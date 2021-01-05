@@ -20,6 +20,11 @@ public class KnockAction extends Action {
     }
 
     @Override
+    public State.StepInTurn getStep() {
+        return State.StepInTurn.KnockOrContinue;
+    }
+
+    @Override
     protected boolean specificSame(Action other) {
         KnockAction o = (KnockAction) other;
         if (o.knock != knock) {

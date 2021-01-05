@@ -15,6 +15,11 @@ public class PickAction extends Action {
     }
 
     @Override
+    public State.StepInTurn getStep() {
+        return State.StepInTurn.Pick;
+    }
+
+    @Override
     protected boolean specificSame(Action other) {
         if (deck != ((PickAction) other).deck) {
             return false;
