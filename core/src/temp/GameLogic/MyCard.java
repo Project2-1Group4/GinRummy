@@ -30,10 +30,6 @@ public class MyCard {
         return card.suit == this.suit && card.rank == this.rank;
     }
 
-    public int getIndex() {
-        return suit.index * (Rank.values().length) + (rank.index);
-    }
-
     public int ginValue() {
         return rank.ginValue;
     }
@@ -111,28 +107,6 @@ public class MyCard {
             }
         }
         return sb.toString();
-    }
-
-    public static int[] getIndices(int index) {
-        int rank = index % Rank.values().length;
-        return new int[]{
-                (index - rank) / Rank.values().length,
-                rank
-        };
-    }
-
-    public static int getIndex(Suit s, Rank r) {
-        return getIndex(s.index, r.index);
-    }
-
-    public static int getIndex(int i, int j) {
-        return new MyCard(i, j).getIndex();
-    }
-
-    public static MyCard getCard(int index) {
-        int rank = index % Rank.values().length;
-        int suit = (index - rank) / Rank.values().length;
-        return new MyCard(suit, rank);
     }
 
     /**

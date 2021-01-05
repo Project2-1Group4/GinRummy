@@ -110,7 +110,6 @@ public class Coordinator extends ScreenAdapter {
      * @param step      turn in the players turn round
      */
     private Action handleTurn(GamePlayer curPlayer, State.StepInTurn step) {
-        // TODO maybe move elsewhere
         if (currentGameState.getDeckSize() <= GameRules.minCardsInDeck) {
             if (GameRules.print) System.out.println("FORCE END OF ROUND. 2 CARDS LEFT IN DECK");
             currentGameState = Executor.startNewRound(500, currentGameState);

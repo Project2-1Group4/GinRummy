@@ -6,21 +6,25 @@ import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 
+import java.util.Stack;
+
 public abstract class MemoryPlayer extends GamePlayer {
     protected static final int discard = -1;
     // -1 = discard, 0 = unknown, player = player index
-    protected int[] memory;
+    protected int[][] memory;
+    protected Stack<MyCard> discardMemory;
 
     public MemoryPlayer() {
-        memory = new int[MyCard.Suit.values().length * MyCard.Rank.values().length];
+        memory = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
+        discardMemory = new Stack<>();
     }
 
     @Override
     public void newRound(MyCard topOfDiscard) {
         super.newRound(topOfDiscard);
-        memory[topOfDiscard.getIndex()] = discard;
+        set(topOfDiscard, discard);
         for (MyCard card : allCards) {
-            memory[card.getIndex()] = index;
+            set(card, index);
         }
     }
 
@@ -31,13 +35,13 @@ public abstract class MemoryPlayer extends GamePlayer {
 
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
-        memory[discardAction.card.getIndex()] = discard;
+        set(discardAction.card, discard);
     }
 
     @Override
     public void playerPicked(PickAction pickAction) {
         if (!pickAction.deck) {
-            memory[pickAction.card.getIndex()] = pickAction.playerIndex;
+            set(pickAction.card, pickAction.playerIndex);
         }
     }
 
@@ -48,5 +52,15 @@ public abstract class MemoryPlayer extends GamePlayer {
         } else if (action instanceof DiscardAction) {
             playerDiscarded((DiscardAction) action);
         }
+    }
+
+    private void set(MyCard card, int id){
+        if(id==discard){
+            discardMemory.add(card);
+        }
+        else if(card.same(discardMemory.peek())){
+            discardMemory.pop();
+        }
+        memory[card.suit.index][card.rank.index] = id;
     }
 }

@@ -31,18 +31,8 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
-    public HandLayout viewHandLayout() {
-        return viewHandLayout();
-    }
-
-    @Override
-    public List<MyCard> viewHand() {
-        return viewHand();
-    }
-
-    @Override
     public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
-        render(batch, renderingStyle, renderer);
+        player.render(batch, renderingStyle, renderer);
     }
 
     @Override

@@ -141,7 +141,7 @@ public class PlayerRenderer {
     }
 
     private void update() {
-        //TODO snaping
+        //TODO snapping
     }
 
     private void renderUnmoved(SpriteBatch batch, Style style) {

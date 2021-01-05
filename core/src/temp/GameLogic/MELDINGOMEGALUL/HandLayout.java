@@ -3,6 +3,7 @@ package temp.GameLogic.MELDINGOMEGALUL;
 import temp.GameLogic.MyCard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -182,6 +183,10 @@ public class HandLayout {
         return cpy.size() == 0;
     }
 
+    public double evaluate(){
+        //TODO
+        return 0;
+    }
     public HandLayout deepCopy() {
         HandLayout m = new HandLayout();
         m.setOfMelds = Meld.deepCopy(setOfMelds);
