@@ -17,27 +17,27 @@ public class State {
     public boolean endGame;
 
     public int startingPlayer;
-    protected Random seed;
-    protected List<MyCard> initDeck;
-    protected List<MyCard> deck;
-    protected Stack<MyCard> discardPile;
-    protected int numberOfPlayers;
-    protected List<GamePlayer> players;
-    protected List<PlayerState> playerStates;
-    protected int playerTurn;
-    protected StepInTurn stepInTurn;
-    protected int[] scores;
-    protected float[] secondsPerStep;
-    protected float curTime;
-    protected Integer knocker;
-    protected Integer roundWinnerID;
-    protected Integer roundWinnerIndex;
-    protected Integer gameWinnerIndex;
-    protected int round;
-    protected int turnInRound;
-    protected Stack<Action> movesDone;
+    public Random seed;
+    public List<MyCard> initDeck;
+    public List<MyCard> deck;
+    public Stack<MyCard> discardPile;
+    public int numberOfPlayers;
+    public List<GamePlayer> players;
+    public List<PlayerState> playerStates;
+    public int playerTurn;
+    public StepInTurn stepInTurn;
+    public int[] scores;
+    public float[] secondsPerStep;
+    public float curTime;
+    public Integer knocker;
+    public Integer roundWinnerID;
+    public Integer roundWinnerIndex;
+    public Integer gameWinnerIndex;
+    public int round;
+    public int turnInRound;
+    public Stack<Action> movesDone;
 
-    protected State(int startingPlayer, Random seed, List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
+    public State(int startingPlayer, Random seed, List<MyCard> deck, Stack<MyCard> discardPile, List<GamePlayer> players, List<PlayerState> playerStates,
                     int numberOfPlayers, int playerTurn, StepInTurn stepInTurn, int[] scores, float[] secondsPerStep, Integer knocker, int round, int turnInRound, Stack<Action> movesDone) {
         this.startingPlayer = startingPlayer;
         this.seed = seed;
@@ -62,15 +62,15 @@ public class State {
 
     // SETTERS
     // Quality of life methods
-    protected MyCard pickDeckTop() {
+    public MyCard pickDeckTop() {
         return deck.remove(deck.size() - 1);
     }
 
-    protected MyCard pickDiscardTop() {
+    public MyCard pickDiscardTop() {
         return discardPile.pop();
     }
 
-    protected void addToDiscard(MyCard card) {
+    public void addToDiscard(MyCard card) {
         discardPile.add(card);
     }
 

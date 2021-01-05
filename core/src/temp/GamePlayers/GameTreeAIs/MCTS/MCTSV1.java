@@ -6,6 +6,7 @@ import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.GameState.State;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -51,9 +52,6 @@ public class MCTSV1 extends MCTS{
 
     @Override
     protected boolean rollOut(Knowledge state){
-        /*
-        TODO make rollout algorithm (in MCTS class prob)
-         */
-        return false;
+        return rollout(new basicGreedyTest(), new basicGreedyTest(),state, rd.nextInt());
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 // Can simply extend HandLayout/be replaced by HandLayout where it's used
 public class PlayerState {
 
-    protected HandLayout handLayout;
+    public HandLayout handLayout;
 
     public PlayerState() {
         handLayout = new HandLayout();

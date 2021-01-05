@@ -1,17 +1,22 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
+import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.GameState.State;
+import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
+import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.MemoryPlayer;
 import temp.GameRules;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 public abstract class MCTS extends MemoryPlayer{
 
@@ -89,6 +94,34 @@ public abstract class MCTS extends MemoryPlayer{
     }
 
     /**
+     * Executes rollout based on current state
+     *
+     * @param player1 player used to simulate yourself
+     * @param player2 player used to simulate other
+     * @param knowledge state to start at
+     * @param seed to allow replication
+     * @return true if you win, false if other wins
+     */
+    protected boolean rollout(GamePlayer player1, GamePlayer player2, Knowledge knowledge, int seed) {
+        GameLogic g = new GameLogic();
+        State curState = new StateBuilder()
+                .setSeed(seed)
+                .addPlayer(player1)
+                .addPlayer(player2)
+                .build();
+        curState = g.startGame(curState);
+        curState.deck = new ArrayList<>(knowledge.deck);
+        curState.playerTurn = knowledge.turn;
+        curState.playerStates.get(0).handLayout = new HandLayout(knowledge.player);
+        curState.playerStates.get(1).handLayout = new HandLayout(knowledge.otherPlayer);
+        curState.discardPile = (Stack<MyCard>) knowledge.discardPile.clone();
+        while (!curState.endOfGame()) {
+            curState = g.update(curState);
+        }
+        return curState.getWinnerIndex()==0;
+    }
+
+    /**
      * Gets all possible moves given current knowledge (pretty much state).
      *
      * @param knowledge current knowledge of the game
@@ -117,8 +150,8 @@ public abstract class MCTS extends MemoryPlayer{
                 root.children.add(new MCTSNode(root,new PickAction(knowledge.turn, true, knowledge.unknown.get(i))));
             }
         }
-        if(knowledge.discard.size()!=0){
-            root.children.add(new MCTSNode(root, new PickAction(knowledge.turn, false, knowledge.discard.peek())));
+        if(knowledge.discardPile.size()!=0){
+            root.children.add(new MCTSNode(root, new PickAction(knowledge.turn, false, knowledge.discardPile.peek())));
         }
     }
 
