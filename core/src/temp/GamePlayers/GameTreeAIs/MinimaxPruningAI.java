@@ -10,9 +10,7 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
@@ -29,7 +27,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public List<MyCard> unknownCards;
     boolean playerKnock = false;
     boolean AIknock = false;
-    static int round = 0;
+    //static int round = 0;
     //public static SetOfCards deck;
     int maxDepthOfTree = 3;
     private List<MyCard> backupHand;
@@ -72,7 +70,6 @@ public class MinimaxPruningAI extends GamePlayer {
         if (maxPlayer) {
             //System.out.println("run alpha beta with max player");
             Node maxNode = new Node(false); //node with negative inf hand value
-            //Node maxNode = null;
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, false);
                 //System.out.println("evalNode: "+evalNode);
@@ -88,7 +85,6 @@ public class MinimaxPruningAI extends GamePlayer {
         } else {
             //System.out.println("run alpha beta with min player");
             Node minNode = new Node(true); // node with positive inf hand value
-            //Node minNode = null;
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, true);
                 minNode = Node.getNodeMin(beta, evalNode);

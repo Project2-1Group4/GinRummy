@@ -3,9 +3,7 @@ package temp.GamePlayers.GameTreeAIs;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Node {
     /*
@@ -24,7 +22,7 @@ public class Node {
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
 
-    public static int constantScore = 100;
+    public static final int constantScore = 100;
 
     private int depthTree;
     //protected HashMap<MyCard, Double> probMap = new HashMap<>();

@@ -207,6 +207,16 @@ public class GametreeAI {
         return deepClone;
     }
 
+    public static List<MyCard> cloneMyCardList(List<MyCard> aList){
+        List<MyCard> clone = new ArrayList<>();
+        for(MyCard card:aList){
+            clone.add(card);
+        }
+
+        return clone;
+    }
+
+
     // method for the first layer
     public Node pickDeck(List<MyCard> hand, List<MyCard> cardsUnknown, List<MyCard> discardPile){
         List<MyCard> copyCards = new ArrayList<>(hand);
@@ -509,6 +519,7 @@ public class GametreeAI {
             printOutTree(child);
         }
     }
+
     public List<MyCard> updateProbDiscard(Node current, MyCard discardCard){
         copyParent(current);
         lookThroughKnownCards(discardCard);
