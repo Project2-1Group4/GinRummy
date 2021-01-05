@@ -3,7 +3,6 @@ package temp.GameLogic.GameState;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
-import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;

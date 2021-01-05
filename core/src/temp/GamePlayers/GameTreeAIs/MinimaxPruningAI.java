@@ -10,7 +10,8 @@ import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
 import temp.GamePlayers.GamePlayer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;

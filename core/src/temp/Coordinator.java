@@ -11,11 +11,8 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.Layoff;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GameLogic.MyCard;
-import temp.GamePlayers.*;
-import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
-import temp.GamePlayers.GreedyAIs.basicGreedyTest;
-import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
-import temp.GamePlayers.MousePlayer.MousePlayer;
+import temp.GamePlayers.ForcePlayer;
+import temp.GamePlayers.GamePlayer;
 import temp.Graphics.Graphics;
 
 // Handles coordination between players||validator||executor||graphics

@@ -1,14 +1,5 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
-import temp.GameLogic.GameActions.Action;
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MyCard;
-import temp.GameRules;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 // Does MCTS on imperfect information we have
 public class MCTSV2 extends MCTS{
 

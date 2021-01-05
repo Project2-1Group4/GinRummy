@@ -1,7 +1,5 @@
 package temp.Extra.GameTree;
 
-import temp.Extra.GameTree.Bot.Bot;
-import temp.Extra.GameTree.Bot.BotMemory;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;

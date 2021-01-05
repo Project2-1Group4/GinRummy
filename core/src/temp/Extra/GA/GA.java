@@ -1,7 +1,7 @@
 package temp.Extra.GA;
 
-import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
 import java.util.ArrayList;
 import java.util.List;
