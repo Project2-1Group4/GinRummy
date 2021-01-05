@@ -7,11 +7,13 @@ import java.util.List;
 
 public class MCTSNode {
     public final Action action;
+    public final MCTSNode parent;
     public final List<MCTSNode> children;
     public int wins=0;
     public int rollouts =0;
 
-    public MCTSNode(Action action){
+    public MCTSNode(MCTSNode parent, Action action){
+        this.parent = parent;
         this.action = action;
         children = new ArrayList<>();
     }
@@ -33,7 +35,7 @@ public class MCTSNode {
      * @return exploration value of node
      */
     public double explorationValue(int rolloutsDone){
-        return value()+MCTS.explorationParam*Math.sqrt(Math.log(rolloutsDone)/(float) rollouts);
+        return rollouts !=0? value()+MCTS.explorationParam*Math.sqrt(Math.log(rolloutsDone)/(float) rollouts) : Double.MAX_VALUE;
     }
 
     /**
@@ -42,13 +44,13 @@ public class MCTSNode {
      * @param rolloutsDone total nb of rollouts done
      * @return child node that should be explored
      */
-    public MCTSNode getExploredChildNode(int rolloutsDone){
+    public MCTSNode getChildToExplore(int rolloutsDone){
         MCTSNode node = null;
         double max = Double.MIN_VALUE;
-        for (int i = 0; i < children.size(); i++) {
-            double explorationValue = children.get(i).explorationValue(rolloutsDone);
-            if(max<=explorationValue){
-                node = children.get(i);
+        for (MCTSNode child : children) {
+            double explorationValue = child.explorationValue(rolloutsDone);
+            if (max <= explorationValue) {
+                node = child;
                 max = explorationValue;
             }
         }
