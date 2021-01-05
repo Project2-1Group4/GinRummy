@@ -132,6 +132,20 @@ public class HandLayout {
         return Meld.deepCopy(setOfMelds);
     }
 
+    public List<MyCard> getCardsInMelds(){
+        List<MyCard> temp = new ArrayList<>();
+
+        List<Meld> copyOfMelds = Meld.deepCopy(setOfMelds);
+
+        for (Meld aMeld : copyOfMelds){
+
+            for(MyCard card : aMeld.viewMeld()){
+                temp.add(card);
+            }
+        }
+        return temp;
+    }
+
     public boolean isValid() {
         for (Meld setOfMeld : setOfMelds) {
             if (!setOfMeld.isValid()) {
