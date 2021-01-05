@@ -15,6 +15,8 @@ import java.util.Stack;
 // Does MCTS on x amount of created perfect information games
 public class MCTSV1 extends MCTS{
 
+    private final int simulations = 100; // Nb of perfect games simulated
+
     @Override
     protected Action getBestAction(State.StepInTurn step){
         rollouts = 0;

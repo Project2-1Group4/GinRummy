@@ -16,7 +16,6 @@ import java.util.Random;
 public abstract class MCTS extends MemoryPlayer{
 
     public static final double explorationParam = 1.2;
-    protected final int simulations = 100; // Nb of perfect games simulated
     protected final int rolloutsPerNode = 1; // Should be =1 unless you rollout at least somewhat randomly
     protected final int maximumAmountOfRollouts = 1000; // For stopping condition
     protected final Random rd; // For seeding
@@ -61,7 +60,7 @@ public abstract class MCTS extends MemoryPlayer{
                 n = n.getChildToExplore(rollouts);
                 state.execute(n.action);
                 if(state.step== State.StepInTurn.Pick && n.children.size()>2){
-                    //TODO average out deck picks
+                    averageOutDeckPicks(n);
                 }
             }
             n.children.addAll(getPossibleMoves(state).children);
@@ -139,6 +138,30 @@ public abstract class MCTS extends MemoryPlayer{
             }
         }
         root.children.add(new MCTSNode(root, new KnockAction(knowledge.turn, false, handLayout)));
+    }
+
+    /**
+     * Used to avoid MCTS from exploring the one card it needs that could be at the top of the deck,
+     * but isn't necessarily
+     *
+     * @param node node that needs to be averaged out
+     */
+    private void averageOutDeckPicks(MCTSNode node){
+        assert node.action instanceof PickAction;
+        int rollouts = 0;
+        int wins =0;
+        for (MCTSNode child : node.children) {
+            if(((PickAction)child.action).deck) {
+                rollouts += child.rollouts;
+                wins += child.wins;
+            }
+        }
+        for (MCTSNode child : node.children) {
+            if(((PickAction)child.action).deck) {
+                child.rollouts = rollouts / child.children.size();
+                child.wins = wins / child.children.size();
+            }
+        }
     }
 
     /**
