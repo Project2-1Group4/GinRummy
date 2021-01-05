@@ -93,7 +93,7 @@ public class Executor {
         shuffleList(newState.seed, shuffles, newState.deck);
         startDiscardPile(newState);
         distributeCards(GameRules.baseCardsPerHand, newState);
-        newState.playerTurn = newState.startingPlayer;;
+        newState.playerTurn = newState.startingPlayer;
         return newState;
     }
 
@@ -104,11 +104,11 @@ public class Executor {
      * @return shuffled list
      */
     public static List<MyCard> shuffleList(Random rd, int shuffles, List<MyCard> cards) {
-        if (GameRules.print) System.out.println("Deck shuffled");
         for (int i = 0; i < shuffles; i++) {
             MyCard card = cards.remove(rd.nextInt(cards.size()));
             cards.add(rd.nextInt(cards.size()), card);
         }
+        if (GameRules.print || GameRules.minPrint)  System.out.println("Deck shuffled");
         return cards;
     }
 
@@ -119,17 +119,14 @@ public class Executor {
      * @param curState     current game state
      */
     public static void distributeCards(int cardsPerHand, State curState) {
-        if (GameRules.print) System.out.println("Cards distributed");
-
         for (int i = 0; i < curState.playerStates.size(); i++) {
-
             for (int j = 0; j < cardsPerHand; j++) {
                 curState.playerStates.get(i).handLayout.addUnusedCard(curState.pickDeckTop());
             }
             curState.players.get(i).update(curState.playerStates.get(i).viewHandLayout());
             curState.players.get(i).newRound(curState.peekDiscardTop());
+            if (GameRules.print || GameRules.minPrint) System.out.println("Player "+i+" cards distributed");
         }
-
     }
 
     /**
@@ -138,12 +135,10 @@ public class Executor {
      * @param curState current game state
      */
     public static void startDiscardPile(State curState) {
-        if (GameRules.print) System.out.println("Discard pile started");
-
         if (curState.discardPile.isEmpty()) {
             curState.addToDiscard(curState.pickDeckTop());
         }
-
+        if (GameRules.print || GameRules.minPrint)  System.out.println("Discard pile created");
     }
 
     /* STATE UPDATING */
@@ -166,7 +161,7 @@ public class Executor {
     public static void nextStep(State curState) {
 
         curState.getPlayer().update(curState.getPlayerState().viewHandLayout());
-        if (GameRules.print || GameRules.minPrint) System.out.println(curState.viewLastAction());
+        if (GameRules.print) System.out.println(curState.viewLastAction());
 
         Action a = curState.viewLastAction();
         for (int i = 0; i < curState.players.size(); i++) {
@@ -192,8 +187,8 @@ public class Executor {
         }
         curState.curTime = curState.secondsPerStep[curState.getStep().index];
 
-        if (GameRules.print)
-            System.out.println("\nNew step: Player " + curState.getPlayerNumber() + " " + curState.stepInTurn);
+        if (GameRules.print || GameRules.minPrint)
+            System.out.println("New step: Player " + curState.getPlayerNumber() + " " + curState.stepInTurn);
 
     }
 
@@ -305,7 +300,7 @@ public class Executor {
                     System.out.println("Executor.execute() ERROR ERROR ERROR");
                 }
                 if (executed != null) {
-                    if (GameRules.print || GameRules.minPrint) System.out.println("Action saved");
+                    if (GameRules.print) System.out.println("Action saved");
                     curState.movesDone.add(action);
                     curState.getPlayer().executed(executed);
                     if(action instanceof KnockAction && ((KnockAction) action).knock){
