@@ -33,7 +33,7 @@ public class HandLayout {
 
     // No real reason to use this imo
     public HandLayout(List<MyCard> cards) {
-        super();
+        this();
         for (MyCard card : cards) {
             addUnusedCard(card);
         }

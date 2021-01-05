@@ -25,14 +25,17 @@ public class Knowledge {
     public int turn;
     public Integer finished = null;
 
-    public Knowledge(List<MyCard> player, List<MyCard> otherPlayer, List<MyCard> deck,List<MyCard> unknown, Stack<MyCard> discard) {
+    public Knowledge(State.StepInTurn step, int turn, List<MyCard> player, List<MyCard> otherPlayer, List<MyCard> deck, List<MyCard> unknown, Stack<MyCard> discard) {
         assert (deck == null && unknown != null) || (deck != null && unknown == null);
+        this.step = step;
+        this.turn = turn;
         this.player = player;
         this.otherPlayer = otherPlayer;
         this.deck = deck;
         this.unknown = unknown;
         this.discardPile = discard;
         actions = new Stack<>();
+        assert isValid();
     }
 
     public void execute(Action action){
@@ -143,7 +146,7 @@ public class Knowledge {
             actions.pop();
         }
         else{
-            System.out.println("L142 Knowledge !!!!!");
+            System.out.println("L147 Knowledge !!!!! "+action);
         }
     }
 
@@ -200,5 +203,20 @@ public class Knowledge {
             }
         }
         return false;
+    }
+
+    public boolean isValid(){
+        int sum = discardPile.size()+player.size()+otherPlayer.size()+ (deck!=null?deck.size():unknown.size());
+        return sum == 52;
+    }
+    @Override
+    public String toString() {
+        return "Knowledge{" +
+                "player=" + player +
+                "\n, otherPlayer=" + otherPlayer +
+                "\n, unknown=" + unknown +
+                "\n, deck=" + deck +
+                "\n, discardPile=" + discardPile +
+                '}';
     }
 }

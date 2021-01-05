@@ -101,15 +101,13 @@ public class Executor {
      * @param rd randomizer
      * @param shuffles number of shuffles
      * @param cards list of cards to shuffle
-     * @return shuffled list
      */
-    public static List<MyCard> shuffleList(Random rd, int shuffles, List<MyCard> cards) {
+    public static void shuffleList(Random rd, int shuffles, List<MyCard> cards) {
         for (int i = 0; i < shuffles; i++) {
             MyCard card = cards.remove(rd.nextInt(cards.size()));
             cards.add(rd.nextInt(cards.size()), card);
         }
         if (GameRules.print || GameRules.minPrint)  System.out.println("Deck shuffled");
-        return cards;
     }
 
     /**

@@ -82,7 +82,7 @@ public class State {
     // GETTERS
 
     public boolean endOfGame(){
-        return gameWinnerIndex!=null;
+        return gameWinnerIndex!=null || endGame;
     }
 
     public Integer getRoundWinnerIndex(){

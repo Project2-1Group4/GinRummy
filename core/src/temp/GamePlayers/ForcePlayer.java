@@ -30,9 +30,14 @@ public class ForcePlayer extends GamePlayer {
         this.allCards = player.allCards;
     }
 
+    public ForcePlayer(){
+        player = null;
+    }
     @Override
     public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
-        player.render(batch, renderingStyle, renderer);
+        if(player!=null) {
+            player.render(batch, renderingStyle, renderer);
+        }
     }
 
     @Override
