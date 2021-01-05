@@ -37,4 +37,5 @@ public class GameRules {
     public static String names_random = "random rd";
     public static String names_keyboard = "keyboard";
     public static String names_mouse = "mouse";
+    public static String names_MCTS = "mcts";
 }
