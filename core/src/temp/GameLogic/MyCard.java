@@ -98,6 +98,21 @@ public class MyCard {
         }
     }
 
+    public static List<MyCard> intraListDifference(List<MyCard> c1, List<MyCard> c2){
+        List<MyCard> cardDiff = new ArrayList<>();
+        for (MyCard card : c1) {
+            boolean found = false;
+            for (MyCard myCard : c2) {
+                if (card.same(myCard)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) cardDiff.add(card);
+        }
+        return cardDiff;
+    }
+
     public static String toString(List<MyCard> cards) {
         StringBuilder sb = new StringBuilder();
         if (cards.size() != 0) {

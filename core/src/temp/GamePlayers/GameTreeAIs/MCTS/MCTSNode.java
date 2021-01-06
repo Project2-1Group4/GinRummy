@@ -77,4 +77,8 @@ public class MCTSNode {
     public boolean isRoot(){
         return parent == null;
     }
+
+    public boolean same(MCTSNode mctsNode) {
+        return action.same(mctsNode.action);
+    }
 }

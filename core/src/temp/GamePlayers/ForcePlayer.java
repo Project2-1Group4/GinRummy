@@ -65,7 +65,11 @@ public class ForcePlayer extends GamePlayer {
 
     @Override
     public MyCard discardCard() {
-        return handLayout.viewUnusedCards().get(0);
+        List<MyCard> unused = viewUnusedHand();
+        if(unused.size()==0){
+            return viewHand().get(0);
+        }
+        return unused.get(0);
     }
 
     @Override

@@ -24,7 +24,12 @@ public class PickAction extends Action {
         if (deck != ((PickAction) other).deck) {
             return false;
         }
-        if (deck) {
+        if((card==null && ((PickAction) other).card!=null) || (card!=null && ((PickAction) other).card==null)){
+            return false;
+        }
+        if(deck &&
+                ((card==null && ((PickAction) other).card==null)||
+                (card.same(((PickAction) other).card)))){
             return true;
         }
         return card.same(((PickAction) other).card);
