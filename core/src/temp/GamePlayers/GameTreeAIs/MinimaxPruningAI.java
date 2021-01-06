@@ -120,7 +120,6 @@ public class MinimaxPruningAI extends GamePlayer {
 
         unknownCards = pickNode.unknownCards;
         probMap = pickNode.getProbMap();
-        discardedCards = pickNode.discardPile;
         System.out.println("discardpile size after = "+discardedCards.size());
 
         System.out.println("probabilitiesCalc = " + Arrays.deepToString(probMap));
@@ -182,6 +181,8 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        System.out.println("Discardpile size before ai picked  = "+ discardedCards.size());
+        System.out.println("cardsunknown size before ai picked  = "+ unknownCards.size());
         createTree();
         this.tree.createTree(false);
         MyCard[] pick_discard = this.getNodeReturn();
@@ -189,7 +190,8 @@ public class MinimaxPruningAI extends GamePlayer {
         if(pick_discard[0]==null){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-
+                System.out.println("Discardpile size after ai picked deck = "+ discardedCards.size());
+                System.out.println("cardsunknown size after ai picked deck = "+ unknownCards.size());
             }
 
             return true;
@@ -197,7 +199,8 @@ public class MinimaxPruningAI extends GamePlayer {
         else if(!pick_discard[0].equals(topOfDiscard)){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-
+                System.out.println("Discardpile size after ai picked deck = "+ discardedCards.size());
+                System.out.println("cardsunknown size after ai picked deck = "+ unknownCards.size());
             }
             return true;
         }
@@ -205,6 +208,8 @@ public class MinimaxPruningAI extends GamePlayer {
         else {
             System.out.println("DiscardPile");
             this.discardedCards.remove(pick_discard[0]);
+            System.out.println("Discardpile size after ai picked pile = "+ discardedCards.size());
+            System.out.println("cardsunknown size after ai picked pile = "+ unknownCards.size());
             return false;
         }
 
@@ -234,6 +239,8 @@ public class MinimaxPruningAI extends GamePlayer {
         }
         MyCard aCard = GametreeAI.chooseCardToDiscard(this.allCards);
         this.discardedCards.add(aCard);
+        System.out.println("Discardpile size after ai discarded = "+discardedCards.size());
+        System.out.println("cardsunknown size after ai discarded = "+unknownCards.size());
         return aCard;
     }
 
@@ -307,6 +314,8 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
+        System.out.println("Discardpile size before player discarded = "+discardedCards.size());
+        System.out.println("cardsunknown size before player discarded = "+unknownCards.size());
         MyCard disCard = discardAction.card;
         this.discardedCards.add(disCard);
         Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
@@ -315,6 +324,8 @@ public class MinimaxPruningAI extends GamePlayer {
                 this.unknownCards = this.tree.updateProbDiscard(current,disCard);
                 this.probMap = this.tree.probMap;
                 this.unknownCards.remove(unknownCards.get(i));
+                System.out.println("Discardpile size after player discarded = "+discardedCards.size());
+                System.out.println("cardsunknown size after player discarded = "+unknownCards.size());
             }
         }
     }
@@ -328,18 +339,25 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
 
         if(!pickAction.deck){
+            System.out.println("Discardpile size before player picked pile = "+discardedCards.size());
+            System.out.println("cardsunknown size before player picked pile = "+unknownCards.size());
             MyCard pickedCard = pickAction.card;
             this.discardedCards.remove(pickedCard);
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
             this.unknownCards = this.tree.updateProbPickPile(current,pickedCard);
             this.probMap= this.tree.probMap;
+            System.out.println("Discardpile size after player picked pile = "+discardedCards.size());
+            System.out.println("cardsunknown size after player picked pile = "+unknownCards.size());
         }
         else{
+            System.out.println("Discardpile size before player picked pile = "+discardedCards.size());
+            System.out.println("cardsunknown size before player picked pile = "+unknownCards.size());
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0,this.probMap );
             MyCard notChosen = new MyCard(this.discardedCards.get(discardedCards.size()-1));
             this.unknownCards = this.tree.updateProbDiscard(current,notChosen);
             this.probMap= this.tree.probMap;
-
+            System.out.println("Discardpile size after player picked pile = "+discardedCards.size());
+            System.out.println("cardsunknown size after player picked pile = "+unknownCards.size());
         }
     }
 
