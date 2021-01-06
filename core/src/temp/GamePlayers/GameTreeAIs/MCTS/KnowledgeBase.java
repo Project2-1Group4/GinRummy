@@ -1,6 +1,5 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
-import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.KnockAction;
@@ -78,7 +77,7 @@ public class KnowledgeBase {
         }
         if(executed) {
             step = step.getNext();
-            if(step == State.StepInTurn.KnockOrContinue) {
+            if(step == State.StepInTurn.Pick) {
                 turn = turn == 0 ? 1 : 0;
             }
             actions.add(action);
@@ -90,16 +89,13 @@ public class KnowledgeBase {
 
     private boolean pickAction(PickAction pick){
         if(pick.deck){
-            if(unknown.size()==0){
-                if(!deck.get(deck.size()-1).same(pick.card)){
-                    return false;
-                }
-                remove(deck, pick.card);
-            }
-            else{
+            if(!deck.get(deck.size()-1).same(pick.card)){
                 if(!remove(unknown, pick.card)){
                     return false;
                 }
+            }
+            else{
+                remove(deck, pick.card);
             }
         }
         else{
@@ -237,15 +233,22 @@ public class KnowledgeBase {
         int sum = discardPile.size()+player.size()+otherPlayer.size()+ (unknown.size()==0?deck.size():unknown.size());
         return sum == 52;
     }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Turn: player ").append(turn).append(" step ").append(step).append("\n");
         sb.append("Player me: ").append(MyCard.toString(player)).append("\n");
         sb.append("Player other: ").append(MyCard.toString(otherPlayer)).append("\n");
         sb.append("Deck: ").append(MyCard.toString(deck)).append("\n");
         sb.append("Discard: ").append(MyCard.toString(discardPile)).append("\n");
         sb.append("Unknown: ").append(MyCard.toString(unknown));
         return sb.toString();
+    }
+
+    public KnowledgeBase copy(){
+        return new KnowledgeBase(step, turn, new ArrayList<>(player), new ArrayList<>(otherPlayer), new ArrayList<MyCard>(deck),
+                new ArrayList<MyCard>(unknown), (Stack<MyCard>) discardPile.clone());
     }
 
     public static KnowledgeBase getRandom(Integer seed){
@@ -269,5 +272,34 @@ public class KnowledgeBase {
         }
         List<MyCard> u = new ArrayList<>(deck);
         return new KnowledgeBase(State.StepInTurn.Pick, 0, p, o, new ArrayList<MyCard>(), u, d);
+    }
+
+    //TODO either delete or make clearer
+    public static BeepBoopDifferences difference(KnowledgeBase kb1, KnowledgeBase kb2){
+        List<MyCard> playerDiff = new ArrayList<>(MyCard.intraListDifference(kb1.player, kb2.player));
+        List<MyCard> otherDiff = new ArrayList<>(MyCard.intraListDifference(kb1.otherPlayer, kb2.otherPlayer));
+        List<MyCard> deckDiff = new ArrayList<>(MyCard.intraListDifference(kb1.deck, kb2.deck));
+        List<MyCard> unknownDiff = new ArrayList<>(MyCard.intraListDifference(kb1.unknown, kb2.unknown));
+        Stack<MyCard> discardDiff = new Stack<>();
+        discardDiff.addAll(new ArrayList<>(MyCard.intraListDifference(kb1.discardPile, kb2.discardPile)));
+        State.StepInTurn[] stepDiff = new State.StepInTurn[2];
+        if(kb1.step!=kb2.step) {
+            System.out.println("difference");
+            stepDiff[0] = kb1.step;
+            stepDiff[1] = kb2.step;
+        }
+        int[] turnDiff = new int[2];
+        if(kb1.turn!=kb2.turn) {
+            turnDiff[0] = kb1.turn;
+            turnDiff[1] = kb2.turn;
+        }
+        Integer[] finishedDiff = new Integer[2];
+        if(kb1.finished !=null && kb2.finished != null && !kb1.finished.equals(kb2.finished)
+                || (kb1.finished==null && kb2.finished!=null)
+                || (kb1.finished!=null && kb2.finished==null)){
+            finishedDiff[0] = kb1.finished; finishedDiff[1] = kb2.finished;
+        }
+
+        return new BeepBoopDifferences(finishedDiff, stepDiff, turnDiff, playerDiff, otherDiff, deckDiff, unknownDiff, discardDiff);
     }
 }

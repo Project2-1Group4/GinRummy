@@ -23,10 +23,10 @@ public abstract class MCTS extends MemoryPlayer{
 
     public static final double explorationParam = 1.2;
     protected final int rolloutsPerNode = 1; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int maximumAmountOfRollouts = 1000; // For stopping condition
+    protected final int maximumAmountOfRollouts = 100; // For stopping condition
     protected final Random rd; // For seeding
 
-    protected int rollouts = 0;
+    protected int rollouts;
 
     public MCTS(int seed){
         rd = new Random(seed);
@@ -35,9 +35,12 @@ public abstract class MCTS extends MemoryPlayer{
         rd = new Random();
     }
 
-    /*
-    Interface methods. Methods that get called by game itself.
-     */
+
+
+    //Interface methods. Methods that get called by game itself.
+
+
+
     @Override
     public Boolean KnockOrContinue() {
         KnockAction action = (KnockAction) getBestAction(State.StepInTurn.KnockOrContinue);
@@ -56,9 +59,12 @@ public abstract class MCTS extends MemoryPlayer{
         return action==null? null : action.card;
     }
 
-    /*
-    Initial. Called every time it's your turn to get all possible moves from current state.
-     */
+
+
+    //Initial. Called every time it's your turn to get all possible moves from current state.
+
+
+
     /**
      * Returns best action found through MCTS.
      *
@@ -98,7 +104,7 @@ public abstract class MCTS extends MemoryPlayer{
     }
 
     private void getPickMoves(MCTSNode parent, KnowledgeBase knowledge){
-        if(knowledge.unknown.size()==0){
+        if(knowledge.deck.size()!=0){
             parent.children.add(new MCTSNode(parent,new PickAction(knowledge.turn, true, knowledge.deck.get(knowledge.deck.size()-1))));
         }
         else{
@@ -118,18 +124,11 @@ public abstract class MCTS extends MemoryPlayer{
             }
         }
         else{
-            if(knowledge.unknown.size()==0) {
-                for (MyCard card : knowledge.otherPlayer) {
-                    parent.children.add(new MCTSNode(parent, new DiscardAction(knowledge.turn, card)));
-                }
+            for (MyCard card : knowledge.otherPlayer) {
+                parent.children.add(new MCTSNode(parent, new DiscardAction(knowledge.turn, card)));
             }
-            else{
-                for (MyCard card : knowledge.otherPlayer) {
-                    parent.children.add(new MCTSNode(parent, new DiscardAction(knowledge.turn, card)));
-                }
-                for (MyCard card : knowledge.unknown) {
-                    parent.children.add(new MCTSNode(parent, new DiscardAction(knowledge.turn, card)));
-                }
+            for (MyCard card : knowledge.unknown) {
+                parent.children.add(new MCTSNode(parent, new DiscardAction(knowledge.turn, card)));
             }
         }
     }
@@ -145,9 +144,12 @@ public abstract class MCTS extends MemoryPlayer{
         parent.children.add(new MCTSNode(parent, new KnockAction(knowledge.turn, false, handLayout)));
     }
 
-    /*
-    Overridable methods.
-     */
+
+
+    //Overridable methods
+
+
+
     /**
      * Overridable method.
      * For now, for MCTSV1 to generate random game states and apply MCTS to every game state generated.
@@ -170,9 +172,12 @@ public abstract class MCTS extends MemoryPlayer{
         executeRollouts(node, new ForcePlayer(), new ForcePlayer(),state, rd.nextInt());
     }
 
-    /*
-    Main Monte Carlo Tree Simulation
-     */
+
+
+    //Main Monte Carlo Tree Simulation
+
+
+
     /**
      * Executes the MCTS on given knowledge.
      *
@@ -180,6 +185,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @param state imagined state of game
      */
     protected void mcts(MCTSNode root, KnowledgeBase state){
+        rollouts = 0;
         while(!stopCondition()) {
             // Explore
             MCTSNode node = explore(root, state);
@@ -237,7 +243,8 @@ public abstract class MCTS extends MemoryPlayer{
     protected void executeRollouts(MCTSNode node, GamePlayer player1, GamePlayer player2, KnowledgeBase state, Integer seed){
         for (int i = 0; i < rolloutsPerNode; i++) {
             node.wins += executeRollout(player1, player2,state, seed);
-            node.rollouts += 1;
+            node.rollouts++;
+            rollouts++;
         }
     }
 
@@ -275,7 +282,7 @@ public abstract class MCTS extends MemoryPlayer{
      *
      * @param node that has been rolled out
      */
-    private static void backPropagate(MCTSNode node){
+    protected static void backPropagate(MCTSNode node){
         double leafRollouts = node.rollouts;
         double leafWins = node.wins;
         while(node.parent!=null){
@@ -301,9 +308,12 @@ public abstract class MCTS extends MemoryPlayer{
         return node;
     }
 
-    /*
-    Additional Methods
-     */
+
+
+    // Additional Methods
+
+
+
     /**
      * Finds index of best action.
      *
@@ -352,8 +362,8 @@ public abstract class MCTS extends MemoryPlayer{
      *
      * @param node node that needs to be averaged out
      */
-    private static void averageOutDeckPicks(MCTSNode node){
-        if(!node.isLeaf() || node.children.get(0).action instanceof PickAction){
+    protected void averageOutDeckPicks(MCTSNode node){
+        if(node.isLeaf() || node.children.get(0).action.getStep()!= State.StepInTurn.Pick){
             return;
         }
         int rollouts = 0;
@@ -366,8 +376,8 @@ public abstract class MCTS extends MemoryPlayer{
         }
         for (MCTSNode child : node.children) {
             if(((PickAction)child.action).deck) {
-                child.rollouts = (int)((rollouts /(double) node.children.size())+0.5);
-                child.wins = (int)((wins /(double) node.children.size())+0.5);
+                child.rollouts = rollouts /(double) node.children.size();
+                child.wins = wins /(double) node.children.size();
             }
         }
     }
@@ -375,13 +385,13 @@ public abstract class MCTS extends MemoryPlayer{
     /**
      * Helper method. Prints. To be deleted.
      *
-     * @param actions list of actions that can be done now
+     * @param root root you want to print
      * @param chosen index of action that has been chosen
      */
-    protected void print(List<MCTSNode> actions, Integer chosen){
-        System.out.println("Chose "+chosen+" out of:");
-        for (int i = 0; i < actions.size(); i++) {
-            System.out.println("\t"+i+". "+actions.get(i));
+    protected void print(MCTSNode root, Integer chosen){
+        System.out.println("Root "+root+"\nChose "+chosen+" out of:");
+        for (int i = 0; i < root.children.size(); i++) {
+            System.out.println("\t"+i+". "+root.children.get(i));
         }
     }
 }
