@@ -1,16 +1,20 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
 import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.GameActions.PickAction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MCTSNode {
+    private static final Random rd = new Random(0);
+
     public final Action action;
     public final MCTSNode parent;
     public final List<MCTSNode> children;
-    public int wins=0;
-    public int rollouts =0;
+    public double wins=0;
+    public double rollouts =0;
 
     public MCTSNode(MCTSNode parent, Action action){
         this.parent = parent;
@@ -45,7 +49,7 @@ public class MCTSNode {
      * @return child node that should be explored
      */
     public MCTSNode getChildToExplore(int rolloutsDone){
-        MCTSNode node = null;
+        MCTSNode node = children.get(0);
         double max = Double.MIN_VALUE;
         for (MCTSNode child : children) {
             double explorationValue = child.explorationValue(rolloutsDone);
@@ -54,6 +58,23 @@ public class MCTSNode {
                 max = explorationValue;
             }
         }
+        if(node.action instanceof PickAction && children.size()>2 && ((PickAction) node.action).deck){
+            do{
+                node = children.get(rd.nextInt(children.size()-1));
+            }while(!((PickAction)(node.action)).deck);
+        }
         return node;
+    }
+
+    public String toString(){
+        return "Action \"" + action + "\" has a score of " + wins + "/" + rollouts;
+    }
+
+    public boolean isLeaf() {
+        return children.size()==0;
+    }
+
+    public boolean isRoot(){
+        return parent == null;
     }
 }

@@ -2,7 +2,7 @@ package temp;
 
 import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GameTreeAIs.MCTS.MCTSV1;
+import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
@@ -36,7 +36,7 @@ public class StringToGamePlayer {
             return new RandomPlayer();
         }
         else if(has(GameRules.names_MCTS, s)){
-            return new MCTSV1();
+            return new MCTSv1();
         }
         return CombinePlayer.getBaseCombinePlayer();
     }
