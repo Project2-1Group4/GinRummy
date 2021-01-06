@@ -158,9 +158,20 @@ public class StateBuilder {
         assert players.size() == playerStates.size();
         assert playerTurn < numberOfPlayers;
         assert stepInTurn != null;
-        assert scores.length == numberOfPlayers;
-        assert secondsPerStep.length == 3;
-        assert knocker > numberOfPlayers;
+        assert scores == null || scores.length == numberOfPlayers;
+        assert secondsPerStep.length == State.StepInTurn.values().length;
+        if(knocker!=null){
+            boolean found = false;
+            for (GamePlayer player : players) {
+                if(knocker==player.index){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                throw new AssertionError("Knocker doesn't exist");
+            }
+        }
 
         int playersToAdd = numberOfPlayers - players.size();
         for (int i = 0; i < playersToAdd; i++) {
