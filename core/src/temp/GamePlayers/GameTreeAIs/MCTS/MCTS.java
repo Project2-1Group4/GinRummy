@@ -26,6 +26,8 @@ public abstract class MCTS extends MemoryPlayer{
     protected final int maximumAmountOfRollouts = 100; // For stopping condition
     protected final Random rd; // For seeding
 
+    protected boolean simpleKnocking = true;
+
     protected int rollouts;
 
     public MCTS(int seed){
@@ -35,14 +37,19 @@ public abstract class MCTS extends MemoryPlayer{
         rd = new Random();
     }
 
-
-
     //Interface methods. Methods that get called by game itself.
-
-
 
     @Override
     public Boolean KnockOrContinue() {
+
+        if(simpleKnocking){
+            if (this.handLayout.getDeadwood() <= 10){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         KnockAction action = (KnockAction) getBestAction(State.StepInTurn.KnockOrContinue);
         return action==null? null : action.knock;
     }
@@ -347,8 +354,13 @@ public abstract class MCTS extends MemoryPlayer{
         Stack<MyCard> discard = (Stack<MyCard>) knowledge.discardPile.clone();
 
         while(other.size()<=GameRules.baseCardsPerHand){
+            // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
+            // Here we can modify this to pick cards based of set probabilities
             other.add(unknown.remove(rd.nextInt(unknown.size()-1)));
         }
+
+        // TODO: Modify this to add the size of the deck, to limit the depth of the tree and probably add a speed increase
+        // Should probably be a class held variable to be fair
         deck.addAll(unknown);
         unknown = new ArrayList<>();
         Executor.shuffleList(rd, 500, deck);
