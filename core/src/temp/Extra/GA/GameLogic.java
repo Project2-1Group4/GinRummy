@@ -18,7 +18,7 @@ public class GameLogic {
     private final boolean fullGame;
 
 
-    private boolean roundEnd;
+    private boolean roundEnd = false;
     private boolean printEndOfRound = false;
 
     public GameLogic(){
@@ -70,7 +70,7 @@ public class GameLogic {
             GamePlayer player = curState.getPlayer();
             Action action = getAction(player, curState);
             boolean executed = Executor.execute(action, curState);
-            if (!executed) {
+            if (!executed && !roundEnd) {
                 if (action == null) {
                     System.out.println("ERROR ERROR ERROR BOT RETURNS NO MOVE");
                 }
