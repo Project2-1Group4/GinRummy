@@ -29,7 +29,7 @@ public class MinimaxPruningAI extends GamePlayer {
     boolean AIknock = false;
     //static int round = 0;
     //public static SetOfCards deck;
-    int maxDepthOfTree = 3;
+    int maxDepthOfTree = 5;
     private List<MyCard> backupHand;
     private double[][] probMap = new double[4][13];
 
@@ -101,30 +101,18 @@ public class MinimaxPruningAI extends GamePlayer {
     public MyCard[] getNodeReturn() {
         //create the tree
         Node parent = tree.getRootNode();
-
         List<MyCard> currentHand = GametreeAI.deepCloneMyCardList(parent.hand);
-        System.out.println("current bot hand: "+currentHand);
-        System.out.println("deadwood = "+handLayout.getDeadwood());
         Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
         //System.out.println("pick node (hoping hand): "+pickNode);
-
-
         for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
-
                 pickNode.unknownCards.add(card);
+
             }
         }
-
-        System.out.println("ProbNode : " + Arrays.deepToString(this.probMap));
-
         unknownCards = pickNode.unknownCards;
         probMap = pickNode.getProbMap();
-        System.out.println("discardpile size after = "+discardedCards.size());
 
-        System.out.println("probabilitiesCalc = " + Arrays.deepToString(probMap));
-        System.out.println(" ");
-        System.out.println("cardsunknown size after = " +unknownCards.size());
         List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
         MyCard pickCard = null;
         for(MyCard card : newHand) {
@@ -152,6 +140,13 @@ public class MinimaxPruningAI extends GamePlayer {
         return new MyCard[] {pickCard, discardCard};
     }
 
+    public void  checkDoubles (){
+        for(int i = 0; i < unknownCards.size(); i++) {
+            if (discardedCards.contains(unknownCards.get(i))||allCards.contains(unknownCards.get(i))) {
+                this.unknownCards.remove(unknownCards.get(i));
+            }
+        }
+    }
 
     public static void main(String[] args) {
         GameLogic g = new GameLogic(true, true);
@@ -162,6 +157,7 @@ public class MinimaxPruningAI extends GamePlayer {
     If true then the player knocks and the round ends
     If false then the player doesn't knock
     */
+
     @Override
     public Boolean knockOrContinue() {
         //System.out.println("problem score "+new SetOfCards(this.allCards, false).toList());
@@ -181,17 +177,16 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        System.out.println("Discardpile size before ai picked  = "+ discardedCards.size());
-        System.out.println("cardsunknown size before ai picked  = "+ unknownCards.size());
+
         createTree();
         this.tree.createTree(false);
         MyCard[] pick_discard = this.getNodeReturn();
         backupHand = new ArrayList<>();
+        checkDoubles();
         if(pick_discard[0]==null){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-                System.out.println("Discardpile size after ai picked deck = "+ discardedCards.size());
-                System.out.println("cardsunknown size after ai picked deck = "+ unknownCards.size());
+
             }
 
             return true;
@@ -199,21 +194,23 @@ public class MinimaxPruningAI extends GamePlayer {
         else if(!pick_discard[0].equals(topOfDiscard)){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-                System.out.println("Discardpile size after ai picked deck = "+ discardedCards.size());
-                System.out.println("cardsunknown size after ai picked deck = "+ unknownCards.size());
             }
+            checkDoubles();
             return true;
         }
 
         else {
-            System.out.println("DiscardPile");
-            this.discardedCards.remove(pick_discard[0]);
-            System.out.println("Discardpile size after ai picked pile = "+ discardedCards.size());
-            System.out.println("cardsunknown size after ai picked pile = "+ unknownCards.size());
+            for(int i = 0; i<discardedCards.size();i++){
+                if(discardedCards.get(i).same(pick_discard[0])){
+                    this.discardedCards.remove(discardedCards.get(i));
+                }
+            }
+            checkDoubles();
             return false;
         }
 
     }
+
 
     /*
     Returns the card that wants to be removed from the current hand
@@ -225,6 +222,7 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public MyCard discardCard() {
+        checkDoubles();
         if(backupHand.size()!=0) {
             for (MyCard card : allCards) {
                 if (!backupHand.contains(card)) {
@@ -239,8 +237,6 @@ public class MinimaxPruningAI extends GamePlayer {
         }
         MyCard aCard = GametreeAI.chooseCardToDiscard(this.allCards);
         this.discardedCards.add(aCard);
-        System.out.println("Discardpile size after ai discarded = "+discardedCards.size());
-        System.out.println("cardsunknown size after ai discarded = "+unknownCards.size());
         return aCard;
     }
 
@@ -290,8 +286,7 @@ public class MinimaxPruningAI extends GamePlayer {
         for(MyCard card: unknownCards){
             this.setProbability(card, 1.0/41.0);
         }
-        System.out.println("probabilities = " + Arrays.deepToString(probMap));
-        System.out.println(" ");
+
         createTree();
         this.tree.createTree(true);
     }
@@ -314,9 +309,8 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
-        System.out.println("Discardpile size before player discarded = "+discardedCards.size());
-        System.out.println("cardsunknown size before player discarded = "+unknownCards.size());
         MyCard disCard = discardAction.card;
+        checkDoubles();
         this.discardedCards.add(disCard);
         Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
         for(int i =0; i<unknownCards.size();i++){
@@ -324,11 +318,11 @@ public class MinimaxPruningAI extends GamePlayer {
                 this.unknownCards = this.tree.updateProbDiscard(current,disCard);
                 this.probMap = this.tree.probMap;
                 this.unknownCards.remove(unknownCards.get(i));
-                System.out.println("Discardpile size after player discarded = "+discardedCards.size());
-                System.out.println("cardsunknown size after player discarded = "+unknownCards.size());
+
             }
         }
     }
+
 
     /*
     Gives info on the other player's actions
@@ -337,27 +331,26 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void playerPicked(PickAction pickAction) {
-
         if(!pickAction.deck){
-            System.out.println("Discardpile size before player picked pile = "+discardedCards.size());
-            System.out.println("cardsunknown size before player picked pile = "+unknownCards.size());
+            checkDoubles();
             MyCard pickedCard = pickAction.card;
-            this.discardedCards.remove(pickedCard);
+            for(int i = 0; i<discardedCards.size();i++){
+                if(discardedCards.get(i).same(pickedCard)){
+                    this.discardedCards.remove(discardedCards.get(i));
+                }
+            }
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
             this.unknownCards = this.tree.updateProbPickPile(current,pickedCard);
             this.probMap= this.tree.probMap;
-            System.out.println("Discardpile size after player picked pile = "+discardedCards.size());
-            System.out.println("cardsunknown size after player picked pile = "+unknownCards.size());
+
         }
         else{
-            System.out.println("Discardpile size before player picked pile = "+discardedCards.size());
-            System.out.println("cardsunknown size before player picked pile = "+unknownCards.size());
+            checkDoubles();
             Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0,this.probMap );
             MyCard notChosen = new MyCard(this.discardedCards.get(discardedCards.size()-1));
             this.unknownCards = this.tree.updateProbDiscard(current,notChosen);
             this.probMap= this.tree.probMap;
-            System.out.println("Discardpile size after player picked pile = "+discardedCards.size());
-            System.out.println("cardsunknown size after player picked pile = "+unknownCards.size());
+
         }
     }
 
