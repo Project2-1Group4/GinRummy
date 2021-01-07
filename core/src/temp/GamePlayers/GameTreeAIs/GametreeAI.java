@@ -76,25 +76,29 @@ public class GametreeAI {
     // we need to determine stop statement for recursion
     // firstRound true if opponent can still pass
     public void createNodesOpponent(Node parent, boolean firstRound){
-        if(parent.winOrLose || cardsUnknown.size() < 12 || parent.getDepthTree() == maxDepth){
+        if(finishTree(parent)){
 
         }
         else{
 
             // makes nodes for if opponent picks from discard pile
             simulationPickPile(parent);
-
             List<Node> nodesPile = monteCarloSim(true);
             for(int i = 0; i< nodesPile.size(); i++){
                 parent.addChild(nodesPile.get(i));
                 MyCard discard = chooseCardToDiscard(nodesPile.get(i).opponentHand);
-                simulationDiscard(nodesPile.get(i), discard);
+                if(finishTree(nodesPile.get(i))){
 
-                List<Node> nodesDiscard1 = monteCarloSim(false);
-                for(int j = 0; j< nodesDiscard1.size(); j++){
-                    nodesPile.get(i).addChild(nodesDiscard1.get(i));
-                    createNodesAI(nodesDiscard1.get(j));
                 }
+                else{
+                    simulationDiscard(nodesPile.get(i), discard);
+                    List<Node> nodesDiscard1 = monteCarloSim(false);
+                    for(int j = 0; j< nodesDiscard1.size(); j++){
+                        nodesPile.get(i).addChild(nodesDiscard1.get(i));
+                        createNodesAI(nodesDiscard1.get(j));
+                    }
+                }
+
             }
             // makes nodes for is player picks deck or for the first round passes
             simulationPickDeck(parent);
@@ -107,22 +111,42 @@ public class GametreeAI {
             }
             for(int i = 0; i< nodesDeck.size(); i++){
                 parent.addChild(nodesDeck.get(i));
-                if(!firstRound){
-                    MyCard discard = chooseCardToDiscard(nodesDeck.get(i).opponentHand);
-                    simulationDiscard(nodesDeck.get(i), discard);
-                    List<Node> nodesDiscard2 = monteCarloSim(false);
-                    for(int j = 0; j< nodesDiscard2.size(); j++){
-                        nodesDeck.get(j).addChild(nodesDiscard2.get(i));
-                        createNodesAI(nodesDiscard2.get(j));
+                if(finishTree(nodesDeck.get(i))){
+
+                }
+                else{
+                    if(!firstRound){
+                        MyCard discard = chooseCardToDiscard(nodesDeck.get(i).opponentHand);
+                        simulationDiscard(nodesDeck.get(i), discard);
+                        List<Node> nodesDiscard2 = monteCarloSim(false);
+                        for(int j = 0; j< nodesDiscard2.size(); j++){
+                            nodesDeck.get(j).addChild(nodesDiscard2.get(i));
+                            createNodesAI(nodesDiscard2.get(j));
+                        }
+                    }
+                    else{
+                        createNodesAI(nodesDeck.get(i));
                     }
                 }
+
             }
         }
     }
 
+    public boolean finishTree(Node parent){
+        if(parent.winOrLose || cardsUnknown.size() < 12 || parent.getDepthTree() == maxDepth){
+            System.out.println("Stopped with depth " + parent.getDepthTree());
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
     // we need to determine stop statement for recursion
     public void createNodesAI(Node parent){
-        if(parent.winOrLose || cardsUnknown.size() < 12 || parent.getDepthTree() == maxDepth){
+        if(finishTree(parent)){
 
         }
         else{
@@ -130,9 +154,7 @@ public class GametreeAI {
             MyCard topPile = discardPile.get(discardPile.size()-1);
             if(evaluate(topPile, parent.hand)){
                 hand.add(topPile);
-
                 discardPile.remove(topPile);
-
                 MyCard discard = chooseCardToDiscard(hand);
                 hand.remove(discard);
                 discardPile.add(discard);
@@ -300,29 +322,35 @@ public class GametreeAI {
 
     public void simulationDiscard(Node parent, MyCard discard){
         copyParent(parent);
-        //checkDoubles();
-        lookThroughKnownCards(discard);
-        discardPile.add(discard);
-        cardsUnknown.remove(discard);
-        opponentHand.remove(discard);
+        if(finishTree(parent)){
 
-        // OPPONENT DISCARDS CARD
-        for(int j = 0; j<cardsUnknown.size(); j++){
-            // decrease prob of cards that form set with not chosen card
-            MyCard currentCard = cardsUnknown.get(j);
+        }
+        else{
+            //checkDoubles();
+            lookThroughKnownCards(discard);
+            discardPile.add(discard);
+            cardsUnknown.remove(discard);
+            opponentHand.remove(discard);
 
-            if (currentCard.rank.index == discard.rank.index) {
-                double prob = this.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
-                this.setProbability(currentCard, prob);
-                //cardsUnknown.getCard(j).setProb(setProb);
-            }
-            // decrease prob of cards that form run with chosen card
-            if (currentCard.suit.index == discard.suit.index && Math.abs(currentCard.rank.index - discard.rank.index) == 1) {
-                double prob = this.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
-                this.setProbability(currentCard, prob);
-                //cardsUnknown.getCard(j).setProb(runProb);
+            // OPPONENT DISCARDS CARD
+            for(int j = 0; j<cardsUnknown.size(); j++){
+                // decrease prob of cards that form set with not chosen card
+                MyCard currentCard = cardsUnknown.get(j);
+
+                if (currentCard.rank.index == discard.rank.index) {
+                    double prob = this.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownSet));
+                    this.setProbability(currentCard, prob);
+                    //cardsUnknown.getCard(j).setProb(setProb);
+                }
+                // decrease prob of cards that form run with chosen card
+                if (currentCard.suit.index == discard.suit.index && Math.abs(currentCard.rank.index - discard.rank.index) == 1) {
+                    double prob = this.getProbability(currentCard) * (1.0 / (2.0 * leftInUnknownRun));
+                    this.setProbability(currentCard, prob);
+                    //cardsUnknown.getCard(j).setProb(runProb);
+                }
             }
         }
+
     }
 
     public void copyParent(Node parent){
