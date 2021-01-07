@@ -18,10 +18,13 @@ public class MinimaxPruningAI extends GamePlayer {
     public List<MyCard> hand;
     public List<MyCard> pile;
     public List<MyCard> unknownCards;
-    int maxDepthOfTree = 5;
+    int maxDepthOfTree = 4;
     private List<MyCard> backupHand;
     private double[][] probMap = new double[4][13];
     public List<MyCard> discardedCards = new ArrayList<>();
+    private boolean nullMove;
+    //variable for null move heuristic
+    private int R;
 
     public MinimaxPruningAI(){
         super();
@@ -29,15 +32,43 @@ public class MinimaxPruningAI extends GamePlayer {
 
     // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
     public Node alphaBetaPruning(Node node, Node alpha, Node beta, boolean maxPlayer, int maxDepth) {
-        if ((node.getChildren().size() == 0) || node.playerStop || node.AIStop || node.getDepthTree() == maxDepth) {
+        if (node.getChildren().size() == 0 || node.playerStop || node.AIStop || node.getDepthTree() == maxDepth) {
             return node;
         }
+        // null move heuristic
+        if(nullMove && node.getDepthTree() >= 2){
+            int move = 0;
+            if(node.getChildren().size() == 1){
+               move = 0;
+            }
+            else{
+                Random moveGenerator  =new Random();
+                System.out.println("children size = " +node.getChildren().size());
+                move = moveGenerator.nextInt(node.getChildren().size()-1);
+            }
+
+            if(maxPlayer){
+                Node evalNode = alphaBetaPruning(node.getChildren().get(move), alpha, beta, false, node.getDepthTree() -1 - R);
+                if(evalNode.getHandValue() <= alpha.getHandValue()){
+                    Node maxNode = alpha;
+                    return maxNode;
+                }
+            }
+            else{
+                Node evalNode = alphaBetaPruning(node.getChildren().get(move), alpha, beta, true, node.getDepthTree() -1 - R);
+                if(evalNode.getHandValue() >= beta.getHandValue()){
+                    Node minNode = beta;
+                    return minNode;
+                }
+            }
+        }
+        // basic alphabeta
         if (maxPlayer) {
             Node maxNode = new Node(false); //node with negative inf hand value
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, false, maxDepthOfTree);
                 maxNode = Node.getNodeMax(alpha, evalNode);
-                alpha = Node.getNodeMax(alpha, evalNode);
+                alpha = maxNode;
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
@@ -47,7 +78,7 @@ public class MinimaxPruningAI extends GamePlayer {
             for (Node child : node.getChildren()) {
                 Node evalNode = alphaBetaPruning(child, alpha, beta, true, maxDepthOfTree);
                 minNode = Node.getNodeMin(beta, evalNode);
-                beta = Node.getNodeMin(beta, evalNode);
+                beta = minNode;
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
@@ -68,11 +99,9 @@ public class MinimaxPruningAI extends GamePlayer {
     }
 
     public Node nullMove(Node root){
-        Node pickNode = root;
-        if(root.getDepthTree() == 0){
-
-        }
-        return pickNode;
+        nullMove = true;
+        R = 1;
+        return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
     }
 
 
@@ -80,8 +109,8 @@ public class MinimaxPruningAI extends GamePlayer {
         //create the tree
         Node parent = tree.getRootNode();
         List<MyCard> currentHand = GametreeAI.deepCloneMyCardList(parent.hand);
-        Node pickNode = basicAlphaBeta(parent);
-        //Node pickNode = iterativeDeepening(parent);
+        // pick desired alpha beta method (basicAlphaBeta, iterativeDeepening, nullMove)
+        Node pickNode = nullMove(parent);
         for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
                 pickNode.unknownCards.add(card);
