@@ -356,7 +356,16 @@ public abstract class MCTS extends MemoryPlayer{
         while(other.size()<GameRules.baseCardsPerHand){
             // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
             // Here we can modify this to pick cards based of set probabilities
-            other.add(unknown.remove(rd.nextInt(unknown.size()-1)));
+
+            // This is to fix an issue that happens when most of the cards are already known
+            // Just makes it so that it will never get an array out of bounds exception
+            if(unknown.size()>1){
+                other.add(unknown.remove(rd.nextInt(unknown.size()-1)));
+            } else {
+                other.add(unknown.remove(0));
+            }
+
+
         }
 
         // TODO: Modify this to add the size of the deck, to limit the depth of the tree and probably add a speed increase

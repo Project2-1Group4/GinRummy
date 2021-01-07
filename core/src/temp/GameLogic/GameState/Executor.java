@@ -103,11 +103,17 @@ public class Executor {
      * @param cards list of cards to shuffle
      */
     public static void shuffleList(Random rd, int shuffles, List<MyCard> cards) {
-        for (int i = 0; i < shuffles; i++) {
-            MyCard card = cards.remove(rd.nextInt(cards.size()));
-            cards.add(rd.nextInt(cards.size()), card);
+        // If there's only one card you can't really shuffle it, so the program will just return the current set of cards as is
+        if(cards.size()>1) {
+            for (int i = 0; i < shuffles; i++) {
+                MyCard card = cards.remove(rd.nextInt(cards.size()));
+                cards.add(rd.nextInt(cards.size()), card);
+            }
+
+        } else {
+            System.out.println("An empty set of cards was given");
         }
-        if (GameRules.print || GameRules.minPrint)  System.out.println("Deck shuffled");
+        if (GameRules.print || GameRules.minPrint) System.out.println("Deck shuffled");
     }
 
     /**
