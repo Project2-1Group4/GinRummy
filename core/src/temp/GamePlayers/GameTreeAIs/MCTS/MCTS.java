@@ -353,7 +353,7 @@ public abstract class MCTS extends MemoryPlayer{
         List<MyCard> deck = new ArrayList<>(knowledge.deck);
         Stack<MyCard> discard = (Stack<MyCard>) knowledge.discardPile.clone();
 
-        while(other.size()<=GameRules.baseCardsPerHand){
+        while(other.size()<GameRules.baseCardsPerHand){
             // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
             // Here we can modify this to pick cards based of set probabilities
             other.add(unknown.remove(rd.nextInt(unknown.size()-1)));
