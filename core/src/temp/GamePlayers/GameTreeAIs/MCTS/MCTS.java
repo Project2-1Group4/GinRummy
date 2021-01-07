@@ -177,6 +177,8 @@ public abstract class MCTS extends MemoryPlayer{
      */
     protected void rollout(MCTSNode node, KnowledgeBase state){
         executeRollouts(node, new ForcePlayer(), new ForcePlayer(),state, rd.nextInt());
+
+        //executeRollouts(node, new basicGreedyTest(), new basicGreedyTest(),state, rd.nextInt());
     }
 
 
@@ -271,6 +273,10 @@ public abstract class MCTS extends MemoryPlayer{
         while (!curState.endOfGame()) {
             curState = g.update(curState);
         }
+
+        // TODO: Modify result add the end so that it adds points to whatever gave a bigger point total
+        // That way we give more value to stuff that won by a bigger margin
+
         double win;
         if(curState.roundWinnerIndex==null){
             win = 0.5; // TIE

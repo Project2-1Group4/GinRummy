@@ -13,6 +13,10 @@ public class MCTSv1 extends MCTS{
     }
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, KnowledgeBase knowledge){
+        if(knowledge.otherPlayer.size()+knowledge.unknown.size() <= 12){
+            System.out.println("This game world is invalid and we should stop searching");
+        }
+
         for (int i = 0; i < simulations; i++) {
             KnowledgeBase generated = generateRandomWorld(knowledge);
             MCTSNode generatedRoot = getPossibleMoves(new MCTSNode(null, null), generated);
