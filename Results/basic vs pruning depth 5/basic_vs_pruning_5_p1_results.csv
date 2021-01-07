@@ -1,0 +1,11 @@
+RoundNumber,FinalRound,WinningPlayer,ScorePlayer0,ScorePlayer1,DeadWoodValueP0,DeadWoodValueP1,CardsInDeadwoodP0,CardsInDeadwoodP1
+9,true,0,106,55,5,34,3,7
+9,true,1,74,143,60,10,10,4
+10,true,1,23,135,47,6,10,1
+10,true,1,30,108,48,8,7,4
+5,true,1,3,112,22,5,4,3
+4,true,1,0,113,28,10,6,4
+7,true,1,71,113,31,9,10,3
+12,true,1,69,119,24,1,3,1
+11,true,1,38,108,33,10,7,3
+4,true,0,109,42,4,27,1,7
