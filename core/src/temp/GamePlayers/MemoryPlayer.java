@@ -99,7 +99,47 @@ public abstract class MemoryPlayer extends GamePlayer {
      */
 
     public void updateMemory(HandLayout layout){
-        for(int i=0; i<memory.length;i++){
+
+        List<MyCard> tempList = layout.viewAllCards();
+
+        // It should only be one card, but I'll create an arraylist just in case
+        List<MyCard> discarded = new ArrayList<>();
+
+        for(int i=0;i<memory.length;i++){
+            for(int j=0;j<memory[0].length;j++){
+
+                if(memory[i][j] == this.index){
+                    boolean cardModified = false;
+                    for(int k = 0;k<tempList.size();k++){
+                        MyCard card = tempList.get(k);
+                        if((card.suit.index == i) && (card.rank.index==j)){
+                            cardModified = true;
+                            tempList.remove(card);
+                            break;
+                        }
+
+                    }
+
+                    if(!cardModified){
+                        discarded.add(new MyCard(i,j));
+                        //set(i,j,discard);
+                    }
+
+                }
+
+            }
+
+        }
+
+        for(MyCard card: tempList){
+            set(card, this.index);
+        }
+
+        for(MyCard card: discarded){
+            set(card,discard);
+        }
+
+        /*for(int i=0; i<memory.length;i++){
             for(int j = 0; j<memory[0].length;j++){
                 // I'm 90% sure it's this.index, but still I want to add a note to make sure I'm not fucking up
                 // But what I'm doing here is setting all cards in memory as discard cards
@@ -114,7 +154,7 @@ public abstract class MemoryPlayer extends GamePlayer {
 
         for(MyCard card: layout.viewAllCards()){
             memory[card.suit.index][card.rank.index] = this.index;
-        }
+        }*/
 
     }
 
@@ -143,9 +183,16 @@ public abstract class MemoryPlayer extends GamePlayer {
         if(id==discard){
             discardMemory.add(card);
         }
-        else if(card.same(discardMemory.peek())){
-            discardMemory.pop();
+        else if(discardMemory.size() > 0){
+            if(discardMemory.contains(card)) {
+                discardMemory.remove(card);
+            }
         }
         memory[card.suit.index][card.rank.index] = id;
     }
+
+    private void set(int suit, int rank, int id){
+        set(new MyCard(suit,rank),id);
+    }
+
 }
