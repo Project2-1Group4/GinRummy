@@ -6,8 +6,8 @@ import temp.GameLogic.GameState.StateBuilder;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
-import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,16 +21,17 @@ public class Tests {
     public static void main(String[] args) {
         GameLogic logic = new GameLogic(true, true);
         GamePlayer[] players = new GamePlayer[]{
-                new basicGreedyTest(),
-                new meldBuildingGreedy()
+                new MCTSv1(1),
+                new basicGreedyTest()
         };
-        int games = 1000; // Set nb of games
-        Integer seed = null; // Set seed
+        int games = 1; // Set nb of games
+        Integer seed = 5; // Set seed
 
         List<GameInfo> results = runGames(logic, players, games, seed);
 
-        CSVWriter.write(results, "Results/GA vs Self coefs/","meld_greedy_self_p1");
+        CSVWriter.write(results, "Results/GA vs Self coefs/","blahblah");
 
+        /*
         GamePlayer[] flipped = new GamePlayer[]{
                 players[1],
                 players[0]
@@ -38,7 +39,7 @@ public class Tests {
 
         results  = runGames(logic, flipped, games, seed);
 
-        CSVWriter.write(results, "Results/GA vs Self coefs/","meld_greedy_self_p0");
+        CSVWriter.write(results, "Results/GA vs Self coefs/","meld_greedy_self_p0");*/
 
     }
 
