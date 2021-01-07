@@ -105,7 +105,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public MyCard[] getNodeReturn() {
         //create the tree
         Node parent = tree.getRootNode();
-        List<MyCard> currentHand = GametreeAI.deepCloneMyCardList(parent.hand);
+        List<MyCard> currentHand = GametreeAI.cloneMyCardList(parent.hand);
         // pick desired alpha beta method (basicAlphaBeta, iterativeDeepening, nullMove)
         Node pickNode = nullMove(parent);
         for(MyCard card : unknownCards){
@@ -116,7 +116,7 @@ public class MinimaxPruningAI extends GamePlayer {
         unknownCards = pickNode.unknownCards;
         probMap = pickNode.getProbMap();
 
-        List<MyCard> newHand = GametreeAI.deepCloneMyCardList(pickNode.hand);
+        List<MyCard> newHand = GametreeAI.cloneMyCardList(pickNode.hand);
         MyCard pickCard = null;
         for(MyCard card : newHand) {
             if (!currentHand.contains(card)) {
