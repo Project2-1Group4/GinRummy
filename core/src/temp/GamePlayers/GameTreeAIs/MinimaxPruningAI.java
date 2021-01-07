@@ -82,11 +82,11 @@ public class MinimaxPruningAI extends GamePlayer {
             return minNode;
         }
     }
-
+    //activation of the basic minimax with aplha beta pruning
     public Node basicAlphaBeta(Node root){
         return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
     }
-
+    // activation fo the iterative deepening
     public Node iterativeDeepening(Node root){
         Node pickNode = root;
         for(int i = 1; i <= maxDepthOfTree; i++){
@@ -95,13 +95,14 @@ public class MinimaxPruningAI extends GamePlayer {
         return pickNode;
     }
 
+    //activation of the null move heuristic
     public Node nullMove(Node root){
         nullMove = true;
         R = 1;
         return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
     }
 
-
+    // method to get the node that the alpha beta pruning found
     public MyCard[] getNodeReturn() {
         //create the tree
         Node parent = tree.getRootNode();
@@ -156,6 +157,8 @@ public class MinimaxPruningAI extends GamePlayer {
             }
         }
     }
+
+    //the ai decides to knock or continue
     @Override
     public Boolean knockOrContinue() {
         if (this.handLayout.getDeadwood() <= 10){
