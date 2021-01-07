@@ -19,6 +19,11 @@ public class MCTSv1 extends MCTS{
 
         for (int i = 0; i < simulations; i++) {
             KnowledgeBase generated = generateRandomWorld(knowledge);
+
+            // Here the children shouldn't all go to the same root
+            // It's convenient for MCTS to sometimes go to one of the leaf nodes isntead of the original root
+            // TODO: Fix that up later
+
             MCTSNode generatedRoot = getPossibleMoves(new MCTSNode(null, null), generated);
             mcts(generatedRoot, generated);
             merge(root, generatedRoot);
