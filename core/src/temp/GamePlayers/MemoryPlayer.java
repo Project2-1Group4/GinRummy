@@ -80,6 +80,42 @@ public abstract class MemoryPlayer extends GamePlayer {
     @Override
     public void update(HandLayout realLayout) {
         super.update(realLayout);
+
+        // So the idea of this method is to transform all cards that were previously in the hand as unknown
+        // And then go through the handlayout again to update the current cards
+        // There are probably more efficient ways of doing this
+        // But given there's no distinction done between discard card or something else, this feels like the easiest way
+
+        // IMPORTANT NOTE: I'm assuming that if a card is no longer in the hand that it was discarded
+        // This should hold no matter what, but still it's important to make note of that assumption
+
+        updateMemory(this.handLayout);
+
+    }
+
+    /*
+    So the AI was having issues remembering it got an 11 card and keeping that information in memory
+    So I'm modifying the update method to update the internal matrix
+     */
+
+    public void updateMemory(HandLayout layout){
+        for(int i=0; i<memory.length;i++){
+            for(int j = 0; j<memory[0].length;j++){
+                // I'm 90% sure it's this.index, but still I want to add a note to make sure I'm not fucking up
+                // But what I'm doing here is setting all cards in memory as discard cards
+                // Then I clean up and update which cards are now in the hand
+                if(memory[i][j] == this.index){
+                    memory[i][j] = -1;
+                }
+
+            }
+
+        }
+
+        for(MyCard card: layout.viewAllCards()){
+            memory[card.suit.index][card.rank.index] = this.index;
+        }
+
     }
 
     @Override
