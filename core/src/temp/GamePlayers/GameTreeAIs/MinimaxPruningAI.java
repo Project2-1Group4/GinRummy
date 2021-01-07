@@ -1,8 +1,5 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.Card;
-import cardlogic.SetOfCards;
-import gameHandling.Player;
 import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
@@ -141,13 +138,7 @@ public class MinimaxPruningAI extends GamePlayer {
         return new MyCard[] {pickCard, discardCard};
     }
 
-    public void  checkDoubles (){
-        for(int i = 0; i < unknownCards.size(); i++) {
-            if (discardedCards.contains(unknownCards.get(i))||allCards.contains(unknownCards.get(i))) {
-                this.unknownCards.remove(unknownCards.get(i));
-            }
-        }
-    }
+
 
     public static void main(String[] args) {
         GameLogic g = new GameLogic(true, true);
@@ -158,6 +149,13 @@ public class MinimaxPruningAI extends GamePlayer {
     If true then the player knocks and the round ends
     If false then the player doesn't knock
     */
+    public void  checkDoubles (){
+        for(int i = 0; i < unknownCards.size(); i++) {
+            if (discardedCards.contains(unknownCards.get(i))||allCards.contains(unknownCards.get(i))) {
+                this.unknownCards.remove(unknownCards.get(i));
+            }
+        }
+    }
     @Override
     public Boolean knockOrContinue() {
         if (this.handLayout.getDeadwood() <= 10){

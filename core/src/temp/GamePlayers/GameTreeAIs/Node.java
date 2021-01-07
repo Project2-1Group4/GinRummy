@@ -1,11 +1,12 @@
 package temp.GamePlayers.GameTreeAIs;
 
+import org.jetbrains.annotations.NotNull;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
 import temp.GameLogic.MyCard;
 
 import java.util.*;
 
-public class Node {
+public class Node implements Comparable {
     /*
     Main change I did was change from set of cards into List<MyCard>
     From there on I went through the code and tried to fix all of the red lines that appeared
@@ -181,5 +182,15 @@ public class Node {
         //System.out.println(node.parent);
     }
 
+    @Override
+    public int compareTo(@NotNull Object o) {
+        Node node = (Node) o;
+        if (this.getHandValue() > node.getHandValue())
+            return 1;
+        else if (this.getHandValue() == node.getHandValue())
+            return 0;
+        else
+            return -1;
+    }
 }
 

@@ -26,7 +26,7 @@ public class GametreeAI {
     private int leftInUnknownSet = 4; // cards that can form a set with a certain card, that are not in the discard pile or your hand
     private int leftInUnknownRun = 2; // cards that can form a run with a certain card, that are not in the discard pile or your hand
 
-    private int depthTree = 0;
+    private int depthTree = 1;
     private int maxDepth;
     private Node root;
 
@@ -521,4 +521,9 @@ public class GametreeAI {
         return min+(Math.random()*(max-min));
     }
 
+    public static List<MyCard> cloneMyCardList(List<MyCard> hand) {
+        List<MyCard> attempt = new ArrayList<>();
+        attempt.addAll(hand);
+        return attempt;
+    }
 }
