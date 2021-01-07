@@ -333,8 +333,10 @@ public class Executor {
 
     private static PickAction pick(PickAction action, State curState) {
         if (action.deck && curState.getDeckSize() != 0) {
-            curState.getPlayerState().handLayout.addUnusedCard(curState.pickDeckTop());
-            return new PickAction(action.playerIndex, true, curState.peekDeckTop());
+            MyCard card = curState.pickDeckTop();
+            curState.getPlayerState().handLayout.addUnusedCard(card);
+            //MyCard peekTop = curState.peekDeckTop();
+            return new PickAction(action.playerIndex, true, card);
         } else if (!action.deck && !curState.isDiscardEmpty() && action.card.same(curState.peekDiscardTop())) {
             curState.getPlayerState().handLayout.addUnusedCard(curState.pickDiscardTop());
             return action;

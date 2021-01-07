@@ -34,6 +34,11 @@ public class MyCard {
         return rank.ginValue;
     }
 
+    public boolean equals(Object anObject){
+        MyCard card = (MyCard) anObject;
+        return card.suit == this.suit && card.rank == this.rank;
+    }
+
     public String toString() {
         return rank.name() + " Of " + suit.name();
     }
