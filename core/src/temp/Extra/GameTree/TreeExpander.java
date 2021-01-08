@@ -29,7 +29,7 @@ public class TreeExpander {
             case LayoutConfirmation:
                 return getPossibleLayoutConfirmationActions(index, curState.getCards(curState.turn().playerIndex));
             case Layoff:
-                return getPossibleLayoffActions(index, Finder.findBestHandLayout(curState.getCards(curState.turn().playerIndex)), Finder.findBestHandLayout(curState.getCards(curState.knocker())).viewMelds());
+                return getPossibleLayoffActions(index, Finder.findBestHandLayout(curState.getCards(curState.turn().playerIndex)), Finder.findBestHandLayout(curState.getCards(curState.knocker())).melds());
             default:
                 return new ArrayList<>();
         }
@@ -39,7 +39,7 @@ public class TreeExpander {
         List<HandLayout> layouts = Finder.findAllLayouts(cards);
         List<KnockAction> possibleActions = new ArrayList<>();
         for (HandLayout possible : layouts) {
-            if (possible.getDeadwood() <= GameRules.minDeadwoodToKnock) {
+            if (possible.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
                 possibleActions.add(new KnockAction(index, true, possible));
             }
         }
@@ -77,7 +77,7 @@ public class TreeExpander {
 
     public static List<LayoffAction> getPossibleLayoffActions(int index, HandLayout layout, List<Meld> knockerMelds) {
         List<LayoffAction> possibleActions = new ArrayList<>();
-        List<MyCard> unusedCards = layout.viewUnusedCards();
+        List<MyCard> unusedCards = layout.unused();
         //TODO? make it return all possible ways you can layoff
         possibleActions.add(new LayoffAction(index, null));
         return possibleActions;

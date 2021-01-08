@@ -25,7 +25,7 @@ public class Coordinator extends ScreenAdapter {
         List<GamePlayer> players = new ArrayList<>();
         players.add(StringToGamePlayer.getPlayer(master.name1));
         players.add(StringToGamePlayer.getPlayer(master.name2));
-        game = new Game(players, new GameState(players.size(),MyCard.getBasicDeck(),null));
+        game = new Game(players, new GameState(players.size(),MyCard.getBasicDeck(),null), false);
         graphics = new Graphics();
     }
 
@@ -35,6 +35,7 @@ public class Coordinator extends ScreenAdapter {
     }
 
     public void gameEnded() {
+        game.remove();
         if(game.getWinner()==0){
             master.winner = "Player 1 "+master.name1;
         }

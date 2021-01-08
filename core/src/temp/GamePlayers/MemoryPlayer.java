@@ -1,9 +1,9 @@
 package temp.GamePlayers;
 
+import temp.GameLogic.Game;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.States.CardsInfo;
@@ -13,126 +13,85 @@ import java.util.List;
 import java.util.Stack;
 
 public abstract class MemoryPlayer extends GamePlayer {
-    protected static final int discard = -1;
-    // -1 = discard, 0 = unknown, player = player index
-    protected int[][] memory;
-    protected Stack<MyCard> discardMemory;
+    protected CardsInfo cardsMemory;
     protected Step step;
     protected int turn;
     protected int round;
 
     public MemoryPlayer() {
-        memory = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
-        discardMemory = new Stack<>();
         round = 0;
     }
 
-    protected CardsInfo unpackMemory(){
-        List<MyCard> otherPlayer = new ArrayList<>();
-        List<MyCard> unknown = new ArrayList<>();
-        for (int suit = 0; suit < memory.length; suit++) {
-            for (int rank = 0; rank < memory[suit].length; rank++) {
-                if(memory[suit][rank]==index+1 || (memory[suit][rank] == 1 && index != 1)){
-                    otherPlayer.add(new MyCard(suit,rank));
-                }
-                if(memory[suit][rank]==0){
-                    unknown.add(new MyCard(suit,rank));
-                }
-            }
-        }
-        List<List<MyCard>> players = new ArrayList<>();
-        players.add(viewHand());
-        players.add(otherPlayer);
-        return new CardsInfo(players, new Stack<MyCard>(), unknown, (Stack<MyCard>) discardMemory.clone());
-    }
-
+    // Game <=> Player interaction
     @Override
     public final Boolean knockOrContinue() {
         step = Step.KnockOrContinue;
         return KnockOrContinue();
     }
-
     public abstract Boolean KnockOrContinue();
-
     @Override
     public final Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         step = Step.Pick;
         return PickDeckOrDiscard(remainingCardsInDeck, topOfDiscard);
     }
-
     public abstract Boolean PickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard);
-
     @Override
     public final MyCard discardCard() {
         step = Step.Discard;
         return DiscardCard();
     }
-
     public abstract MyCard DiscardCard();
 
+    // Sync game info with player
     @Override
     public void newRound(MyCard topOfDiscard) {
         super.newRound(topOfDiscard);
-        set(topOfDiscard, discard);
-        for (MyCard card : allCards) {
-            set(card, index);
+        Game.getNumberOfPlayers(this);
+        List<List<MyCard>> players = new ArrayList<>();
+        for (int i = 0; i < index; i++) {
+            players.add(new ArrayList<MyCard>());
         }
+        players.add(getHand());
+        Stack<MyCard> discard = new Stack<>();
+        discard.add(topOfDiscard);
+        Stack<MyCard> unknown = MyCard.getBasicDeck();
+        unknown.removeAll(players.get(index));
+        unknown.remove(topOfDiscard);
+        cardsMemory = new CardsInfo(players, new Stack<MyCard>(),unknown,discard);
         round++;
     }
 
-    @Override
-    public void update(List<MyCard> realLayout) {
-        super.update(realLayout);
-
-        // So the idea of this method is to transform all cards that were previously in the hand as unknown
-        // And then go through the handlayout again to update the current cards
-        // There are probably more efficient ways of doing this
-        // But given there's no distinction done between discard card or something else, this feels like the easiest way
-
-        // IMPORTANT NOTE: I'm assuming that if a card is no longer in the hand that it was discarded
-        // This should hold no matter what, but still it's important to make note of that assumption
-
-        updateMemory(this.handLayout);
-
-    }
-
-    /*
-    So the AI was having issues remembering it got an 11 card and keeping that information in memory
-    So I'm modifying the update method to update the internal matrix
-     */
-
-    public void updateMemory(HandLayout layout){
-        for(int i=0; i<memory.length;i++){
-            for(int j = 0; j<memory[0].length;j++){
-                // I'm 90% sure it's this.index, but still I want to add a note to make sure I'm not fucking up
-                // But what I'm doing here is setting all cards in memory as discard cards
-                // Then I clean up and update which cards are now in the hand
-                if(memory[i][j] == this.index){
-                    memory[i][j] = -1;
-                }
-
-            }
-
-        }
-
-        for(MyCard card: layout.viewAllCards()){
-            memory[card.suit.index][card.rank.index] = this.index;
-        }
-
-    }
-
+    // Sync moves done with player knowledge
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
-        set(discardAction.card, discard);
+        boolean found = cardsMemory.players.get(discardAction.playerIndex).remove(discardAction.card);
+        if(!found){
+            if(discardAction.playerIndex==index) {
+                System.out.println("uuh oh MemoryPlayer playerDiscarded()");
+            }
+            else{
+                cardsMemory.unassigned.remove(discardAction.card);
+            }
+        }
+        cardsMemory.discardPile.add(discardAction.card);
     }
-
     @Override
     public void playerPicked(PickAction pickAction) {
-        if (!pickAction.deck || pickAction.card()!=null) {
-            set(pickAction.card(), pickAction.playerIndex);
+        if(pickAction.playerIndex>=cardsMemory.players.size()){
+            cardsMemory.players.add(new ArrayList<MyCard>());
+        }
+        if(pickAction.deck){
+            if(pickAction.card()!=null){
+                assert pickAction.playerIndex==index;
+                cardsMemory.unassigned.remove(pickAction.card());
+                cardsMemory.players.get(pickAction.playerIndex).add(pickAction.card());
+            }
+        }
+        else{
+            assert pickAction.card().equals(cardsMemory.peekDiscard());
+            cardsMemory.players.get(pickAction.playerIndex).add(cardsMemory.discardPile.pop());
         }
     }
-
     @Override
     public void executed(Action action) {
         if (action instanceof PickAction) {
@@ -140,15 +99,5 @@ public abstract class MemoryPlayer extends GamePlayer {
         } else if (action instanceof DiscardAction) {
             playerDiscarded((DiscardAction) action);
         }
-    }
-
-    private void set(MyCard card, int id){
-        if(id==discard){
-            discardMemory.add(card);
-        }
-        else if(card.same(discardMemory.peek())){
-            discardMemory.pop();
-        }
-        memory[card.suit.index][card.rank.index] = id;
     }
 }

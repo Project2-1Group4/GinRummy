@@ -24,15 +24,23 @@ public class MCTSNode {
         children = new ArrayList<>();
     }
 
+    public boolean isLeaf() {
+        return children.size()==0;
+    }
+    public boolean isRoot(){
+        return parent == null;
+    }
+    public boolean equals(Object o){
+        return o instanceof MCTSNode && action.equals(((MCTSNode) o).action);
+    }
     /**
      * Gives value of node.
      *
      * @return value of node
      */
     public double value() {
-        return rollouts !=0? wins/(double) rollouts : 0;
+        return rollouts !=0? wins/ rollouts : 0;
     }
-
     /**
      * Gives exploration value of node.
      * The bigger it is the most likely this node gets explored.
@@ -43,7 +51,6 @@ public class MCTSNode {
     public double explorationValue(int rolloutsDone){
         return rollouts !=0? value()+MCTS.explorationParam*Math.sqrt(Math.log(rolloutsDone)/(float) rollouts) : Double.MAX_VALUE;
     }
-
     /**
      * Gives child node with highest exploration value.
      *
@@ -68,19 +75,19 @@ public class MCTSNode {
         return node;
     }
 
+    public void backPropagate(){
+        backPropagate(rollouts, wins);
+    }
+    private void backPropagate(double rollouts, double wins){
+        if(!isRoot()){
+            parent.rollouts+=rollouts;
+            parent.wins+=wins;
+            parent.backPropagate(rollouts, wins);
+        }
+    }
+
     public String toString(){
         return "Depth "+depth+". Action \"" + action + "\" has a score of " + wins + "/" + rollouts;
     }
 
-    public boolean isLeaf() {
-        return children.size()==0;
-    }
-
-    public boolean isRoot(){
-        return parent == null;
-    }
-
-    public boolean same(MCTSNode mctsNode) {
-        return action.same(mctsNode.action);
-    }
 }

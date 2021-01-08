@@ -79,7 +79,7 @@ public class GreedyV3 extends GamePlayer {
 
     @Override
     public Boolean knockOrContinue() {
-        if (this.handLayout.getDeadwood() <= this.knockValue){
+        if (this.handLayout.deadwoodValue() <= this.knockValue){
             return true;
         } else {
             return false;
@@ -88,14 +88,14 @@ public class GreedyV3 extends GamePlayer {
 
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        List<MyCard> temp = this.handLayout.viewAllCards();
+        List<MyCard> temp = this.handLayout.cards();
         temp.add(topOfDiscard);
 
 
 
         if(this.avoidsDiscard){
             HandLayout layout = Finder.findBestHandLayout(temp);
-            List<MyCard> cardsInMelds = layout.getCardsInMelds();
+            List<MyCard> cardsInMelds = layout.meldCards();
 
             for(MyCard card : cardsInMelds){
                 if (card.same(topOfDiscard)){
@@ -205,11 +205,11 @@ public class GreedyV3 extends GamePlayer {
 
         }
 
-        List<Meld> melds = hand.viewMelds();
-        List<MyCard> deadwood = hand.viewUnusedCards();
+        List<Meld> melds = hand.melds();
+        List<MyCard> deadwood = hand.unused();
 
         for (Meld list : melds) {
-            for (MyCard aCard : list.viewMeld()) {
+            for (MyCard aCard : list.cards()) {
                 newMemMatrix[aCard.suit.index][aCard.rank.index] = -1;
             }
         }
@@ -459,15 +459,15 @@ public class GreedyV3 extends GamePlayer {
             int[][] cloneOfMatrix = cloneResetMemMatrix(this.memoryMatrix, layout);
 
             // Here I'm adding the value of all the melds to valOfHand
-            for(Meld melds: layout.viewMelds()){
-                for(MyCard card: melds.viewMeld()){
+            for(Meld melds: layout.melds()){
+                for(MyCard card: melds.cards()){
                     valOfHand += this.heuristicForMeld(card.rank.index);
                 }
 
             }
 
             // Here the method takes care of evaluating all of the cards that are free
-            for(MyCard deadWoodCard: layout.viewUnusedCards()){
+            for(MyCard deadWoodCard: layout.unused()){
                 double runVal = this.evaluateRun(deadWoodCard.suit.index, deadWoodCard.rank.index, cloneOfMatrix);
                 double setVal = this.evaluateSet(deadWoodCard.suit.index, cloneOfMatrix);
 
@@ -503,7 +503,7 @@ public class GreedyV3 extends GamePlayer {
 
             HandLayout layout = Finder.findBestHandLayout(tempList);
 
-            if(layout.getDeadwood() <= knockValue){
+            if(layout.deadwoodValue() <= knockValue){
                 return true;
             }
 

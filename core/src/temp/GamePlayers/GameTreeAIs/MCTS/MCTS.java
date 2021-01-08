@@ -25,14 +25,16 @@ import java.util.*;
 //TODO do MCTSv2
 //TODO remove HandLayout from knocker and integrate layout confirm+layoff steps in logic
 public abstract class MCTS extends MemoryPlayer{
+
     public boolean debugmcts = false;
-    public static final double explorationParam = 1.2;
+    public boolean print = false;
+
+    public static final double explorationParam = 1.4;
     protected final int rolloutsPerNode = 1; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int maximumAmountOfRollouts = 100; // For stopping condition
+    protected final int rolloutsPerSimulation = 100; // Higher = deeper search. For stopping condition
+
     protected final Random rd; // For seeding
-
     protected boolean simpleKnocking = true;
-
     protected int rollouts;
 
     public MCTS(int seed){
@@ -46,7 +48,7 @@ public abstract class MCTS extends MemoryPlayer{
     @Override
     public Boolean KnockOrContinue() {
         if(simpleKnocking){
-            if (this.handLayout.getDeadwood() <= 10){
+            if (this.handLayout.deadwoodValue() <= 10){
                 return true;
             } else {
                 return false;
@@ -57,11 +59,17 @@ public abstract class MCTS extends MemoryPlayer{
     }
     @Override
     public Boolean PickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        if(print){
+            System.out.println("MCTS Pick");
+        }
         PickAction action = (PickAction) getBestAction(Step.Pick);
         return action==null? null : action.deck;
     }
     @Override
     public MyCard DiscardCard() {
+        if(print){
+            System.out.println("MCTS Discard");
+        }
         DiscardAction action = (DiscardAction) getBestAction(Step.Discard);
         return action==null? null : action.card;
     }
@@ -77,11 +85,17 @@ public abstract class MCTS extends MemoryPlayer{
             throw new AssertionError("Memory player step inconsistencies");
         }
         rollouts = 0;
-        RoundState state = new RoundState(unpackMemory(), new Turn(step, 0));
+        RoundState state = new RoundState(cardsMemory, new Turn(step, index));
         MCTSNode root = ExpandNode(new MCTSNode(null, null), state);
+
         monteCarloTreeSearch(root, state.cards());
 
         int best = findBestAction(root.children);
+        if(print) {
+            System.out.println(cardsMemory);
+            System.out.println("Moves:");
+            print(root, best);
+        }
         return root.children.get(best).action;
     }
 
@@ -93,7 +107,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @param state current state of the game
      * @return list of possible moves
      */
-    protected static MCTSNode ExpandNode(MCTSNode parent, RoundState state){
+    protected MCTSNode ExpandNode(MCTSNode parent, RoundState state){
         if(state.turn().step == Step.Pick){
             getPickMoves(parent, state);
         }
@@ -105,21 +119,19 @@ public abstract class MCTS extends MemoryPlayer{
         }
         return parent;
     }
-    private static void getPickMoves(MCTSNode parent, RoundState state){
+    private void getPickMoves(MCTSNode parent, RoundState state){
         if(state.deck().size()!=0){
             parent.children.add(new MCTSNode(parent,new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1))));
         }
         else{
-            for (int i = 0; i < state.unassigned().size(); i++) {
-                parent.children.add(new MCTSNode(parent,new PickAction(state.getPlayerIndex(), true, state.unassigned().get(i))));
-            }
+            parent.children.add(new MCTSNode(parent,new PickAction(state.getPlayerIndex(), true, null)));
         }
         if(state.discardPile().size()!=0){
             parent.children.add(new MCTSNode(parent, new PickAction(state.getPlayerIndex(), false, state.discardPile().peek())));
         }
     }
-    private static void getDiscardMoves(MCTSNode parent, RoundState state){
-        if(state.getPlayerIndex()==0){
+    private void getDiscardMoves(MCTSNode parent, RoundState state){
+        if(state.getPlayerIndex()==index){
             for (MyCard card : state.getCards(state.getPlayerIndex())) {
                 parent.children.add(new MCTSNode(parent, new DiscardAction(state.getPlayerIndex(), card)));
             }
@@ -133,11 +145,11 @@ public abstract class MCTS extends MemoryPlayer{
             }
         }
     }
-    private static void getKnockMoves(MCTSNode parent, RoundState state){
+    private void getKnockMoves(MCTSNode parent, RoundState state){
         //TODO what to do when other player's turn and not perfect information
-        if(state.getPlayerIndex()==0 || state.hasPerfectInformation()) {
+        if(state.getPlayerIndex()== index || state.hasPerfectInformation()) {
             HandLayout handLayout = new HandLayout(state.getCards(state.getPlayerIndex()));
-            if (handLayout.getDeadwood() <= GameRules.minDeadwoodToKnock) {
+            if (handLayout.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
                 parent.children.add(new MCTSNode(parent, new KnockAction(state.getPlayerIndex(), true, handLayout)));
             }
         }
@@ -152,7 +164,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @param root node with all possible moves as children
      */
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge) {
-        mcts(root,new RoundState(knowledge, new Turn(step, 0)));
+        mcts(root,new RoundState(knowledge, new Turn(step, index)));
     }
     /**
      * For now, for MCTSV2 to generate random hands at the end of the exploration for the enemy
@@ -163,7 +175,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @return the value of that the state end up getting us after rollout
      */
     protected double rollout(RoundState state){
-        return executeRollout(new ForcePlayer(), new ForcePlayer(),state);
+        return executeRollout(new ForcePlayer(rd.nextInt()), new ForcePlayer(rd.nextInt()),state);
     }
 
     // Main Monte Carlo Tree Simulation
@@ -178,42 +190,37 @@ public abstract class MCTS extends MemoryPlayer{
         rollouts = 0;
         while(!stopCondition()) {
             if(debugmcts) {
-                System.out.println("\n\nIteration: " + (rollouts/rolloutsPerNode)+" rollouts: "+rollouts);
+                System.out.println("\nLoop " + (rollouts/rolloutsPerNode)+", rollouts "+rollouts);
             }
+            RoundState s = new RoundState(state);
             // Explore
-            MCTSNode node = explore(root, state);
+            MCTSNode node = explore(root, s);
             if(debugmcts) {
                 System.out.println("\nExplored to "+node);
-                System.out.println(state);
             }
             // Expand
-            ExpandNode(node, state);
+            ExpandNode(node, s);
             if(debugmcts){
                 System.out.println("\nExpanded:");
                 print(node, null);
             }
             // Simulate
             for (int i = 0; i < rolloutsPerNode; i++) {
-                node.wins += rollout(new RoundState(state));
+                node.wins += rollout(new RoundState(s));
                 node.rollouts++;
                 rollouts++;
+                if(stopCondition()){
+                    break;
+                }
             }
             if(debugmcts) {
-                System.out.println("\nRolled out "+node);
+                System.out.println("\nRolled out "+rolloutsPerNode+" times:\n"+node);
             }
             // Back propagate
-            backPropagate(node);
+            node.backPropagate();
             if(debugmcts) {
                 System.out.println("\nBack propagated");
             }
-            // Go back to init state
-            node = undoExploration(node, state);
-            if(debugmcts){
-                System.out.println("\nUndid exploration");
-                System.out.println(state.turn());
-                print(node, null);
-            }
-            assert node == root;
         }
     }
     /**
@@ -223,7 +230,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if stop, false if not
      */
     protected boolean stopCondition(){
-        return rollouts>=maximumAmountOfRollouts;
+        return rollouts>= rolloutsPerSimulation;
     }
     /**
      * Explores current tree based on exploration value up until it reaches a leaf node,
@@ -235,8 +242,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @return leaf node favored by exploration
      */
     private MCTSNode explore(MCTSNode node, RoundState state){
-        while (!node.isLeaf()) {
-            averageOutDeckPicks(node);
+        while (!node.isLeaf()){
             node = node.getChildToExplore(rollouts);
             node.action.doAction(state,true);
         }
@@ -251,42 +257,10 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if you win, false if other wins
      */
     private double executeRollout(GamePlayer player1, GamePlayer player2, RoundState state) {
-        Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt());
+        Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt(), false);
         Result result = g.playOutRound();
+        g.remove();
         return getRoundValue(result);
-    }
-    /**
-     * Back propagate results of rollout.
-     *
-     * @param node that has been rolled out
-     */
-    protected static void backPropagate(MCTSNode node){
-        double leafRollouts = node.rollouts;
-        double leafWins = node.wins;
-        while(node.parent!=null){
-            MCTSNode temp = node.parent;
-            temp.rollouts+= leafRollouts;
-            temp.wins+= leafWins;
-            node = temp;
-        }
-    }
-    /**
-     * Undoes all moves made to get to node (back to root node)
-     *
-     * @param node final node expanded
-     * @param state knowledge base at the end of the expansion
-     * @return root node
-     */
-    private MCTSNode undoExploration(MCTSNode node, RoundState state){
-        while (!node.isRoot()) {
-            if(!node.action.same(state.getLastAction())){
-                System.out.println("NOOO");
-                throw new AssertionError("WEWE");
-            }
-            node.action.undoAction(state);
-            node = node.parent;
-        }
-        return node;
     }
     /**
      * Finds index of best action.
@@ -296,16 +270,15 @@ public abstract class MCTS extends MemoryPlayer{
      */
     protected int findBestAction(List<MCTSNode> actions){
         int best=0;
-        double max = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
         for (int i = 0; i < actions.size(); i++) {
-            if(max<=actions.get(i).rollouts){
-                max = actions.get(i).rollouts;
+            if(max<=actions.get(i).rollouts+actions.get(i).value()){
+                max = actions.get(i).rollouts+actions.get(i).value();
                 best = i;
             }
         }
         return best;
     }
-
 
     // Other
 
@@ -317,59 +290,26 @@ public abstract class MCTS extends MemoryPlayer{
      * @return new (different objects) perfect information world
      */
     protected CardsInfo completeUnknownInformation(CardsInfo knowledge){
-        List<List<MyCard>> players = new ArrayList<>();
-        players.add(new ArrayList<>(knowledge.getCards(0)));
-        players.add(new ArrayList<>(knowledge.getCards(1)));
-        List<MyCard> unassigned = new ArrayList<>(knowledge.unassigned);
-        Stack<MyCard> deck = new Stack<>();
-        Stack<MyCard> discard = (Stack<MyCard>) knowledge.discardPile.clone();
-
-        if(players.get(1).size()+unassigned.size()<GameRules.baseCardsPerHand) throw new AssertionError("Can't fill a hand I known information.");
-
-        while(players.get(1).size()<GameRules.baseCardsPerHand){
-            // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
-            // Here we can modify this to pick cards based of set probabilities
-            players.get(1).add(unassigned.remove(rd.nextInt(unassigned.size()-1)));
+        CardsInfo c = new CardsInfo(knowledge);
+        Game.shuffleList(rd, 500, c.unassigned);
+        for (int i = 0; i < c.players.size(); i++) {
+            while(c.players.get(i).size()<GameRules.baseCardsPerHand){
+                // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
+                // Here we can modify this to pick cards based of set probabilities
+                c.players.get(i).add(c.unassigned.remove(0));
+            }
         }
         // TODO: Modify this to add the size of the deck, to limit the depth of the tree and probably add a speed increase
         // Should probably be a class held variable to be fair
-        deck.addAll(unassigned);
-        deck.addAll(knowledge.deck);
-        unassigned = new ArrayList<>();
-        Game.shuffleList(rd, 500, deck);
-        return new CardsInfo(players, deck, unassigned, discard);
+        c.deck.addAll(c.unassigned);
+        c.unassigned.clear();
+        return c;
     }
     protected double getRoundValue(Result result){
         if(result.winner==null){
             return 0.5;
         }
-        return 1-result.winner;
-    }
-    /**
-     * Used to avoid MCTS from exploring the one card it needs that could be at the top of the deck,
-     * but isn't necessarily.
-     * Rolls to nearest integer.
-     *
-     * @param node node that needs to be averaged out
-     */
-    protected void averageOutDeckPicks(MCTSNode node){
-        if(node.isLeaf() || node.children.get(0).action.getStep()!= Step.Pick){
-            return;
-        }
-        int rollouts = 0;
-        int wins =0;
-        for (MCTSNode child : node.children) {
-            if(((PickAction)child.action).deck) {
-                rollouts += child.rollouts;
-                wins += child.wins;
-            }
-        }
-        for (MCTSNode child : node.children) {
-            if(((PickAction)child.action).deck) {
-                child.rollouts = rollouts /(double) node.children.size();
-                child.wins = wins /(double) node.children.size();
-            }
-        }
+        return result.winner==index? 1 : 0;
     }
     /**
      * Helper method. Prints. To be deleted.

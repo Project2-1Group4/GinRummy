@@ -1,33 +1,26 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
 import temp.Extra.PostGameInformation.Result;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Entities.Turn;
 import temp.GameLogic.Game;
 import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.States.CardsInfo;
 import temp.GameLogic.States.GameState;
 import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 // Does MCTS on x amount of created perfect information games
 public class MCTSv1 extends MCTS{
 
-    public static void main(String[] args) {
-        GamePlayer[] players = new GamePlayer[]{
-                new basicGreedyTest(),
-                new basicGreedyTest()
-        };
-        Game g = new Game(players, 0);
-        GameState r = g.playOutGame();
-        System.out.println(Result.getScores(r.toResult()));
-        //Result r = g.playOutRound();
-        //System.out.println(r);
-    }
-
-    private final int simulations = 10; // Nb of perfect games simulated
+    private final int simulations = 100; // Nb of perfect games simulated
 
     public MCTSv1(int seed){
         super(seed);
@@ -38,45 +31,56 @@ public class MCTSv1 extends MCTS{
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
-            //System.out.println("Simulation "+i);
-            RoundState generated = new RoundState(completeUnknownInformation(knowledge),new Turn(step, 0));
+            RoundState generated = new RoundState(completeUnknownInformation(knowledge),new Turn(step, index));
             MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null), generated);
             mcts(generatedRoot, generated);
-            //print(generatedRoot, null);
             merge(root, generatedRoot);
         }
-        //System.out.println("PRE");
-        //print(root,null);
-        averageOutDeckPicks(root);
-        rootBackProp(root);
-        //System.out.println("POST");
-        //print(root,null);
+        //TODO not a todo, just like the color :)
+        // Can check what the best top of the deck would be for player here
+        mergeDeckPicksIntoOne(root, step);
     }
 
-    private void rootBackProp(MCTSNode root){
-        for (MCTSNode child : root.children) {
-            backPropagate(child);
-        }
-    }
-    /**
-     * Merges the children of main and second together into main
-     * @param main at the same depth as second
-     * @param second at the same depth as main
-     */
-    private void merge(MCTSNode main, MCTSNode second){
-        for (int scnd = 0; scnd < second.children.size(); scnd++) {
+    private void merge(MCTSNode main, MCTSNode secondary){
+        for (MCTSNode secondC : secondary.children) {
             boolean found = false;
-            for (int mn = 0; mn < main.children.size(); mn++) {
-                if(main.children.get(mn).same(second.children.get(scnd))){
-                    main.children.get(mn).rollouts+= second.children.get(scnd).rollouts;
-                    main.children.get(mn).wins+= second.children.get(scnd).wins;
+            for (MCTSNode mainC : main.children) {
+                if(secondC.equals(mainC)){
                     found = true;
+                    mainC.wins+=secondC.wins;
+                    mainC.rollouts+=secondC.rollouts;
+                    main.wins+=secondC.wins;
+                    main.rollouts+=secondC.rollouts;
                     break;
                 }
             }
             if(!found){
-                main.children.add(second.children.get(scnd));
+                main.children.add(secondC);
+                main.wins+=secondC.wins;
+                main.rollouts+=secondC.rollouts;
             }
+        }
+    }
+    private void mergeDeckPicksIntoOne(MCTSNode node, Step step){
+        if(step!=Step.Pick) return;
+        int rolloutSum=0;
+        int winSum=0;
+        MCTSNode deck=null;
+        for (int i = node.children.size() - 1; i >= 0; i--) {
+            MCTSNode c = node.children.get(i);
+            if(((PickAction)c.action).deck) {
+                if (((PickAction)c.action).card() == null) {
+                    deck = node.children.get(i);
+                    continue;
+                }
+                winSum+=c.wins;
+                rolloutSum+=c.rollouts;
+                node.children.remove(i);
+            }
+        }
+        if(deck!=null){
+            deck.wins+=winSum;
+            deck.rollouts+=rolloutSum;
         }
     }
 }

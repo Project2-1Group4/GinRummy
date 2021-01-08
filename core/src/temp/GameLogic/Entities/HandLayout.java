@@ -23,15 +23,12 @@ public class HandLayout {
         setOfMelds = new ArrayList<>();
         unusedCards = new ArrayList<>();
     }
-
     public HandLayout(int[][] hand, List<Meld> melds) {
         this.hand = hand;
         this.setOfMelds = melds;
         unusedCards = new ArrayList<>();
         init(Finder.copy(hand));
     }
-
-    // No real reason to use this imo
     public HandLayout(List<MyCard> cards) {
         this();
         for (MyCard card : cards) {
@@ -39,11 +36,11 @@ public class HandLayout {
         }
     }
 
-    // SETTERS
-    // Only way to change inner state of HandLayout
+    // SETTERS. Ony way to change inner state
+
     private void init(int[][] hand) {
         for (Meld meld : setOfMelds) {
-            for (MyCard myCard : meld.viewMeld()) {
+            for (MyCard myCard : meld.cards()) {
                 this.value += myCard.ginValue();
                 hand[myCard.suit.index][myCard.rank.index] = 0;
             }
@@ -58,22 +55,18 @@ public class HandLayout {
             }
         }
     }
-
     public void addUnusedCard(MyCard card) {
         unusedCards.add(card);
         deadwood += card.ginValue();
     }
-
     public void addMeld(Meld meld) {
         setOfMelds.add(meld);
-        value += meld.getValue();
+        value += meld.value();
     }
-
     public void addToMeld(int i, MyCard card) {
-        setOfMelds.get(i).addCard(card);
+        setOfMelds.get(i).add(card);
         value += card.ginValue();
     }
-
     public boolean removeUnusedCard(MyCard card) {
         for (int i = 0; i < unusedCards.size(); i++) {
 
@@ -85,11 +78,10 @@ public class HandLayout {
         }
         return false;
     }
-
     public boolean removeCard(MyCard card) {
         if (!removeUnusedCard(card)) {
-            for (Meld meld : viewMelds()) {
-                if (meld.removeCard(card)) {
+            for (Meld meld : melds()) {
+                if (meld.remove(card)) {
                     return true;
                 }
             }
@@ -98,54 +90,20 @@ public class HandLayout {
         return true;
     }
 
-    // GETTERS
-    // Returns copies to avoid the changing of the inner state using mutable objects
+    // GETTERS. Returns copies to keep HandLayout from changing on the outside
+
     public int[][] getHand() {
         return Finder.copy(hand);
     }
-
-    public int getDeadwood() {
+    public int deadwoodValue() {
         return deadwood;
     }
-
-    public int getNumberOfCardsInDeadwood(){
+    public int cardsInDeadwood(){
         return unusedCards.size();
     }
-
-    public int getValue() {
+    public int meldValue() {
         return value;
     }
-
-    public List<MyCard> viewUnusedCards() {
-        return new ArrayList<>(unusedCards);
-    }
-
-    public List<MyCard> viewAllCards() {
-        List<MyCard> cards = new ArrayList<>(unusedCards);
-        for (Meld setOfMeld : setOfMelds) {
-            cards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
-        }
-        return cards;
-    }
-
-    public List<Meld> viewMelds() {
-        return Meld.deepCopy(setOfMelds);
-    }
-
-    public List<MyCard> getCardsInMelds(){
-        List<MyCard> temp = new ArrayList<>();
-
-        List<Meld> copyOfMelds = Meld.deepCopy(setOfMelds);
-
-        for (Meld aMeld : copyOfMelds){
-
-            for(MyCard card : aMeld.viewMeld()){
-                temp.add(card);
-            }
-        }
-        return temp;
-    }
-
     public boolean isValid() {
         for (Meld setOfMeld : setOfMelds) {
             if (!setOfMeld.isValid()) {
@@ -154,7 +112,6 @@ public class HandLayout {
         }
         return true;
     }
-
     public boolean same(HandLayout other) {
         int found = 0;
         for (MyCard unusedCard : unusedCards) {
@@ -167,8 +124,8 @@ public class HandLayout {
         if (found != unusedCards.size()) {
             return false;
         }
-        List<Meld> cpy = viewMelds();
-        List<Meld> otherCpy = other.viewMelds();
+        List<Meld> cpy = melds();
+        List<Meld> otherCpy = other.melds();
         for (int i = 0; i < cpy.size(); i++) {
             for (int j = 0; j < otherCpy.size(); j++) {
                 if (cpy.get(i).same(otherCpy.get(j))) {
@@ -181,7 +138,32 @@ public class HandLayout {
         }
         return cpy.size() == 0;
     }
+    public List<MyCard> unused() {
+        return new ArrayList<>(unusedCards);
+    }
+    public List<MyCard> cards() {
+        List<MyCard> cards = new ArrayList<>(unusedCards);
+        for (Meld setOfMeld : setOfMelds) {
+            cards.addAll(new ArrayList<>(setOfMeld.cards()));
+        }
+        return cards;
+    }
+    public List<MyCard> meldCards(){
+        List<MyCard> temp = new ArrayList<>();
 
+        List<Meld> copyOfMelds = Meld.deepCopy(setOfMelds);
+
+        for (Meld aMeld : copyOfMelds){
+
+            for(MyCard card : aMeld.cards()){
+                temp.add(card);
+            }
+        }
+        return temp;
+    }
+    public List<Meld> melds() {
+        return Meld.deepCopy(setOfMelds);
+    }
     public double evaluate(){
         //TODO
         return 0;
@@ -195,7 +177,6 @@ public class HandLayout {
         m.hand = this.hand;
         return m;
     }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Melds:");

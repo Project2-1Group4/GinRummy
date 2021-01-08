@@ -27,9 +27,8 @@ public class MyCard {
     }
 
     // GETTERS
-    public boolean equals(Object anObject){
-        MyCard card = (MyCard) anObject;
-        return card.suit == this.suit && card.rank == this.rank;
+    public boolean equals(Object o){
+        return o instanceof MyCard && ((MyCard) o).suit == this.suit && ((MyCard) o).rank == this.rank;
     }
 
     public boolean same(MyCard card) {

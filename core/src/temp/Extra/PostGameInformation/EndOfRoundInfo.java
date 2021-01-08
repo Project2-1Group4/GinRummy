@@ -23,8 +23,8 @@ public class EndOfRoundInfo {
         deadwoodValues = new int[stateList.size()];
         numberOfCardsInDeadwood = new int[stateList.size()];
         for (int i = 0; i < state.layouts().length; i++) {
-            deadwoodValues[i] = state.layouts()[i].getDeadwood();
-            numberOfCardsInDeadwood[i] = state.layouts()[i].getNumberOfCardsInDeadwood();
+            deadwoodValues[i] = state.layouts()[i].deadwoodValue();
+            numberOfCardsInDeadwood[i] = state.layouts()[i].cardsInDeadwood();
         }
     }
 

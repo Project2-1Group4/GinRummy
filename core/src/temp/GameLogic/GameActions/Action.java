@@ -19,9 +19,9 @@ public abstract class Action {
     public Step getStep(){
         return step;
     }
-    public boolean same(Action other) {
-        if (this.getClass() == other.getClass()) {
-            return specificSame(other);
+    public boolean equals(Object o) {
+        if (this.getClass() == o.getClass()) {
+            return specificSame(o);
         }
         return false;
     }
@@ -43,7 +43,7 @@ public abstract class Action {
     }
     //Undo
     public boolean canUndo(RoundState state){
-        return state.actions.size()!=0 && state.actions.peek().same(this);
+        return state.actions.size()!=0 && state.actions.peek().equals(this);
     }
     public boolean undoAction(RoundState state){
         if(canUndo(state)){
@@ -58,7 +58,7 @@ public abstract class Action {
     /*
     Subclass specific methods
      */
-    protected abstract boolean specificSame(Action other);
+    protected abstract boolean specificSame(Object other);
     protected abstract boolean specificCanDo(RoundState state);
     protected abstract void specificDo(RoundState state);
     protected abstract void specificUndo(RoundState state);

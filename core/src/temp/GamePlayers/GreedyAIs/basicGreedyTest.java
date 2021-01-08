@@ -85,7 +85,7 @@ public class basicGreedyTest extends GamePlayer {
 
 
     public MyCard chooseCardToDiscard(MyCard aCard) {
-        List<MyCard> current = this.handLayout.viewAllCards();
+        List<MyCard> current = this.handLayout.cards();
 
         current.add(aCard);
 
@@ -114,7 +114,7 @@ public class basicGreedyTest extends GamePlayer {
             // This is garbage unnefficient, but I don't feel like adding a proper method now
             HandLayout layout = Finder.findBestHandLayout(aList);
 
-            int resultingHand = layout.getDeadwood();
+            int resultingHand = layout.deadwoodValue();
 
             /*
             So this means that the hand that has the lowest value is the best hand
@@ -135,7 +135,7 @@ public class basicGreedyTest extends GamePlayer {
 
     @Override
     public Boolean knockOrContinue() {
-        int currentHand = this.handLayout.getDeadwood();
+        int currentHand = this.handLayout.deadwoodValue();
 
         if(!this.debugRun) {
             try {
@@ -157,7 +157,7 @@ public class basicGreedyTest extends GamePlayer {
 
     @Override
     public MyCard discardCard() {
-        return chooseCardToDiscard(this.handLayout.viewAllCards());
+        return chooseCardToDiscard(this.handLayout.cards());
     }
 
     @Override

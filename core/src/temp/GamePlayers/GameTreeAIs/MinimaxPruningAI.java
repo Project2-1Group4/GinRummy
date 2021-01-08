@@ -255,7 +255,7 @@ public class MinimaxPruningAI extends GamePlayer {
         Game g = new Game(new GamePlayer[]{
                 new MinimaxPruningAI(),
                 new MinimaxPruningAI()
-        }, 0);
+        }, 0, false);
         g.playOutGame();
     }
 

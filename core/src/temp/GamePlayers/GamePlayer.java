@@ -18,23 +18,13 @@ import java.util.List;
 
 public abstract class GamePlayer implements PlayerInterface {
 
-    private static int player = 0;
-
-    private static int getPlayer() {
-        player++;
-        return player;
-    }
-
     protected List<MyCard> allCards;
     protected HandLayout handLayout;
     protected InputProcessor processor;
-    public final int index;
 
-    public GamePlayer() {
-        index = getPlayer();
-    }
+    public int index;
 
-    /* SETTERS */
+    // Player methods
 
     /**
      * Called:
@@ -49,65 +39,9 @@ public abstract class GamePlayer implements PlayerInterface {
         allCards = cards;
         handLayout = Finder.findBestHandLayout(allCards);
     }
-
-    /* GETTERS */
-
-    public InputProcessor getProcessor() {
-        return processor;
-    }
-
-    // All views. IDK why
-    public List<MyCard> viewHand() {
-        return new ArrayList<>(allCards);
-    }
-
-    public HandLayout viewHandLayout() {
-        return handLayout.deepCopy();
-    }
-
-    public List<Meld> viewMelds() {
-        return handLayout.viewMelds();
-    }
-
-    public List<MyCard> viewUnusedHand() {
-        return handLayout.viewUnusedCards();
-    }
-
-    /**
-     * To allow all players to get this feature
-     * Automatically creates best melds for given hand
-     */
-    public HandLayout getBestMelds() {
-        return Finder.findBestHandLayout(allCards);
-    }
-
-    /**
-     * To allow all players to get this feature
-     * Automatically lays the most cards off
-     * <p>
-     * Shit show of a method. Dont feel like cleaning up
-     *
-     * @param knockerMelds list of melds of the player that knocked
-     * @return layoff object
-     */
-    public List<Layoff> automaticLayoff(List<Meld> knockerMelds) {
-        List<MyCard> unusedCards = handLayout.viewUnusedCards();
-        List<Layoff> layoffs = new ArrayList<>();
-        // For all melds
-        for (Meld knockerMeld : knockerMelds) {
-            Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards, knockerMeld);
-            if (index != null) {
-                layoffs.add(new Layoff(unusedCards.get(index), knockerMeld));
-            }
-        }
-        return layoffs;
-    }
-
-    /* EXTRA */
     public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
         // In case you want to render extra
     }
-
     /**
      * Called at the start of every round once the cards have been distributed
      *
@@ -116,17 +50,16 @@ public abstract class GamePlayer implements PlayerInterface {
     @Override
     public void newRound(MyCard topOfDiscard) {
     }
-
-    /* PLAYER METHODS */
     @Override
     public HandLayout confirmLayout() {
         return getBestMelds();
     }
-
     @Override
     public List<Layoff> layOff(List<Meld> knockerMelds) {
         return automaticLayoff(knockerMelds);
     }
+
+    // "Eyes"/Listeners/Sensing Organ >.>
 
     @Override
     public void playerActed(Action action) {
@@ -138,18 +71,61 @@ public abstract class GamePlayer implements PlayerInterface {
             }
         }
     }
-
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
     }
-
     @Override
     public void playerPicked(PickAction pickAction) {
     }
-
     @Override
     public void executed(Action action) {
 
+    }
+
+    // Getters
+
+    public InputProcessor getProcessor() {
+        return processor;
+    }
+    public List<MyCard> getHand() {
+        return allCards;
+    }
+    public HandLayout viewHandLayout() {
+        return handLayout;
+    }
+    public List<Meld> viewMelds() {
+        return handLayout.melds();
+    }
+    public List<MyCard> viewUnusedHand() {
+        return handLayout.unused();
+    }
+    /**
+     * To allow all players to get this feature
+     * Automatically creates best melds for given hand
+     */
+    public HandLayout getBestMelds() {
+        return Finder.findBestHandLayout(allCards);
+    }
+    /**
+     * To allow all players to get this feature
+     * Automatically lays the most cards off
+     * <p>
+     * Shit show of a method. Dont feel like cleaning up
+     *
+     * @param knockerMelds list of melds of the player that knocked
+     * @return layoff object
+     */
+    public List<Layoff> automaticLayoff(List<Meld> knockerMelds) {
+        List<MyCard> unusedCards = handLayout.unused();
+        List<Layoff> layoffs = new ArrayList<>();
+        // For all melds
+        for (Meld knockerMeld : knockerMelds) {
+            Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards, knockerMeld);
+            if (index != null) {
+                layoffs.add(new Layoff(unusedCards.get(index), knockerMeld));
+            }
+        }
+        return layoffs;
     }
 
     @Override

@@ -72,11 +72,11 @@ public class CardsInfo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < players.size(); i++) {
-            sb.append("Player ").append(i).append(": ").append(players.get(i)).append("\n");
+            sb.append("Player ").append(i).append(" (").append(players.get(i).size()).append("): ").append(players.get(i)).append("\n");
         }
-        sb.append("Deck: ").append(deck).append("\n");
-        sb.append("Discard: ").append(discardPile).append("\n");
-        sb.append("Unassigned: ").append(unassigned);
+        sb.append("Deck (").append(deck.size()).append("): ").append(deck).append("\n");
+        sb.append("Discard (").append(discardPile.size()).append("): ").append(discardPile).append("\n");
+        sb.append("Unassigned (").append(unassigned.size()).append("): ").append(unassigned);
         return sb.toString();
     }
 

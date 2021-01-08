@@ -93,11 +93,11 @@ class MeldCreator {
         Meld meld = new Meld();
         if(kRight!=null) {
             for (Integer integer : kRight) {
-                meld.addCard(new MyCard(i, integer));
+                meld.add(new MyCard(i, integer));
             }
         }else {
             for (Integer integer : kDown) {
-                meld.addCard(new MyCard(integer, j));
+                meld.add(new MyCard(integer, j));
             }
         }
         return meld;
@@ -112,7 +112,7 @@ class MeldCreator {
      * @return modified array
      */
     private static int[][] setMeldTo(int[][] array, Meld meld, int val) {
-        for (MyCard myCard : meld.viewMeld()) {
+        for (MyCard myCard : meld.cards()) {
             array[myCard.suit.index][myCard.rank.index] = val;
         }
         return array;

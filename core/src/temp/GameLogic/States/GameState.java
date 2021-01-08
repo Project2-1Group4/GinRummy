@@ -75,9 +75,6 @@ public class GameState {
     public int[] getPoints(){
         return points;
     }
-    public boolean gameEnded(){
-        return Game.gameStopCondition(this);
-    }
     public boolean locked() {
         return locked;
     }

@@ -69,6 +69,29 @@ public class CSVWriterV2 {
         }
     }
 
+    public static void writeTimes(double[] times, String directory, String fileName){
+        File dir = new File(directory);
+        dir.mkdirs();
+        fileName = directory+fileName;
+        /*
+        PER ROUND INFO
+         */
+        try(PrintWriter gameWriter = new PrintWriter(new File(fileName+"_endOfGame.csv"))){
+            StringBuilder sb = new StringBuilder();
+            sb.append("Game").append(',').append("Time").append("\n");
+            for (int i = 0; i < times.length; i++) {
+                sb.append(i).append(',').append(times[i]).append("\n");
+            }
+            gameWriter.write(sb.toString());
+        }
+        catch(FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
     public static String endOfRoundDecoder(List<GameInfo> results){
         StringBuilder sb = new StringBuilder();
         for(int i =0; i<results.size();i++){

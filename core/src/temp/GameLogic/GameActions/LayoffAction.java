@@ -18,7 +18,7 @@ public class LayoffAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         LayoffAction o = (LayoffAction) other;
         int found = 0;
         for (int i = 0; i < layoffs.size(); i++) {

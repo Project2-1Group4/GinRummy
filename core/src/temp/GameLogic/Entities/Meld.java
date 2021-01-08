@@ -16,14 +16,12 @@ public class Meld {
     }
 
     // SETTERS
-    // Only way to change inner state of Meld
-    public void addCard(MyCard card) {
-        // In Gin Rummy the melds don't really have a value, so we can probably ignore this
+
+    public void add(MyCard card) {
         value += card.ginValue();
         meld.add(card);
     }
-
-    public boolean removeCard(MyCard card) {
+    public boolean remove(MyCard card) {
         for (int i = 0; i < meld.size(); i++) {
             if (card.same(meld.get(i))) {
                 value -= meld.get(i).ginValue();
@@ -33,7 +31,6 @@ public class Meld {
         }
         return false;
     }
-
     public void setType() {
         type = meld.get(0).suit == meld.get(1).suit ? MeldType.Run : MeldType.Set;
     }
@@ -43,7 +40,6 @@ public class Meld {
         sortByRank();
         sortBySuit();
     }
-
     public void sortByRank() {
         for (int i = 0; i < meld.size(); i++) {
             for (int j = i; j > 0; j--) {
@@ -56,7 +52,6 @@ public class Meld {
             }
         }
     }
-
     public void sortBySuit() {
         for (int i = 0; i < meld.size(); i++) {
             for (int j = i; j > 0; j--) {
@@ -70,23 +65,23 @@ public class Meld {
         }
     }
 
-    // GETTERS
-    // Returns copies to avoid the changing of the inner state using mutable objects
-    public int getValue() {
+    // GETTERS. Returns copies to keep state from being modified outside
+
+    public int value() {
         return value;
     }
-
-    public List<MyCard> viewMeld() {
+    public int size() {
+        return meld.size();
+    }
+    public List<MyCard> cards() {
         return new ArrayList<>(meld);
     }
-
-    public MeldType getType() {
+    public MeldType type() {
         if (type == null) {
             setType();
         }
         return type;
     }
-
     public boolean isValid() {
         setType();
         // If set
@@ -109,14 +104,12 @@ public class Meld {
         }
         return true;
     }
-
     public boolean isValidWith(MyCard card) {
-        addCard(card);
+        add(card);
         boolean valid = isValid();
-        removeCard(card);
+        remove(card);
         return valid;
     }
-
     public boolean same(Meld other) {
         int found = 0;
         for (MyCard card : meld) {
@@ -128,7 +121,12 @@ public class Meld {
         }
         return found == meld.size();
     }
-
+    public Meld deepCopy() {
+        Meld m = new Meld();
+        m.type = this.type;
+        m.meld = new ArrayList<>(meld);
+        return m;
+    }
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[ ").append(meld.get(0));
@@ -139,19 +137,12 @@ public class Meld {
         return sb.toString();
     }
 
-    public Meld deepCopy() {
-        Meld m = new Meld();
-        m.type = this.type;
-        m.meld = new ArrayList<>(meld);
-        return m;
-    }
-
     // EXTRA
+
     public enum MeldType {
         Set,
         Run
     }
-
     public static List<Meld> deepCopy(List<Meld> setOfMelds) {
         List<Meld> melds = new ArrayList<>();
         for (Meld setOfMeld : setOfMelds) {

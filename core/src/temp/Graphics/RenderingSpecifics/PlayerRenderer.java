@@ -35,12 +35,12 @@ public class PlayerRenderer {
         renderUnmoved(batch, style);
         renderMoved(batch, style);
         renderMelds(batch, style);
-        renderValues(batch, style, new int[]{handLayout.getValue(), handLayout.getDeadwood()});
+        renderValues(batch, style, new int[]{handLayout.meldValue(), handLayout.deadwoodValue()});
     }
 
     public void init(Style style, HandLayout handLayout) {
-        List<MyCard> cards = handLayout.viewUnusedCards();
-        List<Meld> cardMelds = handLayout.viewMelds();
+        List<MyCard> cards = handLayout.unused();
+        List<Meld> cardMelds = handLayout.melds();
 
         updateUnusedCards(cards);
         updateMeldCards(cardMelds);
@@ -86,14 +86,14 @@ public class PlayerRenderer {
         for (Meld meld : meldCards) {
             boolean exists = false;
             for (int i = 0; i < melds.size(); i++) {
-                for (MyCard myCard : meld.viewMeld()) {
+                for (MyCard myCard : meld.cards()) {
                     if (melds.get(i).has(myCard)) {
                         exists = true;
                     }
                 }
                 if (exists) {
                     List<GameCard> newMeld = new ArrayList<>();
-                    for (MyCard myCard : meld.viewMeld()) {
+                    for (MyCard myCard : meld.cards()) {
                         GameCard c = melds.get(i).get(myCard);
                         newMeld.add(c);
                     }
@@ -103,7 +103,7 @@ public class PlayerRenderer {
             }
             if (!exists) {
                 List<GameCard> newMeld = new ArrayList<>();
-                for (MyCard myCard : meld.viewMeld()) {
+                for (MyCard myCard : meld.cards()) {
                     newMeld.add(new GameCard(myCard));
                 }
                 newMelds.add(new GameMeld(newMeld));

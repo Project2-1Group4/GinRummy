@@ -50,7 +50,7 @@ public class SetOfCards {
 	}
 
 	public SetOfCards(HandLayout layout){
-		this(layout.viewAllCards(), false);
+		this(layout.cards(), false);
 	}
 
 	public SetOfCards(List<MyCard> cardList, boolean garbage){

@@ -23,7 +23,7 @@ public class KnockAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         KnockAction o = (KnockAction) other;
         if (o.knock != knock) {
             return false;
@@ -42,7 +42,7 @@ public class KnockAction extends Action {
 
     @Override
     public boolean specificCanDo(RoundState state) {
-        return !knock || Finder.findBestHandLayout(state.getCards(playerIndex)).getDeadwood()<= GameRules.minDeadwoodToKnock;
+        return !knock || Finder.findBestHandLayout(state.getCards(playerIndex)).deadwoodValue()<= GameRules.minDeadwoodToKnock;
     }
 
     @Override

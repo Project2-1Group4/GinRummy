@@ -14,7 +14,7 @@ public class DiscardAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         return card.same(((DiscardAction) other).card);
     }
 

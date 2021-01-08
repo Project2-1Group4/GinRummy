@@ -85,13 +85,13 @@ public class meldBuildingGreedy extends GamePlayer {
 
     static int[][] createMemoryMatrix(HandLayout layout) {
 
-        List<Meld> melds = layout.viewMelds();
-        List<MyCard> deadwood = layout.viewUnusedCards();
+        List<Meld> melds = layout.melds();
+        List<MyCard> deadwood = layout.unused();
 
         int[][] newMemMatrix = new int[4][13];
 
         for (Meld list : melds) {
-            for (MyCard aCard : list.viewMeld()) {
+            for (MyCard aCard : list.cards()) {
                 newMemMatrix[aCard.suit.index][aCard.suit.index] = -1;
             }
         }
@@ -138,11 +138,11 @@ public class meldBuildingGreedy extends GamePlayer {
 
         }
 
-        List<Meld> melds = hand.viewMelds();
-        List<MyCard> deadwood = hand.viewUnusedCards();
+        List<Meld> melds = hand.melds();
+        List<MyCard> deadwood = hand.unused();
 
         for (Meld list : melds) {
-            for (MyCard aCard : list.viewMeld()) {
+            for (MyCard aCard : list.cards()) {
                 newMemMatrix[aCard.suit.index][aCard.rank.index] = -1;
             }
         }
@@ -400,7 +400,7 @@ public class meldBuildingGreedy extends GamePlayer {
     }
 
     public MyCard findLeastValuableCard(HandLayout aLayout){
-        return findLeastValuableCard(aLayout.viewAllCards());
+        return findLeastValuableCard(aLayout.cards());
     }
 
     // I choose the card with the highest value, as high value = bad in Gin Rummy
@@ -422,15 +422,15 @@ public class meldBuildingGreedy extends GamePlayer {
             int[][] cloneOfMatrix = cloneResetMemMatrix(this.memoryMatrix, layout);
             
             // Here I'm adding the value of all the melds to valOfHand
-            for(Meld melds: layout.viewMelds()){
-                for(MyCard card: melds.viewMeld()){
+            for(Meld melds: layout.melds()){
+                for(MyCard card: melds.cards()){
                     valOfHand += this.heuristicForMeld(card.rank.index);
                 }
                 
             }
 
             // Here the method takes care of evaluating all of the cards that are free
-            for(MyCard deadWoodCard: layout.viewUnusedCards()){
+            for(MyCard deadWoodCard: layout.unused()){
                 double runVal = this.evaluateRun(deadWoodCard.suit.index, deadWoodCard.rank.index, cloneOfMatrix);
                 double setVal = this.evaluateSet(deadWoodCard.suit.index, cloneOfMatrix);
 
@@ -455,7 +455,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
     @Override
     public Boolean knockOrContinue() {
-        if (this.handLayout.getDeadwood() <= this.knockValue){
+        if (this.handLayout.deadwoodValue() <= this.knockValue){
             return true;
         } else {
             return false;
@@ -466,7 +466,7 @@ public class meldBuildingGreedy extends GamePlayer {
     // TODO: Implement this method
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        List<MyCard> temp = this.handLayout.viewAllCards();
+        List<MyCard> temp = this.handLayout.cards();
         temp.add(topOfDiscard);
         MyCard worst = this.findLeastValuableCard(temp);
         this.topDiscard = worst;
@@ -509,7 +509,7 @@ public class meldBuildingGreedy extends GamePlayer {
     static public int findValOfHand(List<MyCard> cardList) {
         HandLayout layout = Finder.findBestHandLayout(cardList);
 
-        return layout.getDeadwood();
+        return layout.deadwoodValue();
     }
 
     @Override

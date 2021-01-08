@@ -7,10 +7,7 @@ import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Entities.Turn;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class RoundState {
     private boolean locked;
@@ -22,10 +19,10 @@ public class RoundState {
     public Stack<Action> actions;
 
     public RoundState(CardsInfo cards, Turn turn, HandLayout[] layouts, Stack<Action> actions, Integer knocker){
-        this.cards = new CardsInfo(cards);
+        this.cards = cards;
         this.currentTurn = turn;
-        confirmedLayouts = layouts.clone();
-        this.actions = (Stack<Action>) actions.clone();
+        confirmedLayouts = layouts;
+        this.actions = actions;
         this.knocker = knocker;
     }
     public RoundState(CardsInfo cards, Turn turn, HandLayout[] layouts){
@@ -44,11 +41,20 @@ public class RoundState {
     // Getters
 
     public int turnsPlayed(){
-        int nbOfKnocks = 0;
-        for (Action action : actions) {
-            if(action.getStep()== Step.KnockOrContinue) nbOfKnocks++;
+        int i = actions.size()-1;
+        int k =0;
+        if(i>0) {
+            while (actions.get(i-k).step == Step.Layoff ||
+                    actions.get(i-k).step == Step.LayoutConfirmation ||
+                    actions.get(i-k).step == Step.EndOfRound) {
+                k++;
+                if(i-k<=0){
+                    break;
+                }
+
+            }
         }
-        return nbOfKnocks/cards.players.size();
+        return (actions.size()-k-1)/(3*cards.players.size());
     }
     public int numberOfPlayers(){
         return cards.players.size();
@@ -85,7 +91,7 @@ public class RoundState {
     public boolean knockedWithGin() {
         if(knocker!=null){
             for (HandLayout confirmedLayout : confirmedLayouts) {
-                if(confirmedLayout!=null && confirmedLayout.getDeadwood()==0){
+                if(confirmedLayout!=null && confirmedLayout.deadwoodValue()==0){
                     return true;
                 }
             }
@@ -133,11 +139,11 @@ public class RoundState {
     }
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("Knocked: ").append(knocker).append("\n");
+        sb.append("Knocked: ").append(knocker).append(" and won ").append(Arrays.toString(pointsWonFromRound)).append("\n");
         sb.append("Turn: ").append(currentTurn).append("\n");
-        sb.append(cards).append("\n");
+        sb.append(cards);
         for (int i = 0; i < confirmedLayouts.length; i++) {
-            sb.append("Player ").append(i).append("'s layout:\n").append(confirmedLayouts[i]).append("\n");
+            sb.append("\nPlayer ").append(i).append("'s layout:\n").append(confirmedLayouts[i]);
         }
         return sb.toString();
     }

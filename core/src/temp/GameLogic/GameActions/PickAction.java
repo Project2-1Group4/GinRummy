@@ -20,7 +20,7 @@ public class PickAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         if (deck != ((PickAction) other).deck) {
             return false;
         }

@@ -23,7 +23,7 @@ public class Validator {
             return true;
         } else {
             if (validHandLayout(layout)) {
-                return layout.getDeadwood() <= GameRules.minDeadwoodToKnock;
+                return layout.deadwoodValue() <= GameRules.minDeadwoodToKnock;
             }
             return false;
         }
@@ -70,12 +70,12 @@ public class Validator {
      * @return true if valid, false if not
      */
     public static boolean confirmLayout(HandLayout wantedLayout, HandLayout realLayout) {
-        for (Meld meld : wantedLayout.viewMelds()) {
+        for (Meld meld : wantedLayout.melds()) {
             if (!validMeld(meld)) {
                 return false;
             }
         }
-        List<MyCard> realCards = realLayout.viewAllCards();
+        List<MyCard> realCards = realLayout.cards();
         int removed = 0;
         for (MyCard card : realCards) {
             if (!wantedLayout.removeCard(card)) {
@@ -93,7 +93,7 @@ public class Validator {
      * @return true if valid, no if not
      */
     private static boolean validHandLayout(HandLayout handLayout) {
-        for (Meld meld : handLayout.viewMelds()) {
+        for (Meld meld : handLayout.melds()) {
             if (!validMeld(meld)) {
                 return false;
             }
@@ -108,11 +108,11 @@ public class Validator {
      * @return true if valid meld, false if non-valid meld
      */
     public static boolean validMeld(Meld meld) {
-        Meld.MeldType type = meld.getType();
+        Meld.MeldType type = meld.type();
         // If set
         if (type == Meld.MeldType.Run) {
-            for (int i = 1; i < meld.viewMeld().size() - 1; i++) {
-                if (meld.viewMeld().get(i).suit != meld.viewMeld().get(i + 1).suit) {
+            for (int i = 1; i < meld.cards().size() - 1; i++) {
+                if (meld.cards().get(i).suit != meld.cards().get(i + 1).suit) {
                     return false;
                 }
             }
@@ -120,9 +120,9 @@ public class Validator {
         // Else run
         else {
             meld.sortByRank();
-            for (int i = 1; i < meld.viewMeld().size() - 1; i++) {
-                if (meld.viewMeld().get(i).rank != meld.viewMeld().get(i + 1).rank &&
-                        meld.viewMeld().get(i).rank.value != meld.viewMeld().get(i + 1).rank.value + 1) {
+            for (int i = 1; i < meld.cards().size() - 1; i++) {
+                if (meld.cards().get(i).rank != meld.cards().get(i + 1).rank &&
+                        meld.cards().get(i).rank.value != meld.cards().get(i + 1).rank.value + 1) {
                     return false;
                 }
             }
@@ -155,7 +155,7 @@ public class Validator {
 
         //If meld found in knocker meld, validate it
         if (index != null) {
-            knockerMelds.get(index).addCard(layoff.card);
+            knockerMelds.get(index).add(layoff.card);
             return validMeld(knockerMelds.get(index));
         }
         //Meld not found

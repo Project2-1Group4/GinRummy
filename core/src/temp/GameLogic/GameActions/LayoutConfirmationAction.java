@@ -19,7 +19,7 @@ public class LayoutConfirmationAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         return layout.same(((LayoutConfirmationAction) other).layout);
     }
 

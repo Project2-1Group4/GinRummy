@@ -11,7 +11,7 @@ public class EndSignal extends Action{
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         return false;
     }
 

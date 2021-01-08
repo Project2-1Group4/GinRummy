@@ -20,6 +20,7 @@ import java.util.Random;
 // Feed through the players and either a seed, an initial round
 public class Game {
 
+    public boolean print;
     private final static List<Game> currentGames = new ArrayList<>();
     private final GameState gameState;
     private final List<GamePlayer> players;
@@ -28,9 +29,10 @@ public class Game {
     private float time = 0;
     private float[] timeAllotted;
 
-    public Game(List<GamePlayer> players, GameState gameState) {
+    public Game(List<GamePlayer> players, GameState gameState, boolean print) {
         this.gameState = gameState;
         this.players = players;
+        this.print = print;
         timeAllotted = new float[Step.values().length];
         Arrays.fill(timeAllotted, GameRules.DeckOrDiscardPileTime);
         if(gameState.getRoundNumber()==0) {
@@ -38,14 +40,14 @@ public class Game {
         }
         currentGames.add(this);
     }
-    public Game(List<GamePlayer> players, Integer seed){
-        this(players, new GameState(players.size(), MyCard.getBasicDeck(), seed));
+    public Game(List<GamePlayer> players, Integer seed, boolean print){
+        this(players, new GameState(players.size(), MyCard.getBasicDeck(), seed), print);
     }
-    public Game(GamePlayer[] players, Integer seed){
-        this(Arrays.asList(players), seed);
+    public Game(GamePlayer[] players, Integer seed, boolean print){
+        this(Arrays.asList(players), seed, print);
     }
-    public Game(List<GamePlayer> players, RoundState initRound, Integer seed){
-        this(players, new GameState(initRound, seed));
+    public Game(List<GamePlayer> players, RoundState initRound, Integer seed, boolean print){
+        this(players, new GameState(initRound, seed), print);
 
     }
 
@@ -62,7 +64,7 @@ public class Game {
         boolean outOfTime = outOfTime();
         Turn curTurn = getTurn();
         if(outOfTime){
-            players.set(getPlayerIndex(),new ForcePlayer(players.get(curTurn.playerIndex)));
+            players.set(getPlayerIndex(),new ForcePlayer(players.get(curTurn.playerIndex), null));
         }
         Action a = continueGame();
         if(outOfTime){
@@ -79,13 +81,13 @@ public class Game {
     public Action continueGame(){
         Action a = continueRound();
         if(a instanceof EndSignal){
-            if(!gameState.locked()) {
-                gameState.addPoints(getRound().points());
-                if(gameState.gameEnded()){
-                    gameState.lock();
-                }
-            }
             if(gameStopCondition(gameState) || playTillRound<gameState.getRoundNumber()){
+                if(!gameState.locked()) {
+                    gameState.lock();
+                    if (print) {
+                        System.out.println("Game locked with points: " + Arrays.toString(gameState.getPoints()));
+                    }
+                }
                 return new EndSignal(true);
             }
             startNewRound();
@@ -100,16 +102,28 @@ public class Game {
     public Action continueRound(){
         if(newStep){
             oncePerStep(getRound(), players);
+            newStep = false;
         }
         Action action = getPlayerAction(players.get(getPlayerIndex()),getTurn(), gameState.round());
         boolean executed = action != null && action.doAction(gameState.round(), true);
         if(executed){
+            if(print){
+                System.out.println("Turn "+getTurnNumber()+" Action: "+action);
+            }
             newStep = true;
             if(roundStopCondition(getRound())){
                 if(!getRound().locked()){
                     getRound().setLayouts();
                     getRound().setPoints(getPointsWon(getRound()));
+                    gameState.addPoints(getRound().points());
                     getRound().lock();
+                    if(print){
+                        System.out.println("Round "+getRoundNumber()+" locked with points: "+ Arrays.toString(getRound().points()));
+                        for (int i = 0; i < getRound().layouts().length; i++) {
+                            System.out.println("Player "+i+"\n"+getRound().layouts()[i]);
+                        }
+                        System.out.println("Current game points: "+ Arrays.toString(getPoints()));
+                    }
                 }
                 return new EndSignal(false);
             }
@@ -142,6 +156,7 @@ public class Game {
                 }
             }
         }
+        remove();
         return gameState;
     }
     /**
@@ -157,6 +172,7 @@ public class Game {
     private void startNewRound(){
         gameState.createNewRound();
         for (int i = 0; i < players.size(); i++) {
+            players.get(i).index = i;
             players.get(i).update(new ArrayList<>(gameState.round().getCards(i)));
             players.get(i).newRound(gameState.round().peekDiscard());
         }
@@ -181,6 +197,9 @@ public class Game {
                 }
             }
         }
+    }
+    public void remove(){
+        currentGames.remove(this);
     }
 
     // Getters
@@ -207,7 +226,7 @@ public class Game {
         return gameState.round();
     }
     public boolean gameEnded(){
-        return gameState.gameEnded();
+        return gameStopCondition(gameState);
     }
     public Integer getWinner(){
         if(gameEnded()){
@@ -259,13 +278,16 @@ public class Game {
         if(state.knocker()==null){
             return points;
         }
-        int winningPlayerIndex = Finder.findLowestDeadwoodIndex(Arrays.asList(state.layouts()), state.layouts()[state.knocker()].getDeadwood(), state.knocker());
-        int deadwoodDifferences = Finder.getPointsToAdd(Arrays.asList(state.layouts()), state.layouts()[winningPlayerIndex].getDeadwood());
-        int bonus = Finder.getBonusPoints(state.knocker(), winningPlayerIndex, state.layouts()[state.knocker()].getDeadwood());
+        int winningPlayerIndex = Finder.findLowestDeadwoodIndex(Arrays.asList(state.layouts()), state.layouts()[state.knocker()].deadwoodValue(), state.knocker());
+        int deadwoodDifferences = Finder.getPointsToAdd(Arrays.asList(state.layouts()), state.layouts()[winningPlayerIndex].deadwoodValue());
+        int bonus = Finder.getBonusPoints(state.knocker(), winningPlayerIndex, state.layouts()[state.knocker()].deadwoodValue());
         points[winningPlayerIndex] = deadwoodDifferences+bonus;
         return points;
     }
     public static void shuffleList(Random rd, int shuffles, List<MyCard> list){
+        if(list.size()<=1) {
+            return;
+        }
         for (int i = 0; i < shuffles; i++) {
             MyCard c =list.remove(rd.nextInt(list.size()));
             list.add(c);
@@ -289,7 +311,7 @@ public class Game {
                 break;
             }
         }
-        return new Integer[]{gameIndex, playerIndex};
+        return gameIndex==null? null : new Integer[]{gameIndex, playerIndex};
     }
     /**
      * Returns all points in the game currently
@@ -298,6 +320,9 @@ public class Game {
      */
     public static int[] getPoints(GamePlayer p){
         Integer[] indices = getIndices(p);
+        if(indices==null){
+            return null;
+        }
         int[] points = currentGames.get(indices[0]).getPoints();
         int[] pointsUpdate = new int[points.length];
         for (int i = 0; i < points.length; i++) {
@@ -312,7 +337,17 @@ public class Game {
      */
     public static List<MyCard> getCards(GamePlayer p){
         Integer[] indices = getIndices(p);
+        if(indices==null){
+            return null;
+        }
         return new ArrayList<>(currentGames.get(indices[0]).getRound().getCards(indices[1]));
+    }
+    public static int getNumberOfPlayers(GamePlayer p) {
+        Integer[] indices = getIndices(p);
+        if(indices==null){
+            return 0;
+        }
+        return currentGames.get(indices[0]).players.size();
     }
 
     // Action getters
@@ -344,7 +379,7 @@ public class Game {
         return layout==null? null : new LayoutConfirmationAction(currentTurn.playerIndex, layout);
     }
     private LayoffAction layoffAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.getCards(state.knocker())).viewMelds());
+        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.getCards(state.knocker())).melds());
         return new LayoffAction(currentTurn.playerIndex, layoffs);
     }
 }

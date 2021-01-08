@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.Entities.Meld;
 import temp.GameLogic.Entities.MyCard;
-import temp.GameLogic.Logic.MeldCreator;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -26,8 +25,8 @@ public class Finder {
         int lowestDeadwood = knockerDeadwood;
         int lowestDeadwoodIndex = knockerIndex;
         for (int i = 0; i < handLayouts.size(); i++) {
-            if (lowestDeadwood > handLayouts.get(i).getDeadwood()) {
-                lowestDeadwood = handLayouts.get(i).getDeadwood();
+            if (lowestDeadwood > handLayouts.get(i).deadwoodValue()) {
+                lowestDeadwood = handLayouts.get(i).deadwoodValue();
                 lowestDeadwoodIndex = i;
             }
         }
@@ -44,7 +43,7 @@ public class Finder {
     public static int getPointsToAdd(List<HandLayout> handLayouts, int winnerDeadwood) {
         int points = 0;
         for (HandLayout handLayout : handLayouts) {
-            points += handLayout.getDeadwood() - winnerDeadwood;
+            points += handLayout.deadwoodValue() - winnerDeadwood;
         }
         return points;
     }
@@ -78,7 +77,7 @@ public class Finder {
         List<HandLayout> handLayouts = findAllLayouts(cards);
         // To stop auto sorting of unused cards
         HandLayout bestLayout = findLowestDeadwoodLayout(handLayouts);
-        List<MyCard> unusedCards = bestLayout.viewUnusedCards();
+        List<MyCard> unusedCards = bestLayout.unused();
         for (MyCard card : cards) {
             for (int i = 0; i < unusedCards.size(); i++) {
                 if (card.same(unusedCards.get(i))) {
@@ -126,11 +125,11 @@ public class Finder {
         int maxVal = 0;
         int lowestDead = Integer.MAX_VALUE;
         for (int i = 0; i < handLayoutValues.size(); i++) {
-            if (handLayoutValues.get(i).getDeadwood() <= lowestDead) {
-                if (handLayoutValues.get(i).getValue() >= maxVal) {
+            if (handLayoutValues.get(i).deadwoodValue() <= lowestDead) {
+                if (handLayoutValues.get(i).meldValue() >= maxVal) {
                     index = i;
-                    maxVal = handLayoutValues.get(i).getValue();
-                    lowestDead = handLayoutValues.get(i).getDeadwood();
+                    maxVal = handLayoutValues.get(i).meldValue();
+                    lowestDead = handLayoutValues.get(i).deadwoodValue();
                 }
             }
         }
@@ -145,7 +144,7 @@ public class Finder {
      * @return null if none, otherwise index
      */
     public static Integer findFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld) {
-        if (meld.getType() == Meld.MeldType.Run) {
+        if (meld.type() == Meld.MeldType.Run) {
             return findCardIndexRun(cards, meld);
         } else {
             return findCardIndexSet(cards, meld);
@@ -160,17 +159,17 @@ public class Finder {
      * @return null if none, otherwise index
      */
     private static Integer findCardIndexRun(List<MyCard> cards, Meld meld) {
-        assert meld.getType() == Meld.MeldType.Run;
+        assert meld.type() == Meld.MeldType.Run;
 
-        MyCard.Suit runSuit = meld.viewMeld().get(0).suit;
+        MyCard.Suit runSuit = meld.cards().get(0).suit;
         // For all cards in the meld
-        for (int j = 0; j < meld.viewMeld().size(); j++) {
+        for (int j = 0; j < meld.cards().size(); j++) {
             // For all unused cards
             for (int i = 0; i < cards.size(); i++) {
                 // If the card is of the same suit
                 if (cards.get(i).suit == runSuit) {
                     // If card is in the neighbourhood of the card
-                    if (Math.abs(cards.get(i).rank.value - meld.viewMeld().get(j).rank.value) <= 1) {
+                    if (Math.abs(cards.get(i).rank.value - meld.cards().get(j).rank.value) <= 1) {
                         return i;
                     }
                 }
@@ -187,9 +186,9 @@ public class Finder {
      * @return null if none, otherwise index
      */
     private static Integer findCardIndexSet(List<MyCard> cards, Meld meld) {
-        assert meld.getType() == Meld.MeldType.Set;
+        assert meld.type() == Meld.MeldType.Set;
 
-        MyCard.Rank setRank = meld.viewMeld().get(0).rank;
+        MyCard.Rank setRank = meld.cards().get(0).rank;
         // For all unused cards
         for (int i = 0; i < cards.size(); i++) {
             // If the card is of the same rank

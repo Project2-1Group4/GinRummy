@@ -15,8 +15,8 @@ public class RandomPlayer extends GamePlayer{
     }
     @Override
     public Boolean knockOrContinue() {
-        if(handLayout.getDeadwood()<=10){
-            return rd.nextBoolean();
+        if(handLayout.deadwoodValue()<=10){
+            return true;
         }
         return false;
     }
