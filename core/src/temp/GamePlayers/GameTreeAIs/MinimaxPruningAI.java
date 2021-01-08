@@ -23,6 +23,12 @@ public class MinimaxPruningAI extends GamePlayer {
     //variable for null move heuristic
     private int R;
 
+    public MinimaxPruningAI(GametreeAI tree) {
+        this.tree = tree;
+        this.hand = tree.hand;
+        this.pile = tree.discardPile;
+        this.unknownCards = tree.cardsUnknown;
+    }
     public MinimaxPruningAI(){
         super();
     }

@@ -25,8 +25,8 @@ public class GametreeAI {
     public double[][] probMap;
     private int leftInUnknownSet = 4; // cards that can form a set with a certain card, that are not in the discard pile or your hand
     private int leftInUnknownRun = 2; // cards that can form a run with a certain card, that are not in the discard pile or your hand
-
-    private int depthTree = 0;
+    static int simulations = 100;
+    int depthTree = 0;
     private int maxDepth;
     private Node root;
 
@@ -323,7 +323,7 @@ public class GametreeAI {
         List<Node> nodes = new ArrayList<>();
         List<MyCard> opponentHandcur;
 
-        for(int i= 1; i<= 100; i++){ // generate 100 possibilities
+        for(int i= 1; i<= GametreeAI.simulations; i++){ // generate 100 possibilities
             if(pickOrDiscard){ // if opponent has picked a card, they still need to discard so they have 11 cards
                 opponentHandcur = chooseRandomCards(cardsUnknown, 11);
             }
