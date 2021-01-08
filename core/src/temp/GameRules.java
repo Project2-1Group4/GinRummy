@@ -34,7 +34,9 @@ public class GameRules {
     public static String names_meldGreedy = "greedy meld greedy meldgreedy";
     public static String names_basicGreedy = "basic greedy basicgreedy";
     public static String names_minimax = "minimax alphabeta";
+    public static String name_best_search = "best first minimax";
     public static String names_random = "random rd";
     public static String names_keyboard = "keyboard";
     public static String names_mouse = "mouse";
+
 }
