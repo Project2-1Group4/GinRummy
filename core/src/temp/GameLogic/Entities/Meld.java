@@ -1,6 +1,4 @@
-package temp.GameLogic.MELDINGOMEGALUL;
-
-import temp.GameLogic.MyCard;
+package temp.GameLogic.Entities;
 
 import java.util.ArrayList;
 import java.util.List;

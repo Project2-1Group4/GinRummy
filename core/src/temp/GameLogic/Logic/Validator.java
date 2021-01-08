@@ -1,8 +1,9 @@
-package temp.GameLogic;
+package temp.GameLogic.Logic;
 
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Entities.Layoff;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
 import temp.GameRules;
 
 import java.util.List;

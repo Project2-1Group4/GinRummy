@@ -1,5 +1,7 @@
 package temp.Extra.GA;
 
+import temp.Extra.PostGameInformation.Result;
+import temp.GameLogic.Game;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
@@ -133,7 +135,6 @@ public class GA {
 
     public GamePlayer[] train() {
         assert competitors[0] != null;
-        GameLogic game = new GameLogic();
         int seed = 0;
         do {
             for (int i = 0; i < competitors.length; i++) {
@@ -141,7 +142,12 @@ public class GA {
                     if (i != j) {
                         List<Result> results = new ArrayList<>();
                         for (int k = 0; k < nbOfGamesPerPair; k++) {
-                            results.add(game.play(competitors[i].player, competitors[j].player, seed));
+                            List<GamePlayer> p = new ArrayList<>();
+                            p.add(competitors[i].player);
+                            p.add(competitors[j].player);
+                            Game g = new Game(p, seed);
+                            g.playTillRound = 1;
+                            results.addAll(g.playOutGame());
                         }
                         float[] scores = updateScores(results);
                         competitors[i].score+= scores[i];

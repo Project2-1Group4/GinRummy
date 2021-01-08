@@ -1,8 +1,9 @@
 package temp.Extra.GA;
 
-import temp.Extra.Tests.EndOfRoundInfo;
-import temp.Extra.Tests.GameInfo;
-import temp.Extra.Tests.Tests;
+import temp.Extra.PostGameInformation.Result;
+import temp.Extra.PostGameInformation.EndOfRoundInfo;
+import temp.Extra.PostGameInformation.GameInfo;
+import temp.Extra.Tests;
 import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 
 import java.io.File;
@@ -100,9 +101,6 @@ public class GAGreedy {
     meldBuildingGreedy[] fittestPlayers;
     int[] numOfWinsForFit;
 
-    GameLogic internalLogic = new GameLogic(true,true);
-
-
     // I assume we always take half the competitors as winners, just cause it makes it easier to calculate stuff
 
     /*
@@ -169,7 +167,7 @@ public class GAGreedy {
         for(int i = 0; i<this.players.length;i+=2){
             meldBuildingGreedy[] matchedPlayers = {this.players[i], this.players[i+1]};
 
-            List<GameInfo> results = Tests.runGames(this.internalLogic, matchedPlayers, this.numberOfGames,null);
+            List<GameInfo> results = Tests.runGames(matchedPlayers, this.numberOfGames,null);
 
             int victoriesForP0 = 0;
             int victoriesForP1 = 0;

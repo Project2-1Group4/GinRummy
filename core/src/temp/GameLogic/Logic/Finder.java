@@ -1,7 +1,11 @@
-package temp.GameLogic.MELDINGOMEGALUL;
+package temp.GameLogic.Logic;
 
 import com.badlogic.gdx.Gdx;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Logic.MeldCreator;
+import temp.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,7 @@ public class Finder {
     /**
      * Calculates the amount of points won only based on deadwood differences. Nothing else.
      *
-     * @param handLayouts    1 meldSet for every player (even winner but that gives 0)
+     * @param handLayouts list of layouts of player (including winner because that will give 0)
      * @param winnerDeadwood value of the winners deadwood
      * @return sum(losers deadwood - winner deadwood)
      */
@@ -43,6 +47,24 @@ public class Finder {
             points += handLayout.getDeadwood() - winnerDeadwood;
         }
         return points;
+    }
+
+    /**
+     * returns bonus point the winning player gets based on Gin Rummy Bonus Point rules
+     * @param knockerIndex index of knocker
+     * @param winnerIndex index of winner
+     * @param knockerDeadwood deadwood in knocker hand
+     * @return bonus win
+     */
+    public static int getBonusPoints(int knockerIndex, int winnerIndex, int knockerDeadwood){
+        int bonus = 0;
+        if(knockerDeadwood==0){
+            bonus+= GameRules.ginBonus;
+        }
+        if(knockerIndex!=winnerIndex){
+            bonus+= GameRules.undercutBonus;
+        }
+        return bonus;
     }
 
     /**

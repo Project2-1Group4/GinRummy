@@ -2,10 +2,10 @@ package temp.GamePlayers.GreedyAIs;
 
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
@@ -498,8 +498,8 @@ public class meldBuildingGreedy extends GamePlayer {
     // Always assume that it's when a new set of cards is given
     // As the update method is handled separately, and has already been implemented
     @Override
-    public void update(HandLayout realLayout) {
-        allCards = realLayout.viewAllCards();
+    public void update(List<MyCard> cards) {
+        allCards = cards;
         handLayout = Finder.findBestHandLayout(allCards);
         this.updateMemoryMatrix(handLayout);
     }
@@ -522,7 +522,7 @@ public class meldBuildingGreedy extends GamePlayer {
     @Override
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
-            MyCard aCard = pickAction.card;
+            MyCard aCard = pickAction.card();
             this.memoryMatrix[aCard.suit.index][aCard.rank.index] = 2;
         }
 

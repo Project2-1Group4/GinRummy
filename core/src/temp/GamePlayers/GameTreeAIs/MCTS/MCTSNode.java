@@ -12,12 +12,14 @@ public class MCTSNode {
 
     public final Action action;
     public final MCTSNode parent;
+    public final int depth;
     public final List<MCTSNode> children;
     public double wins=0;
     public double rollouts =0;
 
     public MCTSNode(MCTSNode parent, Action action){
         this.parent = parent;
+        depth = parent==null? 0 : parent.depth+1;
         this.action = action;
         children = new ArrayList<>();
     }
@@ -67,7 +69,7 @@ public class MCTSNode {
     }
 
     public String toString(){
-        return "Action \"" + action + "\" has a score of " + wins + "/" + rollouts;
+        return "Depth "+depth+". Action \"" + action + "\" has a score of " + wins + "/" + rollouts;
     }
 
     public boolean isLeaf() {

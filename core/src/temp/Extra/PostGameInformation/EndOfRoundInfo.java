@@ -1,7 +1,7 @@
-package temp.Extra.Tests;
+package temp.Extra.PostGameInformation;
 
-import temp.GameLogic.GameState.PlayerState;
-import temp.GameLogic.GameState.State;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.States.RoundState;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,21 +14,17 @@ public class EndOfRoundInfo {
     public final int[] deadwoodValues;
     public final int[] numberOfCardsInDeadwood;
 
-    public EndOfRoundInfo(State state, boolean finalRound){
-        this.round = state.getRound();
+    public EndOfRoundInfo(RoundState state,int roundNumber, boolean finalRound){
+        this.round = roundNumber;
         this.finalRound = finalRound;
-        if(!finalRound) {
-            winner = state.getRoundWinnerIndex();
-        }else{
-            winner = state.getWinnerIndex();
-        }
-        scores = state.getScores();
-        List<PlayerState> stateList = state.getPlayerStates();
+        winner = state.winner();
+        scores = state.points();
+        List<List<MyCard>> stateList = state.getAllPlayerCards();
         deadwoodValues = new int[stateList.size()];
         numberOfCardsInDeadwood = new int[stateList.size()];
-        for (int i = 0; i < stateList.size(); i++) {
-            deadwoodValues[i] = stateList.get(i).getDeadwood();
-            numberOfCardsInDeadwood[i] = stateList.get(i).getNumberOfCardsInDeadwood();
+        for (int i = 0; i < state.layouts().length; i++) {
+            deadwoodValues[i] = state.layouts()[i].getDeadwood();
+            numberOfCardsInDeadwood[i] = state.layouts()[i].getNumberOfCardsInDeadwood();
         }
     }
 
@@ -67,14 +63,19 @@ public class EndOfRoundInfo {
      */
 
     public String csvString() {
-        return round + "," +
-                finalRound + "," +
-                winner + "," +
-                scores[0] + "," +
-                scores[1] + "," +
-                deadwoodValues[0] + "," +
-                deadwoodValues[1] + "," +
-                numberOfCardsInDeadwood[0] + "," +
-                numberOfCardsInDeadwood[1];
+        StringBuilder s = new StringBuilder();
+        s.append(round).append(',');
+        s.append(winner!=null? winner:"Null").append(',');
+        for (int score : scores) {
+            s.append(score).append(',');
+        }
+        for (int deadwoodValue : deadwoodValues) {
+            s.append(deadwoodValue).append(',');
+        }
+        for (int i : numberOfCardsInDeadwood) {
+            s.append(i).append(',');
+        }
+        s.append(finalRound);
+        return s.toString();
     }
 }

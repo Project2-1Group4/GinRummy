@@ -1,4 +1,7 @@
-package temp.Extra.Tests;
+package temp.Extra.PostGameInformation;
+
+import temp.Extra.PostGameInformation.EndOfRoundInfo;
+import temp.Extra.PostGameInformation.GameInfo;
 
 import java.io.File;
 import java.io.FileNotFoundException;

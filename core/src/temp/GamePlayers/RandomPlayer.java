@@ -1,6 +1,6 @@
 package temp.GamePlayers;
 
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.Random;
 

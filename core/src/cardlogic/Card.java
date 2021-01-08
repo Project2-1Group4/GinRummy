@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 public class Card extends Actor implements Comparable {
 

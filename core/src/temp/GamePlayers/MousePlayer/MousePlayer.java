@@ -2,10 +2,11 @@ package temp.GamePlayers.MousePlayer;
 
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 import temp.Graphics.GameCard;
+
+import java.util.List;
 
 // NEEDS GRAPHICS TO WORK
 // Has no knock or continue. Dont feel like implementing. Just use in combo with keyboard
@@ -55,7 +56,7 @@ public class MousePlayer extends GamePlayer {
     }
 
     @Override
-    public void update(HandLayout realLayout) {
+    public void update(List<MyCard> realLayout) {
         super.update(realLayout);
         clicked = null;
     }

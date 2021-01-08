@@ -3,10 +3,10 @@ package temp.GamePlayers;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
-import temp.GamePlayers.GameTreeAIs.MCTS.KnowledgeBase;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Entities.Step;
+import temp.GameLogic.States.CardsInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public abstract class MemoryPlayer extends GamePlayer {
     // -1 = discard, 0 = unknown, player = player index
     protected int[][] memory;
     protected Stack<MyCard> discardMemory;
-    protected State.StepInTurn step;
+    protected Step step;
     protected int turn;
     protected int round;
 
@@ -27,7 +27,7 @@ public abstract class MemoryPlayer extends GamePlayer {
         round = 0;
     }
 
-    protected KnowledgeBase unpackMemory(){
+    protected CardsInfo unpackMemory(){
         List<MyCard> otherPlayer = new ArrayList<>();
         List<MyCard> unknown = new ArrayList<>();
         for (int suit = 0; suit < memory.length; suit++) {
@@ -40,12 +40,15 @@ public abstract class MemoryPlayer extends GamePlayer {
                 }
             }
         }
-        return new KnowledgeBase(step, 0, viewHand(), otherPlayer, new ArrayList<MyCard>(), unknown, (Stack<MyCard>) discardMemory.clone());
+        List<List<MyCard>> players = new ArrayList<>();
+        players.add(viewHand());
+        players.add(otherPlayer);
+        return new CardsInfo(players, new Stack<MyCard>(), unknown, (Stack<MyCard>) discardMemory.clone());
     }
 
     @Override
     public final Boolean knockOrContinue() {
-        step = State.StepInTurn.KnockOrContinue;
+        step = Step.KnockOrContinue;
         return KnockOrContinue();
     }
 
@@ -53,7 +56,7 @@ public abstract class MemoryPlayer extends GamePlayer {
 
     @Override
     public final Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        step = State.StepInTurn.Pick;
+        step = Step.Pick;
         return PickDeckOrDiscard(remainingCardsInDeck, topOfDiscard);
     }
 
@@ -61,7 +64,7 @@ public abstract class MemoryPlayer extends GamePlayer {
 
     @Override
     public final MyCard discardCard() {
-        step = State.StepInTurn.Discard;
+        step = Step.Discard;
         return DiscardCard();
     }
 
@@ -78,7 +81,7 @@ public abstract class MemoryPlayer extends GamePlayer {
     }
 
     @Override
-    public void update(HandLayout realLayout) {
+    public void update(List<MyCard> realLayout) {
         super.update(realLayout);
 
         // So the idea of this method is to transform all cards that were previously in the hand as unknown
@@ -99,47 +102,7 @@ public abstract class MemoryPlayer extends GamePlayer {
      */
 
     public void updateMemory(HandLayout layout){
-
-        List<MyCard> tempList = layout.viewAllCards();
-
-        // It should only be one card, but I'll create an arraylist just in case
-        List<MyCard> discarded = new ArrayList<>();
-
-        for(int i=0;i<memory.length;i++){
-            for(int j=0;j<memory[0].length;j++){
-
-                if(memory[i][j] == this.index){
-                    boolean cardModified = false;
-                    for(int k = 0;k<tempList.size();k++){
-                        MyCard card = tempList.get(k);
-                        if((card.suit.index == i) && (card.rank.index==j)){
-                            cardModified = true;
-                            tempList.remove(card);
-                            break;
-                        }
-
-                    }
-
-                    if(!cardModified){
-                        discarded.add(new MyCard(i,j));
-                        //set(i,j,discard);
-                    }
-
-                }
-
-            }
-
-        }
-
-        for(MyCard card: tempList){
-            set(card, this.index);
-        }
-
-        for(MyCard card: discarded){
-            set(card,discard);
-        }
-
-        /*for(int i=0; i<memory.length;i++){
+        for(int i=0; i<memory.length;i++){
             for(int j = 0; j<memory[0].length;j++){
                 // I'm 90% sure it's this.index, but still I want to add a note to make sure I'm not fucking up
                 // But what I'm doing here is setting all cards in memory as discard cards
@@ -154,7 +117,7 @@ public abstract class MemoryPlayer extends GamePlayer {
 
         for(MyCard card: layout.viewAllCards()){
             memory[card.suit.index][card.rank.index] = this.index;
-        }*/
+        }
 
     }
 
@@ -165,8 +128,8 @@ public abstract class MemoryPlayer extends GamePlayer {
 
     @Override
     public void playerPicked(PickAction pickAction) {
-        if (!pickAction.deck || pickAction.card!=null) {
-            set(pickAction.card, pickAction.playerIndex);
+        if (!pickAction.deck || pickAction.card()!=null) {
+            set(pickAction.card(), pickAction.playerIndex);
         }
     }
 
@@ -183,16 +146,9 @@ public abstract class MemoryPlayer extends GamePlayer {
         if(id==discard){
             discardMemory.add(card);
         }
-        else if(discardMemory.size() > 0){
-            if(discardMemory.contains(card)) {
-                discardMemory.remove(card);
-            }
+        else if(card.same(discardMemory.peek())){
+            discardMemory.pop();
         }
         memory[card.suit.index][card.rank.index] = id;
     }
-
-    private void set(int suit, int rank, int id){
-        set(new MyCard(suit,rank),id);
-    }
-
 }

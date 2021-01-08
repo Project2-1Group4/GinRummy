@@ -1,6 +1,6 @@
-package temp.GameLogic.MELDINGOMEGALUL;
+package temp.GameLogic.Entities;
 
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Logic.Finder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,18 +198,16 @@ public class HandLayout {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Value ").append(value).append(" with melds:\n");
+        sb.append("Melds:");
         if (setOfMelds.size() != 0) {
             sb.append(setOfMelds.get(0));
             for (int i = 1; i < setOfMelds.size(); i++) {
                 sb.append(" ").append(setOfMelds.get(i));
             }
-            sb.append("\n");
         }
-        sb.append("Deadwood ").append(deadwood).append(" with cards:");
-        if(unusedCards.size()!=0){
-            sb.append("\n").append(MyCard.toString(unusedCards));
-        }
+        sb.append("\n");
+        sb.append("Deadwood ").append(deadwood).append(" with cards: ").append(unusedCards);
+
         return sb.toString();
     }
 }

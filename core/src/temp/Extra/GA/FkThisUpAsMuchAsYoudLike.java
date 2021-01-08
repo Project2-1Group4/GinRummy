@@ -1,5 +1,6 @@
 package temp.Extra.GA;
 
+import temp.Extra.PostGameInformation.Result;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.List;

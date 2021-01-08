@@ -1,9 +1,10 @@
-package temp.GameLogic;
+package temp.GameLogic.Entities;
 
 import cardlogic.Card;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 // Simple card class. IMMUTABLE
 public class MyCard {
@@ -26,17 +27,17 @@ public class MyCard {
     }
 
     // GETTERS
+    public boolean equals(Object anObject){
+        MyCard card = (MyCard) anObject;
+        return card.suit == this.suit && card.rank == this.rank;
+    }
+
     public boolean same(MyCard card) {
         return card.suit == this.suit && card.rank == this.rank;
     }
 
     public int ginValue() {
         return rank.ginValue;
-    }
-
-    public boolean equals(Object anObject){
-        MyCard card = (MyCard) anObject;
-        return card.suit == this.suit && card.rank == this.rank;
     }
 
     public String toString() {
@@ -103,6 +104,25 @@ public class MyCard {
         }
     }
 
+    public static boolean remove(List<MyCard> list, MyCard card){
+        for (int i = 0; i < list.size(); i++) {
+            if(card.same(list.get(i))){
+                list.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean has(List<MyCard> list, MyCard card){
+        for (MyCard myCard : list) {
+            if (card.same(myCard)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static List<MyCard> intraListDifference(List<MyCard> c1, List<MyCard> c2){
         List<MyCard> cardDiff = new ArrayList<>();
         for (MyCard card : c1) {
@@ -134,8 +154,8 @@ public class MyCard {
      *
      * @return prototype deck: 1 of each card.
      */
-    public static List<MyCard> getBasicDeck() {
-        List<MyCard> deck = new ArrayList<>();
+    public static Stack<MyCard> getBasicDeck() {
+        Stack<MyCard> deck = new Stack<>();
         for (Suit suit : Suit.values()) {
             for (Rank rank : Rank.values()) {
                 deck.add(new MyCard(suit, rank));

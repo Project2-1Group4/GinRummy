@@ -2,8 +2,8 @@ package cardlogic;
 
 import cardlogic.Card.SUITS;
 import gameHandling.Player;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;

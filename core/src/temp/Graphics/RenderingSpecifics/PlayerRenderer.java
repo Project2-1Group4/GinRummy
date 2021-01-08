@@ -2,9 +2,9 @@ package temp.Graphics.RenderingSpecifics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 import temp.Graphics.GameCard;

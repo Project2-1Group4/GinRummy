@@ -1,13 +1,12 @@
-package temp.Extra.Tests;
+package temp.Extra.PostGameInformation;
 
-import temp.GameLogic.GameState.State;
+import temp.Extra.PostGameInformation.EndOfRoundInfo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class GameInfo {
-    // list hierarchy = .get(playerIndex).get(roundIndex).get(turnIndex)
+    // list hierarchy = .get(roundIndex).get(turnIndex).get(playerIndex)
     // int[0] = deadwood value, int[1] = nb of cards in deadwood
     public final List<List<List<int[]>>> deadwoodOverTurns;
     // float[0] = time for picking,

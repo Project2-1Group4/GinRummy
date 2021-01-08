@@ -2,7 +2,7 @@ package temp.GamePlayers.GameTreeAIs;
 
 import cardlogic.SetOfCards;
 import gameHandling.Player;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.ArrayList;
 import java.util.HashMap;

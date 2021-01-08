@@ -3,7 +3,7 @@ package temp.Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 // Main rendering information stored here
 public class Style {

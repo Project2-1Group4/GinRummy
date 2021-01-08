@@ -1,10 +1,11 @@
-package temp.GameLogic;
+package temp.Extra.GameTree;
 
+import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.GameActions.*;
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.States.RoundState;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -16,19 +17,19 @@ import java.util.List;
  */
 public class TreeExpander {
 
-    public static List<? extends Action> getPossibleActions(State curState) {
-        int index = curState.getPlayerNumber();
-        switch (curState.getStep()) {
+    public static List<? extends Action> getPossibleActions(RoundState curState) {
+        int index = curState.turn().playerIndex;
+        switch (curState.turn().step) {
             case KnockOrContinue:
-                return getPossibleKnockActions(index, curState.getPlayerState().viewHand());
+                return getPossibleKnockActions(index, curState.getCards(curState.turn().playerIndex));
             case Pick:
-                return getPossiblePickActions(index, curState.getDeckSize(), curState.peekDiscardTop());
+                return getPossiblePickActions(index, curState.deckSize(), curState.peekDiscard());
             case Discard:
-                return getPossibleDiscardActions(index, curState.getPlayerState().viewHand());
+                return getPossibleDiscardActions(index, curState.getCards(curState.turn().playerIndex));
             case LayoutConfirmation:
-                return getPossibleLayoutConfirmationActions(index, curState.getPlayerState().viewHandLayout());
-            case LayOff:
-                return getPossibleLayoffActions(index, curState.getPlayerState().viewHandLayout(), curState.getKnockerState().viewMelds());
+                return getPossibleLayoutConfirmationActions(index, curState.getCards(curState.turn().playerIndex));
+            case Layoff:
+                return getPossibleLayoffActions(index, Finder.findBestHandLayout(curState.getCards(curState.turn().playerIndex)), Finder.findBestHandLayout(curState.getCards(curState.knocker())).viewMelds());
             default:
                 return new ArrayList<>();
         }
@@ -65,9 +66,9 @@ public class TreeExpander {
         return possibleActions;
     }
 
-    public static List<LayoutConfirmationAction> getPossibleLayoutConfirmationActions(int index, HandLayout layout) {
+    public static List<LayoutConfirmationAction> getPossibleLayoutConfirmationActions(int index, List<MyCard> cards) {
         List<LayoutConfirmationAction> possibleActions = new ArrayList<>();
-        List<HandLayout> layouts = Finder.findAllLayouts(layout.viewAllCards());
+        List<HandLayout> layouts = Finder.findAllLayouts(cards);
         for (HandLayout possible : layouts) {
             possibleActions.add(new LayoutConfirmationAction(index, possible));
         }
@@ -77,14 +78,8 @@ public class TreeExpander {
     public static List<LayoffAction> getPossibleLayoffActions(int index, HandLayout layout, List<Meld> knockerMelds) {
         List<LayoffAction> possibleActions = new ArrayList<>();
         List<MyCard> unusedCards = layout.viewUnusedCards();
-        for (Meld meld : knockerMelds) {
-            for (MyCard unusedCard : unusedCards) {
-                if (meld.isValidWith(unusedCard)) {
-                    possibleActions.add(new LayoffAction(index, unusedCard, meld));
-                }
-            }
-        }
-        possibleActions.add(new LayoffAction(index, null, null));
+        //TODO? make it return all possible ways you can layoff
+        possibleActions.add(new LayoffAction(index, null));
         return possibleActions;
     }
 }

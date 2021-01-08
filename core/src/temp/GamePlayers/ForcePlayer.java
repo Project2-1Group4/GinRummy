@@ -3,10 +3,10 @@ package temp.GamePlayers;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.Layoff;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 import temp.GameRules;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ForcePlayer extends GamePlayer {
     private final boolean onlyGin = false;
-    private final GamePlayer player;
+    public final GamePlayer player;
 
     public ForcePlayer(GamePlayer player) {
         this.player = player;
@@ -59,7 +59,7 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
+    public List<Layoff> layOff(List<Meld> knockerMelds) {
         return automaticLayoff(knockerMelds);
     }
 

@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.Layoff;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class KeyboardPlayer extends GamePlayer {
     }
 
     @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
+    public List<Layoff> layOff(List<Meld> knockerMelds) {
         return null;
     }
 }

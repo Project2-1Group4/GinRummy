@@ -3,9 +3,9 @@ package temp.GamePlayers.GreedyAIs;
 
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;

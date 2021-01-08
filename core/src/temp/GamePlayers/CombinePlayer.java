@@ -5,8 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
@@ -88,7 +87,7 @@ public class CombinePlayer extends GamePlayer {
     }
 
     @Override
-    public void update(HandLayout realLayout) {
+    public void update(List<MyCard> realLayout) {
         super.update(realLayout);
         for (GamePlayer handler : handlers) {
             handler.update(realLayout);

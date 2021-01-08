@@ -1,7 +1,32 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
+import temp.Extra.PostGameInformation.Result;
+import temp.GameLogic.Entities.Turn;
+import temp.GameLogic.Game;
+import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.States.CardsInfo;
+import temp.GameLogic.States.RoundState;
+import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GreedyAIs.basicGreedyTest;
+
+import java.util.List;
+
 // Does MCTS on x amount of created perfect information games
 public class MCTSv1 extends MCTS{
+
+    public static void main(String[] args) {
+        GamePlayer[] players = new GamePlayer[]{
+                new basicGreedyTest(),
+                new basicGreedyTest()
+        };
+        Game g = new Game(players, 0);
+        List<Result> r = g.playOutGame();
+        for (Result result : r) {
+            System.out.println(result.simpleString());
+        }
+        //Result r = g.playOutRound();
+        //System.out.println(r);
+    }
 
     private final int simulations = 10; // Nb of perfect games simulated
 
@@ -12,28 +37,21 @@ public class MCTSv1 extends MCTS{
         super();
     }
     @Override
-    protected void monteCarloTreeSearch(MCTSNode root, KnowledgeBase knowledge){
-        if(knowledge.otherPlayer.size()+knowledge.unknown.size() <= 12){
-            System.out.println("This game world is invalid and we should stop searching");
-        }
-
+    protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
-            KnowledgeBase generated = generateRandomWorld(knowledge);
-
-            // Here the children shouldn't all go to the same root
-            // It's convenient for MCTS to sometimes go to one of the leaf nodes isntead of the original root
-            // TODO: Fix that up later
-
-            MCTSNode generatedRoot = getPossibleMoves(new MCTSNode(null, null), generated);
+            //System.out.println("Simulation "+i);
+            RoundState generated = new RoundState(completeUnknownInformation(knowledge),new Turn(step, 0));
+            MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null), generated);
             mcts(generatedRoot, generated);
+            //print(generatedRoot, null);
             merge(root, generatedRoot);
         }
-        System.out.println("PRE");
-        print(root,null);
+        //System.out.println("PRE");
+        //print(root,null);
         averageOutDeckPicks(root);
         rootBackProp(root);
-        System.out.println("POST");
-        print(root,null);
+        //System.out.println("POST");
+        //print(root,null);
     }
 
     private void rootBackProp(MCTSNode root){
@@ -41,7 +59,11 @@ public class MCTSv1 extends MCTS{
             backPropagate(child);
         }
     }
-
+    /**
+     * Merges the children of main and second together into main
+     * @param main at the same depth as second
+     * @param second at the same depth as main
+     */
     private void merge(MCTSNode main, MCTSNode second){
         for (int scnd = 0; scnd < second.children.size(); scnd++) {
             boolean found = false;

@@ -3,11 +3,10 @@ package temp.GamePlayers.GameTreeAIs;
 import cardlogic.Card;
 import cardlogic.SetOfCards;
 import gameHandling.Player;
-import temp.Extra.GA.GameLogic;
+import temp.GameLogic.Game;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
@@ -253,8 +252,11 @@ public class MinimaxPruningAI extends GamePlayer {
 */
 
     public static void main(String[] args) {
-        GameLogic g = new GameLogic(true, true);
-        g.play(new MinimaxPruningAI(), new MinimaxPruningAI(), 0);
+        Game g = new Game(new GamePlayer[]{
+                new MinimaxPruningAI(),
+                new MinimaxPruningAI()
+        }, 0);
+        g.playOutGame();
     }
 
 /*
@@ -395,7 +397,7 @@ public class MinimaxPruningAI extends GamePlayer {
         After the player has discarded a card (with the new 10 card hand)
      */
     @Override
-    public void update(HandLayout realLayout) {
+    public void update(List<MyCard> realLayout) {
         super.update(realLayout);
         //SetOfCards cardList = new SetOfCards(realLayout);
 
@@ -464,7 +466,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
 
         if(!pickAction.deck){
-            MyCard aCard = pickAction.card;
+            MyCard aCard = pickAction.card();
             Card pickedCard = new Card(aCard);
             this.discardedCards.remove(pickedCard);
             Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );

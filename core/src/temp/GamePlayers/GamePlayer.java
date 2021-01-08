@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.Layoff;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
@@ -43,10 +43,10 @@ public abstract class GamePlayer implements PlayerInterface {
      * -after having discarded
      * -after having decided to knock (or not)
      *
-     * @param realLayout current hand layout being considered by the game
+     * @param cards current cards the game has saved
      */
-    public void update(HandLayout realLayout) {
-        allCards = realLayout.viewAllCards();
+    public void update(List<MyCard> cards) {
+        allCards = cards;
         handLayout = Finder.findBestHandLayout(allCards);
     }
 
@@ -90,16 +90,17 @@ public abstract class GamePlayer implements PlayerInterface {
      * @param knockerMelds list of melds of the player that knocked
      * @return layoff object
      */
-    public Layoff automaticLayoff(List<Meld> knockerMelds) {
+    public List<Layoff> automaticLayoff(List<Meld> knockerMelds) {
         List<MyCard> unusedCards = handLayout.viewUnusedCards();
+        List<Layoff> layoffs = new ArrayList<>();
         // For all melds
         for (Meld knockerMeld : knockerMelds) {
             Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards, knockerMeld);
             if (index != null) {
-                return new Layoff(unusedCards.get(index), knockerMeld);
+                layoffs.add(new Layoff(unusedCards.get(index), knockerMeld));
             }
         }
-        return new Layoff(null, null);
+        return layoffs;
     }
 
     /* EXTRA */
@@ -123,7 +124,7 @@ public abstract class GamePlayer implements PlayerInterface {
     }
 
     @Override
-    public Layoff layOff(List<Meld> knockerMelds) {
+    public List<Layoff> layOff(List<Meld> knockerMelds) {
         return automaticLayoff(knockerMelds);
     }
 
