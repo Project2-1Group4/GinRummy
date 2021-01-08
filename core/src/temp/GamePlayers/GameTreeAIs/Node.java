@@ -2,6 +2,7 @@ package temp.GamePlayers.GameTreeAIs;
 
 import org.jetbrains.annotations.NotNull;
 import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
 import temp.GameLogic.MyCard;
 
 import java.util.*;
@@ -154,18 +155,96 @@ public class Node implements Comparable {
     }
 
     public static Node getNodeMax(Node node1, Node node2) {
-        if (node1.getHandValue() > node2.getHandValue())
+        if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
+            int almostMelds1 = almostMelds(node1.hand);
+            int almostMelds2 = almostMelds(node2.hand);
+            if(almostMelds1 == almostMelds2){
+                if(node1.getHandValue() > node2.getHandValue()){
+                    return node1;
+                }
+                else{
+                    return node2;
+                }
+            }
+            else if(almostMelds1 < almostMelds2){
+                return node2;
+            }
+            else{
+                return node1;
+            }
+
+        }
+        else if(node1.getHandValue() > node2.getHandValue()){
             return node1;
+        }
         else
             return node2;
     }
 
     public static Node getNodeMin(Node node1, Node node2) {
-        if (node1.getHandValue() < node2.getHandValue())
+        if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
+            int almostMelds1 = almostMelds(node1.hand);
+            int almostMelds2 = almostMelds(node2.hand);
+            if(almostMelds1 == almostMelds2){
+                if(node1.getHandValue() < node2.getHandValue()){
+                    return node1;
+                }
+                else{
+                    return node2;
+                }
+            }
+            else if(almostMelds1 > almostMelds2){
+                return node2;
+            }
+            else{
+                return node1;
+            }
+
+        }
+        else if (node1.getHandValue() < node2.getHandValue())
             return node1;
         else
             return node2;
     }
+
+    public static int almostMelds(List<MyCard> currentHand){
+        int almostMelds = 0;
+        List<MyCard> deadwoodCards = Finder.findBestHandLayout(currentHand).viewUnusedCards();
+        List<Meld>  melds = Finder.findBestHandLayout(currentHand).viewMelds();
+        List<MyCard> meldCards = new ArrayList<>();
+        for (Meld setOfMeld : melds) {
+            meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
+        }
+        for(int j = 0; j< deadwoodCards.size(); j++){
+            for(int i = 0; i< deadwoodCards.size(); i++){
+                if(deadwoodCards.get(j).rank.index == deadwoodCards.get(i).rank.index && i!=j){
+                    int cardinMeld = 2;
+                    for(int k = 0; k< meldCards.size(); k++){
+                        if(meldCards.get(k).rank.index == deadwoodCards.get(i).rank.index){
+                            cardinMeld--;
+                        }
+                    }
+                    if(cardinMeld > 0){
+                        almostMelds++;
+                    }
+                }
+                if(deadwoodCards.get(j).suit.index == deadwoodCards.get(i).suit.index && Math.abs(deadwoodCards.get(j).rank.index - deadwoodCards.get(i).rank.index) == 1 && i!=j){
+                    int cardinMeld = 1;
+                    for(int k = 0; k< meldCards.size(); k++){
+                        if(meldCards.get(k).suit.index == deadwoodCards.get(j).suit.index && Math.abs(meldCards.get(k).rank.index - deadwoodCards.get(j).rank.index) == 1 ){
+                            cardinMeld--;
+                        }
+                    }
+                    if(cardinMeld>0){
+                        almostMelds++;
+                    }
+                }
+            }
+        }
+        almostMelds = almostMelds/2;
+        return almostMelds;
+    }
+
 
     /*
     No idea why the original handValue method was implemented as it is, but this is my attempt at bringing it to the new game system
@@ -178,8 +257,18 @@ public class Node implements Comparable {
     }
 
     public static void main(String[] args) {
-        //Node node = new Node(new SetOfCards(false, false), new SetOfCards(false, false), new SetOfCards(true, false));
-        //System.out.println(node.parent);
+        List<MyCard> cardList = MyCard.getBasicDeck();
+        List<MyCard> tryHand = new ArrayList<>();
+        Random getcard = new Random();
+        int num =0;
+        for(int i= 0; i<10; i++){
+            num = getcard.nextInt(51);
+            tryHand.add(cardList.get(num));
+        }
+        System.out.println("hand "+tryHand);
+        int melds = almostMelds(tryHand);
+        System.out.println("almost melds amount = "+melds);
+
     }
 
     @Override
