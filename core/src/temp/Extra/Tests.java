@@ -24,8 +24,8 @@ public class Tests {
 
     public static void main(String[] args) {
         GamePlayer[] players = new GamePlayer[]{
-                new MCTSv1(),
                 new basicGreedyTest(),
+                new MCTSv1(),
         };
         int games = 1; // Set nb of games
         Integer seed = null; // Set seed
@@ -46,8 +46,9 @@ public class Tests {
             System.out.println("\nRound "+i+": "+result.r+"\n");
             i++;
         }
-
         System.out.println(Result.getScores(r));
+
+        //System.out.println(Result.getScores(r));
         //CSVWriterV2.write(results, "Results/Delete this/","n");
     }
 

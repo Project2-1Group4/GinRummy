@@ -30,8 +30,8 @@ public abstract class MCTS extends MemoryPlayer{
     public boolean print = false;
 
     public static final double explorationParam = 1.4;
-    protected final int rolloutsPerNode = 1; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int rolloutsPerSimulation = 100; // Higher = deeper search. For stopping condition
+    protected final int rolloutsPerNode = 2; // Should be =1 unless you rollout at least somewhat randomly
+    protected final int rolloutsPerSimulation = 500; // Higher = deeper search. For stopping condition
 
     protected final Random rd; // For seeding
     protected boolean simpleKnocking = true;
@@ -307,9 +307,14 @@ public abstract class MCTS extends MemoryPlayer{
     }
     protected double getRoundValue(Result result){
         if(result.winner==null){
-            return 0.5;
+            return 0;
         }
-        return result.winner==index? 1 : 0;
+        int deadwood = result.r.layouts()[index].deadwoodValue();
+        int deadwoodDiff = 0;
+        for (int i = 0; i < result.r.layouts().length; i++) {
+            deadwoodDiff+= result.r.layouts()[i].deadwoodValue() - deadwood;
+        }
+        return deadwoodDiff;
     }
     /**
      * Helper method. Prints. To be deleted.

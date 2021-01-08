@@ -20,7 +20,7 @@ import java.util.Random;
 // Does MCTS on x amount of created perfect information games
 public class MCTSv1 extends MCTS{
 
-    private final int simulations = 100; // Nb of perfect games simulated
+    private final int simulations = 10; // Nb of perfect games simulated
 
     public MCTSv1(int seed){
         super(seed);
