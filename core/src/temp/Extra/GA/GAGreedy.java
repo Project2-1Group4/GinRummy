@@ -167,7 +167,8 @@ public class GAGreedy {
         for(int i = 0; i<this.players.length;i+=2){
             meldBuildingGreedy[] matchedPlayers = {this.players[i], this.players[i+1]};
 
-            List<GameInfo> results = Tests.runGames(matchedPlayers, this.numberOfGames,null);
+            //TODO fixit
+            List<GameInfo> results = new ArrayList<>();//Tests.runGames(matchedPlayers, this.numberOfGames,null);
 
             int victoriesForP0 = 0;
             int victoriesForP1 = 0;

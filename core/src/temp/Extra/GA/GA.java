@@ -147,7 +147,7 @@ public class GA {
                             p.add(competitors[j].player);
                             Game g = new Game(p, seed);
                             g.playTillRound = 1;
-                            results.addAll(g.playOutGame());
+                            results.addAll(g.playOutGame().toResult());
                         }
                         float[] scores = updateScores(results);
                         competitors[i].score+= scores[i];

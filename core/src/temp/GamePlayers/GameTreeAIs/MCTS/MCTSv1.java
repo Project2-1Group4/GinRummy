@@ -5,6 +5,7 @@ import temp.GameLogic.Entities.Turn;
 import temp.GameLogic.Game;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.States.CardsInfo;
+import temp.GameLogic.States.GameState;
 import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
@@ -20,10 +21,8 @@ public class MCTSv1 extends MCTS{
                 new basicGreedyTest()
         };
         Game g = new Game(players, 0);
-        List<Result> r = g.playOutGame();
-        for (Result result : r) {
-            System.out.println(result.simpleString());
-        }
+        GameState r = g.playOutGame();
+        System.out.println(Result.getScores(r.toResult()));
         //Result r = g.playOutRound();
         //System.out.println(r);
     }

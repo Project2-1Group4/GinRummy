@@ -4,9 +4,12 @@ import temp.Extra.PostGameInformation.CSVWriter;
 import temp.Extra.PostGameInformation.CSVWriterV2;
 import temp.Extra.PostGameInformation.EndOfRoundInfo;
 import temp.Extra.PostGameInformation.GameInfo;
+import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Game;
 import temp.GameLogic.GameActions.Action;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.States.GameState;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
@@ -23,40 +26,43 @@ public class Tests {
 
     public static void main(String[] args) {
         GamePlayer[] players = new GamePlayer[]{
-                new MCTSv1(1),
                 new basicGreedyTest(),
-                new MCTSv1(0),
-                new MCTSv1(1)
+                new basicGreedyTest(),
         };
-        int games = 1; // Set nb of games
+        int games = 5000; // Set nb of games
         Integer seed = 5; // Set seed
 
-        List<GameInfo> results = runGames(players, games, seed);
+        List<GameState> results = runGames(players, games, seed);
 
-        CSVWriter.write(results, "Results/GA vs Self coefs/","blahblah");
-        CSVWriterV2.write(results, "Results/MCTS Broken :(/","n");
-        CSVWriterV2.write(results, "Results/MCTS Broken :(/","flipped");
-
+        int[] wins = new int[players.length];
+        for (GameState result : results) {
+            wins[result.getHighestScoreIndex()]++;
+        }
+        System.out.println(Arrays.toString(wins)+" wins out of "+games);
+        //CSVWriterV2.write(results, "Results/Delete this/","n");
     }
 
-    public static List<GameInfo> runGames(GamePlayer[] players, int numberOfGames, Integer seed){
+    public static List<GameState> runGames(GamePlayer[] players, int numberOfGames, Integer seed){
         Random rd;
         if(seed!=null) {
             rd = new Random(seed);
         }else {
             rd = new Random();
         }
-        List<GameInfo> results = new ArrayList<>();
+        List<GameState> results = new ArrayList<>();
         for(int i=0; i <numberOfGames; i++){
-            System.out.println("Game "+i);
+            if(i%500==0){
+                System.out.println("Game "+i);
+            }
             results.add(runGame(players,rd.nextInt()));
         }
         return results;
     }
 
-    public static GameInfo runGame(GamePlayer[] players, int seed) {
-        Game curState = new Game(Arrays.asList(players.clone()), seed);
-        List<List<List<int[]>>> deadwood = new ArrayList<>();
+    public static GameState runGame(GamePlayer[] players, int seed) {
+        Game game = new Game(Arrays.asList(players.clone()), seed);
+
+        /*List<List<List<int[]>>> deadwood = new ArrayList<>();
         List<List<List<double[]>>> times = new ArrayList<>();
         List<EndOfRoundInfo> roundInfo = new ArrayList<>();
 
@@ -76,11 +82,9 @@ public class Tests {
 
             if(prevRound != curState.getRoundNumber()){
                 System.out.println("Round "+curState.getRound());
-                /*
 
-                If you want to test something every round do it here
+                //If you want to test something every round do it here
 
-                 */
                 if(saveTurnInfo) {
                     times.add(new ArrayList<List<double[]>>());
                     deadwood.add(new ArrayList<List<int[]>>());
@@ -89,11 +93,9 @@ public class Tests {
                 newRound = true;
             }
             if(prevTurn != curState.getTurnNumber()){
-                /*
 
-                If you want to test something every turn do it here
+                //If you want to test something every turn do it here
 
-                */
                 if(saveTurnInfo) {
                     times.get(times.size() - 1).add(new ArrayList<double[]>());
                     deadwood.get(deadwood.size() - 1).add(new ArrayList<int[]>());
@@ -101,9 +103,8 @@ public class Tests {
                 newTurn = true;
             }
             if(prevPlayer != curState.getPlayerIndex()){
-                /*
 
-                If you want to test something every new player do it here
+                //If you want to test something every new player do it here
 
 
                 if(saveTurnInfo) {
@@ -128,14 +129,12 @@ public class Tests {
 
                 }
                 newPlayer = true;
-                 */
+
             }
             if(prevStep != curState.getStep()){
-                /*
 
-                If you want to test something every step do it here
+                //If you want to test something every step do it here
 
-                 */
                 if(saveTurnInfo) {
                     turnTimes[prevStep.index] = t;
                 }
@@ -160,7 +159,7 @@ public class Tests {
                 newStep = false;
             }
         }
-        roundInfo.add(new EndOfRoundInfo(curState.getRound(), curState.getRoundNumber(),true));
-        return new GameInfo(roundInfo, times, deadwood);
+        roundInfo.add(new EndOfRoundInfo(curState.getRound(), curState.getRoundNumber(),true));*/
+        return game.playOutGame();
     }
 }

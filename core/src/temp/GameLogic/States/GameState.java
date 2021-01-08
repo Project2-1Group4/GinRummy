@@ -1,14 +1,13 @@
 package temp.GameLogic.States;
 
+import temp.Extra.PostGameInformation.Result;
 import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Entities.Turn;
 import temp.GameLogic.Game;
 import temp.GameRules;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class GameState {
     private final Stack<MyCard> gameDeck;
@@ -16,6 +15,7 @@ public class GameState {
     private final int[] points;
     private final int nbOfPlayers;
     private final Random rd;
+    private boolean locked = false;
     public GameState(int nbOfPlayers, Stack<MyCard> gameDeck,Integer seed){
         this.nbOfPlayers = nbOfPlayers;
         this.gameDeck = (Stack<MyCard>) gameDeck.clone();
@@ -50,7 +50,7 @@ public class GameState {
         return rounds.peek();
     }
     public RoundState round(int i){
-        if(i<0 || i>rounds.size()){
+        if(i<0 || i>=rounds.size()){
             return null;
         }
         return rounds.get(i);
@@ -77,6 +77,9 @@ public class GameState {
     }
     public boolean gameEnded(){
         return Game.gameStopCondition(this);
+    }
+    public boolean locked() {
+        return locked;
     }
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -106,5 +109,15 @@ public class GameState {
                 .build();
         rounds.add(newRound);
     }
+    public void lock() {
+        locked = true;
+    }
 
+    public List<Result> toResult() {
+        List<Result> r = new ArrayList<>();
+        for (RoundState round : rounds) {
+            r.add(new Result(round));
+        }
+        return r;
+    }
 }

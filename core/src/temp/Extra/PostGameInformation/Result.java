@@ -38,4 +38,18 @@ public class Result {
     public String simpleString() {
         return Arrays.toString(pointsWon);
     }
+    public static String getScores(List<Result> r){
+        StringBuilder sb = new StringBuilder();
+        int[] points = new int[r.get(0).pointsWon.length];
+        sb.append("Start: ").append(Arrays.toString(points)).append("\n");
+        for (int i = 0; i < r.size(); i++) {
+            for (int j = 0; j < points.length; j++) {
+                points[j]+= r.get(i).pointsWon[j];
+            }
+            sb.append("Round ").append(i+1).append(": ");
+            sb.append(Arrays.toString(points));
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }

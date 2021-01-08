@@ -79,8 +79,11 @@ public class Game {
     public Action continueGame(){
         Action a = continueRound();
         if(a instanceof EndSignal){
-            if(!gameState.gameEnded()) {
+            if(!gameState.locked()) {
                 gameState.addPoints(getRound().points());
+                if(gameState.gameEnded()){
+                    gameState.lock();
+                }
             }
             if(gameStopCondition(gameState) || playTillRound<gameState.getRoundNumber()){
                 return new EndSignal(true);
@@ -130,19 +133,16 @@ public class Game {
      * Runs game from current state to finish (point or round limit), saving the results of every round
      * @return results of every round
      */
-    public List<Result> playOutGame(){
-        List<Result> results = new ArrayList<>();
+    public GameState playOutGame(){
         while(true){
-            int round = getRoundNumber();
             Action a = continueGame();
             if(a instanceof EndSignal){
-                results.add(new Result(gameState.round(round-1)));
-                if(((EndSignal) a).endOfGame){
+                if(((EndSignal) a).endOfGame) {
                     break;
                 }
             }
         }
-        return results;
+        return gameState;
     }
     /**
      * Undoes the last action of the last round of this game.
