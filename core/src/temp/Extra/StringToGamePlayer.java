@@ -1,4 +1,4 @@
-package temp;
+package temp.Extra;
 
 import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.GamePlayer;
@@ -9,6 +9,7 @@ import temp.GamePlayers.GreedyAIs.meldBuildingGreedy;
 import temp.GamePlayers.KeyboardPlayer;
 import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.GamePlayers.RandomPlayer;
+import temp.GameRules;
 
 public class StringToGamePlayer {
 
