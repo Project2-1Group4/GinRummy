@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO evaluation function in HandLayout
+//TODO Over the turns info in test and still want CSVWriter?
+
+//TODO evaluate() function in HandLayout
 //TODO what to do when other player's turn and not perfect information: knocking + rollout
 //TODO move confirmLayoff to Finder and fix it
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
@@ -32,27 +34,28 @@ public class Game {
 
     public float[] timeAllotted;
     public int playTillRound=Integer.MAX_VALUE;
-    public boolean print;
+    public boolean printTurns = false;
+    public boolean printRounds = false;
+    public boolean printGames = false;
 
-    public Game(List<GamePlayer> players, GameState gameState, boolean print) {
+    public Game(List<GamePlayer> players, GameState gameState) {
         currentGames.add(this);
         this.gameState = gameState;
         this.players = players;
-        this.print = print;
         timeAllotted = new float[Step.values().length];
         Arrays.fill(timeAllotted, GameRules.DeckOrDiscardPileTime);
         if(gameState.getRoundNumber()==0) {
             startNewRound();
         }
     }
-    public Game(List<GamePlayer> players, Integer seed, boolean print){
-        this(players, new GameState(players.size(), MyCard.getBasicDeck(), seed), print);
+    public Game(List<GamePlayer> players, Integer seed){
+        this(players, new GameState(players.size(), MyCard.getBasicDeck(), seed));
     }
-    public Game(GamePlayer[] players, Integer seed, boolean print){
-        this(Arrays.asList(players), seed, print);
+    public Game(GamePlayer[] players, Integer seed){
+        this(Arrays.asList(players), seed);
     }
-    public Game(List<GamePlayer> players, RoundState initRound, Integer seed, boolean print){
-        this(players, new GameState(initRound, seed), print);
+    public Game(List<GamePlayer> players, RoundState initRound, Integer seed){
+        this(players, new GameState(initRound, seed));
 
     }
 
@@ -91,8 +94,8 @@ public class Game {
             if(gameStopCondition(gameState) || playTillRound<gameState.getRoundNumber()){
                 if(!gameState.locked()) {
                     gameState.lock();
-                    if (print) {
-                        System.out.println("Game locked with points: " + Arrays.toString(gameState.getPoints()));
+                    if (printGames) {
+                        System.out.println("Game locked with points: " + Arrays.toString(gameState.getPoints())+"\n");
                     }
                 }
                 return new EndSignal(true);
@@ -114,7 +117,7 @@ public class Game {
         Action action = getPlayerAction(players.get(curPlayerIndex()), turn(), gameState.round());
         boolean executed = action != null && action.doAction(gameState.round(), true);
         if(executed){
-            if(print){
+            if(printTurns){
                 System.out.println("Turn "+ turnNumber()+" Action: "+action);
             }
             newStep = true;
@@ -124,12 +127,12 @@ public class Game {
                     round().setPoints(pointsWon(round()));
                     gameState.addPoints(round().points());
                     round().lock();
-                    if(print){
+                    if(printRounds){
                         System.out.println("Round "+ roundNumber()+" locked with points: "+ Arrays.toString(round().points()));
                         for (int i = 0; i < round().layouts().length; i++) {
                             System.out.println("Player "+i+"\n"+ round().layouts()[i]);
                         }
-                        System.out.println("Current game points: "+ Arrays.toString(points()));
+                        System.out.println("Current game points: "+ Arrays.toString(points())+"\n");
                     }
                 }
                 return new EndSignal(false);
@@ -207,6 +210,11 @@ public class Game {
     }
     public void remove(){
         currentGames.remove(this);
+    }
+    public void print(boolean pt, boolean pr, boolean pg){
+        printTurns = pt;
+        printRounds = pr;
+        printGames = pg;
     }
 
     // Getters

@@ -12,14 +12,17 @@ import java.util.*;
 
 public class Tests {
 
-    public static boolean print = false;
+    public static boolean printTurns = false;
+    public static boolean printRounds = true;
+    public static boolean printGames = false;
 
     public static void main(String[] args) {
         GamePlayer[] players = new GamePlayer[]{
-                new MCTSv1(200, 1, 1.4, 10),
+                new basicGreedyTest(),
+                //new MCTSv1(300, 1, 1.4, 10),
                 new basicGreedyTest()
         };
-        int games = 1; // Set nb of games
+        int games = 20; // Set nb of games
         Integer seed = null; // Set seed
 
         List<GameState> results = runGames(players, games, seed);
@@ -44,21 +47,17 @@ public class Tests {
         }
         List<GameState> results = new ArrayList<>();
         for(int i=0; i <numberOfGames; i++){
-            if(print){
+            if(printGames){
                 System.out.println("Game "+i);
             }
-            results.add(runGameSaveTimes(players,rd.nextInt()));
+            results.add(runGame(players,rd.nextInt()));
         }
         return results;
     }
 
-    public static GameState runGame(GamePlayer[] players, int seed) {
-        Game game = new Game(Arrays.asList(players), seed, print);
-        return game.playOutGame();
-    }
-
-    public static GameState runGameSaveTimes(GamePlayer[] players, int seed){
-        Game game = new Game(Arrays.asList(players), seed, print);
+    public static GameState runGame(GamePlayer[] players, int seed){
+        Game game = new Game(Arrays.asList(players), seed);
+        game.print(printTurns, printRounds, printGames);
         while(!game.gameEnded()){
             game.continueGame();
         }

@@ -284,7 +284,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if you win, false if other wins
      */
     private double executeRollout(GamePlayer player1, GamePlayer player2, RoundState state) {
-        Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt(), false);
+        Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt());
         Result result = g.playOutRound();
         g.remove();
         return getRoundValue(result);

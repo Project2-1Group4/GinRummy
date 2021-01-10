@@ -2,6 +2,7 @@ package temp;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
+import temp.Extra.StringToGamePlayer;
 import temp.GameLogic.Game;
 import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.GameActions.Action;
@@ -25,7 +26,7 @@ public class Coordinator extends ScreenAdapter {
         List<GamePlayer> players = new ArrayList<>();
         players.add(StringToGamePlayer.getPlayer(master.name1));
         players.add(StringToGamePlayer.getPlayer(master.name2));
-        game = new Game(players, new GameState(players.size(),MyCard.getBasicDeck(),null), false);
+        game = new Game(players, new GameState(players.size(),MyCard.getBasicDeck(),null));
         graphics = new Graphics();
     }
 

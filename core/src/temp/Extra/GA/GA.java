@@ -145,7 +145,7 @@ public class GA {
                             List<GamePlayer> p = new ArrayList<>();
                             p.add(competitors[i].player);
                             p.add(competitors[j].player);
-                            Game g = new Game(p, seed, false);
+                            Game g = new Game(p, seed);
                             g.playTillRound = 1;
                             results.addAll(g.playOutGame().toResult());
                         }
