@@ -15,7 +15,7 @@ public class GameState {
     public final int[] points;
     public final int nbOfPlayers;
     public final Random rd;
-    public boolean locked = false;
+    private boolean locked = false;
 
     public GameState(int nbOfPlayers, Stack<MyCard> gameDeck,Integer seed){
         this.nbOfPlayers = nbOfPlayers;
