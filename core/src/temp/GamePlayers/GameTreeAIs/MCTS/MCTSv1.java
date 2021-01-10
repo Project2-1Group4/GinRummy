@@ -1,43 +1,42 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
-import temp.Extra.PostGameInformation.Result;
-import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Entities.Turn;
-import temp.GameLogic.Game;
-import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.States.CardsInfo;
-import temp.GameLogic.States.GameState;
 import temp.GameLogic.States.RoundState;
-import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GreedyAIs.basicGreedyTest;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 // Does MCTS on x amount of created perfect information games
 public class MCTSv1 extends MCTS{
 
-    private final int simulations = 10; // Nb of perfect games simulated
+    protected final int baseSimulations = 10; // Nb of perfect games simulated
 
-    public MCTSv1(int seed){
-        super(seed);
+    protected final int simulations;
+
+    public MCTSv1(int rolloutsPerSimulation, int rolloutsPerNode,double explorationParam, int simulations , Integer seed){
+        super(rolloutsPerSimulation, rolloutsPerNode, explorationParam, seed);
+        this.simulations = simulations;
+    }
+    public MCTSv1(int rolloutsPerSimulation, int rolloutsPerNode,double explorationParam , Integer seed){
+        super(rolloutsPerSimulation, rolloutsPerNode, explorationParam, seed);
+        this.simulations = baseSimulations;
+    }
+    public MCTSv1(Integer seed){
+        this(baseRolloutsPerSim, baseRolloutsPerNode, baseExplorationParam,seed);
     }
     public MCTSv1(){
-        super();
+        this(null);
     }
+
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
             RoundState generated = new RoundState(completeUnknownInformation(knowledge),new Turn(step, index));
-            MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null), generated);
+            MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null, this), generated);
             mcts(generatedRoot, generated);
             merge(root, generatedRoot);
         }
-        //TODO not a todo, just like the color :)
-        // Can check what the best top of the deck would be for player here
+        //Can check what the best deck pick would be here.
         mergeDeckPicksIntoOne(root, step);
     }
 

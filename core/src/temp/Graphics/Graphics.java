@@ -55,12 +55,12 @@ public class Graphics {
             for (Map.Entry<String, Renderer> entry : renderers.entrySet()) {
                 entry.getValue().render(batch, renderingStyle, game);
             }
-            PlayerRenderer pRenderer = playerRenderers.get(game.getTurn().playerIndex);
+            PlayerRenderer pRenderer = playerRenderers.get(game.turn().playerIndex);
             if (pRenderer == null) {
-                pRenderer = new PlayerRenderer(game.getGamePlayer());
-                playerRenderers.put(game.getPlayerIndex(), pRenderer);
+                pRenderer = new PlayerRenderer(game.curGamePlayer());
+                playerRenderers.put(game.curPlayerIndex(), pRenderer);
             }
-            currentPlayer = game.getPlayerIndex();
+            currentPlayer = game.curPlayerIndex();
             pRenderer.render(batch, renderingStyle);
         }
         batch.end();

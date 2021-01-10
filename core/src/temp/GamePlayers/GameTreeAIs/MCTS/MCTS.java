@@ -10,6 +10,7 @@ import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.CardsInfo;
 import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.ForcePlayer;
@@ -18,30 +19,43 @@ import temp.GamePlayers.MemoryPlayer;
 import temp.GameRules;
 
 import java.util.*;
-//TODO fix mouse player
-//TODO fix backpropagation
-//TODO evaluation function in HandLayout
-//TODO what to do when other player's turn and not perfect information: knocking
-//TODO do MCTSv2
-//TODO remove HandLayout from knocker and integrate layout confirm+layoff steps in logic
+
+//TODO explore different exploration function for MCTS
+//TODO explore different ways of evaluating a rollout
+//TODO MCTS build to allow customizing MCTS at runtime (for testing what hyper param are best)
 public abstract class MCTS extends MemoryPlayer{
+
+    protected static final int baseRolloutsPerSim = 500;
+    protected static final int baseRolloutsPerNode = 2;
+    protected static final double baseExplorationParam = 1.4;
 
     public boolean debugmcts = false;
     public boolean print = false;
 
-    public static final double explorationParam = 1.4;
-    protected final int rolloutsPerNode = 2; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int rolloutsPerSimulation = 600; // Higher = deeper search. For stopping condition
+    protected final int rolloutsPerNode; // Should be =1 unless you rollout at least somewhat randomly
+    protected final int rolloutsPerSimulation; // Higher = deeper search. For stopping condition
+    protected final double explorationParam;
 
     protected final Random rd; // For seeding
     protected boolean simpleKnocking = true;
     protected int rollouts;
 
-    public MCTS(int seed){
-        rd = new Random(seed);
+    public MCTS(int rolloutsPerSimulation, int rolloutsPerNode,double explorationParam , Integer seed){
+        if(seed==null){
+            rd = new Random();
+        }
+        else{
+            rd = new Random(seed);
+        }
+        this.rolloutsPerSimulation = rolloutsPerSimulation;
+        this.rolloutsPerNode = rolloutsPerNode;
+        this.explorationParam =explorationParam;
+    }
+    public MCTS(Integer seed){
+        this(baseRolloutsPerSim, baseRolloutsPerNode, baseExplorationParam, seed);
     }
     public MCTS(){
-        rd = new Random();
+        this(null);
     }
 
     //Interface methods. Methods that get called by game itself.
@@ -86,7 +100,7 @@ public abstract class MCTS extends MemoryPlayer{
         }
         rollouts = 0;
         RoundState state = new RoundState(cardsMemory, new Turn(step, index));
-        MCTSNode root = ExpandNode(new MCTSNode(null, null), state);
+        MCTSNode root = ExpandNode(new MCTSNode(null, null, this), state);
 
         monteCarloTreeSearch(root, state.cards());
 
@@ -108,52 +122,64 @@ public abstract class MCTS extends MemoryPlayer{
      * @return list of possible moves
      */
     protected MCTSNode ExpandNode(MCTSNode parent, RoundState state){
+        List<Action> moves = null;
         if(state.turn().step == Step.Pick){
-            getPickMoves(parent, state);
+            moves = getPickMoves(state);
         }
         else if(state.turn().step == Step.Discard){
-            getDiscardMoves(parent, state);
+            moves = getDiscardMoves(state);
         }
         else if(state.turn().step == Step.KnockOrContinue){
-            getKnockMoves(parent, state);
+            moves = getKnockMoves(state);
+        }
+        if(moves!=null) {
+            for (Action move : moves) {
+                parent.children.add(new MCTSNode(parent, move, this));
+            }
         }
         return parent;
     }
-    private void getPickMoves(MCTSNode parent, RoundState state){
+    private List<Action> getPickMoves(RoundState state){
+        List<Action> pick = new ArrayList<>();
         if(state.deck().size()!=0){
-            parent.children.add(new MCTSNode(parent,new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1))));
+            pick.add(new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1)));
         }
         else{
-            parent.children.add(new MCTSNode(parent,new PickAction(state.getPlayerIndex(), true, null)));
+            pick.add(new PickAction(state.getPlayerIndex(), true, null));
         }
         if(state.discardPile().size()!=0){
-            parent.children.add(new MCTSNode(parent, new PickAction(state.getPlayerIndex(), false, state.discardPile().peek())));
+            pick.add(new PickAction(state.getPlayerIndex(), false, state.discardPile().peek()));
         }
+        return pick;
     }
-    private void getDiscardMoves(MCTSNode parent, RoundState state){
+    private List<Action> getDiscardMoves(RoundState state){
+        List<Action> discard = new ArrayList<>();
         if(state.getPlayerIndex()==index){
             for (MyCard card : state.getCards(state.getPlayerIndex())) {
-                parent.children.add(new MCTSNode(parent, new DiscardAction(state.getPlayerIndex(), card)));
+                discard.add(new DiscardAction(state.getPlayerIndex(), card));
             }
         }
         else{
             for (MyCard card : state.getCards(state.getPlayerIndex())) {
-                parent.children.add(new MCTSNode(parent, new DiscardAction(state.getPlayerIndex(), card)));
+                discard.add(new DiscardAction(state.getPlayerIndex(), card));
             }
             for (MyCard card : state.unassigned()) {
-                parent.children.add(new MCTSNode(parent, new DiscardAction(state.getPlayerIndex(), card)));
+                discard.add(new DiscardAction(state.getPlayerIndex(), card));
             }
         }
+        return discard;
     }
-    private void getKnockMoves(MCTSNode parent, RoundState state){
+    private List<Action> getKnockMoves(RoundState state){
+        List<Action> knock = new ArrayList<>();
         //TODO what to do when other player's turn and not perfect information
         if(state.getPlayerIndex()== index || state.hasPerfectInformation()) {
-            HandLayout handLayout = new HandLayout(state.getCards(state.getPlayerIndex()));
+            HandLayout handLayout = Finder.findBestHandLayout(state.getCards(state.getPlayerIndex()));
             if (handLayout.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
-                parent.children.add(new MCTSNode(parent, new KnockAction(state.getPlayerIndex(), true, handLayout)));
+                knock.add(new KnockAction(state.getPlayerIndex(), true, handLayout));
             }
         }
-        parent.children.add(new MCTSNode(parent, new KnockAction(state.getPlayerIndex(), false, null)));
+        knock.add(new KnockAction(state.getPlayerIndex(), false, null));
+        return knock;
     }
 
     // Intermediate
@@ -187,6 +213,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @param state imagined state of game
      */
     protected void mcts(MCTSNode root, RoundState state){
+        assert state.numberOfPlayers()==Game.numberOfPlayers(this);
         rollouts = 0;
         while(!stopCondition()) {
             if(debugmcts) {

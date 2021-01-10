@@ -13,14 +13,14 @@ public class ExtraRenderer implements Renderer {
         BitmapFont font = style.getFont();
         font.setColor(Color.BLACK);
         int y = Gdx.graphics.getHeight() - 20;
-        font.draw(batch, "Round " + curState.getRoundNumber() + " turn " + curState.getTurnNumber(), 20, y);
+        font.draw(batch, "Round " + curState.roundNumber() + " turn " + curState.turnNumber(), 20, y);
         y -= 20;
-        font.draw(batch, "Player " + curState.getPlayerIndex(), 20, y);
+        font.draw(batch, "Player " + curState.curPlayerIndex(), 20, y);
         y -= 20;
-        font.draw(batch, curState.getStep().question, 20, y);
+        font.draw(batch, curState.step().question, 20, y);
         y -= 20;
-        font.draw(batch, Float.toString(curState.getCurTime()), 20, y);
-        int[] scores = curState.getPoints();
+        font.draw(batch, Float.toString(curState.curTime()), 20, y);
+        int[] scores = curState.points();
         font.draw(batch, "SCORES", Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 20);
         for (int i = 0; i < scores.length; i++) {
             font.draw(batch, "Player " + i + ": " + scores[i], Gdx.graphics.getWidth() - 100, Gdx.graphics.getHeight() - 20 * (i + 2));

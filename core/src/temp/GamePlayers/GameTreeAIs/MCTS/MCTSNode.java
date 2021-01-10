@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Random;
 
 public class MCTSNode {
-    private static final Random rd = new Random(0);
+
+    private final MCTS creator;
 
     public final Action action;
     public final MCTSNode parent;
@@ -17,7 +18,8 @@ public class MCTSNode {
     public double wins=0;
     public double rollouts =0;
 
-    public MCTSNode(MCTSNode parent, Action action){
+    public MCTSNode(MCTSNode parent, Action action, MCTS creator){
+        this.creator = creator;
         this.parent = parent;
         depth = parent==null? 0 : parent.depth+1;
         this.action = action;
@@ -49,7 +51,7 @@ public class MCTSNode {
      * @return exploration value of node
      */
     public double explorationValue(int rolloutsDone){
-        return rollouts !=0? value()+MCTS.explorationParam*Math.sqrt(Math.log(rolloutsDone)/(float) rollouts) : Double.MAX_VALUE;
+        return rollouts !=0? value()+creator.explorationParam*Math.sqrt(Math.log(rolloutsDone)/(float) rollouts) : Double.MAX_VALUE;
     }
     /**
      * Gives child node with highest exploration value.
@@ -69,7 +71,7 @@ public class MCTSNode {
         }
         if(node.action instanceof PickAction && children.size()>2 && ((PickAction) node.action).deck){
             do{
-                node = children.get(rd.nextInt(children.size()-1));
+                node = children.get(creator.rd.nextInt(children.size()-1));
             }while(!((PickAction)(node.action)).deck);
         }
         return node;

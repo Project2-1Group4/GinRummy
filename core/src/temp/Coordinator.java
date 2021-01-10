@@ -36,10 +36,10 @@ public class Coordinator extends ScreenAdapter {
 
     public void gameEnded() {
         game.remove();
-        if(game.getWinner()==0){
+        if(game.gameWinner()==0){
             master.winner = "Player 1 "+master.name1;
         }
-        else if(game.getWinner()==1){
+        else if(game.gameWinner()==1){
             master.winner = "Player 2 "+master.name2;
         }
         master.changeScreen(GinRummy.END);

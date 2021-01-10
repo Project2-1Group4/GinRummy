@@ -46,12 +46,11 @@ public abstract class MemoryPlayer extends GamePlayer {
     @Override
     public void newRound(MyCard topOfDiscard) {
         super.newRound(topOfDiscard);
-        Game.getNumberOfPlayers(this);
         List<List<MyCard>> players = new ArrayList<>();
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < Game.numberOfPlayers(this); i++) {
             players.add(new ArrayList<MyCard>());
         }
-        players.add(getHand());
+        players.set(index, getHand());
         Stack<MyCard> discard = new Stack<>();
         discard.add(topOfDiscard);
         Stack<MyCard> unknown = MyCard.getBasicDeck();
