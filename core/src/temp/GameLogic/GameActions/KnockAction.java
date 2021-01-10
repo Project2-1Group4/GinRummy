@@ -7,7 +7,6 @@ import temp.GameLogic.States.RoundState;
 import temp.GameRules;
 
 // IMMUTABLE
-// TODO? remove handlayout from knockaction
 public class KnockAction extends Action {
     public final boolean knock;
     private final HandLayout knockLayout;

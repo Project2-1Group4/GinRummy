@@ -127,11 +127,4 @@ public abstract class GamePlayer implements PlayerInterface {
         }
         return layoffs;
     }
-
-    @Override
-    public String toString() {
-        return "GamePlayer{" +
-                "handLayout=" + handLayout +
-                '}';
-    }
 }
