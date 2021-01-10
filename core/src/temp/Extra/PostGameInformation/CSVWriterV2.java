@@ -1,65 +1,22 @@
 package temp.Extra.PostGameInformation;
 
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.States.GameState;
+import temp.GameLogic.States.RoundState;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
 public class CSVWriterV2 {
-    public static void write(List<GameInfo> results, String directory, String fileName){
+
+    public static void write(String s, String directory, String fileName) {
         File dir = new File(directory);
         dir.mkdirs();
         fileName = directory+fileName;
-        /*
-        PER ROUND INFO
-         */
-        try(PrintWriter gameWriter = new PrintWriter(new File(fileName+"_endOfGame.csv"))){
-            StringBuilder sb = new StringBuilder();
-            sb.append("GameNumber"+',');
-            sb.append("RoundNumber"+',');
-            sb.append("WinningPlayer"+',');
-            for (int i = 0; i < results.get(0).roundInfos.get(0).scores.length; i++) {
-                sb.append("ScorePlayer").append(i).append(',');
-            }
-            for (int i = 0; i < results.get(0).roundInfos.get(0).scores.length; i++) {
-                sb.append("DeadwoodPlayer").append(i).append(',');
-            }
-            for (int i = 0; i < results.get(0).roundInfos.get(0).scores.length; i++) {
-                sb.append("CardsInDeadwoodPlayer").append(i).append(',');
-            }
-            sb.append("FinalRound");
-            sb.append('\n');
-            sb.append(endOfRoundDecoder(results));
-            gameWriter.write(sb.toString());
-
-        }
-        catch(FileNotFoundException e){
-            System.out.println(e.getMessage());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        /*
-        PER TURN INFO
-         */
-        try(PrintWriter gameWriter = new PrintWriter(new File(fileName+"_gamesInfo.csv"))){
-            StringBuilder sb = new StringBuilder();
-            sb.append("GameNumber"+',');
-            sb.append("RoundNumber"+',');
-            sb.append("TurnNumber"+',');
-            sb.append("PlayerNumber"+',');
-            sb.append("DeadwoodValue"+',');
-            sb.append("CardsInDeadwood"+',');
-            sb.append("PickTime"+',');
-            sb.append("DiscardTime"+',');
-            sb.append("KnockingTime"+',');
-            sb.append("LayoutConfirmTime"+',');
-            sb.append("LayoffTime");
-            sb.append('\n');
-            for (int i = 0; i < results.size(); i++) {
-                sb.append(decodeGame(i,results.get(i)));
-            }
-            gameWriter.write(sb.toString());
+        try(PrintWriter gameWriter = new PrintWriter(fileName+".csv")){
+            gameWriter.write(s);
         }
         catch(FileNotFoundException e){
             System.out.println(e.getMessage());
@@ -68,64 +25,148 @@ public class CSVWriterV2 {
             e.printStackTrace();
         }
     }
-
-    public static void writeTimes(double[] times, String directory, String fileName){
-        File dir = new File(directory);
-        dir.mkdirs();
-        fileName = directory+fileName;
-        /*
-        PER ROUND INFO
-         */
-        try(PrintWriter gameWriter = new PrintWriter(new File(fileName+"_endOfGame.csv"))){
-            StringBuilder sb = new StringBuilder();
-            sb.append("Game").append(',').append("Time").append("\n");
-            for (int i = 0; i < times.length; i++) {
-                sb.append(i).append(',').append(times[i]).append("\n");
-            }
-            gameWriter.write(sb.toString());
-        }
-        catch(FileNotFoundException e){
-            System.out.println(e.getMessage());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public static void writeAll(List<GameState> g, String directory, String fileName){
+        write(endOfRounds(g), directory, fileName+"_EndOfRounds");
+        write(endOfGames(g), directory, fileName+"_EndOfGames");
     }
-    public static String endOfRoundDecoder(List<GameInfo> results){
+
+    // Get CSV format of the end of every round
+
+    public static String endOfRounds(List<GameState> g){
+        return onlyEndOfRoundsTitleRow(g) + '\n' +
+                onlyEndOfRounds(g);
+    }
+
+    /**
+     * Game, Round, P0 Score, ..., Pi Score, Winner, Turns ,P0 Win, ..., Pi Win, P0 Deadwood, ..., Pi Deadwood
+     * Assumes all games have same nb of players.
+     * @param g games
+     * @return csv format
+     */
+    private static String onlyEndOfRoundsTitleRow(List<GameState> g){
+        return "Game" + ',' + onlyEndOfRoundsTitleRow(g.get(0));
+    }
+    private static String onlyEndOfRounds(List<GameState> g){
         StringBuilder sb = new StringBuilder();
-        for(int i =0; i<results.size();i++){
-            for (EndOfRoundInfo roundInfo : results.get(i).roundInfos) {
-                sb.append(i).append(',');
-                sb.append(roundInfo.csvString());
-                sb.append('\n');
+        for (int i = 0; i < g.size(); i++) {
+            String[] lines = onlyEndOfRounds(g.get(i)).split("\r\n|\r|\n");
+            for (String line : lines) {
+                sb.append(i).append(',').append(line).append('\n');
             }
         }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Round, P0 Score, ..., Pi Score, Winner, Turns ,P0 Win, ..., Pi Win, P0 Deadwood, ..., Pi Deadwood
+     * @param g game to get title csv of
+     * @return csv format
+     */
+    private static String onlyEndOfRoundsTitleRow(GameState g){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Round").append(',');
+        for (int i = 0; i < g.round(0).numberOfPlayers(); i++) {
+            sb.append("P").append(i).append(" Score").append(',');
+        }
+        return sb.toString() + onlyEndOfRoundTitleRow(g.round(0));
+    }
+    private static String onlyEndOfRounds(GameState g) {
+        StringBuilder sb = new StringBuilder();
+        int[] scores = new int[g.nbOfPlayers];
+        for (int i = 0; i < g.rounds.size(); i++) {
+            for (int j = 0; j < scores.length; j++) {
+                scores[j] += g.round(i).points()[j];
+            }
+            sb.append(i).append(',');
+            for (int score : scores) {
+                sb.append(score).append(',');
+            }
+            sb.append(onlyEndOfRound(g.round(i))).append('\n');
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Winner, Turns ,P0 Win, ..., Pi Win, P0 Deadwood, ..., Pi Deadwood
+     * @param r round
+     * @return csv format title
+     */
+    private static String onlyEndOfRoundTitleRow(RoundState r){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Winner").append(',').append("Turns");
+        StringBuilder deadwood = new StringBuilder();
+        for (int i = 0; i < r.numberOfPlayers(); i++) {
+            sb.append(',').append("P").append(i).append(" Win");
+            deadwood.append(',').append("P").append(i).append(" Deadwood");
+        }
+        sb.append(deadwood.toString());
         return sb.toString();
     }
-
-    public static String decodeGame(int game, GameInfo result){
+    private static String onlyEndOfRound(RoundState r){
         StringBuilder sb = new StringBuilder();
-        List<List<List<int[]>>> d = result.deadwoodOverTurns;
-        List<List<List<double[]>>> t = result.timesOverTurns;
-        for (int round = 0; round < d.size(); round++) {
-            for (int turn = 0; turn < d.get(round).size(); turn++) {
-                for (int player = 0; player < d.get(round).get(turn).size(); player++) {
-                    sb.append(game).append(',');
-                    sb.append(round).append(',');
-                    sb.append(turn).append(',');
-                    sb.append(player).append(',');
-                    sb.append(d.get(round).get(turn).get(player)[0]).append(',');
-                    sb.append(d.get(round).get(turn).get(player)[1]).append(',');
-                    sb.append(t.get(round).get(turn).get(player)[0]).append(',');
-                    sb.append(t.get(round).get(turn).get(player)[1]).append(',');
-                    sb.append(t.get(round).get(turn).get(player)[2]).append(',');
-                    sb.append(t.get(round).get(turn).get(player)[3]).append(',');
-                    sb.append(t.get(round).get(turn).get(player)[4]);
-                    sb.append('\n');
-                }
-            }
+        StringBuilder deadwood = new StringBuilder();
+        sb.append(r.winner()).append(',').append(r.turnsPlayed());
+        for (int i = 0; i < r.layouts().length; i++) {
+            sb.append(',').append(r.points()[i]);
+            deadwood.append(',').append(r.layouts()[i].deadwoodValue());
         }
+        return sb.toString() + deadwood.toString();
+    }
+
+    // Get CSV format of the end of every game
+
+    public static String endOfGames(List<GameState> g){
+        return onlyEndOfGamesTitleRow(g) + '\n' +
+                onlyEndOfGames(g);
+    }
+
+    /**
+     * Game, Rounds, P0 Score, ..., Pi Score, Winner
+     * @param g games
+     * @return title for csv format
+     */
+    private static String onlyEndOfGamesTitleRow(List<GameState> g){
+        return "Game" + ',' + onlyEndOfGameTitleRow(g.get(0));
+    }
+    /**
+     * Game, Rounds, P0 Score, ..., Pi Score, Winner
+     * @param g games
+     * @return csv format
+     */
+    private static String onlyEndOfGames(List<GameState> g){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < g.size(); i++) {
+            sb.append(i).append(',').append(onlyEndOfGame(g.get(i))).append('\n');
+        }
+        return sb.toString().trim();
+    }
+    /**
+     * Rounds, P0 Score, ..., Pi Score, Winner
+     * @param g game
+     * @return title for csv format
+     */
+
+    private static String onlyEndOfGameTitleRow(GameState g){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Rounds").append(',');
+        for (int i = 0; i < g.nbOfPlayers; i++) {
+            sb.append("P").append(i).append(" Score").append(',');
+        }
+        sb.append("Winner");
+        return sb.toString();
+    }
+    /**
+     * Rounds, P0 Score, ..., Pi Score, Winner
+     * @param g game
+     * @return csv format
+     */
+    private static String onlyEndOfGame(GameState g){
+        StringBuilder sb = new StringBuilder();
+        sb.append(g.getRoundNumber()).append(',');
+        for (int point : g.points) {
+            sb.append(point).append(',');
+        }
+        sb.append(g.winner());
         return sb.toString();
     }
 }

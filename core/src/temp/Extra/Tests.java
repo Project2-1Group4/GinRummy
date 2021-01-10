@@ -1,31 +1,23 @@
 package temp.Extra;
 
-import temp.Extra.PostGameInformation.*;
-import temp.GameLogic.Entities.HandLayout;
-import temp.GameLogic.Entities.Step;
+
+import temp.Extra.PostGameInformation.CSVWriterV2;
 import temp.GameLogic.Game;
-import temp.GameLogic.GameActions.Action;
-import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.GameState;
-import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Tests {
 
-    public static boolean print = true;
-    private static boolean saveTurnInfo = false;
+    public static boolean print = false;
 
     public static void main(String[] args) {
         GamePlayer[] players = new GamePlayer[]{
-                new basicGreedyTest(),
-                new MCTSv1(),
+                new MCTSv1(200, 1, 1.4, 10),
+                new basicGreedyTest()
         };
         int games = 1; // Set nb of games
         Integer seed = null; // Set seed
@@ -40,16 +32,7 @@ public class Tests {
         for (int i = 0; i < players.length; i++) {
             System.out.println("Player "+i+" win%: "+(wins[i]/(double)games));
         }
-        List<Result> r = results.get(0).toResult();
-        int i=1;
-        for (Result result : r) {
-            System.out.println("\nRound "+i+": "+result.r+"\n");
-            i++;
-        }
-        System.out.println(Result.getScores(r));
-
-        //System.out.println(Result.getScores(r));
-        //CSVWriterV2.write(results, "Results/Delete this/","n");
+        CSVWriterV2.write(CSVWriterV2.endOfRounds(results), "Results/test/", "test1");
     }
 
     public static List<GameState> runGames(GamePlayer[] players, int numberOfGames, Integer seed){
@@ -61,14 +44,24 @@ public class Tests {
         }
         List<GameState> results = new ArrayList<>();
         for(int i=0; i <numberOfGames; i++){
-            System.out.println("Game "+i);
-            results.add(runGame(players,rd.nextInt()));
+            if(print){
+                System.out.println("Game "+i);
+            }
+            results.add(runGameSaveTimes(players,rd.nextInt()));
         }
         return results;
     }
 
     public static GameState runGame(GamePlayer[] players, int seed) {
         Game game = new Game(Arrays.asList(players), seed, print);
+        return game.playOutGame();
+    }
+
+    public static GameState runGameSaveTimes(GamePlayer[] players, int seed){
+        Game game = new Game(Arrays.asList(players), seed, print);
+        while(!game.gameEnded()){
+            game.continueGame();
+        }
         return game.playOutGame();
     }
 }

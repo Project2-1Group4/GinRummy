@@ -42,6 +42,7 @@ public class Result {
         StringBuilder sb = new StringBuilder();
         int[] points = new int[r.get(0).pointsWon.length];
         sb.append("Start: ").append(Arrays.toString(points)).append("\n");
+        sb.append("Start: ").append(Arrays.toString(points)).append(" ");
         for (int i = 0; i < r.size(); i++) {
             for (int j = 0; j < points.length; j++) {
                 points[j]+= r.get(i).pointsWon[j];
@@ -49,6 +50,8 @@ public class Result {
             sb.append("Round ").append(i+1).append(": ");
             sb.append(Arrays.toString(points));
             sb.append("\n");
+            sb.append("Round ").append(i+1).append(" ");
+            sb.append(Arrays.toString(points)).append(" ");
         }
         return sb.toString();
     }
