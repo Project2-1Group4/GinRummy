@@ -1,6 +1,5 @@
 package temp.GameLogic.GameActions;
 
-import temp.GameLogic.Entities.Step;
 import temp.GameLogic.States.RoundState;
 
 public class EndSignal extends Action{
@@ -12,12 +11,12 @@ public class EndSignal extends Action{
 
     @Override
     protected boolean specificSame(Object other) {
-        return false;
+        return other instanceof EndSignal && ((EndSignal) other).endOfGame == endOfGame;
     }
 
     @Override
     protected boolean specificCanDo(RoundState state) {
-        return false;
+        return true;
     }
 
     @Override
@@ -32,6 +31,6 @@ public class EndSignal extends Action{
 
     @Override
     protected String specificToString() {
-        return null;
+        return endOfGame? "End Of Game." : "End Of Round";
     }
 }
