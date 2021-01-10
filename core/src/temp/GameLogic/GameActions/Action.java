@@ -30,7 +30,7 @@ public abstract class Action {
     }
     //Do
     public boolean canDo(RoundState state, boolean respectCurrentTurn){
-        return(!respectCurrentTurn || (state.turn()!=null && state.turn().playerIndex == playerIndex && state.turn().step == step)) && specificCanDo(state);
+        return ((!respectCurrentTurn || (state.turn()!=null && state.turn().playerIndex == playerIndex && state.turn().step == step) || this instanceof EndSignal) && specificCanDo(state));
     }
     public boolean doAction(RoundState state, boolean respectCurrentTurn){
         if(canDo(state, respectCurrentTurn)){
