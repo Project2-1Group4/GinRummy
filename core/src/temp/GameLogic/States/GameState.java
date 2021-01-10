@@ -10,12 +10,13 @@ import temp.GameRules;
 import java.util.*;
 
 public class GameState {
-    private final Stack<MyCard> gameDeck;
-    private final Stack<RoundState> rounds;
-    private final int[] points;
-    private final int nbOfPlayers;
-    private final Random rd;
-    private boolean locked = false;
+    public final Stack<MyCard> gameDeck;
+    public final Stack<RoundState> rounds;
+    public final int[] points;
+    public final int nbOfPlayers;
+    public final Random rd;
+    public boolean locked = false;
+
     public GameState(int nbOfPlayers, Stack<MyCard> gameDeck,Integer seed){
         this.nbOfPlayers = nbOfPlayers;
         this.gameDeck = (Stack<MyCard>) gameDeck.clone();
@@ -28,7 +29,6 @@ public class GameState {
         rounds = new Stack<>();
         points = new int[nbOfPlayers];
     }
-
     public GameState(RoundState initRound, Integer seed) {
         if(seed==null){
             rd = new Random();
@@ -72,11 +72,25 @@ public class GameState {
         }
         return highest;
     }
+    public Integer winner(){
+        int highest = getHighestScoreIndex();
+        if(points[highest]>=GameRules.pointsToWin){
+            return highest;
+        }
+        return null;
+    }
     public int[] getPoints(){
         return points;
     }
     public boolean locked() {
         return locked;
+    }
+    public List<Result> toResult() {
+        List<Result> r = new ArrayList<>();
+        for (RoundState round : rounds) {
+            r.add(new Result(round));
+        }
+        return r;
     }
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -108,13 +122,5 @@ public class GameState {
     }
     public void lock() {
         locked = true;
-    }
-
-    public List<Result> toResult() {
-        List<Result> r = new ArrayList<>();
-        for (RoundState round : rounds) {
-            r.add(new Result(round));
-        }
-        return r;
     }
 }
