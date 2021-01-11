@@ -127,22 +127,18 @@ public class Tests {
         long interStart = 0;
         long intraStart = 0;
         while(!game.gameEnded()){
+            intraStart = System.nanoTime();
             if(saveIntraTurnInfo || saveInterTurnInfo){
                 turn = game.turn();
                 roundIndex = game.roundNumber()-1;
                 turnIndex = game.turnNumber();
-                if(saveIntraTurnInfo){
-                    intraStart = System.nanoTime();
-                }
                 if(saveInterTurnInfo) {
                     if(game.turn().step == Step.Pick){
                         interStart = System.nanoTime();
                     }
                 }
             }
-
             game.continueGame();
-
             double stepTime = (System.nanoTime() - intraStart) / (double) 1_000_000_000;
             if(printTurns){
                 System.out.println("Took "+stepTime+" seconds.");
@@ -181,7 +177,6 @@ public class Tests {
                     interTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][1] = deadwood;
                 }
             }
-            intraStart = System.nanoTime();
         }
     }
 }
