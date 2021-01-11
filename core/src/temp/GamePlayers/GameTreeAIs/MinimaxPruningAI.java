@@ -1,9 +1,6 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.Card;
-import cardlogic.SetOfCards;
-import gameHandling.Player;
-import temp.GameLogic.Game;
+import temp.Extra.GA.GameLogic;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
 import temp.GameLogic.Entities.MyCard;
@@ -14,28 +11,17 @@ import java.util.List;
 
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
-    boolean AITurn;
-    public SetOfCards hand;
-    public SetOfCards pile;
-    public SetOfCards unknownCards;
-    boolean playerKnock = false;
-    boolean AIknock = false;
-    static int round = 0;
-    //public static SetOfCards deck;
+
+    public List<MyCard> hand;
+    public List<MyCard> pile;
+    public List<MyCard> unknownCards;
     int maxDepthOfTree = 4;
     private List<MyCard> backupHand;
-
-
-    public List<Card> discardedCards = new ArrayList<>();
-
-
-    public MinimaxPruningAI(GametreeAI tree, SetOfCards pile, SetOfCards hand, SetOfCards unknown) {
-        this.tree = tree;
-        this.hand = hand;
-        this.pile = pile;
-        this.unknownCards = unknown; //include deck and opponent hand
-        AITurn = true;
-    }
+    private double[][] probMap = new double[4][13];
+    public List<MyCard> discardedCards = new ArrayList<>();
+    private boolean nullMove;
+    //variable for null move heuristic
+    private int R;
 
     public MinimaxPruningAI(GametreeAI tree) {
         this.tree = tree;
@@ -43,213 +29,124 @@ public class MinimaxPruningAI extends GamePlayer {
         this.pile = tree.discardPile;
         this.unknownCards = tree.cardsUnknown;
     }
-
     public MinimaxPruningAI(){
         super();
     }
 
-
-    public void pickedCard() {
-        AITurn = false;
-    }
-
     // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
-    public Node alphaBetaPruning(Node node, Node alpha, Node beta, boolean maxPlayer) {
-        if ((node.getChildren().size() == 0) || node.playerStop || node.AIStop) {
+    public Node alphaBetaPruning(Node node, Node alpha, Node beta, boolean maxPlayer, int maxDepth) {
+        if (node.getChildren().size() == 0 || node.playerStop || node.AIStop || node.getDepthTree() == maxDepth) {
             return node;
         }
+        // null move heuristic
+        if(nullMove && node.getDepthTree() >= 2){
+            int move = 0;
+            if(node.getChildren().size() == 1){
+               move = 0;
+            }
+            else{
+                Random moveGenerator  =new Random();
+                System.out.println("children size = " +node.getChildren().size());
+                move = moveGenerator.nextInt(node.getChildren().size()-1);
+            }
 
+            if(maxPlayer){
+                Node evalNode = alphaBetaPruning(node.getChildren().get(move), alpha, beta, false, node.getDepthTree() -1 - R);
+                if(evalNode.getHandValue() <= alpha.getHandValue()){
+                    Node maxNode = alpha;
+                    return maxNode;
+                }
+            }
+            else{
+                Node evalNode = alphaBetaPruning(node.getChildren().get(move), alpha, beta, true, node.getDepthTree() -1 - R);
+                if(evalNode.getHandValue() >= beta.getHandValue()){
+                    Node minNode = beta;
+                    return minNode;
+                }
+            }
+        }
+        // basic alphabeta
         if (maxPlayer) {
-            //System.out.println("run alpha beta with max player");
             Node maxNode = new Node(false); //node with negative inf hand value
-            //Node maxNode = null;
             for (Node child : node.getChildren()) {
-                Node evalNode = alphaBetaPruning(child, alpha, beta, false);
-                //System.out.println("evalNode: "+evalNode);
+                Node evalNode = alphaBetaPruning(child, alpha, beta, false, maxDepthOfTree);
                 maxNode = Node.getNodeMax(alpha, evalNode);
-                //System.out.println("max node: "+maxNode);
-                alpha = Node.getNodeMax(alpha, evalNode);
-                //System.out.println("alpha: "+alpha);
+                alpha = maxNode;
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
-            //System.out.println("max node: "+maxNode);
             return maxNode;
         } else {
-            //System.out.println("run alpha beta with min player");
             Node minNode = new Node(true); // node with positive inf hand value
-            //Node minNode = null;
             for (Node child : node.getChildren()) {
-                Node evalNode = alphaBetaPruning(child, alpha, beta, true);
+                Node evalNode = alphaBetaPruning(child, alpha, beta, true, maxDepthOfTree);
                 minNode = Node.getNodeMin(beta, evalNode);
-                //System.out.println("min node: "+minNode);
-                beta = Node.getNodeMin(beta, evalNode);
+                beta = minNode;
                 if (beta.getHandValue() <= alpha.getHandValue())
                     break;
             }
-            //System.out.println("min node: "+minNode);
             return minNode;
         }
     }
+    //activation of the basic minimax with aplha beta pruning
+    public Node basicAlphaBeta(Node root){
+        return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
+    }
+    // activation fo the iterative deepening
+    public Node iterativeDeepening(Node root){
+        Node pickNode = root;
+        for(int i = 1; i <= maxDepthOfTree; i++){
+            pickNode = alphaBetaPruning(root, new Node(false), new Node(true), true, i);
+        }
+        return pickNode;
+    }
 
-    public Card[] getNodeReturn() {
+    //activation of the null move heuristic
+    public Node nullMove(Node root){
+        nullMove = true;
+        R = 1;
+        return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
+    }
+
+    // method to get the node that the alpha beta pruning found
+    public MyCard[] getNodeReturn() {
         //create the tree
         Node parent = tree.getRootNode();
-        List<Card> currentHand = Player.copyList(parent.hand.toList(), false);
-        System.out.println("current bot hand: "+currentHand);
-        Node pickNode = alphaBetaPruning(parent, new Node(false), new Node(true), true);
-        //System.out.println("pick node (hoping hand): "+pickNode);
-
-
-        for(Card card : unknownCards.toList()){
+        List<MyCard> currentHand = GametreeAI.cloneMyCardList(parent.hand);
+        // pick desired alpha beta method (basicAlphaBeta, iterativeDeepening, nullMove)
+        nullMove = false;
+        Node pickNode = basicAlphaBeta(parent);
+        for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
-                pickNode.unknownCards.addCard(card);
+                pickNode.unknownCards.add(card);
             }
         }
         unknownCards = pickNode.unknownCards;
+        probMap = pickNode.getProbMap();
 
-        List<Card> newHand = Player.copyList(pickNode.hand.toList(), false);
-        Card pickCard = null;
-        for(Card card : newHand) {
+        List<MyCard> newHand = GametreeAI.cloneMyCardList(pickNode.hand);
+        MyCard pickCard = null;
+        for(MyCard card : newHand) {
             if (!currentHand.contains(card)) {
                 pickCard = card;
             }
         }
 
         //loop through newHand to get the new card
-
-        System.out.println("pick card: "+pickCard);
-        Card discardCard = null;
+        MyCard discardCard = null;
 
         //if pickCard and discardCard are both null. It means that after simulating the bot does not want to change the hand
         //at current state
         //loop through old hand to get the card be discarded
-        for(Card card : currentHand) {
+        for(MyCard card : currentHand) {
             if (!newHand.contains(card)) {
                 discardCard = card;
             }
         }
-
-        System.out.println("discard card: "+discardCard);
-
-        return new Card[] {pickCard, discardCard};
+        return new MyCard[] {pickCard, discardCard};
     }
 
-/*
-    public void chooseNode() {
-        Card[] pick_discard = this.getNodeReturn();
-        Card pickCard = pick_discard[0];
-        Card discardCard = pick_discard[1];
 
-        if (pickCard != null && pickCard.equals(pile.peekTopCard())){
-            System.out.println("AI pick from pile: "+pickCard);
-            pile.discardCard(pickCard);
-            pile.addCard(discardCard);
-            hand.addCard(pickCard);
-            hand.discardCard(discardCard);
-
-        }
-        else{
-            // should pick from actual deck instead of cardsunknown in tree since in game you get topcard from deck
-            // discard card then also should be changed instead of the node one because your new card is probably different
-             this one changes to the rule below (I am not really sure this one makes any senses or not)
-            if the search return the card from pile  -> pick pile otherwise get card from deck (we have the prob that we can pick the likely card but still not sure)
-
-            pickCard = deck.drawTopCard();
-            deck.discardCard(pickCard);
-            hand.addCard(pickCard);
-            discardCard = GametreeAI.chooseCardToDiscard(hand.toList());
-            hand.discardCard(discardCard);
-            pile.addCard(discardCard);
-            System.out.println("AI pick from deck: "+pickCard);
-            //pickCard is now known so remove from unknowncards
-            unknownCards.discardCard(pickCard);
-        }
-
-        System.out.println("bot hand after play: "+hand);
-        System.out.println("Card discard from bot: "+discardCard);
-        //update tree
-    }
-*/
-    public boolean AIknock() {
-        int score = Player.scoreHand(this.hand.toList());
-        System.out.println("hand score: "+score);
-        if (score < 10) {
-            System.out.println("Bot wins the game!!");
-            AIknock = true;
-            return true;
-        }
-        else
-            return false;
-    }
-/*
-    public void playGame(SetOfCards opponentHand, SetOfCards deck){
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Scanner sc = new Scanner(System.in);
-        System.out.println("deck size: "+deck.size());
-        System.out.println("deck top card: "+deck.getCard(deck.size()-1));
-        // AI's turn
-        //System.out.println("bot hand before turn: "+hand);
-        System.out.println("Discard pile before bot discard: " + pile);
-        chooseNode(deck);
-        //System.out.println("bot hand after turn: "+hand);
-        // opponents turn
-        System.out.println("Player 2, it's your turn");
-        //System.out.println("Discard pile:" + pile.getCard(pile.size()-1));
-        System.out.println("Discard pile:" + pile);
-
-        System.out.println("Current player hand:" + opponentHand.toList());
-        System.out.println("Pick Deck or Pile");
-        // get choice of opponent from which pile it gets new card
-        String choice = "pile";
-        try {
-            choice = reader.readLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // update probs
-        Node current = new Node(pile, hand, unknownCards, new SetOfCards(false, false), 0);
-        if(choice.equals("pile")){
-            this.tree.simulationPickPile(current);
-            unknownCards = this.tree.getCardsUnknown();
-            opponentHand.addCard(pile.drawTopCard());
-        }
-        else{
-            this.tree.simulationPickDeck(current);
-            unknownCards = this.tree.getCardsUnknown();
-            opponentHand.addCard(deck.drawTopCard());
-        }
-        //current.unknownCards = unknownCards;
-        System.out.println("New player hand: " + opponentHand.toList());
-        System.out.println("Pick a card to discard");
-        int cardDiscard = sc.nextInt();
-        if (cardDiscard < opponentHand.size()) {
-            Card aCard = opponentHand.getCard(cardDiscard);
-            this.tree.simulationDiscard(current, aCard);
-            opponentHand.discardCard(aCard);
-            this.pile.addCard(aCard);
-            unknownCards.discardCard(aCard);
-            //unknownCards = this.tree.getCardsUnknown();
-
-        }
-
-        boolean knock = Player.chooseToKnock(opponentHand);
-
-        if (knock) {
-            System.out.println("yes to knock otherwise continue!!!");
-            String chooseToKnock = sc.nextLine();
-            if (chooseToKnock.equals("yes")) {
-                playerKnock = true;
-            }
-            else
-                playerKnock = false;
-        }
-        tree.createTree(false);
-
-
-    }
-*/
 
     public static void main(String[] args) {
         Game g = new Game(new GamePlayer[]{
@@ -259,58 +156,27 @@ public class MinimaxPruningAI extends GamePlayer {
         g.playOutGame();
     }
 
-/*
-    public static void main (String [] args){
-        // create cards for game
-        SetOfCards deck = new SetOfCards(true, false);
-        // create hand AI
-        SetOfCards hand = SetOfCards.handOutCard(10, deck);
-        System.out.println("hand: "+hand);
-        System.out.println("score: "+Player.scoreHand(hand.toList()));
-        // create pile
-        SetOfCards pile = new SetOfCards(false, false);
-        Card discardCard = deck.drawTopCard();
-        pile.addCard(discardCard);
-        // create tree
-        GametreeAI gameTree = new GametreeAI(pile, hand,deck, 4);
-        gameTree.createTree(true);
-
-        // create opponenthand
-        SetOfCards copyDeck  = new SetOfCards(deck.toList());
-        SetOfCards opponentHand = SetOfCards.handOutCard(10, copyDeck);
-        // create pruning
-        MinimaxPruningAI AI = new MinimaxPruningAI(gameTree, pile, hand, deck);
-
-        // start game
-        while(!AI.AIknock() && !AI.playerKnock){
-            //Print out some cards to see the probabilities
-
-            for(int i = 0; i<3; i++) {
-                System.out.println("test prob: "+gameTree.cardsUnknown.getCard(i+3)+" "+gameTree.cardsUnknown.getCard(i+3).getProb());
-            }
-
-
-
-        }
-        System.out.println("Bot hand card after game over: "+hand);
-        System.out.println("Win after: "+round+" rounds");
-    }
-*/
-
     /*
     If true then the player knocks and the round ends
     If false then the player doesn't knock
     */
+    public void  checkDoubles (){
+        for(int i = 0; i < unknownCards.size(); i++) {
+            if (discardedCards.contains(unknownCards.get(i))||allCards.contains(unknownCards.get(i))) {
+                this.unknownCards.remove(unknownCards.get(i));
+            }
+        }
+    }
+
+    //the ai decides to knock or continue
     @Override
     public Boolean knockOrContinue() {
-        //System.out.println("problem score "+new SetOfCards(this.allCards, false).toList());
-        int score = Player.scoreHand(new SetOfCards(this.allCards, false).toList());
-        if (score < 10) {
-            //System.out.println("Score AI " + score);
+        if (this.handLayout.getDeadwood() <= 10){
+            System.out.println("end Round");
             return true;
-        }
-        else
+        } else {
             return false;
+        }
     }
 
     /*
@@ -319,76 +185,60 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
+        System.out.println("move");
         createTree();
         this.tree.createTree(false);
-        Card[] pick_discard = this.getNodeReturn();
-        Card topCard = new Card(topOfDiscard);
+        MyCard[] pick_discard = this.getNodeReturn();
         backupHand = new ArrayList<>();
+        checkDoubles();
         if(pick_discard[0]==null){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-
             }
             return true;
         }
-        else if(!pick_discard[0].equals(topCard)){
+        else if(!pick_discard[0].equals(topOfDiscard)){
             for(int i=0; i<allCards.size();i++){
                 backupHand.add(allCards.get(i));
-
             }
+            checkDoubles();
             return true;
         }
-
         else {
-            this.discardedCards.remove(pick_discard[0]);
+            for(int i = 0; i<discardedCards.size();i++){
+                if(discardedCards.get(i).same(pick_discard[0])){
+                    this.discardedCards.remove(discardedCards.get(i));
+                }
+            }
+            checkDoubles();
             return false;
         }
-
     }
+
 
     /*
     Returns the card that wants to be removed from the current hand
-
-    I dont know this one does not work with this algo cuz we should have deck as param to choose whether bot wants to
-    pick from deck or pile then he will have different options discard card. I will make a different one having param deck
-    but you can always modify it
-
      */
     @Override
     public MyCard discardCard() {
-        if(backupHand.size()!=0){
-            for(MyCard card : allCards){
-                if(!backupHand.contains(card)){
-                    Card aCard = new Card(card);
-                    for(int i =0; i<unknownCards.size();i++) {
-                        if (aCard.getSuit() == unknownCards.getCard(i).getSuit() && aCard.getValue() == unknownCards.getCard(i).getValue()) {
-                            unknownCards.discardCard(unknownCards.getCard(i));
+        checkDoubles();
+        if(backupHand.size()!=0) {
+            for (MyCard card : allCards) {
+                if (!backupHand.contains(card)) {
+
+                    for (int i = 0; i < unknownCards.size(); i++) {
+                        if (card.suit.index == unknownCards.get(i).suit.index && card.rank.index == unknownCards.get(i).rank.index){
+                            unknownCards.remove(unknownCards.get(i));
                         }
                     }
                 }
             }
         }
-        //System.out.println("problem discard "+ new SetOfCards(this.allCards, false).toList());
-        Card aCard = GametreeAI.chooseCardToDiscard(new SetOfCards(this.allCards, false).toList());
+        MyCard aCard = GametreeAI.chooseCardToDiscard(this.allCards);
         this.discardedCards.add(aCard);
-        MyCard discard = new MyCard(aCard);
-        return discard;
+        return aCard;
     }
-    /*
-    public MyCard discardCard(SetOfCards deck) {
-        MyCard topCard = new MyCard(pile.peekTopCard());
-        if (this.pickDeckOrDiscard(unknownCards.size()-10, topCard)) {
-            Card[] pick_discard = this.getNodeReturn();
-            return new MyCard(pick_discard[1]);
-        }
-        else {
-            List<Card> copyHand = Player.copyList(this.hand.toList(), false);
-            copyHand.add(deck.peekTopCard());
-            Card discard = GametreeAI.chooseCardToDiscard(copyHand);
-            return new MyCard(discard);
-        }
-    }
-*/
+
     /*
     It's called everytime the player's hand is changed
     So this means it's called when:
@@ -399,28 +249,18 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void update(List<MyCard> realLayout) {
         super.update(realLayout);
-        //SetOfCards cardList = new SetOfCards(realLayout);
-
     }
 
     public void createTree(){
-        this.tree = new GametreeAI(new SetOfCards(this.discardedCards),new SetOfCards(this.allCards, false)
-                , this.unknownCards, this.maxDepthOfTree);
-
+        this.tree = new GametreeAI(this.discardedCards,this.allCards, this.unknownCards, this.maxDepthOfTree, this.probMap);
     }
 
-    public static List<Card> findRemainingCards(List<Card> hand, List<Card> discardPile){
-        List<Card> temp = new ArrayList<>(hand);
-        temp.addAll(discardPile);
-        return findRemainingCards(temp);
-    }
+    public static List<MyCard> findRemainingCards(List<MyCard> hand, List<MyCard> discardPile){
+        List<MyCard> knownCards = new ArrayList<>(hand);
+        knownCards.addAll(discardPile);
+        List<MyCard> cardList = MyCard.getBasicDeck();
 
-    public static List<Card> findRemainingCards(List<Card> knownCards){
-        SetOfCards allCards = new SetOfCards(true, false);
-        List<Card> cardList = allCards.toList();
-
-        // TODO: Check that this remove method is working properly
-        for(Card aCard: knownCards){
+        for(MyCard aCard: knownCards){
             cardList.remove(aCard);
         }
 
@@ -433,10 +273,27 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void newRound(MyCard topOfDiscard) {
         this.discardedCards = new ArrayList<>();
-        this.discardedCards.add(new Card(topOfDiscard));
-        this.unknownCards = new SetOfCards(findRemainingCards(new SetOfCards(this.allCards, false).toList(), this.discardedCards));
+        this.discardedCards.add(new MyCard(topOfDiscard));
+        this.unknownCards = findRemainingCards(this.allCards, this.discardedCards);
+        probMap = new double[4][13];
+        for(MyCard card: unknownCards){
+            this.setProbability(card, 1.0/41.0);
+        }
+
         createTree();
         this.tree.createTree(true);
+    }
+
+    void setProbability(MyCard card, double val){
+        if(val >= 1.0){
+            probMap[card.suit.index][card.rank.index] = 1.0;
+        }
+        else if(val <= 0.0) {
+            probMap[card.suit.index][card.rank.index] = 0.0;
+        }
+        else {
+            probMap[card.suit.index][card.rank.index] = val;
+        }
     }
 
     /*
@@ -446,13 +303,14 @@ public class MinimaxPruningAI extends GamePlayer {
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
         MyCard disCard = discardAction.card;
-        Card discardedCard = new Card(disCard);
-        this.discardedCards.add(discardedCard);
-        Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
+        checkDoubles();
+        this.discardedCards.add(disCard);
+        Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
         for(int i =0; i<unknownCards.size();i++){
-            if(discardedCard.getSuit()==unknownCards.getCard(i).getSuit()&& discardedCard.getValue() == unknownCards.getCard(i).getValue()){
-                this.unknownCards = this.tree.updateProbDiscard(current,discardedCard);
-                this.unknownCards.discardCard(unknownCards.getCard(i));
+            if(disCard.suit.index ==unknownCards.get(i).suit.index&& disCard.rank.index == unknownCards.get(i).rank.index){
+                this.unknownCards = this.tree.updateProbDiscard(current,disCard);
+                this.probMap = this.tree.probMap;
+                this.unknownCards.remove(unknownCards.get(i));
             }
         }
     }
@@ -464,19 +322,25 @@ public class MinimaxPruningAI extends GamePlayer {
      */
     @Override
     public void playerPicked(PickAction pickAction) {
-
         if(!pickAction.deck){
-            MyCard aCard = pickAction.card();
-            Card pickedCard = new Card(aCard);
-            this.discardedCards.remove(pickedCard);
-            Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
+            checkDoubles();
+            MyCard pickedCard = pickAction.card;
+            for(int i = 0; i<discardedCards.size();i++){
+                if(discardedCards.get(i).same(pickedCard)){
+                    this.discardedCards.remove(discardedCards.get(i));
+                }
+            }
+            Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0, this.probMap );
             this.unknownCards = this.tree.updateProbPickPile(current,pickedCard);
+            this.probMap= this.tree.probMap;
+
         }
         else{
-            Node current = new Node(new SetOfCards(this.discardedCards), new SetOfCards(this.allCards, false), this.unknownCards,new SetOfCards(this.allCards, false), 0 );
-            Card notChosen = new Card(this.discardedCards.get(discardedCards.size()-1));
+            checkDoubles();
+            Node current = new Node(this.discardedCards, this.allCards, this.unknownCards,this.allCards, 0,this.probMap );
+            MyCard notChosen = new MyCard(this.discardedCards.get(discardedCards.size()-1));
             this.unknownCards = this.tree.updateProbDiscard(current,notChosen);
+            this.probMap= this.tree.probMap;
         }
     }
-
 }

@@ -21,9 +21,10 @@ public class MyCard {
         this.rank = Rank.getRank(j);
     }
 
-    public MyCard(Card aCard){
-        this.suit = Suit.getSuit(aCard.getSuitVal());
-        this.rank = Rank.getRank(aCard.getValue()-1) ;
+    // TODO: Make sure that these deep copies are properly done
+    public MyCard(MyCard aCard){
+        this.suit = Suit.getSuit(aCard.suit.index);
+        this.rank = Rank.getRank(aCard.rank.index);
     }
 
     // GETTERS
@@ -88,7 +89,7 @@ public class MyCard {
 
         Rank(int index) {
             this.index = index;
-            this.value = index + 1;
+            this.value = index +1;
             this.ginValue = Math.min(value, 10);
         }
 
@@ -162,4 +163,11 @@ public class MyCard {
         }
         return deck;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        MyCard card = (MyCard) o;
+        return (this.rank.index == card.rank.index && this.suit.index == card.suit.index);
+    }
+
 }

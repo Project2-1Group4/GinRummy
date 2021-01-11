@@ -1,51 +1,73 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.SetOfCards;
-import gameHandling.Player;
-import temp.GameLogic.Entities.MyCard;
+import org.jetbrains.annotations.NotNull;
+import temp.GameLogic.MELDINGOMEGALUL.Finder;
+import temp.GameLogic.MELDINGOMEGALUL.Meld;
+import temp.GameLogic.MyCard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class Node {
-    public SetOfCards discardPile;
-    public SetOfCards hand;
-    public SetOfCards unknownCards;
-    public SetOfCards opponentHand;
+public class Node implements Comparable {
+    /*
+    Main change I did was change from set of cards into List<MyCard>
+    From there on I went through the code and tried to fix all of the red lines that appeared
+    That's the gist of it tbh
+     */
+
+    public List<MyCard> discardPile;
+    public List<MyCard> hand;
+    public List<MyCard> unknownCards;
+    public List<MyCard> opponentHand;
     public boolean winOrLose;
     public int handValue; //not deadwood value, constant - deadwood, (for easier implementation pruning)
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
 
+    public static final int constantScore = 100;
+
     private int depthTree;
-    protected HashMap<MyCard, Double> probMap = new HashMap<>();
+    //protected HashMap<MyCard, Double> probMap = new HashMap<>();
+    private double[][] probMap = new double[4][13];
 
     public boolean playerStop = false; // when game is over this one turns to be true
     public boolean AIStop = false; // turn to be true when game is over
 
-    public Node(SetOfCards pile, SetOfCards cards, SetOfCards unknownCards, SetOfCards opponentHand, int depth) {
+    public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth) {
         this.discardPile = pile;
         this.hand = cards;
         this.unknownCards = unknownCards;
         this.opponentHand = opponentHand;
         this.depthTree = depth;
 
-        int pScore = Player.scoreHand(hand.toList());
-        int opHand = Player.scoreHand(opponentHand.toList());
-
+        int pScore = Finder.findBestHandLayout(hand).getDeadwood(); //Player.scoreHand(hand.toList());
+        int opHand = Finder.findBestHandLayout(opponentHand).getDeadwood();//Player.scoreHand(opponentHand.toList());
+       // System.out.println("probabilities = " + Arrays.deepToString(probMap));
+        //System.out.println(" ");
         if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
-        handValue = Player.getHandValue(cards.toList());
+        handValue = Node.getHandValue(cards);
+
+        this.setDefaultProbabilities();
+    }
+
+    public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth, double[][] probMap){
+        this(pile, cards, unknownCards, opponentHand, depth);
+        this.probMap = probMap;
+    }
+
+    void setDefaultProbabilities(){
+        for(MyCard card: unknownCards){
+            this.setProbability(card, 1.0/41.0);
+        }
     }
 
     public Node(boolean positiveInf) {
-        this.discardPile = new SetOfCards(false, false);
-        this.hand = new SetOfCards(false, false);
-        this.opponentHand = new SetOfCards(false, false);
-        this.unknownCards = new SetOfCards(false, false);
+        this.discardPile = new ArrayList<>();
+        this.hand = new ArrayList<>();
+        this.opponentHand = new ArrayList<>();
+        this.unknownCards = new ArrayList<>();
 
         if (positiveInf) {
             this.setHandValue(100000);
@@ -55,11 +77,34 @@ public class Node {
     }
 
     double getProbability(MyCard aCard){
-        return this.probMap.get(aCard);
+        return probMap[aCard.suit.index][aCard.rank.index];
     }
 
     void updateProbability(MyCard aCard, double aVal){
-        this.probMap.put(aCard, aVal);
+        probMap[aCard.suit.index][aCard.rank.index] = probMap[aCard.suit.index][aCard.rank.index]*aVal;
+    }
+
+    void setProbability(MyCard card, double val){
+        if(val >= 1.0){
+            probMap[card.suit.index][card.rank.index] = 1.0;
+        }
+        else if(val <= 0.0) {
+            probMap[card.suit.index][card.rank.index] = 0.0;
+        }
+        else {
+            probMap[card.suit.index][card.rank.index] = val;
+        }
+    }
+
+    // TODO: Make sure it's a deep copy being made
+    double[][] getProbMap(){
+        double[][] cloneMap = new double[probMap.length][];
+
+        for(int i=0;i<probMap.length;i++){
+            cloneMap[i] = this.probMap[i].clone();
+        }
+
+        return cloneMap;
     }
 
     //we already have static method in Player class
@@ -110,23 +155,131 @@ public class Node {
     }
 
     public static Node getNodeMax(Node node1, Node node2) {
-        if (node1.getHandValue() > node2.getHandValue())
+        if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
+            int almostMelds1 = almostMelds(node1.hand);
+            int almostMelds2 = almostMelds(node2.hand);
+            if(almostMelds1 == almostMelds2){
+                if(node1.getHandValue() > node2.getHandValue()){
+                    return node1;
+                }
+                else{
+                    return node2;
+                }
+            }
+            else if(almostMelds1 < almostMelds2){
+                return node2;
+            }
+            else{
+                return node1;
+            }
+
+        }
+        else if(node1.getHandValue() > node2.getHandValue()){
             return node1;
+        }
         else
             return node2;
     }
 
     public static Node getNodeMin(Node node1, Node node2) {
-        if (node1.getHandValue() < node2.getHandValue())
+        if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
+            int almostMelds1 = almostMelds(node1.hand);
+            int almostMelds2 = almostMelds(node2.hand);
+            if(almostMelds1 == almostMelds2){
+                if(node1.getHandValue() < node2.getHandValue()){
+                    return node1;
+                }
+                else{
+                    return node2;
+                }
+            }
+            else if(almostMelds1 > almostMelds2){
+                return node2;
+            }
+            else{
+                return node1;
+            }
+
+        }
+        else if (node1.getHandValue() < node2.getHandValue())
             return node1;
         else
             return node2;
     }
 
-    public static void main(String[] args) {
-        //Node node = new Node(new SetOfCards(false, false), new SetOfCards(false, false), new SetOfCards(true, false));
-        //System.out.println(node.parent);
+    public static int almostMelds(List<MyCard> currentHand){
+        int almostMelds = 0;
+        List<MyCard> deadwoodCards = Finder.findBestHandLayout(currentHand).viewUnusedCards();
+        List<Meld>  melds = Finder.findBestHandLayout(currentHand).viewMelds();
+        List<MyCard> meldCards = new ArrayList<>();
+        for (Meld setOfMeld : melds) {
+            meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
+        }
+        for(int j = 0; j< deadwoodCards.size(); j++){
+            for(int i = 0; i< deadwoodCards.size(); i++){
+                if(deadwoodCards.get(j).rank.index == deadwoodCards.get(i).rank.index && i!=j){
+                    int cardinMeld = 2;
+                    for(int k = 0; k< meldCards.size(); k++){
+                        if(meldCards.get(k).rank.index == deadwoodCards.get(i).rank.index){
+                            cardinMeld--;
+                        }
+                    }
+                    if(cardinMeld > 0){
+                        almostMelds++;
+                    }
+                }
+                if(deadwoodCards.get(j).suit.index == deadwoodCards.get(i).suit.index && Math.abs(deadwoodCards.get(j).rank.index - deadwoodCards.get(i).rank.index) == 1 && i!=j){
+                    int cardinMeld = 1;
+                    for(int k = 0; k< meldCards.size(); k++){
+                        if(meldCards.get(k).suit.index == deadwoodCards.get(j).suit.index && Math.abs(meldCards.get(k).rank.index - deadwoodCards.get(j).rank.index) == 1 ){
+                            cardinMeld--;
+                        }
+                    }
+                    if(cardinMeld>0){
+                        almostMelds++;
+                    }
+                }
+            }
+        }
+        almostMelds = almostMelds/2;
+        return almostMelds;
     }
 
+
+    /*
+    No idea why the original handValue method was implemented as it is, but this is my attempt at bringing it to the new game system
+    All I did was copy the code and alter the deadwood method to use what exists in the new game logic
+    So hopefully this works perfectly
+     */
+    public static int getHandValue(List<MyCard> aHand) {
+        int scoreHand = Finder.findBestHandLayout(aHand).getDeadwood();
+        return constantScore - scoreHand;
+    }
+
+    public static void main(String[] args) {
+        List<MyCard> cardList = MyCard.getBasicDeck();
+        List<MyCard> tryHand = new ArrayList<>();
+        Random getcard = new Random();
+        int num =0;
+        for(int i= 0; i<10; i++){
+            num = getcard.nextInt(51);
+            tryHand.add(cardList.get(num));
+        }
+        System.out.println("hand "+tryHand);
+        int melds = almostMelds(tryHand);
+        System.out.println("almost melds amount = "+melds);
+
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        Node node = (Node) o;
+        if (this.getHandValue() > node.getHandValue())
+            return 1;
+        else if (this.getHandValue() == node.getHandValue())
+            return 0;
+        else
+            return -1;
+    }
 }
 
