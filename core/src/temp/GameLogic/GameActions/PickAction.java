@@ -37,12 +37,25 @@ public class PickAction extends Action {
 
     @Override
     public boolean specificCanDo(RoundState state) {
-        return (deck && state.deckSize()!=0 && (card==null || card.same(state.peekDeck())))
-                || (!deck && card!=null && state.discardPile().size() != 0 && card.same(state.peekDiscard()));
+        if(deck){
+            if(card==null){
+                if(state.deckSize()!=0){ return true; }
+            }
+            else {
+                if (state.deckSize() != 0 && state.peekDeck().same(card)) { return true; }
+                if (state.deckSize() == 0 && state.unassigned().contains(card)) { return true; }
+            }
+        }
+        return !deck && card != null && state.discardPile().size() != 0 && card.same(state.peekDiscard());
     }
 
     @Override
     protected void specificDo(RoundState state) {
+        if (deck && state.deckSize() == 0 && state.unassigned().contains(card)){
+            state.cards(playerIndex).add(card);
+            state.unassigned().remove(card);
+            return;
+        }
         if(deck) card = state.peekDeck();
         state.cards(playerIndex).add(deck? state.deck().pop():state.discardPile().pop());
     }
