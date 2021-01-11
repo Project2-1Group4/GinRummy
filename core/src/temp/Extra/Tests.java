@@ -8,9 +8,13 @@ import temp.GameLogic.Game;
 import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.GameState;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class Tests {
 
@@ -26,11 +30,11 @@ public class Tests {
     public static void main(String[] args) {
         GamePlayer[] players = new GamePlayer[]{
                 new basicGreedyTest(),
-                //new MCTSv1(300, 2, 1.4, 0),
-                new basicGreedyTest()
+                new MinimaxPruningAI(),
+                //new basicGreedyTest()
         };
         String[] playerNames = new String[]{
-                "MCTSv1_300_2_1.4",
+                "MinimaxPruning",
                 "basicGreedy"
         };
         String folder = "Results/test/";

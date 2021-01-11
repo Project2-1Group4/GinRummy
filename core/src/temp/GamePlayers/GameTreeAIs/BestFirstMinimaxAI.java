@@ -1,14 +1,16 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import temp.Extra.GA.GameLogic;
-import temp.GameLogic.*;
+//import temp.Extra.GA.GameLogic;
+import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.Entities.HandLayout;
 import temp.GamePlayers.GamePlayer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
 
 //the structure, parameters are the same as depth first search so I will reuse all basic methods from depth minimax
 public class BestFirstMinimaxAI extends GamePlayer {
@@ -169,10 +171,8 @@ public class BestFirstMinimaxAI extends GamePlayer {
     }
 
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
 
-        GameLogic g = new GameLogic(true, true);
-        g.play(new BestFirstMinimaxAI(), new BestFirstMinimaxAI(), 0);
 
         /*
         List<MyCard> deck = MyCard.getBasicDeck();
@@ -221,8 +221,8 @@ public class BestFirstMinimaxAI extends GamePlayer {
             bot.game(player, deck);
         }
 
-         */
-    }
+
+    }*/
 
 
 
@@ -295,7 +295,7 @@ If false then the player doesn't knock
     //the ai decides to knock or continue
     @Override
     public Boolean knockOrContinue() {
-        if (this.handLayout.getDeadwood() <= 10){
+        if (this.handLayout.deadwoodValue() <= 10){
             System.out.println("end Round");
             return true;
         } else {
@@ -371,9 +371,9 @@ If false then the player doesn't knock
         The player chooses what to discard
         After the player has discarded a card (with the new 10 card hand)
      */
-    @Override
+
     public void update(HandLayout realLayout) {
-        super.update(realLayout);
+        super.update(realLayout.cards());
     }
 
     public void createTree(){
@@ -449,7 +449,7 @@ If false then the player doesn't knock
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
             checkDoubles();
-            MyCard pickedCard = pickAction.card;
+            MyCard pickedCard = pickAction.card();
             for(int i = 0; i<discardedCards.size();i++){
                 if(discardedCards.get(i).same(pickedCard)){
                     this.discardedCards.remove(discardedCards.get(i));

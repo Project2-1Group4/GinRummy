@@ -1,12 +1,9 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import cardlogic.Card;
-import cardlogic.SetOfCards;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Logic.Finder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -382,7 +379,7 @@ public class GametreeAI {
         for(MyCard aCard : aHand){
             List<MyCard> aList = deepCloneMyCardList(aHand);
             aList.remove(aCard);
-            int resultingHand = Finder.findBestHandLayout(aList).getDeadwood();
+            int resultingHand = Finder.findBestHandLayout(aList).deadwoodValue();
             if(resultingHand <= highestVal){    //the result from scoreHand is counting deadwood value so it should be smaller than the previous step
                 theCard = aCard;
                 highestVal = resultingHand;
@@ -450,7 +447,7 @@ public class GametreeAI {
     returns true if you want to pick from discard pile, otherwise pick from the deck
      */
     public boolean evaluate(MyCard discardCard, List<MyCard> hand){
-        List<MyCard> current = Finder.findBestHandLayout(hand).viewAllCards();
+        List<MyCard> current = Finder.findBestHandLayout(hand).cards();
         current.add(discardCard);
         if(chooseCardToDiscard(current) == discardCard){
             return false;

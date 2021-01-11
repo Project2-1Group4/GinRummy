@@ -1,13 +1,15 @@
 package temp.GamePlayers.GameTreeAIs;
 
-import temp.Extra.GA.GameLogic;
+//import temp.Extra.GA.GameLogic;
+
+import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MinimaxPruningAI extends GamePlayer {
     GametreeAI tree;
@@ -148,13 +150,15 @@ public class MinimaxPruningAI extends GamePlayer {
 
 
 
-    public static void main(String[] args) {
+    // I'm just removing the main's if they're not doing anything
+    // So many testing classes is a bit redundant
+    /*public static void main(String[] args) {
         Game g = new Game(new GamePlayer[]{
                 new MinimaxPruningAI(),
                 new MinimaxPruningAI()
         }, 0);
         g.playOutGame();
-    }
+    }*/
 
     /*
     If true then the player knocks and the round ends
@@ -171,7 +175,7 @@ public class MinimaxPruningAI extends GamePlayer {
     //the ai decides to knock or continue
     @Override
     public Boolean knockOrContinue() {
-        if (this.handLayout.getDeadwood() <= 10){
+        if (this.handLayout.deadwoodValue() <= 10){
             System.out.println("end Round");
             return true;
         } else {
@@ -324,7 +328,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){
             checkDoubles();
-            MyCard pickedCard = pickAction.card;
+            MyCard pickedCard = pickAction.card();
             for(int i = 0; i<discardedCards.size();i++){
                 if(discardedCards.get(i).same(pickedCard)){
                     this.discardedCards.remove(discardedCards.get(i));
