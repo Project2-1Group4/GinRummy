@@ -38,8 +38,8 @@ public class Tests {
                 "MCTSv1",
                 "basicGreedy"
         };
-        String folder = "Results/test/";
-        int nbOfGames = 1; // Set nb of games * nb of players
+        String folder = "Results/meldBuildingVSRandom/";
+        int nbOfGames = 500; // Set nb of games * nb of players
         Integer seed = 0; // Set seed
 
         start(folder ,players,playerNames,nbOfGames, seed);
