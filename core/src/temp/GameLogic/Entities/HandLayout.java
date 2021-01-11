@@ -55,12 +55,6 @@ public class HandLayout {
             }
         }
     }
-    public List<MyCard> viewUnusedCards() {
-        return new ArrayList<>(unusedCards);}
-
-    public List<Meld> viewMelds() {
-        return Meld.deepCopy(setOfMelds);
-    }
     public void addUnusedCard(MyCard card) {
         unusedCards.add(card);
         deadwood += card.ginValue();
@@ -171,9 +165,22 @@ public class HandLayout {
         return Meld.deepCopy(setOfMelds);
     }
     public double evaluate(){
-        //TODO
-        return 0;
+        List<MyCard> notInHand = MyCard.getBasicDeck();
+        notInHand.removeAll(cards());
+        int val = 0;
+        for (int i = 0; i < notInHand.size(); i++) {
+            unusedCards.add(notInHand.get(i));
+            val+= Finder.findBestHandLayout(unusedCards).deadwoodValue();
+            for (int j = i+1; j < notInHand.size(); j++) {
+                unusedCards.add(notInHand.get(j));
+                val+= Finder.findBestHandLayout(unusedCards).deadwoodValue();
+                unusedCards.remove(notInHand.get(j));
+            }
+            unusedCards.remove(notInHand.get(i));
+        }
+        return val;
     }
+
     public HandLayout deepCopy() {
         HandLayout m = new HandLayout();
         m.setOfMelds = Meld.deepCopy(setOfMelds);

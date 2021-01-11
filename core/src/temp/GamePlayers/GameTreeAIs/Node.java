@@ -214,8 +214,8 @@ public class Node implements Comparable {
 
     public static int almostMelds(List<MyCard> currentHand){
         int almostMelds = 0;
-        List<MyCard> deadwoodCards = Finder.findBestHandLayout(currentHand).viewUnusedCards();
-        List<Meld>  melds = Finder.findBestHandLayout(currentHand).viewMelds();
+        List<MyCard> deadwoodCards = Finder.findBestHandLayout(currentHand).unused();
+        List<Meld>  melds = Finder.findBestHandLayout(currentHand).melds();
         List<MyCard> meldCards = new ArrayList<>();
         for (Meld setOfMeld : melds) {
             meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));

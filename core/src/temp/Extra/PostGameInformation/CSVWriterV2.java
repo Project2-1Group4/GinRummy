@@ -162,7 +162,6 @@ public class CSVWriterV2 {
     // Game, Rounds, Turn, P0 Deadwood, ..., Pi Deadwood ,P0 Time, ..., Pi Time
 
     public static String endOfTurns(List<List<List<double[][]>>> l){
-        System.out.println(endOfTurnsTitleRow(l));
         return endOfTurnsTitleRow(l) + '\n' +
                 onlyEndOfTurnsG(l);
     }
