@@ -1,6 +1,5 @@
 package temp.Extra.PostGameInformation;
 
-import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.States.GameState;
 import temp.GameLogic.States.RoundState;
 
@@ -30,7 +29,7 @@ public class CSVWriterV2 {
         write(endOfGames(g), directory, fileName+"_EndOfGames");
     }
 
-    // Get CSV format of the end of every round
+    // Game, Round, P0 Score, ..., Pi Score, Winner, Turns ,P0 Win, ..., Pi Win, P0 Deadwood, ..., Pi Deadwood
 
     public static String endOfRounds(List<GameState> g){
         return onlyEndOfRoundsTitleRow(g) + '\n' +
@@ -113,7 +112,7 @@ public class CSVWriterV2 {
         return sb.toString() + deadwood.toString();
     }
 
-    // Get CSV format of the end of every game
+    // Game, Rounds, P0 Score, ..., Pi Score, Winner
 
     public static String endOfGames(List<GameState> g){
         return onlyEndOfGamesTitleRow(g) + '\n' +
@@ -128,11 +127,6 @@ public class CSVWriterV2 {
     private static String onlyEndOfGamesTitleRow(List<GameState> g){
         return "Game" + ',' + onlyEndOfGameTitleRow(g.get(0));
     }
-    /**
-     * Game, Rounds, P0 Score, ..., Pi Score, Winner
-     * @param g games
-     * @return csv format
-     */
     private static String onlyEndOfGames(List<GameState> g){
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < g.size(); i++) {
@@ -140,12 +134,12 @@ public class CSVWriterV2 {
         }
         return sb.toString().trim();
     }
+
     /**
      * Rounds, P0 Score, ..., Pi Score, Winner
      * @param g game
      * @return title for csv format
      */
-
     private static String onlyEndOfGameTitleRow(GameState g){
         StringBuilder sb = new StringBuilder();
         sb.append("Rounds").append(',');
@@ -155,11 +149,6 @@ public class CSVWriterV2 {
         sb.append("Winner");
         return sb.toString();
     }
-    /**
-     * Rounds, P0 Score, ..., Pi Score, Winner
-     * @param g game
-     * @return csv format
-     */
     private static String onlyEndOfGame(GameState g){
         StringBuilder sb = new StringBuilder();
         sb.append(g.getRoundNumber()).append(',');
@@ -168,5 +157,72 @@ public class CSVWriterV2 {
         }
         sb.append(g.winner());
         return sb.toString();
+    }
+
+    // Game, Rounds, Turn, P0 Deadwood, ..., Pi Deadwood ,P0 Time, ..., Pi Time
+
+    public static String endOfTurns(List<List<List<double[][]>>> l){
+        System.out.println(endOfTurnsTitleRow(l));
+        return endOfTurnsTitleRow(l) + '\n' +
+                onlyEndOfTurnsG(l);
+    }
+
+    /**
+     * Game, Rounds, Turn, P0 Deadwood, ..., Pi Deadwood ,P0 Time, ..., Pi Time
+     * @param l saves
+     * @return title for csv format
+     */
+    private static String endOfTurnsTitleRow(List<List<List<double[][]>>> l){
+        return "Game" + ',' + onlyEndOfTurnsTitleRow(l.get(0));
+    }
+    private static String onlyEndOfTurnsG(List<List<List<double[][]>>> l){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < l.size(); i++) {
+            String[] lines = onlyEndOfTurns(l.get(i)).split("\r\n|\r|\n");
+            for (String line : lines) {
+                sb.append(i).append(',').append(line).append('\n');
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Rounds, Turn, P0 Deadwood, ..., Pi Deadwood ,P0 Time, ..., Pi Time
+     * @param l saves
+     * @return title for csv format
+     */
+    private static String onlyEndOfTurnsTitleRow(List<List<double[][]>> l){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Round").append(',').append("Turn");
+        StringBuilder time = new StringBuilder();
+        for (int i = 0; i < l.get(0).get(0).length; i++) {
+            sb.append(',').append("P").append(i).append(" Deadwood");
+            time.append(',').append("P").append(i).append(" Time");
+        }
+        sb.append(time.toString());
+        return sb.toString();
+    }
+    private static String onlyEndOfTurns(List<List<double[][]>> l){
+        StringBuilder sb = new StringBuilder();
+        for (int round = 0; round < l.size(); round++) {
+            for (int turn = 0; turn < l.get(round).size(); turn++) {
+                StringBuilder time = new StringBuilder();
+                sb.append(round).append(',').append(turn);
+                for (double[] doubles : l.get(round).get(turn)) {
+                    sb.append(',').append(doubles[1]);
+                    time.append(',').append(doubles[0]);
+                }
+                sb.append(time.toString()).append('\n');
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    // Game, Rounds, Turn,
+    // P0 Post-Pick Deadwood, P0 Post-Discard Deadwood, P0 Post-Knock Deadwood, ..., Pi Post-Pick Deadwood, Pi Post-Discard Deadwood, Pi Post-Knock Deadwood,
+    // P0 Pick Time, P0 Discard Time, P0 Knock Time, ..., Pi Pick Time, Pi Discard Time, Pi Knock Time
+
+    public static String endOfSteps(List<List<List<double[][][]>>> interTurnInfo) {
+        return "";
     }
 }

@@ -21,15 +21,15 @@ public class TreeExpander {
         int index = curState.turn().playerIndex;
         switch (curState.turn().step) {
             case KnockOrContinue:
-                return getPossibleKnockActions(index, curState.getCards(curState.turn().playerIndex));
+                return getPossibleKnockActions(index, curState.cards(curState.turn().playerIndex));
             case Pick:
                 return getPossiblePickActions(index, curState.deckSize(), curState.peekDiscard());
             case Discard:
-                return getPossibleDiscardActions(index, curState.getCards(curState.turn().playerIndex));
+                return getPossibleDiscardActions(index, curState.cards(curState.turn().playerIndex));
             case LayoutConfirmation:
-                return getPossibleLayoutConfirmationActions(index, curState.getCards(curState.turn().playerIndex));
+                return getPossibleLayoutConfirmationActions(index, curState.cards(curState.turn().playerIndex));
             case Layoff:
-                return getPossibleLayoffActions(index, Finder.findBestHandLayout(curState.getCards(curState.turn().playerIndex)), Finder.findBestHandLayout(curState.getCards(curState.knocker())).melds());
+                return getPossibleLayoffActions(index, Finder.findBestHandLayout(curState.cards(curState.turn().playerIndex)), Finder.findBestHandLayout(curState.cards(curState.knocker())).melds());
             default:
                 return new ArrayList<>();
         }

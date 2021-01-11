@@ -41,7 +41,7 @@ public class KnockAction extends Action {
 
     @Override
     public boolean specificCanDo(RoundState state) {
-        return !knock || Finder.findBestHandLayout(state.getCards(playerIndex)).deadwoodValue()<= GameRules.minDeadwoodToKnock;
+        return !knock || Finder.findBestHandLayout(state.cards(playerIndex)).deadwoodValue()<= GameRules.minDeadwoodToKnock;
     }
 
     @Override

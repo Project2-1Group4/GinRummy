@@ -17,26 +17,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO Over the turns info in test and still want CSVWriter?
+//TODO still want CSVWriter?
 
+//TODO move confirmLayoff to Finder and fix it
 //TODO evaluate() function in HandLayout
 //TODO what to do when other player's turn and not perfect information: knocking + rollout
-//TODO move confirmLayoff to Finder and fix it
+//TODO MAYBE add start of round in CSV
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
 //TODO MAYBE stop getting best layout every GamePlayer.update call
 public class Game {
 
     private final static List<Game> currentGames = new ArrayList<>();
-    private final GameState gameState;
     private final List<GamePlayer> players;
     private float time = 0;
     private boolean newStep = true;
+    public final GameState gameState;
 
     public float[] timeAllotted;
     public int playTillRound=Integer.MAX_VALUE;
     public boolean printTurns = false;
     public boolean printRounds = false;
-    public boolean printGames = false;
+    public boolean printGame = false;
 
     public Game(List<GamePlayer> players, GameState gameState) {
         currentGames.add(this);
@@ -94,7 +95,7 @@ public class Game {
             if(gameStopCondition(gameState) || playTillRound<gameState.getRoundNumber()){
                 if(!gameState.locked()) {
                     gameState.lock();
-                    if (printGames) {
+                    if (printGame) {
                         System.out.println("Game locked with points: " + Arrays.toString(gameState.getPoints())+"\n");
                     }
                 }
@@ -145,6 +146,7 @@ public class Game {
      * @return returns the results of the played out round
      */
     public Result playOutRound(){
+        updateAllPlayers();
         while(true){
             Action a = continueRound();
             if(a instanceof EndSignal){
@@ -158,6 +160,7 @@ public class Game {
      * @return results of every round
      */
     public GameState playOutGame(){
+        updateAllPlayers();
         while(true){
             Action a = continueGame();
             if(a instanceof EndSignal){
@@ -181,15 +184,25 @@ public class Game {
 
     private void startNewRound(){
         gameState.createNewRound();
+        if(printRounds){
+            System.out.println("Round "+ roundNumber()+" started with:\n");
+            gameState.round().setLayouts();
+            for (int i = 0; i < round().layouts().length; i++) {
+                System.out.println("Player "+i+"\n"+ round().layouts()[i]);
+            }
+        }
+        updateAllPlayers();
+    }
+    private void updateAllPlayers(){
         for (int i = 0; i < players.size(); i++) {
             players.get(i).index = i;
-            players.get(i).update(new ArrayList<>(gameState.round().getCards(i)));
+            players.get(i).update(new ArrayList<>(gameState.round().cards(i)));
             players.get(i).newRound(gameState.round().peekDiscard());
         }
     }
     private void oncePerStep(RoundState state, List<GamePlayer> players){
         notifyPlayers(state.getLastAction(), players);
-        players.get(state.getPlayerIndex()).update(new ArrayList<>(state.getCards(state.getPlayerIndex())));
+        players.get(state.getPlayerIndex()).update(new ArrayList<>(state.cards(state.getPlayerIndex())));
         if(players.get(state.getPlayerIndex()) instanceof CombinePlayer || players.get(state.getPlayerIndex()).getProcessor()!=null) {
             Gdx.input.setInputProcessor(players.get(state.getPlayerIndex()).getProcessor());
         }
@@ -214,7 +227,7 @@ public class Game {
     public void print(boolean pt, boolean pr, boolean pg){
         printTurns = pt;
         printRounds = pr;
-        printGames = pg;
+        printGame = pg;
     }
 
     // Getters
@@ -268,11 +281,17 @@ public class Game {
     public RoundState round(){
         return gameState.round();
     }
+    public RoundState round(int i){
+        return gameState.round(i);
+    }
     public GamePlayer curGamePlayer(){
         return players.get(curPlayerIndex());
     }
     private List<MyCard> curPlayerCards(){
-        return gameState.round().getCards(curPlayerIndex());
+        return cards(curPlayerIndex());
+    }
+    public List<MyCard> cards(int playerIndex) {
+        return round().cards(playerIndex);
     }
 
     // Static Other
@@ -358,7 +377,7 @@ public class Game {
         if(indices==null){
             return null;
         }
-        return new ArrayList<>(currentGames.get(indices[0]).round().getCards(indices[1]));
+        return new ArrayList<>(currentGames.get(indices[0]).round().cards(indices[1]));
     }
     public static int numberOfPlayers(GamePlayer p) {
         Integer[] indices = indices(p);
@@ -398,7 +417,7 @@ public class Game {
         return layout==null? null : new LayoutConfirmationAction(currentTurn.playerIndex, layout);
     }
     private LayoffAction layoffAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.getCards(state.knocker())).melds());
+        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.cards(state.knocker())).melds());
         return new LayoffAction(currentTurn.playerIndex, layoffs);
     }
 }
