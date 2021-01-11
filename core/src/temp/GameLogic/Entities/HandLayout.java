@@ -55,6 +55,12 @@ public class HandLayout {
             }
         }
     }
+    public List<MyCard> viewUnusedCards() {
+        return new ArrayList<>(unusedCards);}
+
+    public List<Meld> viewMelds() {
+        return Meld.deepCopy(setOfMelds);
+    }
     public void addUnusedCard(MyCard card) {
         unusedCards.add(card);
         deadwood += card.ginValue();

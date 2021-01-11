@@ -110,6 +110,10 @@ public class Meld {
         remove(card);
         return valid;
     }
+
+    public List<MyCard> viewMeld() {
+        return new ArrayList<>(meld);
+    }
     public boolean same(Meld other) {
         int found = 0;
         for (MyCard card : meld) {
