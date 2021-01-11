@@ -116,15 +116,6 @@ public abstract class GamePlayer implements PlayerInterface {
      * @return layoff object
      */
     public List<Layoff> automaticLayoff(List<Meld> knockerMelds) {
-        List<MyCard> unusedCards = handLayout.unused();
-        List<Layoff> layoffs = new ArrayList<>();
-        // For all melds
-        for (Meld knockerMeld : knockerMelds) {
-            Integer index = Finder.findFirstIndexThatFitsInMeld(unusedCards, knockerMeld);
-            if (index != null) {
-                layoffs.add(new Layoff(unusedCards.get(index), knockerMeld));
-            }
-        }
-        return layoffs;
+        return Finder.findAllPossibleLayoffs(allCards, knockerMelds);
     }
 }
