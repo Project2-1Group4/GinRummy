@@ -1,7 +1,7 @@
 package temp.Graphics;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.List;
 

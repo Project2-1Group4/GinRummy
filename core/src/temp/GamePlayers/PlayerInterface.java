@@ -3,10 +3,10 @@ package temp.GamePlayers;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Layoff;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.Layoff;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public interface PlayerInterface {
      * @param knockerMelds melds of knocker
      * @return null if nothing, layoff if card to layoff, layoff with only nulls
      */
-    Layoff layOff(List<Meld> knockerMelds);
+    List<Layoff> layOff(List<Meld> knockerMelds);
 
     /**
      * @return null if no card has been chosen, otherwise the card you want to discard
@@ -43,7 +43,7 @@ public interface PlayerInterface {
     /**
      * Called every time a new round starts to let the player know to reset it's memory
      *
-     * @param topOfDiscard
+     * @param topOfDiscard opening discard card
      */
     void newRound(MyCard topOfDiscard);
 

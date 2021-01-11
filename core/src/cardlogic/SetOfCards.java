@@ -2,8 +2,8 @@ package cardlogic;
 
 import cardlogic.Card.SUITS;
 import gameHandling.Player;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class SetOfCards {
 	}
 
 	public SetOfCards(HandLayout layout){
-		this(layout.viewAllCards(), false);
+		this(layout.cards(), false);
 	}
 
 	public SetOfCards(List<MyCard> cardList, boolean garbage){

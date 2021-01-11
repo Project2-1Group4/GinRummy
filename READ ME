@@ -1,0 +1,12 @@
+first import gradle!
+
+To run visuals go to deskoptop launcher ( usual way with libgdx projects)
+To play against bot, fill in 'greedy' or 'minimax' for player name in the menu
+
+To test bots against each other without visuals for multiple games go temp > Extra > Tests > Tests
+Option of 'MinimaxPruningAI()', 'basicGreedyTest()' and 'meltBuildingGreedy()'
+
+To test bots against each other without visuals for just 1 game go temp > gameplayers> miniMaxPruningAI, the main method (somewhere in the middle)
+Again you can decide which bots play against each other by filling in one of the three options mentioned above.
+
+Change depth of MCTS in temp > gameplayers> miniMaxPruningAI,  instance field at the top

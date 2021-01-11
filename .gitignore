@@ -125,3 +125,17 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
+
+Results
+
+Results/GA vs Self coefs/meld_greedy_self_p0_deadwood_info.csv
+
+Results/GA vs Self coefs/meld_greedy_self_p0_results.csv
+
+Results/GA vs Self coefs/meld_greedy_self_p0_round_info.csv
+
+Results/GA vs Self coefs/meld_greedy_self_p1_deadwood_info.csv
+
+Results/GA vs Self coefs/meld_greedy_self_p1_results.csv
+
+Results/GA vs Self coefs/meld_greedy_self_p1_round_info.csv

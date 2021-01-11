@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import temp.GameLogic.GameState.State;
+import temp.GameLogic.Game;
 import temp.Graphics.RenderingSpecifics.*;
 
 import java.util.HashMap;
@@ -44,23 +44,23 @@ public class Graphics {
     /**
      * No need to modify this because all "real" rendering is done in other classes
      *
-     * @param curState current game state
+     * @param game current game state
      */
-    public void render(State curState) {
+    public void render(Game game) {
         Gdx.gl.glClearColor(0, 0, 0, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         batch.begin();
-        if (curState != null) {
+        if (game != null) {
             for (Map.Entry<String, Renderer> entry : renderers.entrySet()) {
-                entry.getValue().render(batch, renderingStyle, curState);
+                entry.getValue().render(batch, renderingStyle, game);
             }
-            PlayerRenderer pRenderer = playerRenderers.get(curState.getPlayerNumber());
+            PlayerRenderer pRenderer = playerRenderers.get(game.turn().playerIndex);
             if (pRenderer == null) {
-                pRenderer = new PlayerRenderer(curState.getPlayer());
-                playerRenderers.put(curState.getPlayerNumber(), pRenderer);
+                pRenderer = new PlayerRenderer(game.curGamePlayer());
+                playerRenderers.put(game.curPlayerIndex(), pRenderer);
             }
-            currentPlayer = curState.getPlayerNumber();
+            currentPlayer = game.curPlayerIndex();
             pRenderer.render(batch, renderingStyle);
         }
         batch.end();

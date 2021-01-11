@@ -1,0 +1,5 @@
+Winner,ScorePlayer0,ScorePlayer1,DeadwoodPlayer0,DeadwoodPlayer1,CardsInDeadwoodP0,CardsInDeadwoodP1
+Game: 1
+0,false,1,0,52,62,10,10,4
+1,false,1,0,85,41,8,7,3
+2,true,1,0,149,74,10,10,4

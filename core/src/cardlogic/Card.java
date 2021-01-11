@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 public class Card extends Actor implements Comparable {
 
@@ -63,10 +63,11 @@ public class Card extends Actor implements Comparable {
 	public Card(Card aCard){
 		this.setSuit(aCard.getSuitVal());
 		this.setValue(aCard.getValue());
+		this.setProb(aCard.getProb());
 	}
 
 	public Card(MyCard aCard){
-		this.setValue(aCard.rank.index);
+		this.setValue(aCard.rank.index+1);
 
 		this.setSuit(aCard.suit.index);
 
@@ -200,7 +201,7 @@ public class Card extends Actor implements Comparable {
 		}
 
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		Card card = (Card) o;

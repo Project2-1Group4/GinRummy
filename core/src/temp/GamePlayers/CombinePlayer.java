@@ -5,17 +5,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MyCard;
-import temp.GamePlayers.MouseStuff.MousePlayer;
+import temp.GameLogic.Entities.MyCard;
+import temp.GamePlayers.MousePlayer.MousePlayer;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO find a way to integrate handlers indices with the "main" index
-//TODO and have handlers handLayouts point to the "main" layout
 public class CombinePlayer extends GamePlayer {
     private final List<GamePlayer> handlers;
 
@@ -27,6 +24,7 @@ public class CombinePlayer extends GamePlayer {
     }
 
     public void addPlayer(GamePlayer player) {
+        player.index = index;
         handlers.add(player);
         if (player.processor != null) {
             ((InputMultiplexer) processor).addProcessor(player.processor);
@@ -88,7 +86,7 @@ public class CombinePlayer extends GamePlayer {
     }
 
     @Override
-    public void update(HandLayout realLayout) {
+    public void update(List<MyCard> realLayout) {
         super.update(realLayout);
         for (GamePlayer handler : handlers) {
             handler.update(realLayout);

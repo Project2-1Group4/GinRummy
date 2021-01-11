@@ -1,14 +1,15 @@
 package temp.GameLogic.GameActions;
 
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.Entities.Step;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.States.RoundState;
 
 // IMMUTABLE
 public class LayoutConfirmationAction extends Action {
     public final HandLayout layout;
 
     public LayoutConfirmationAction(int playerIndex, HandLayout handLayout) {
-        super(State.StepInTurn.LayoutConfirmation, playerIndex);
+        super(Step.LayoutConfirmation, playerIndex);
         assert handLayout.isValid();
         this.layout = handLayout;
     }
@@ -18,12 +19,27 @@ public class LayoutConfirmationAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         return layout.same(((LayoutConfirmationAction) other).layout);
     }
 
     @Override
-    public String toString() {
-        return baseString() + " confirmed layout:\n" + layout;
+    public boolean specificCanDo(RoundState state) {
+        return layout.isValid();
+    }
+
+    @Override
+    protected void specificDo(RoundState state) {
+        state.layouts()[playerIndex] = layout;
+    }
+
+    @Override
+    protected void specificUndo(RoundState state) {
+        state.layouts()[playerIndex] = null;
+    }
+
+    @Override
+    public String specificToString() {
+        return " confirmed layout:\n" + layout;
     }
 }

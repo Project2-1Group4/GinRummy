@@ -2,9 +2,9 @@ package temp.Graphics.RenderingSpecifics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 import temp.GamePlayers.GamePlayer;
 import temp.GameRules;
 import temp.Graphics.GameCard;
@@ -29,18 +29,17 @@ public class PlayerRenderer {
     public void render(SpriteBatch batch, Style style) {
         HandLayout handLayout = player.viewHandLayout();
         init(style, handLayout);
-        update();
         player.render(batch, style, this);
 
         renderUnmoved(batch, style);
         renderMoved(batch, style);
         renderMelds(batch, style);
-        renderValues(batch, style, new int[]{handLayout.getValue(), handLayout.getDeadwood()});
+        renderValues(batch, style, new int[]{handLayout.meldValue(), handLayout.deadwoodValue()});
     }
 
     public void init(Style style, HandLayout handLayout) {
-        List<MyCard> cards = handLayout.viewUnusedCards();
-        List<Meld> cardMelds = handLayout.viewMelds();
+        List<MyCard> cards = handLayout.unused();
+        List<Meld> cardMelds = handLayout.melds();
 
         updateUnusedCards(cards);
         updateMeldCards(cardMelds);
@@ -86,14 +85,14 @@ public class PlayerRenderer {
         for (Meld meld : meldCards) {
             boolean exists = false;
             for (int i = 0; i < melds.size(); i++) {
-                for (MyCard myCard : meld.viewMeld()) {
+                for (MyCard myCard : meld.cards()) {
                     if (melds.get(i).has(myCard)) {
                         exists = true;
                     }
                 }
                 if (exists) {
                     List<GameCard> newMeld = new ArrayList<>();
-                    for (MyCard myCard : meld.viewMeld()) {
+                    for (MyCard myCard : meld.cards()) {
                         GameCard c = melds.get(i).get(myCard);
                         newMeld.add(c);
                     }
@@ -103,7 +102,7 @@ public class PlayerRenderer {
             }
             if (!exists) {
                 List<GameCard> newMeld = new ArrayList<>();
-                for (MyCard myCard : meld.viewMeld()) {
+                for (MyCard myCard : meld.cards()) {
                     newMeld.add(new GameCard(myCard));
                 }
                 newMelds.add(new GameMeld(newMeld));
@@ -138,10 +137,6 @@ public class PlayerRenderer {
             meld.setCenterPosition(p[0], p[1]);
             p[0] += dimensions[0] * 1.5f;
         }
-    }
-
-    private void update() {
-        //TODO snaping
     }
 
     private void renderUnmoved(SpriteBatch batch, Style style) {

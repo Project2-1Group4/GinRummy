@@ -1,7 +1,10 @@
 package temp.GameLogic.GameActions;
 
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MELDINGOMEGALUL.HandLayout;
+import temp.GameLogic.Entities.Step;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.States.RoundState;
+import temp.GameRules;
 
 // IMMUTABLE
 public class KnockAction extends Action {
@@ -9,9 +12,8 @@ public class KnockAction extends Action {
     private final HandLayout knockLayout;
 
     public KnockAction(int playerIndex, boolean knock, HandLayout knockLayout) {
-        super(State.StepInTurn.KnockOrContinue, playerIndex);
+        super(Step.KnockOrContinue, playerIndex);
         this.knock = knock;
-        assert !knock || knockLayout != null;
         this.knockLayout = knockLayout;
     }
 
@@ -20,7 +22,7 @@ public class KnockAction extends Action {
     }
 
     @Override
-    protected boolean specificSame(Action other) {
+    protected boolean specificSame(Object other) {
         KnockAction o = (KnockAction) other;
         if (o.knock != knock) {
             return false;
@@ -28,17 +30,38 @@ public class KnockAction extends Action {
         if (!knock) {
             return true;
         }
+        if(knockLayout==null && o.knockLayout==null){
+            return true;
+        }
+        if(knockLayout==null || o.knockLayout==null){
+            return false;
+        }
         return knockLayout.same(o.knockLayout);
     }
 
     @Override
-    public String toString() {
+    public boolean specificCanDo(RoundState state) {
+        return !knock || Finder.findBestHandLayout(state.cards(playerIndex)).deadwoodValue()<= GameRules.minDeadwoodToKnock;
+    }
+
+    @Override
+    protected void specificDo(RoundState state) {
+        if(knock) {
+            state.knocker(playerIndex);
+        }
+    }
+
+    @Override
+    protected void specificUndo(RoundState state) {
+        state.knocker(null);
+    }
+
+    @Override
+    public String specificToString() {
         if (!knock) {
-            return baseString() + " didn't knock.";
-        } else if (knockLayout.getDeadwood() == 0) {
-            return baseString() + " called gin with:\n" + knockLayout;
-        } else {
-            return baseString() + " knocked with:\n" + knockLayout;
+            return " didn't knock.";
+        }else {
+            return " knocked.";
         }
     }
 }

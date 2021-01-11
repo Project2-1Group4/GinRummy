@@ -3,22 +3,21 @@ package temp.Graphics.RenderingSpecifics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import temp.GameLogic.GameState.State;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Game;
+import temp.GameLogic.Entities.MyCard;
 import temp.Graphics.GameCard;
 import temp.Graphics.Graphics;
 import temp.Graphics.Style;
-
 public class CardRenderer implements Renderer {
 
     public GameCard deck;
     public GameCard discard;
 
     @Override
-    public void render(SpriteBatch batch, Style style, State curState) {
+    public void render(SpriteBatch batch, Style style, Game curState) {
         update(style);
-        renderDeck(batch, style, curState.getDeckSize() == 0);
-        renderDiscard(batch, style, curState.peekDiscardTop());
+        renderDeck(batch, style, curState.deckSize() == 0);
+        renderDiscard(batch, style, curState.peekDiscard());
     }
 
     private final float widthPerc = 0.2f;

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 // Builder class
 public class StyleBuilder {

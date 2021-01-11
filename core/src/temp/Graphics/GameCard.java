@@ -3,7 +3,7 @@ package temp.Graphics;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.MyCard;
 
 public class GameCard {
     public Vector2 centerPosition = new Vector2();
