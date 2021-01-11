@@ -7,6 +7,7 @@ import temp.GameLogic.Entities.Layoff;
 import temp.GameLogic.Entities.HandLayout;
 import temp.GameLogic.Entities.Meld;
 import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Logic.Finder;
 import temp.GameRules;
 import temp.Graphics.RenderingSpecifics.PlayerRenderer;
 import temp.Graphics.Style;
@@ -48,6 +49,11 @@ public class ForcePlayer extends GamePlayer {
     }
 
     @Override
+    public void update(List<MyCard> cards) {
+        allCards = cards;
+    }
+
+    @Override
     public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
         if(player!=null) {
             player.render(batch, renderingStyle, renderer);
@@ -56,6 +62,7 @@ public class ForcePlayer extends GamePlayer {
 
     @Override
     public Boolean knockOrContinue() {
+        handLayout = Finder.findBestHandLayout(allCards);
         if (onlyGin) {
             return handLayout.unused().size() == 0;
         }
@@ -63,18 +70,17 @@ public class ForcePlayer extends GamePlayer {
     }
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        return remainingCardsInDeck != 0;
+        return rd.nextBoolean();
     }
+
     @Override
     public HandLayout confirmLayout() {
         return getBestMelds();
     }
-    @Override
-    public List<Layoff> layOff(List<Meld> knockerMelds) {
-        return automaticLayoff(knockerMelds);
-    }
+
     @Override
     public MyCard discardCard() {
+        handLayout = Finder.findBestHandLayout(allCards);
         List<MyCard> unused = handLayout.unused();
         if(unused.size()==0){
             List<Meld> melds = handLayout.melds();
