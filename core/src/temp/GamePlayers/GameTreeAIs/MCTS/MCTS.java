@@ -16,12 +16,14 @@ import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.MemoryPlayer;
+import temp.GamePlayers.RandomPlayer;
 import temp.GameRules;
 
 import java.util.*;
 
-//TODO explore different exploration function for MCTS
-//TODO explore different ways of evaluating a rollout
+//TODO what to do when other player's turn and not perfect information: knocking + rollout
+//TODO exploration value, back prop value
+
 //TODO MCTS build to allow customizing MCTS at runtime (for testing what hyper param are best)
 public abstract class MCTS extends MemoryPlayer{
 
@@ -233,6 +235,9 @@ public abstract class MCTS extends MemoryPlayer{
             }
             // Simulate
             for (int i = 0; i < rolloutsPerNode; i++) {
+                if(debugmcts){
+                    System.out.println("\nRollout "+i);
+                }
                 node.wins += rollout(new RoundState(s));
                 node.rollouts++;
                 rollouts++;
@@ -268,7 +273,7 @@ public abstract class MCTS extends MemoryPlayer{
      * @param state knowledge base at given start node
      * @return leaf node favored by exploration
      */
-    private MCTSNode explore(MCTSNode node, RoundState state){
+    protected MCTSNode explore(MCTSNode node, RoundState state){
         while (!node.isLeaf()){
             node = node.getChildToExplore(rollouts);
             node.action.doAction(state,true);
@@ -336,7 +341,19 @@ public abstract class MCTS extends MemoryPlayer{
         if(result.winner==null){
             return 0.5;
         }
-        return result.winner==index? 1 : 0;
+        if(result.winner==index){
+            return 1;
+        }
+        int deadwood = result.r.layouts()[index].deadwoodValue();
+        int deadwoodDif = 0;
+        for (int i = 0; i < result.r.layouts().length; i++) {
+            if(index!=i){
+                deadwoodDif = deadwood - result.r.layouts()[i].deadwoodValue();
+            }
+        }
+        deadwoodDif/= result.r.numberOfPlayers()-1;
+        // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
+        return (98.0-deadwoodDif)/(2*98.0);
     }
     /**
      * Helper method. Prints. To be deleted.

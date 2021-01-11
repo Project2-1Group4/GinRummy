@@ -31,6 +31,9 @@ public class MCTSv1 extends MCTS{
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
+            if(print){
+                System.out.println("Simulation "+i);
+            }
             RoundState generated = new RoundState(completeUnknownInformation(knowledge),new Turn(step, index));
             MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null, this), generated);
             mcts(generatedRoot, generated);
