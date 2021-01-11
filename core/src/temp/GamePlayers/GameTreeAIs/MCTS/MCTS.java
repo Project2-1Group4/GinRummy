@@ -27,34 +27,25 @@ import java.util.*;
 //TODO MCTS build to allow customizing MCTS at runtime (for testing what hyper param are best)
 public abstract class MCTS extends MemoryPlayer{
 
-    protected static final int baseRolloutsPerSim = 500;
-    protected static final int baseRolloutsPerNode = 2;
-    protected static final double baseExplorationParam = 1.4;
-
     public boolean debugmcts = false;
     public boolean print = false;
 
-    protected final int rolloutsPerNode; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int rolloutsPerSimulation; // Higher = deeper search. For stopping condition
-    protected final double explorationParam;
+    public int rolloutsPerNode = 2; // Should be =1 unless you rollout at least somewhat randomly
+    public double explorationParam = 1.4;
+    public double secPerSim = 1;
 
     protected final Random rd; // For seeding
     protected boolean simpleKnocking = true;
     protected int rollouts;
+    private long s;
 
-    public MCTS(int rolloutsPerSimulation, int rolloutsPerNode,double explorationParam , Integer seed){
+    public MCTS(Integer seed){
         if(seed==null){
             rd = new Random();
         }
         else{
             rd = new Random(seed);
         }
-        this.rolloutsPerSimulation = rolloutsPerSimulation;
-        this.rolloutsPerNode = rolloutsPerNode;
-        this.explorationParam =explorationParam;
-    }
-    public MCTS(Integer seed){
-        this(baseRolloutsPerSim, baseRolloutsPerNode, baseExplorationParam, seed);
     }
     public MCTS(){
         this(null);
@@ -64,11 +55,7 @@ public abstract class MCTS extends MemoryPlayer{
     @Override
     public Boolean KnockOrContinue() {
         if(simpleKnocking){
-            if (this.handLayout.deadwoodValue() <= 10){
-                return true;
-            } else {
-                return false;
-            }
+            return this.handLayout.deadwoodValue() <= 10;
         }
         KnockAction action = (KnockAction) getBestAction(Step.KnockOrContinue);
         return action==null? null : action.knock;
@@ -147,6 +134,7 @@ public abstract class MCTS extends MemoryPlayer{
             pick.add(new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1)));
         }
         else{
+            //TODO add all unassigned
             pick.add(new PickAction(state.getPlayerIndex(), true, null));
         }
         if(state.discardPile().size()!=0){
@@ -217,9 +205,10 @@ public abstract class MCTS extends MemoryPlayer{
     protected void mcts(MCTSNode root, RoundState state){
         assert state.numberOfPlayers()==Game.numberOfPlayers(this);
         rollouts = 0;
-        while(!stopCondition()) {
-            if(debugmcts) {
-                System.out.println("\nLoop " + (rollouts/rolloutsPerNode)+", rollouts "+rollouts);
+        s = System.nanoTime();
+        while (!stopCondition()) {
+            if (debugmcts) {
+                System.out.println("\nLoop " + (rollouts / rolloutsPerNode) + ", rollouts " + rollouts);
             }
             RoundState s = new RoundState(state);
             // Explore
@@ -261,8 +250,8 @@ public abstract class MCTS extends MemoryPlayer{
      *
      * @return true if stop, false if not
      */
-    protected boolean stopCondition(){
-        return rollouts>= rolloutsPerSimulation;
+    protected boolean stopCondition() {
+        return (System.nanoTime()-s)/1_000_000_000.0>secPerSim;
     }
     /**
      * Explores current tree based on exploration value up until it reaches a leaf node,
@@ -289,10 +278,13 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if you win, false if other wins
      */
     private double executeRollout(GamePlayer player1, GamePlayer player2, RoundState state) {
+        if(debugmcts){
+            System.out.println(state);
+        }
         Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt());
         Result result = g.playOutRound();
         g.remove();
-        return getRoundValue(result);
+        return getRoundValue(result.r);
     }
     /**
      * Finds index of best action.
@@ -337,21 +329,21 @@ public abstract class MCTS extends MemoryPlayer{
         c.unassigned.clear();
         return c;
     }
-    protected double getRoundValue(Result result){
-        if(result.winner==null){
+    protected double getRoundValue(RoundState result){
+        if(result.winner()==null){
             return 0.5;
         }
-        if(result.winner==index){
+        if(result.winner()==index){
             return 1;
         }
-        int deadwood = result.r.layouts()[index].deadwoodValue();
+        int deadwood = result.layouts()[index].deadwoodValue();
         int deadwoodDif = 0;
-        for (int i = 0; i < result.r.layouts().length; i++) {
+        for (int i = 0; i < result.layouts().length; i++) {
             if(index!=i){
-                deadwoodDif = deadwood - result.r.layouts()[i].deadwoodValue();
+                deadwoodDif = deadwood - result.layouts()[i].deadwoodValue();
             }
         }
-        deadwoodDif/= result.r.numberOfPlayers()-1;
+        deadwoodDif/= result.numberOfPlayers()-1;
         // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
         return (98.0-deadwoodDif)/(2*98.0);
     }

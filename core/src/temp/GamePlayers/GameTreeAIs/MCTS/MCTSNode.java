@@ -35,6 +35,16 @@ public class MCTSNode {
     public boolean equals(Object o){
         return o instanceof MCTSNode && action.equals(((MCTSNode) o).action);
     }
+    public int subtreeSize(){
+        int subtreeSize = 0;
+        for (MCTSNode child : children) {
+            if(child.rollouts!=0) {
+                subtreeSize++;
+                subtreeSize += child.subtreeSize();
+            }
+        }
+        return subtreeSize;
+    }
     /**
      * Gives value of node.
      *
