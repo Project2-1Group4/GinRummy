@@ -1,9 +1,11 @@
 package temp.GamePlayers.GameTreeAIs;
 
 import org.jetbrains.annotations.NotNull;
-import temp.GameLogic.MELDINGOMEGALUL.Finder;
-import temp.GameLogic.MELDINGOMEGALUL.Meld;
-import temp.GameLogic.MyCard;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 
 import java.util.*;
 
@@ -40,8 +42,8 @@ public class Node implements Comparable {
         this.opponentHand = opponentHand;
         this.depthTree = depth;
 
-        int pScore = Finder.findBestHandLayout(hand).getDeadwood(); //Player.scoreHand(hand.toList());
-        int opHand = Finder.findBestHandLayout(opponentHand).getDeadwood();//Player.scoreHand(opponentHand.toList());
+        int pScore = Finder.findBestHandLayout(hand).deadwoodValue(); //Player.scoreHand(hand.toList());
+        int opHand = Finder.findBestHandLayout(opponentHand).deadwoodValue();//Player.scoreHand(opponentHand.toList());
        // System.out.println("probabilities = " + Arrays.deepToString(probMap));
         //System.out.println(" ");
         if((pScore < opHand) && pScore<=10){
@@ -255,7 +257,7 @@ public class Node implements Comparable {
     So hopefully this works perfectly
      */
     public static int getHandValue(List<MyCard> aHand) {
-        int scoreHand = Finder.findBestHandLayout(aHand).getDeadwood();
+        int scoreHand = Finder.findBestHandLayout(aHand).deadwoodValue();
         return constantScore - scoreHand;
     }
 
