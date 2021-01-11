@@ -419,6 +419,14 @@ public class meldBuildingGreedy extends GamePlayer {
 
             double valOfHand = 0.0;
 
+            // I'm doing an extra check in case the hand allows for a knock
+            // I don't think it will change much, but it definitely feels important as a change
+            // Done just to reward more any hand that can already knock
+
+            if(layout.deadwoodValue()<= this.knockValue){
+                valOfHand=- 1000;
+            }
+
             int[][] cloneOfMatrix = cloneResetMemMatrix(this.memoryMatrix, layout);
             
             // Here I'm adding the value of all the melds to valOfHand
