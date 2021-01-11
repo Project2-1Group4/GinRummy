@@ -143,24 +143,28 @@ public class Tests {
 
             game.continueGame();
 
+            double stepTime = (System.nanoTime() - intraStart) / (double) 1_000_000_000;
+            if(printTurns){
+                System.out.println("Took "+stepTime+" seconds.");
+            }
             if(saveIntraTurnInfo || saveInterTurnInfo){
                 assert turn!=null;
                 deadwood = Finder.findBestHandLayout(game.round(roundIndex).cards(turn.playerIndex)).deadwoodValue();
             }
             if(saveIntraTurnInfo) {
-                if(intraTurnInfo.size()!=roundIndex+1){
-                    intraTurnInfo.add(new ArrayList<double[][][]>());
-                }
-                if(intraTurnInfo.get(roundIndex).size()!=turnIndex+1){
-                    intraTurnInfo.get(roundIndex).add(new double[game.numberOfPlayers()][3][2]);
-                }
+                if(turn.step == Step.Pick || turn.step == Step.Discard || turn.step == Step.KnockOrContinue) {
+                    if (intraTurnInfo.size() != roundIndex + 1) {
+                        intraTurnInfo.add(new ArrayList<double[][][]>());
+                    }
+                    if (intraTurnInfo.get(roundIndex).size() != turnIndex + 1) {
+                        intraTurnInfo.get(roundIndex).add(new double[game.numberOfPlayers()][3][2]);
+                    }
 
-                //.get(round).get(turn) = double[][][]
-                // where double[player][step][0] = time, double[player][step][1] = deadwood afterwards
-                double stepTime = (System.currentTimeMillis() - intraStart) / (double) 1_000_000_000;
-                intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][0] = stepTime;
-                intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][1] = deadwood;
-                intraStart = System.nanoTime();
+                    //.get(round).get(turn) = double[][][]
+                    // where double[player][step][0] = time, double[player][step][1] = deadwood afterwards
+                    intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][0] = stepTime;
+                    intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][1] = deadwood;
+                }
             }
             if(saveInterTurnInfo){
                 if(turn.step == Step.KnockOrContinue) {
@@ -177,6 +181,7 @@ public class Tests {
                     interTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][1] = deadwood;
                 }
             }
+            intraStart = System.nanoTime();
         }
     }
 }
