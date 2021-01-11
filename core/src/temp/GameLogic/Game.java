@@ -17,14 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO still want CSVWriter?
-
-//TODO move confirmLayoff to Finder and fix it
-//TODO evaluate() function in HandLayout
-//TODO what to do when other player's turn and not perfect information: knocking + rollout
-//TODO MAYBE add start of round in CSV
+//TODO evaluate() HandLayout
+//TODO stop getting best layout every GamePlayer.update call
+//TODO MAYBE add start of round in CSV (deadwood AND/OR value from evaluate)
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
-//TODO MAYBE stop getting best layout every GamePlayer.update call
 public class Game {
 
     private final static List<Game> currentGames = new ArrayList<>();
@@ -45,9 +41,7 @@ public class Game {
         this.players = players;
         timeAllotted = new float[Step.values().length];
         Arrays.fill(timeAllotted, GameRules.DeckOrDiscardPileTime);
-        if(gameState.getRoundNumber()==0) {
-            startNewRound();
-        }
+        init();
     }
     public Game(List<GamePlayer> players, Integer seed){
         this(players, new GameState(players.size(), MyCard.getBasicDeck(), seed));
@@ -60,6 +54,20 @@ public class Game {
 
     }
 
+    public void init(){
+        if(gameState.getRoundNumber()==0) {
+            startNewRound();
+        }
+    }
+    public void printRound(){
+        System.out.println("Round "+ roundNumber()+" started with:");
+        gameState.round().setLayouts();
+        for (int i = 0; i < round().layouts().length; i++) {
+            System.out.println("Player "+i+"\n"+ round().layouts()[i]);
+            System.out.println("Value: "+ round().layouts()[i].evaluate());
+        }
+        System.out.println();
+    }
     // Game playing methods
 
     /**
@@ -122,7 +130,7 @@ public class Game {
                 System.out.println("Turn "+ turnNumber()+" Action: "+action);
             }
             newStep = true;
-            if(roundStopCondition(round())){
+            if(action instanceof EndSignal || roundStopCondition(round())){
                 if(!round().locked()){
                     round().setLayouts();
                     round().setPoints(pointsWon(round()));
@@ -132,11 +140,12 @@ public class Game {
                         System.out.println("Round "+ roundNumber()+" locked with points: "+ Arrays.toString(round().points()));
                         for (int i = 0; i < round().layouts().length; i++) {
                             System.out.println("Player "+i+"\n"+ round().layouts()[i]);
+                            System.out.println("Value: "+ round().layouts()[i].evaluate());
                         }
                         System.out.println("Current game points: "+ Arrays.toString(points())+"\n");
                     }
                 }
-                return new EndSignal(false);
+                round().turn(new Turn(Step.EndOfRound, curPlayerIndex()));
             }
         }
         return executed? action : null;
@@ -185,11 +194,7 @@ public class Game {
     private void startNewRound(){
         gameState.createNewRound();
         if(printRounds){
-            System.out.println("Round "+ roundNumber()+" started with:\n");
-            gameState.round().setLayouts();
-            for (int i = 0; i < round().layouts().length; i++) {
-                System.out.println("Player "+i+"\n"+ round().layouts()[i]);
-            }
+            printRound();
         }
         updateAllPlayers();
     }
@@ -228,6 +233,9 @@ public class Game {
         printTurns = pt;
         printRounds = pr;
         printGame = pg;
+        if(printRounds){
+            printRound();
+        }
     }
 
     // Getters
@@ -304,9 +312,9 @@ public class Game {
     public static boolean gameStopCondition(GameState gameState){
         int[] points = gameState.getPoints();
         for (int point : points) {
-                if(point>= GameRules.pointsToWin){
-                    return true;
-                }
+            if(point>= GameRules.pointsToWin){
+                return true;
+            }
         }
         return false;
     }

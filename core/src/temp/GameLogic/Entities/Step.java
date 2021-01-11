@@ -6,7 +6,7 @@ public enum Step{
     KnockOrContinue(2, "Knock?"),
     LayoutConfirmation(3, "Lock in your layout."),
     Layoff(4, "Choose cards to layoff in the knocker's melds."),
-    EndOfRound(5, "Game is done.");
+    EndOfRound(5, "Round is done.");
     public int index;
     public String question;
     Step(int index, String question){

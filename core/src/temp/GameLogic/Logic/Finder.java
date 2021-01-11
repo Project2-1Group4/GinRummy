@@ -2,6 +2,7 @@ package temp.GameLogic.Logic;
 
 import com.badlogic.gdx.Gdx;
 import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.Layoff;
 import temp.GameLogic.Entities.Meld;
 import temp.GameLogic.Entities.MyCard;
 import temp.GameRules;
@@ -233,4 +234,16 @@ public class Finder {
         return myInt;
     }
 
+    public static List<Layoff> findAllPossibleLayoffs(List<MyCard> allCards, List<Meld> knockerMelds) {
+        List<Layoff> layoffs = new ArrayList<>();
+        for (MyCard card : allCards) {
+            for (Meld meld : knockerMelds) {
+                if(meld.isValidWith(card)){
+                    layoffs.add(new Layoff(card, meld));
+                    break;
+                }
+            }
+        }
+        return layoffs;
+    }
 }

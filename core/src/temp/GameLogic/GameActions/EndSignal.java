@@ -31,6 +31,6 @@ public class EndSignal extends Action{
 
     @Override
     protected String specificToString() {
-        return endOfGame? " End Of Game." : " End Of Round";
+        return endOfGame? " End Of Game." : " End Of Round.";
     }
 }

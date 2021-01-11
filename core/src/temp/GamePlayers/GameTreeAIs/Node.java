@@ -4,10 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import temp.GameLogic.Entities.Meld;
 import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Logic.Finder;
+import temp.GameLogic.Entities.Meld;
+import temp.GameLogic.Entities.MyCard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Node implements Comparable {
     /*
@@ -179,8 +179,9 @@ public class Node implements Comparable {
         else if(node1.getHandValue() > node2.getHandValue()){
             return node1;
         }
-        else
+        else {
             return node2;
+        }
     }
 
     public static Node getNodeMin(Node node1, Node node2) {
@@ -203,10 +204,12 @@ public class Node implements Comparable {
             }
 
         }
-        else if (node1.getHandValue() < node2.getHandValue())
+        else if (node1.getHandValue() < node2.getHandValue()){
             return node1;
-        else
+        }
+        else {
             return node2;
+        }
     }
 
     public static int almostMelds(List<MyCard> currentHand){
@@ -215,7 +218,7 @@ public class Node implements Comparable {
         List<Meld>  melds = Finder.findBestHandLayout(currentHand).melds();
         List<MyCard> meldCards = new ArrayList<>();
         for (Meld setOfMeld : melds) {
-            meldCards.addAll(new ArrayList<>(setOfMeld.cards()));
+            meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
         }
         for(int j = 0; j< deadwoodCards.size(); j++){
             for(int i = 0; i< deadwoodCards.size(); i++){
