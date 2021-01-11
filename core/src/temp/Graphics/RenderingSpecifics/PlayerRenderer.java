@@ -29,7 +29,6 @@ public class PlayerRenderer {
     public void render(SpriteBatch batch, Style style) {
         HandLayout handLayout = player.viewHandLayout();
         init(style, handLayout);
-        update();
         player.render(batch, style, this);
 
         renderUnmoved(batch, style);
@@ -138,10 +137,6 @@ public class PlayerRenderer {
             meld.setCenterPosition(p[0], p[1]);
             p[0] += dimensions[0] * 1.5f;
         }
-    }
-
-    private void update() {
-        //TODO snapping
     }
 
     private void renderUnmoved(SpriteBatch batch, Style style) {

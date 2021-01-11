@@ -13,8 +13,6 @@ import temp.Graphics.Style;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO find a way to integrate handlers indices with the "main" index
-//TODO and have handlers handLayouts point to the "main" layout
 public class CombinePlayer extends GamePlayer {
     private final List<GamePlayer> handlers;
 
@@ -26,6 +24,7 @@ public class CombinePlayer extends GamePlayer {
     }
 
     public void addPlayer(GamePlayer player) {
+        player.index = index;
         handlers.add(player);
         if (player.processor != null) {
             ((InputMultiplexer) processor).addProcessor(player.processor);

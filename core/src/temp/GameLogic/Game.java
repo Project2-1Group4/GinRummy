@@ -22,6 +22,7 @@ import java.util.Random;
 //TODO move confirmLayoff to Finder and fix it
 //TODO evaluate() function in HandLayout
 //TODO what to do when other player's turn and not perfect information: knocking + rollout
+//TODO MAYBE add start of round in CSV
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
 //TODO MAYBE stop getting best layout every GamePlayer.update call
 public class Game {
