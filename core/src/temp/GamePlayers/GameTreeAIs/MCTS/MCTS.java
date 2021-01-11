@@ -155,12 +155,12 @@ public abstract class MCTS extends MemoryPlayer{
     private List<Action> getDiscardMoves(RoundState state){
         List<Action> discard = new ArrayList<>();
         if(state.getPlayerIndex()==index){
-            for (MyCard card : state.getCards(state.getPlayerIndex())) {
+            for (MyCard card : state.cards(state.getPlayerIndex())) {
                 discard.add(new DiscardAction(state.getPlayerIndex(), card));
             }
         }
         else{
-            for (MyCard card : state.getCards(state.getPlayerIndex())) {
+            for (MyCard card : state.cards(state.getPlayerIndex())) {
                 discard.add(new DiscardAction(state.getPlayerIndex(), card));
             }
             for (MyCard card : state.unassigned()) {
@@ -173,7 +173,7 @@ public abstract class MCTS extends MemoryPlayer{
         List<Action> knock = new ArrayList<>();
         //TODO what to do when other player's turn and not perfect information
         if(state.getPlayerIndex()== index || state.hasPerfectInformation()) {
-            HandLayout handLayout = Finder.findBestHandLayout(state.getCards(state.getPlayerIndex()));
+            HandLayout handLayout = Finder.findBestHandLayout(state.cards(state.getPlayerIndex()));
             if (handLayout.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
                 knock.add(new KnockAction(state.getPlayerIndex(), true, handLayout));
             }

@@ -41,22 +41,22 @@ public class LayoffAction extends Action {
             }
             cards.add(layoff.card);
         }
-        return state.getCards(playerIndex).containsAll(cards);
+        return state.cards(playerIndex).containsAll(cards);
     }
 
     @Override
     protected void specificDo(RoundState state) {
         for (Layoff layoff : layoffs) {
-            MyCard.remove(state.getCards(playerIndex), layoff.card);
-            state.getCards(state.knocker()).add(layoff.card);
+            MyCard.remove(state.cards(playerIndex), layoff.card);
+            state.cards(state.knocker()).add(layoff.card);
         }
     }
 
     @Override
     protected void specificUndo(RoundState state) {
         for (Layoff layoff : layoffs) {
-            MyCard.remove(state.getCards(state.knocker()), layoff.card);
-            state.getCards(playerIndex).add(layoff.card);
+            MyCard.remove(state.cards(state.knocker()), layoff.card);
+            state.cards(playerIndex).add(layoff.card);
         }
     }
 

@@ -113,7 +113,7 @@ public class RoundState {
     public MyCard peekDiscard(){
         return cards.peekDiscard();
     }
-    public List<MyCard> getCards(int index){
+    public List<MyCard> cards(int index){
         return cards.getCards(index);
     }
     public List<List<MyCard>> getAllPlayerCards(){
@@ -165,7 +165,7 @@ public class RoundState {
     }
     public void setLayouts(){
         for (int i = 0; i < cards.players.size(); i++) {
-            confirmedLayouts[i] = Finder.findBestHandLayout(getCards(i));
+            confirmedLayouts[i] = Finder.findBestHandLayout(cards(i));
         }
     }
     public void setPoints(int[] points){

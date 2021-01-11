@@ -44,12 +44,12 @@ public class PickAction extends Action {
     @Override
     protected void specificDo(RoundState state) {
         if(deck) card = state.peekDeck();
-        state.getCards(playerIndex).add(deck? state.deck().pop():state.discardPile().pop());
+        state.cards(playerIndex).add(deck? state.deck().pop():state.discardPile().pop());
     }
 
     @Override
     protected void specificUndo(RoundState state) {
-        MyCard.remove(state.getCards(playerIndex),card);
+        MyCard.remove(state.cards(playerIndex),card);
         if (deck) {
             state.deck().add(card);
         } else {

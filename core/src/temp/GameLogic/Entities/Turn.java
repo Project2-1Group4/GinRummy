@@ -39,7 +39,7 @@ public class Turn {
                 else return Pick;
             case LayoutConfirmation:
                 if(state.knocker().equals(nextIndex(state.numberOfPlayers()))) {
-                    if (Finder.findBestHandLayout(state.getCards(state.knocker())).deadwoodValue() == 0) {
+                    if (Finder.findBestHandLayout(state.cards(state.knocker())).deadwoodValue() == 0) {
                         return EndOfRound;
                     }
                     return Layoff;
