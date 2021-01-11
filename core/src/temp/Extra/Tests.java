@@ -156,9 +156,10 @@ public class Tests {
 
                 //.get(round).get(turn) = double[][][]
                 // where double[player][step][0] = time, double[player][step][1] = deadwood afterwards
-                double stepTime = (System.currentTimeMillis() - interStart) / (double) 1000;
+                double stepTime = (System.currentTimeMillis() - intraStart) / (double) 1000;
                 intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][0] = stepTime;
                 intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][1] = deadwood;
+                intraStart = System.currentTimeMillis();
             }
             if(saveInterTurnInfo && game.turn().playerIndex!=turn.playerIndex){
                 if(interTurnInfo.size()!=roundIndex+1){
@@ -169,9 +170,10 @@ public class Tests {
                 }
                 // .get(round).get(turn) = double[][]
                 // where double[player][0] = time, double[player][1] = deadwood
-                double turnTime = (System.currentTimeMillis() - intraStart) / (double) 1000;
+                double turnTime = (System.currentTimeMillis() - interStart) / (double) 1000;
                 interTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][0] = turnTime;
                 interTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][1] = deadwood;
+                interStart = System.currentTimeMillis();
             }
         }
     }
