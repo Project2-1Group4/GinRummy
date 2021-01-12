@@ -17,7 +17,7 @@ public class MinimaxPruningAI extends GamePlayer {
     public List<MyCard> hand;
     public List<MyCard> pile;
     public List<MyCard> unknownCards;
-    int maxDepthOfTree = 4;
+    int maxDepthOfTree = 6;
     private List<MyCard> backupHand;
     private double[][] probMap = new double[4][13];
     public List<MyCard> discardedCards = new ArrayList<>();
@@ -33,6 +33,11 @@ public class MinimaxPruningAI extends GamePlayer {
     }
     public MinimaxPruningAI(){
         super();
+    }
+
+    public MinimaxPruningAI(int value){
+        super();
+        this.maxDepthOfTree = value;
     }
 
     // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
