@@ -22,6 +22,7 @@ public class Tests {
     public static boolean printTurns = false; // Print every action taken in cmd
     public static boolean printRounds = true; // Print Start of round and end of rounds info in cmd
     public static boolean printGames = false; // Print when game starts and end of game info in cmd
+    public static boolean printPerc = false;
 
     public static boolean saveInterGameInfo = true; // Between games
     public static boolean saveIntraGameInfo = true; // Between rounds (within rounds)
