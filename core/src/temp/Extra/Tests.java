@@ -83,8 +83,12 @@ public class Tests {
                 gameWins[result.getHighestScoreIndex()]++;
             }
             for (int i = 0; i < wins[0].length; i++) {
-                wins[0][i]+=gameWins[i%players.length];
-                wins[1][i]+=roundWins[i%players.length];
+                int indexAfterIteration = (i-iteration)%nbOfPlayers;
+                if (indexAfterIteration < 0) {
+                    indexAfterIteration += nbOfPlayers;
+                }
+                wins[0][i]+=gameWins[indexAfterIteration];
+                wins[1][i]+=roundWins[indexAfterIteration];
             }
             if(printPerc) {
                 printWinPercentage(gameWins, roundWins, playerNames);
@@ -124,7 +128,7 @@ public class Tests {
     private static void write(String folder, String[] playerNames, List<GameState> results, List<List<List<double[][]>>> interTurnInfo, List<List<List<double[][][]>>> intraTurnInfo){
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < playerNames.length-1; i++) {
-            sb.append(playerNames[i]).append("vs");
+            sb.append(playerNames[i]).append("_");
         }
         sb.append(playerNames[playerNames.length-1]);
         String mainTitle = sb.toString();
