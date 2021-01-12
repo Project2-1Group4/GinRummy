@@ -2,6 +2,7 @@ package temp.Extra;
 
 import temp.GamePlayers.CombinePlayer;
 import temp.GamePlayers.GamePlayer;
+import temp.GamePlayers.GameTreeAIs.BestFirstMinimaxAI;
 import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
@@ -26,6 +27,9 @@ public class StringToGamePlayer {
         }
         else if(has(GameRules.names_minimax, s)){
             return new MinimaxPruningAI();
+        }
+        else if(has(GameRules.name_best_search, s)) {
+            return new BestFirstMinimaxAI();
         }
         else if(has(GameRules.names_keyboard, s)){
             return new KeyboardPlayer();
