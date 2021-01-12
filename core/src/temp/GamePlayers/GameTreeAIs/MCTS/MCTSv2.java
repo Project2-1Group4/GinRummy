@@ -1,9 +1,10 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
-import temp.GameLogic.States.CardsInfo;
 import temp.GameLogic.States.RoundState;
+import temp.GamePlayers.ForcePlayer;
 
-// Does MCTS on imperfect information we have
+// Does MCTS on imperfect information we have.
+// Rollout is performed on randomly generated perfect info world
 public class MCTSv2 extends MCTS{
 
     public MCTSv2(int seed){
@@ -14,10 +15,7 @@ public class MCTSv2 extends MCTS{
     }
     @Override
     protected double rollout(RoundState state) {
-        /*
-        TODO generate x (<- rolloutsPerNode?) different worlds with given state and rollout each one of them
-        bc can't simulate gameplay without knowing where everything is!
-         */
-        return 0;
+        RoundState simulation = completeUnknownInformation(state.cards(), state.turn());
+        return executeRollout(new ForcePlayer(rd.nextInt()), new ForcePlayer(rd.nextInt()), simulation);
     }
 }

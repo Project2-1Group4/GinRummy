@@ -18,8 +18,9 @@ import java.util.List;
 import java.util.Random;
 
 //TODO evaluate() HandLayout
+//TODO add P0 Starting Deadwood, ..., Pi Starting Deadwood, P0-P1 Starting diff to endOfRounds()
+
 //TODO stop getting best layout every GamePlayer.update call
-//TODO MAYBE add start of round in CSV (deadwood AND/OR value from evaluate)
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
 public class Game {
 

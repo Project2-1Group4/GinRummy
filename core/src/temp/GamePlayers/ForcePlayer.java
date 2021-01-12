@@ -70,7 +70,10 @@ public class ForcePlayer extends GamePlayer {
     }
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        return rd.nextBoolean();
+        if(remainingCardsInDeck!=0 && topOfDiscard!=null){
+            return rd.nextBoolean();
+        }
+        return remainingCardsInDeck != 0;
     }
 
     @Override

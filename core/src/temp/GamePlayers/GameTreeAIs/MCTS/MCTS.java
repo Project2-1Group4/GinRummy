@@ -1,6 +1,8 @@
 package temp.GamePlayers.GameTreeAIs.MCTS;
 
 import temp.Extra.PostGameInformation.Result;
+import temp.GameLogic.Entities.HandLayout;
+import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Entities.Step;
 import temp.GameLogic.Entities.Turn;
 import temp.GameLogic.Game;
@@ -8,67 +10,60 @@ import temp.GameLogic.GameActions.Action;
 import temp.GameLogic.GameActions.DiscardAction;
 import temp.GameLogic.GameActions.KnockAction;
 import temp.GameLogic.GameActions.PickAction;
-import temp.GameLogic.Entities.HandLayout;
-import temp.GameLogic.Entities.MyCard;
 import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.CardsInfo;
 import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.ForcePlayer;
 import temp.GamePlayers.GamePlayer;
 import temp.GamePlayers.MemoryPlayer;
-import temp.GamePlayers.RandomPlayer;
 import temp.GameRules;
 
-import java.util.*;
-
-//TODO what to do when other player's turn and not perfect information: knocking + rollout
-//TODO exploration value, back prop value
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 //TODO MCTS build to allow customizing MCTS at runtime (for testing what hyper param are best)
 public abstract class MCTS extends MemoryPlayer{
 
-    protected static final int baseRolloutsPerSim = 500;
-    protected static final int baseRolloutsPerNode = 2;
-    protected static final double baseExplorationParam = 1.4;
-
     public boolean debugmcts = false;
     public boolean print = false;
 
-    protected final int rolloutsPerNode; // Should be =1 unless you rollout at least somewhat randomly
-    protected final int rolloutsPerSimulation; // Higher = deeper search. For stopping condition
-    protected final double explorationParam;
+    public int rolloutsPerNode = 2; // Should be =1 unless you rollout at least somewhat randomly
+    public Integer rolloutsPerSim = 400;
+    public double explorationParam = 1.4;
+    public Double secPerSim = 5.0;
 
-    protected final Random rd; // For seeding
+    protected final Random rd; // For seeding.
+    // WARNING can't reproduce same results when using time as a limit
+    // because execution speed isn't always the same
     protected boolean simpleKnocking = true;
     protected int rollouts;
+    private long s;
 
-    public MCTS(int rolloutsPerSimulation, int rolloutsPerNode,double explorationParam , Integer seed){
+    public MCTS(Integer seed){
         if(seed==null){
             rd = new Random();
         }
         else{
             rd = new Random(seed);
         }
-        this.rolloutsPerSimulation = rolloutsPerSimulation;
-        this.rolloutsPerNode = rolloutsPerNode;
-        this.explorationParam =explorationParam;
-    }
-    public MCTS(Integer seed){
-        this(baseRolloutsPerSim, baseRolloutsPerNode, baseExplorationParam, seed);
     }
     public MCTS(){
         this(null);
     }
 
+    protected void set(Double secPerSim, Integer rolloutsPerSim, int rolloutsPerNode, double explorationParam){
+        this.secPerSim = secPerSim;
+        this.rolloutsPerSim = rolloutsPerSim;
+        this.rolloutsPerNode = rolloutsPerNode;
+        this.explorationParam = explorationParam;
+    }
     //Interface methods. Methods that get called by game itself.
     @Override
     public Boolean KnockOrContinue() {
         if(simpleKnocking){
-            if (this.handLayout.deadwoodValue() <= 10){
-                return true;
-            } else {
-                return false;
-            }
+            return this.handLayout.deadwoodValue() <= 10;
         }
         KnockAction action = (KnockAction) getBestAction(Step.KnockOrContinue);
         return action==null? null : action.knock;
@@ -100,19 +95,35 @@ public abstract class MCTS extends MemoryPlayer{
         if(this.step!=step){
             throw new AssertionError("Memory player step inconsistencies");
         }
-        rollouts = 0;
         RoundState state = new RoundState(cardsMemory, new Turn(step, index));
         MCTSNode root = ExpandNode(new MCTSNode(null, null, this), state);
 
         monteCarloTreeSearch(root, state.cards());
+        mergeDeckPicksIntoOne(root, step);
 
         int best = findBestAction(root.children);
         if(print) {
             System.out.println(cardsMemory);
             System.out.println("Moves:");
+            System.out.println("Moves explored "+root.subtreeSize()+" up to depth "+root.subtreeDepth());
             print(root, best);
         }
+
         return root.children.get(best).action;
+    }
+    private void mergeDeckPicksIntoOne(MCTSNode node, Step step){
+        if(step!=Step.Pick) return;
+        MCTSNode deck= new MCTSNode(node, new PickAction(node.children.get(0).action.playerIndex, true, null), this);
+        for (int i = node.children.size() - 1; i >= 0; i--) {
+            MCTSNode c = node.children.get(i);
+            if(((PickAction)c.action).deck) {
+                deck.wins+= c.wins;
+                deck.rollouts+= c.rollouts;
+                deck.children.addAll(c.children);
+                node.children.remove(i);
+            }
+        }
+        node.children.add(deck);
     }
 
     // Move generation
@@ -147,7 +158,9 @@ public abstract class MCTS extends MemoryPlayer{
             pick.add(new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1)));
         }
         else{
-            pick.add(new PickAction(state.getPlayerIndex(), true, null));
+            for (MyCard card : state.unassigned()) {
+                pick.add(new PickAction(state.getPlayerIndex(), true, card));
+            }
         }
         if(state.discardPile().size()!=0){
             pick.add(new PickAction(state.getPlayerIndex(), false, state.discardPile().peek()));
@@ -173,8 +186,8 @@ public abstract class MCTS extends MemoryPlayer{
     }
     private List<Action> getKnockMoves(RoundState state){
         List<Action> knock = new ArrayList<>();
-        //TODO what to do when other player's turn and not perfect information
-        if(state.getPlayerIndex()== index || state.hasPerfectInformation()) {
+        //Assume he can't knock unless you KNOW (know enough cards) he can
+        if(state.cards(state.getPlayerIndex()).size()>= GameRules.baseCardsPerHand) {
             HandLayout handLayout = Finder.findBestHandLayout(state.cards(state.getPlayerIndex()));
             if (handLayout.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
                 knock.add(new KnockAction(state.getPlayerIndex(), true, handLayout));
@@ -217,9 +230,10 @@ public abstract class MCTS extends MemoryPlayer{
     protected void mcts(MCTSNode root, RoundState state){
         assert state.numberOfPlayers()==Game.numberOfPlayers(this);
         rollouts = 0;
-        while(!stopCondition()) {
-            if(debugmcts) {
-                System.out.println("\nLoop " + (rollouts/rolloutsPerNode)+", rollouts "+rollouts);
+        s = System.nanoTime();
+        while (!stopCondition()) {
+            if (debugmcts) {
+                System.out.println("\nLoop " + (rollouts / rolloutsPerNode) + ", rollouts " + rollouts);
             }
             RoundState s = new RoundState(state);
             // Explore
@@ -261,8 +275,17 @@ public abstract class MCTS extends MemoryPlayer{
      *
      * @return true if stop, false if not
      */
-    protected boolean stopCondition(){
-        return rollouts>= rolloutsPerSimulation;
+    protected boolean stopCondition() {
+        if(secPerSim!=null && rolloutsPerSim!=null) {
+            return (System.nanoTime() - s) / 1_000_000_000.0 >= secPerSim || rollouts >= rolloutsPerSim;
+        }
+        if(secPerSim!=null){
+            return (System.nanoTime() - s) / 1_000_000_000.0 >= secPerSim;
+        }
+        if(rolloutsPerSim!=null){
+            return rollouts >= rolloutsPerSim;
+        }
+        return false;
     }
     /**
      * Explores current tree based on exploration value up until it reaches a leaf node,
@@ -288,11 +311,14 @@ public abstract class MCTS extends MemoryPlayer{
      * @param state state to start at
      * @return true if you win, false if other wins
      */
-    private double executeRollout(GamePlayer player1, GamePlayer player2, RoundState state) {
+    protected double executeRollout(GamePlayer player1, GamePlayer player2, RoundState state) {
+        if(debugmcts){
+            System.out.println(state);
+        }
         Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt());
         Result result = g.playOutRound();
         g.remove();
-        return getRoundValue(result);
+        return getRoundValue(result.r);
     }
     /**
      * Finds index of best action.
@@ -321,11 +347,18 @@ public abstract class MCTS extends MemoryPlayer{
      * @param knowledge known information
      * @return new (different objects) perfect information world
      */
-    protected CardsInfo completeUnknownInformation(CardsInfo knowledge){
+    protected RoundState completeUnknownInformation(CardsInfo knowledge, Turn t){
         CardsInfo c = new CardsInfo(knowledge);
         Game.shuffleList(rd, 500, c.unassigned);
         for (int i = 0; i < c.players.size(); i++) {
-            while(c.players.get(i).size()<GameRules.baseCardsPerHand){
+            int cardsInHand;
+            if(t.step== Step.Discard && t.playerIndex ==i){
+                cardsInHand = GameRules.baseCardsPerHand+1;
+            }
+            else{
+                cardsInHand = GameRules.baseCardsPerHand;
+            }
+            while(c.players.get(i).size()<cardsInHand){
                 // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
                 // Here we can modify this to pick cards based of set probabilities
                 c.players.get(i).add(c.unassigned.remove(0));
@@ -335,25 +368,35 @@ public abstract class MCTS extends MemoryPlayer{
         // Should probably be a class held variable to be fair
         c.deck.addAll(c.unassigned);
         c.unassigned.clear();
-        return c;
+        return new RoundState(c, t);
     }
-    protected double getRoundValue(Result result){
-        if(result.winner==null){
+    private boolean simpleValue = false;
+    /**
+     * If win return value between 0.5-1 based on how good the win is (1 being max win)
+     * and if lose return value between 0-0.5 based on how bad the loss is (0 being max loss)
+     * return 0.5 when tied or when there is 0 deadwood difference.
+     * @param result round to be evaluated
+     * @return value of round
+     */
+    protected double getRoundValue(RoundState result){
+        if(result.winner()==null){
             return 0.5;
         }
-        if(result.winner==index){
-            return 1;
+        if(simpleValue){
+            return result.winner()==index? 1:0;
         }
-        int deadwood = result.r.layouts()[index].deadwoodValue();
-        int deadwoodDif = 0;
-        for (int i = 0; i < result.r.layouts().length; i++) {
-            if(index!=i){
-                deadwoodDif = deadwood - result.r.layouts()[i].deadwoodValue();
+        int[] points = Game.pointsWon(result);
+        int pointsDif = 0;
+        for (int i = 0; i < points.length; i++) {
+            if(points[i]!=0){
+                pointsDif = points[i];
+                pointsDif*= i==index? 1:-1;
+                break;
             }
         }
-        deadwoodDif/= result.r.numberOfPlayers()-1;
         // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
-        return (98.0-deadwoodDif)/(2*98.0);
+        // Max points = max deadwood + ginBonus = 98 + 25 = 123
+        return (123.0+pointsDif)/(2*123.0);
     }
     /**
      * Helper method. Prints. To be deleted.

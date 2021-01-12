@@ -5,7 +5,6 @@ import temp.GameLogic.GameActions.PickAction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MCTSNode {
 
@@ -34,6 +33,32 @@ public class MCTSNode {
     }
     public boolean equals(Object o){
         return o instanceof MCTSNode && action.equals(((MCTSNode) o).action);
+    }
+    public int subtreeSize(){
+        int subtreeSize = 0;
+        for (MCTSNode child : children) {
+            if(child.rollouts!=0) {
+                subtreeSize++;
+                subtreeSize += child.subtreeSize();
+            }
+        }
+        return subtreeSize;
+    }
+    public int subtreeDepth(){
+        return actualDepth()-depth;
+    }
+    private int actualDepth(){
+        if(rollouts==0) {
+            return depth;
+        }
+        int curMax = depth;
+        for (MCTSNode child : children) {
+            int depth = child.actualDepth();
+            if(depth>curMax){
+                curMax = depth;
+            }
+        }
+        return curMax;
     }
     /**
      * Gives value of node.

@@ -1,8 +1,10 @@
 package temp.GameLogic.GameActions;
 
 
+import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.RoundState;
 import temp.GameLogic.Entities.Step;
+import temp.GameRules;
 
 public abstract class Action {
     public final Step step;
@@ -38,6 +40,9 @@ public abstract class Action {
             state.actions.add(this);
             if(respectCurrentTurn) state.turn(state.turn().getNext(state));
             return true;
+        }
+        if(this instanceof KnockAction){
+            throw new AssertionError("lul man");
         }
         return false;
     }

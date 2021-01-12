@@ -10,18 +10,13 @@ import temp.GameLogic.Entities.MyCard;
 import java.util.*;
 
 public class Node implements Comparable {
-    /*
-    Main change I did was change from set of cards into List<MyCard>
-    From there on I went through the code and tried to fix all of the red lines that appeared
-    That's the gist of it tbh
-     */
 
     public List<MyCard> discardPile;
     public List<MyCard> hand;
-    public List<MyCard> unknownCards;
+    public List<MyCard> unknownCards; // all cards that are unknown for AI, so all cards - (discard pile + own hand)
     public List<MyCard> opponentHand;
     public boolean winOrLose;
-    public int handValue; //not deadwood value, constant - deadwood, (for easier implementation pruning)
+    public int handValue; // constant - deadwood (for easier implementation pruning)
 
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
@@ -29,12 +24,14 @@ public class Node implements Comparable {
     public static final int constantScore = 100;
 
     private int depthTree;
-    //protected HashMap<MyCard, Double> probMap = new HashMap<>();
     private double[][] probMap = new double[4][13];
 
     public boolean playerStop = false; // when game is over this one turns to be true
     public boolean AIStop = false; // turn to be true when game is over
 
+    /*
+    constructor for node with default probabilities
+     */
     public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth) {
         this.discardPile = pile;
         this.hand = cards;
@@ -42,29 +39,36 @@ public class Node implements Comparable {
         this.opponentHand = opponentHand;
         this.depthTree = depth;
 
-        int pScore = Finder.findBestHandLayout(hand).deadwoodValue(); //Player.scoreHand(hand.toList());
-        int opHand = Finder.findBestHandLayout(opponentHand).deadwoodValue();//Player.scoreHand(opponentHand.toList());
-       // System.out.println("probabilities = " + Arrays.deepToString(probMap));
-        //System.out.println(" ");
+        int pScore = Finder.findBestHandLayout(hand).deadwoodValue();  // own hand
+        int opHand = Finder.findBestHandLayout(opponentHand).deadwoodValue(); // opponenthand
+
         if((pScore < opHand) && pScore<=10){
             this.winOrLose = true;
         }
         handValue = Node.getHandValue(cards);
-
         this.setDefaultProbabilities();
     }
 
+    /*
+    constructor for Node with probabilities saved
+     */
     public Node(List<MyCard> pile, List<MyCard> cards, List<MyCard> unknownCards, List<MyCard> opponentHand, int depth, double[][] probMap){
         this(pile, cards, unknownCards, opponentHand, depth);
         this.probMap = probMap;
     }
 
+    /*
+    default probabilities for start of round, uniform distribution for all unknown cards
+     */
     void setDefaultProbabilities(){
         for(MyCard card: unknownCards){
             this.setProbability(card, 1.0/41.0);
         }
     }
 
+    /*
+    constructor used for alpha-beta search
+     */
     public Node(boolean positiveInf) {
         this.discardPile = new ArrayList<>();
         this.hand = new ArrayList<>();
@@ -72,18 +76,10 @@ public class Node implements Comparable {
         this.unknownCards = new ArrayList<>();
 
         if (positiveInf) {
-            this.setHandValue(100000);
+            this.setHandValue(100000); // beta
         }
         else
-            this.setHandValue(-100000);
-    }
-
-    double getProbability(MyCard aCard){
-        return probMap[aCard.suit.index][aCard.rank.index];
-    }
-
-    void updateProbability(MyCard aCard, double aVal){
-        probMap[aCard.suit.index][aCard.rank.index] = probMap[aCard.suit.index][aCard.rank.index]*aVal;
+            this.setHandValue(-100000); // alpha
     }
 
     void setProbability(MyCard card, double val){
@@ -98,7 +94,9 @@ public class Node implements Comparable {
         }
     }
 
-    // TODO: Make sure it's a deep copy being made
+    /*
+    returns probabilities of all cards
+     */
     double[][] getProbMap(){
         double[][] cloneMap = new double[probMap.length][];
 
@@ -109,17 +107,6 @@ public class Node implements Comparable {
         return cloneMap;
     }
 
-    //we already have static method in Player class
-    /*
-    public int scoreHand(List<Card> aHand) {
-        SetOfCards hand = new SetOfCards(aHand);
-        Player player = new Player(hand);
-        int scoreHand = player.scoreHand();
-        return scoreHand;
-    }
-
-     */
-
     public List<Node> getChildren() {
         return children;
     }
@@ -128,6 +115,9 @@ public class Node implements Comparable {
         return parent;
     }
 
+    /*
+    depth of node in tree
+     */
     public int getDepthTree() {
         return depthTree;
     }
@@ -147,43 +137,43 @@ public class Node implements Comparable {
         return hand.toString();
     }
 
-    public int getHandValue() {
-        //return Player.getHandValue(this.hand.toList());
-        return this.handValue;
-    }
+    public int getHandValue() { return this.handValue; }
 
     public void setHandValue(int value) {
         this.handValue = value;
     }
 
+    /*
+    evaluation function alpha, returns best node
+     */
     public static Node getNodeMax(Node node1, Node node2) {
+        // if hand values are almost the same, also look at deadwood cards for almost melds
         if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
             int almostMelds1 = almostMelds(node1.hand);
             int almostMelds2 = almostMelds(node2.hand);
+            // if nodes have same amount of almost melds compare as usual
             if(almostMelds1 == almostMelds2){
                 if(node1.getHandValue() > node2.getHandValue()){
                     return node1;
                 }
-                else{
-                    return node2;
-                }
+                else{ return node2; }
             }
+            // if node with lower value has more almost melds, return this node
             else if(almostMelds1 < almostMelds2){
                 return node2;
             }
-            else{
-                return node1;
-            }
-
+            else{ return node1; }
         }
+        // usual comparison: node with highest hand value is returned
         else if(node1.getHandValue() > node2.getHandValue()){
             return node1;
         }
-        else {
-            return node2;
-        }
+        else { return node2; }
     }
 
+    /*
+    evaluation function beta, returns best node (same method as getNodeMax())
+     */
     public static Node getNodeMin(Node node1, Node node2) {
         if (Math.abs(node1.getHandValue() - node2.getHandValue()) <= 3){
             int almostMelds1 = almostMelds(node1.hand);
@@ -192,26 +182,23 @@ public class Node implements Comparable {
                 if(node1.getHandValue() < node2.getHandValue()){
                     return node1;
                 }
-                else{
-                    return node2;
-                }
+                else{ return node2; }
             }
             else if(almostMelds1 > almostMelds2){
                 return node2;
             }
-            else{
-                return node1;
-            }
-
+            else{ return node1; }
         }
         else if (node1.getHandValue() < node2.getHandValue()){
             return node1;
         }
-        else {
-            return node2;
-        }
+        else { return node2; }
     }
 
+    /*
+    look for almost melds in deadwood cards
+    almost meld = 2 out of 3 cards to form a meld
+     */
     public static int almostMelds(List<MyCard> currentHand){
         int almostMelds = 0;
         List<MyCard> deadwoodCards = Finder.findBestHandLayout(currentHand).unused();
@@ -220,21 +207,26 @@ public class Node implements Comparable {
         for (Meld setOfMeld : melds) {
             meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
         }
+        // look through deadwood card for possible almost meld
         for(int j = 0; j< deadwoodCards.size(); j++){
             for(int i = 0; i< deadwoodCards.size(); i++){
+                // look for set
                 if(deadwoodCards.get(j).rank.index == deadwoodCards.get(i).rank.index && i!=j){
-                    int cardinMeld = 2;
+                    int cardinMeld = 2; // 4 suits, 2 are already in deadwood so 2 left
+                    // look if cards needed to finish meld are not already used in another meld,
+                    // which makes the almost meld impossible to become a actual meld
                     for(int k = 0; k< meldCards.size(); k++){
                         if(meldCards.get(k).rank.index == deadwoodCards.get(i).rank.index){
                             cardinMeld--;
                         }
                     }
-                    if(cardinMeld > 0){
+                    if(cardinMeld > 0){ // if not all cards needed to finish almost meld are already used, its an possible almost meld
                         almostMelds++;
                     }
                 }
+                // look for run
                 if(deadwoodCards.get(j).suit.index == deadwoodCards.get(i).suit.index && Math.abs(deadwoodCards.get(j).rank.index - deadwoodCards.get(i).rank.index) == 1 && i!=j){
-                    int cardinMeld = 1;
+                    int cardinMeld = 1; // run has 3 cards, 2 are already in deadwood cards
                     for(int k = 0; k< meldCards.size(); k++){
                         if(meldCards.get(k).suit.index == deadwoodCards.get(j).suit.index && Math.abs(meldCards.get(k).rank.index - deadwoodCards.get(j).rank.index) == 1 ){
                             cardinMeld--;
@@ -246,34 +238,19 @@ public class Node implements Comparable {
                 }
             }
         }
+        // since almost melds have 2 cards in the deadwood, all possible melds will be counted twice
+        // so divide by 2 to get rid of the double counted melds
         almostMelds = almostMelds/2;
         return almostMelds;
     }
 
 
     /*
-    No idea why the original handValue method was implemented as it is, but this is my attempt at bringing it to the new game system
-    All I did was copy the code and alter the deadwood method to use what exists in the new game logic
-    So hopefully this works perfectly
+    returns hand value (= constant - deadwood score)
      */
     public static int getHandValue(List<MyCard> aHand) {
         int scoreHand = Finder.findBestHandLayout(aHand).deadwoodValue();
         return constantScore - scoreHand;
-    }
-
-    public static void main(String[] args) {
-        List<MyCard> cardList = MyCard.getBasicDeck();
-        List<MyCard> tryHand = new ArrayList<>();
-        Random getcard = new Random();
-        int num =0;
-        for(int i= 0; i<10; i++){
-            num = getcard.nextInt(51);
-            tryHand.add(cardList.get(num));
-        }
-        System.out.println("hand "+tryHand);
-        int melds = almostMelds(tryHand);
-        System.out.println("almost melds amount = "+melds);
-
     }
 
     @Override

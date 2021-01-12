@@ -20,13 +20,15 @@ public class DiscardAction extends Action {
 
     @Override
     public boolean specificCanDo(RoundState state) {
-        return MyCard.has(state.cards(playerIndex), card);
+        return state.cards(playerIndex).contains(card) || state.unassigned().contains(card);
     }
 
     @Override
     protected void specificDo(RoundState state) {
         state.discardPile().add(card);
-        MyCard.remove(state.cards(playerIndex), card);
+        if(!state.cards(playerIndex).remove(card)){
+            state.unassigned().remove(card);
+        }
     }
 
     @Override
