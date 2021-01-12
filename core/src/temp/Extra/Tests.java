@@ -86,7 +86,9 @@ public class Tests {
                 wins[0][i]+=gameWins[i%players.length];
                 wins[1][i]+=roundWins[i%players.length];
             }
-            printWinPercentage(gameWins,roundWins,playerNames);
+            if(printPerc) {
+                printWinPercentage(gameWins, roundWins, playerNames);
+            }
             write(folder, playerNames, results, interTurnInfo, intraTurnInfo);
             shuffleForward(players, playerNames);
         }
@@ -117,7 +119,7 @@ public class Tests {
             System.out.println(playerNames[i]+" game win%: "+(gameWins[i]/(double)games));
             sb.append(playerNames[i]).append(" round win%: ").append(roundWins[i] / (double) rounds).append("\n");
         }
-        System.out.println("\n"+sb.toString());
+        System.out.println(sb.toString());
     }
     private static void write(String folder, String[] playerNames, List<GameState> results, List<List<List<double[][]>>> interTurnInfo, List<List<List<double[][][]>>> intraTurnInfo){
         StringBuilder sb = new StringBuilder();
