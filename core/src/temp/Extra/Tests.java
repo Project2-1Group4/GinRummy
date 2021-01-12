@@ -45,13 +45,17 @@ public class Tests {
         start(folder ,players,playerNames,nbOfGames, seed);
     }
 
-    public static void start(String folder, GamePlayer[] players, String[] playerNames, int numberOfGames, Integer seed){
-
+    public static int[][] start(String folder, GamePlayer[] players, String[] playerNames, int numberOfGames, Integer seed){
+        // wins[0] = games, wins[1] = rounds
+        int[][] wins = new int[2][players.length];
         int nbOfPlayers = players.length;
         for (int iteration = 0; iteration < players.length; iteration++) {
             Random rd;
             if(seed!=null) { rd = new Random(seed); }
             else { rd = new Random(); }
+
+            int[] gameWins = new int[players.length];
+            int[] roundWins = new int[players.length];
             // List init
             List<GameState> results = new ArrayList<>();
             List<List<List<double[][]>>> interTurnInfo;
@@ -71,11 +75,22 @@ public class Tests {
                 Game game = new Game(Arrays.asList(players), rd.nextInt());
                 runGame(game, saveInterTurnInfo? interTurnInfo.get(interTurnInfo.size()-1):null, saveIntraTurnInfo? intraTurnInfo.get(intraTurnInfo.size()-1):null);
                 results.add(game.gameState);
+                for (RoundState round : game.gameState.rounds) {
+                    roundWins[round.winner()]++;
+                }
             }
-            printWinPercentage(results, playerNames);
+            for (GameState result : results) {
+                gameWins[result.getHighestScoreIndex()]++;
+            }
+            for (int i = 0; i < wins[0].length; i++) {
+                wins[0][i]+=gameWins[i%players.length];
+                wins[1][i]+=roundWins[i%players.length];
+            }
+            printWinPercentage(gameWins,roundWins,playerNames);
             write(folder, playerNames, results, interTurnInfo, intraTurnInfo);
             shuffleForward(players, playerNames);
         }
+        return wins;
     }
 
     private static void shuffleForward(GamePlayer[] p, String[] n){
@@ -86,16 +101,23 @@ public class Tests {
         System.arraycopy(n, 1, n, 0, n.length-1);
         n[n.length-1] = n1;
     }
-    private static void printWinPercentage(List<GameState> results, String[] playerNames){
-        int players = results.get(0).nbOfPlayers;
-        int[] wins = new int[players];
-        for (GameState result : results) {
-            wins[result.getHighestScoreIndex()]++;
+    private static void printWinPercentage(int[] gameWins, int[] roundWins, String[] playerNames){
+        int games =0;
+        int rounds=0;
+        for (int gameWin : gameWins) {
+            games+=gameWin;
         }
-        System.out.println(Arrays.toString(wins)+" wins out of "+results.size());
-        for (int i = 0; i < players; i++) {
-            System.out.println(playerNames[i]+" win%: "+(wins[i]/(double)results.size()));
+        for (int roundWin : roundWins) {
+            rounds+=roundWin;
         }
+        System.out.println(Arrays.toString(gameWins)+" game wins out of "+games);
+        System.out.println(Arrays.toString(roundWins)+" round  wins out of "+rounds);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < playerNames.length; i++) {
+            System.out.println(playerNames[i]+" game win%: "+(gameWins[i]/(double)games));
+            sb.append(playerNames[i]).append(" round win%: ").append(roundWins[i] / (double) rounds).append("\n");
+        }
+        System.out.println("\n"+sb.toString());
     }
     private static void write(String folder, String[] playerNames, List<GameState> results, List<List<List<double[][]>>> interTurnInfo, List<List<List<double[][][]>>> intraTurnInfo){
         StringBuilder sb = new StringBuilder();
