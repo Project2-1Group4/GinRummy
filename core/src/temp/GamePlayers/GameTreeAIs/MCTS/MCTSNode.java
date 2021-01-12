@@ -44,6 +44,22 @@ public class MCTSNode {
         }
         return subtreeSize;
     }
+    public int subtreeDepth(){
+        return actualDepth()-depth;
+    }
+    private int actualDepth(){
+        if(rollouts==0) {
+            return depth;
+        }
+        int curMax = depth;
+        for (MCTSNode child : children) {
+            int depth = child.actualDepth();
+            if(depth>curMax){
+                curMax = depth;
+            }
+        }
+        return curMax;
+    }
     /**
      * Gives value of node.
      *

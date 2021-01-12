@@ -30,9 +30,9 @@ public abstract class MCTS extends MemoryPlayer{
     public boolean print = false;
 
     public int rolloutsPerNode = 2; // Should be =1 unless you rollout at least somewhat randomly
-    public int rolloutsPerSim = 400;
+    public Integer rolloutsPerSim = 400;
     public double explorationParam = 1.4;
-    public double secPerSim = 5;
+    public Double secPerSim = 5.0;
 
     protected final Random rd; // For seeding.
     // WARNING can't reproduce same results when using time as a limit
@@ -53,6 +53,12 @@ public abstract class MCTS extends MemoryPlayer{
         this(null);
     }
 
+    protected void set(Double secPerSim, Integer rolloutsPerSim, int rolloutsPerNode, double explorationParam){
+        this.secPerSim = secPerSim;
+        this.rolloutsPerSim = rolloutsPerSim;
+        this.rolloutsPerNode = rolloutsPerNode;
+        this.explorationParam = explorationParam;
+    }
     //Interface methods. Methods that get called by game itself.
     @Override
     public Boolean KnockOrContinue() {
@@ -99,8 +105,10 @@ public abstract class MCTS extends MemoryPlayer{
         if(print) {
             System.out.println(cardsMemory);
             System.out.println("Moves:");
+            System.out.println("Moves explored "+root.subtreeSize()+" up to depth "+root.subtreeDepth());
             print(root, best);
         }
+
         return root.children.get(best).action;
     }
     private void mergeDeckPicksIntoOne(MCTSNode node, Step step){
@@ -268,7 +276,16 @@ public abstract class MCTS extends MemoryPlayer{
      * @return true if stop, false if not
      */
     protected boolean stopCondition() {
-        return (System.nanoTime()-s)/1_000_000_000.0>=secPerSim || rollouts>= rolloutsPerSim;
+        if(secPerSim!=null && rolloutsPerSim!=null) {
+            return (System.nanoTime() - s) / 1_000_000_000.0 >= secPerSim || rollouts >= rolloutsPerSim;
+        }
+        if(secPerSim!=null){
+            return (System.nanoTime() - s) / 1_000_000_000.0 >= secPerSim;
+        }
+        if(rolloutsPerSim!=null){
+            return rollouts >= rolloutsPerSim;
+        }
+        return false;
     }
     /**
      * Explores current tree based on exploration value up until it reaches a leaf node,
@@ -353,23 +370,33 @@ public abstract class MCTS extends MemoryPlayer{
         c.unassigned.clear();
         return new RoundState(c, t);
     }
+    private boolean simpleValue = false;
+    /**
+     * If win return value between 0.5-1 based on how good the win is (1 being max win)
+     * and if lose return value between 0-0.5 based on how bad the loss is (0 being max loss)
+     * return 0.5 when tied or when there is 0 deadwood difference.
+     * @param result round to be evaluated
+     * @return value of round
+     */
     protected double getRoundValue(RoundState result){
         if(result.winner()==null){
             return 0.5;
         }
-        if(result.winner()==index){
-            return 1;
+        if(simpleValue){
+            return result.winner()==index? 1:0;
         }
-        int deadwood = result.layouts()[index].deadwoodValue();
-        int deadwoodDif = 0;
-        for (int i = 0; i < result.layouts().length; i++) {
-            if(index!=i){
-                deadwoodDif = deadwood - result.layouts()[i].deadwoodValue();
+        int[] points = Game.pointsWon(result);
+        int pointsDif = 0;
+        for (int i = 0; i < points.length; i++) {
+            if(points[i]!=0){
+                pointsDif = points[i];
+                pointsDif*= i==index? 1:-1;
+                break;
             }
         }
-        deadwoodDif/= result.numberOfPlayers()-1;
         // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
-        return (98.0-deadwoodDif)/(2*98.0);
+        // Max points = max deadwood + ginBonus = 98 + 25 = 123
+        return (123.0+pointsDif)/(2*123.0);
     }
     /**
      * Helper method. Prints. To be deleted.

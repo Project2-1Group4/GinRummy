@@ -16,6 +16,10 @@ public class MCTSv1 extends MCTS{
         this(null);
     }
 
+    public void set(int simulations, Double secPerSim, Integer rolloutsPerSim, int rolloutsPerNode, double explorationParam){
+        this.simulations = simulations;
+        super.set(secPerSim, rolloutsPerSim, rolloutsPerNode, explorationParam);
+    }
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
