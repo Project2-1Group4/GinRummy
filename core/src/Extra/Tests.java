@@ -1,6 +1,5 @@
 package Extra;
 
-
 import Extra.PostGameInformation.CSVWriterV2;
 import GameLogic.Entities.Step;
 import GameLogic.Entities.Turn;
@@ -98,7 +97,9 @@ public class Tests {
                 runGame(game, saveInterTurnInfo? interTurnInfo.get(interTurnInfo.size()-1):null, saveIntraTurnInfo? intraTurnInfo.get(intraTurnInfo.size()-1):null);
                 results.add(game.gameState);
                 for (RoundState round : game.gameState.rounds) {
-                    roundWins[round.winner()]++;
+                    if(round.winner()!=null) {
+                        roundWins[round.winner()]++;
+                    }
                 }
             }
             for (GameState result : results) {
