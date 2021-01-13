@@ -1,7 +1,5 @@
 package GamePlayers.MousePlayer;
 
-import GameLogic.GameActions.DiscardAction;
-import GameLogic.GameActions.PickAction;
 import GameLogic.Entities.MyCard;
 import GamePlayers.GamePlayer;
 import Graphics.GameCard;
@@ -9,21 +7,20 @@ import Graphics.GameCard;
 import java.util.List;
 
 // NEEDS GRAPHICS TO WORK
-// Has no knock or continue. Dont feel like implementing. Just use in combo with keyboard
+// Has no knock or continue button. Use in combo with keyboard
 public class MousePlayer extends GamePlayer {
-
-
     protected GameCard clicked;
 
     public MousePlayer() {
         processor = new MouseHandler(this);
     }
 
+    // Game <=> Player interaction
+
     @Override
     public Boolean knockOrContinue() {
         return null;
     }
-
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         if (clicked != null) {
@@ -36,7 +33,6 @@ public class MousePlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public MyCard discardCard() {
         if (clicked != null) {
@@ -44,17 +40,6 @@ public class MousePlayer extends GamePlayer {
         }
         return null;
     }
-
-    @Override
-    public void playerDiscarded(DiscardAction discardAction) {
-
-    }
-
-    @Override
-    public void playerPicked(PickAction pickAction) {
-
-    }
-
     @Override
     public void update(List<MyCard> realLayout) {
         super.update(realLayout);

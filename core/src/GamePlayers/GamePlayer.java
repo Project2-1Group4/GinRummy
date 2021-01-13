@@ -15,6 +15,7 @@ import Graphics.Style;
 
 import java.util.List;
 
+// Extend to make new type of player
 public abstract class GamePlayer implements PlayerInterface {
 
     protected List<MyCard> allCards;
@@ -23,21 +24,14 @@ public abstract class GamePlayer implements PlayerInterface {
 
     public int index;
 
-    // Player methods
+    // Game <=> Player interaction
 
-    /**
-     * Called:
-     * -when cards have been distributed
-     * -after having picked
-     * -after having discarded
-     * -after having decided to knock (or not)
-     *
-     * @param cards current cards the game has saved
-     */
+    @Override
     public void update(List<MyCard> cards) {
         allCards = cards;
         handLayout = Finder.findBestHandLayout(allCards);
     }
+    @Override
     public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
         // In case you want to render extra
     }

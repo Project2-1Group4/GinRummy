@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class KeyboardPlayer extends GamePlayer {
 
+    // Game <=> Player interaction
+
     @Override
     public Boolean knockOrContinue() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -29,7 +31,6 @@ public class KeyboardPlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
@@ -40,7 +41,6 @@ public class KeyboardPlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public MyCard discardCard() {
         List<MyCard> cards = viewUnusedHand();
@@ -67,22 +67,10 @@ public class KeyboardPlayer extends GamePlayer {
         }
         return null;
     }
-
-    @Override
-    public void playerDiscarded(DiscardAction discardAction) {
-
-    }
-
-    @Override
-    public void playerPicked(PickAction pickAction) {
-
-    }
-
     @Override
     public HandLayout confirmLayout() {
         return null;
     }
-
     @Override
     public List<Layoff> layOff(List<Meld> knockerMelds) {
         return null;

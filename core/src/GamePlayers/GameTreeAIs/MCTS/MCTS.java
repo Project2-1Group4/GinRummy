@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO MCTS build to allow customizing MCTS at runtime (for testing what hyper param are best)
 public abstract class MCTS extends MemoryPlayer{
 
     public boolean debugmcts = false;
@@ -53,13 +52,8 @@ public abstract class MCTS extends MemoryPlayer{
         this(null);
     }
 
-    protected void set(Double secPerSim, Integer rolloutsPerSim, int rolloutsPerNode, double explorationParam){
-        this.secPerSim = secPerSim;
-        this.rolloutsPerSim = rolloutsPerSim;
-        this.rolloutsPerNode = rolloutsPerNode;
-        this.explorationParam = explorationParam;
-    }
-    //Interface methods. Methods that get called by game itself.
+    // Game <=> Player interaction
+
     @Override
     public Boolean KnockOrContinue() {
         if(simpleKnocking){
@@ -85,6 +79,8 @@ public abstract class MCTS extends MemoryPlayer{
         return action==null? null : action.card;
     }
 
+    // Getters
+
     /**
      * Returns best action found through MCTS.
      *
@@ -104,12 +100,80 @@ public abstract class MCTS extends MemoryPlayer{
         int best = findBestAction(root.children);
         if(print) {
             System.out.println(cardsMemory);
-            System.out.println("Moves:");
+            System.out.println(root.toString(1));
+            System.out.println("Chose child "+best);
             System.out.println("Moves explored "+root.subtreeSize()+" up to depth "+root.subtreeDepth());
-            print(root, best);
         }
 
         return root.children.get(best).action;
+    }
+    /**
+     * Generates a random world given the known information
+     * Fills the rest of the enemy's hand and adds the rest of the unknown cards to the deck.
+     *
+     * @param knowledge known information
+     * @return new (different objects) perfect information world
+     */
+    protected RoundState completeUnknownInformation(CardsInfo knowledge, Turn t){
+        CardsInfo c = new CardsInfo(knowledge);
+        for (int i = 0; i < c.players.size(); i++) {
+            int cardsInHand;
+            if(t.step== Step.Discard && t.playerIndex ==i){
+                cardsInHand = GameRules.baseCardsPerHand+1;
+            }
+            else{
+                cardsInHand = GameRules.baseCardsPerHand;
+            }
+            if(c.players.get(i).size()<cardsInHand) {
+                List<MyCard> weightedUnassigned = getWeightedList(i);
+                Game.shuffleList(rd, 250, weightedUnassigned);
+                while (c.players.get(i).size() < cardsInHand) {
+                    MyCard card = weightedUnassigned.remove(0);
+                    c.players.get(i).add(card);
+                    c.unassigned.remove(card);
+                    while(weightedUnassigned.remove(card)){
+                        weightedUnassigned.remove(card);
+                    }
+                }
+            }
+        }
+        Game.shuffleList(rd, 500, c.unassigned);
+        c.deck.addAll(c.unassigned);
+        c.unassigned.clear();
+        return new RoundState(c, t);
+    }
+    /**
+     * If win return value between 0.5-1 based on how good the win is (1 being max win)
+     * and if lose return value between 0-0.5 based on how bad the loss is (0 being max loss)
+     * return 0.5 when tied or when there is 0 deadwood difference.
+     * @param result round to be evaluated
+     * @return value of round
+     */
+    protected double getRoundValue(RoundState result){
+        if(result.winner()==null){
+            return 0.5;
+        }
+        int[] points = Game.pointsWon(result);
+        int pointsDif = 0;
+        for (int i = 0; i < points.length; i++) {
+            if(points[i]!=0){
+                pointsDif = points[i];
+                pointsDif*= i==index? 1:-1;
+                break;
+            }
+        }
+        // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
+        // Max points = max deadwood + ginBonus = 98 + 25 = 123
+        return (123.0+pointsDif)/(2*123.0);
+    }
+
+    // Setters
+
+    protected void set(Double secPerSim, Integer rolloutsPerSim, int rolloutsPerNode, double explorationParam){
+        this.secPerSim = secPerSim;
+        this.rolloutsPerSim = rolloutsPerSim;
+        this.rolloutsPerNode = rolloutsPerNode;
+        this.explorationParam = explorationParam;
     }
     private void mergeDeckPicksIntoOne(MCTSNode node, Step step){
         if(step!=Step.Pick) return;
@@ -119,7 +183,7 @@ public abstract class MCTS extends MemoryPlayer{
             if(((PickAction)c.action).deck) {
                 deck.wins+= c.wins;
                 deck.rollouts+= c.rollouts;
-                deck.children.addAll(c.children);
+                deck.children.add(node.children.get(i));
                 node.children.remove(i);
             }
         }
@@ -197,7 +261,7 @@ public abstract class MCTS extends MemoryPlayer{
         return knock;
     }
 
-    // Intermediate
+    // Intermediate, can/should be built upon further
 
     /**
      * For now, for MCTSV1 to generate random game states and apply MCTS to every game state generated.
@@ -245,7 +309,7 @@ public abstract class MCTS extends MemoryPlayer{
             ExpandNode(node, s);
             if(debugmcts){
                 System.out.println("\nExpanded:");
-                print(node, null);
+                System.out.println(node.toString(1));
             }
             // Simulate
             for (int i = 0; i < rolloutsPerNode; i++) {
@@ -336,78 +400,5 @@ public abstract class MCTS extends MemoryPlayer{
             }
         }
         return best;
-    }
-
-    // Other
-
-    /**
-     * Generates a random world given the known information
-     * Fills the rest of the enemy's hand and adds the rest of the unknown cards to the deck.
-     *
-     * @param knowledge known information
-     * @return new (different objects) perfect information world
-     */
-    protected RoundState completeUnknownInformation(CardsInfo knowledge, Turn t){
-        CardsInfo c = new CardsInfo(knowledge);
-        Game.shuffleList(rd, 500, c.unassigned);
-        for (int i = 0; i < c.players.size(); i++) {
-            int cardsInHand;
-            if(t.step== Step.Discard && t.playerIndex ==i){
-                cardsInHand = GameRules.baseCardsPerHand+1;
-            }
-            else{
-                cardsInHand = GameRules.baseCardsPerHand;
-            }
-            while(c.players.get(i).size()<cardsInHand){
-                // TODO: Add a way to modify how the decks are generated and store the probability of the resulting hand
-                // Here we can modify this to pick cards based of set probabilities
-                c.players.get(i).add(c.unassigned.remove(0));
-            }
-        }
-        // TODO: Modify this to add the size of the deck, to limit the depth of the tree and probably add a speed increase
-        // Should probably be a class held variable to be fair
-        c.deck.addAll(c.unassigned);
-        c.unassigned.clear();
-        return new RoundState(c, t);
-    }
-    private boolean simpleValue = false;
-    /**
-     * If win return value between 0.5-1 based on how good the win is (1 being max win)
-     * and if lose return value between 0-0.5 based on how bad the loss is (0 being max loss)
-     * return 0.5 when tied or when there is 0 deadwood difference.
-     * @param result round to be evaluated
-     * @return value of round
-     */
-    protected double getRoundValue(RoundState result){
-        if(result.winner()==null){
-            return 0.5;
-        }
-        if(simpleValue){
-            return result.winner()==index? 1:0;
-        }
-        int[] points = Game.pointsWon(result);
-        int pointsDif = 0;
-        for (int i = 0; i < points.length; i++) {
-            if(points[i]!=0){
-                pointsDif = points[i];
-                pointsDif*= i==index? 1:-1;
-                break;
-            }
-        }
-        // Max deadwood you can have: K K Q Q J J 10 10 9 9 = 98
-        // Max points = max deadwood + ginBonus = 98 + 25 = 123
-        return (123.0+pointsDif)/(2*123.0);
-    }
-    /**
-     * Helper method. Prints. To be deleted.
-     *
-     * @param root root you want to print
-     * @param chosen index of action that has been chosen
-     */
-    protected void print(MCTSNode root, Integer chosen){
-        System.out.println("Root "+root+"\nChose "+chosen+" out of:");
-        for (int i = 0; i < root.children.size(); i++) {
-            System.out.println("\t"+i+". "+root.children.get(i));
-        }
     }
 }

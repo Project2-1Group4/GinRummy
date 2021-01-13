@@ -14,15 +14,9 @@ import Graphics.Style;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Used when player takes too long on their turn.
- * <p>
- * Prioritizes deck always
- * Discards first unused card
- * Only knocks on Gin
- */
+// Guided randomness
 public class ForcePlayer extends GamePlayer {
-    private final boolean onlyGin = false;
+    public boolean onlyGin = false;
     private final Random rd;
     public final GamePlayer player;
 
@@ -47,17 +41,7 @@ public class ForcePlayer extends GamePlayer {
         player = null;
     }
 
-    @Override
-    public void update(List<MyCard> cards) {
-        allCards = cards;
-    }
-
-    @Override
-    public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
-        if(player!=null) {
-            player.render(batch, renderingStyle, renderer);
-        }
-    }
+    // Game <=> Player interaction
 
     @Override
     public Boolean knockOrContinue() {
@@ -74,12 +58,6 @@ public class ForcePlayer extends GamePlayer {
         }
         return remainingCardsInDeck != 0;
     }
-
-    @Override
-    public HandLayout confirmLayout() {
-        return getBestMelds();
-    }
-
     @Override
     public MyCard discardCard() {
         handLayout = Finder.findBestHandLayout(allCards);
@@ -95,24 +73,34 @@ public class ForcePlayer extends GamePlayer {
         return chooseWeightedRd(unused);
     }
     @Override
-    public void playerDiscarded(DiscardAction discardAction) {
-
+    public void update(List<MyCard> cards) {
+        allCards = cards;
     }
     @Override
-    public void playerPicked(PickAction pickAction) {
-
+    public void render(SpriteBatch batch, Style renderingStyle, PlayerRenderer renderer) {
+        if(player!=null) {
+            player.render(batch, renderingStyle, renderer);
+        }
     }
 
+    // Getters
+
+    /**
+     * Chooses card random card biased by it's value in the deadwood
+     * Higher deadwood value = more chance to be picked
+     * @param cards list of cards to pick from
+     * @return card chosen
+     */
     private MyCard chooseWeightedRd(List<MyCard> cards){
         int sum_of_weight = 0;
-        for(int i=0; i<cards.size(); i++) {
-            sum_of_weight += cards.get(i).ginValue();
+        for (MyCard card : cards) {
+            sum_of_weight += card.ginValue();
         }
         int rnd = rd.nextInt(sum_of_weight);
-        for(int i=0; i<cards.size(); i++) {
-            if(rnd < cards.get(i).ginValue())
-                return cards.get(i);
-            rnd -= cards.get(i).ginValue();
+        for (MyCard card : cards) {
+            if (rnd < card.ginValue())
+                return card;
+            rnd -= card.ginValue();
         }
         return null;
     }

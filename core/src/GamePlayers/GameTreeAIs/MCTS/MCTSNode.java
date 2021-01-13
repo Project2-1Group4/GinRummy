@@ -25,14 +25,27 @@ public class MCTSNode {
         children = new ArrayList<>();
     }
 
+    // Getters
+
     public boolean isLeaf() {
         return children.size()==0;
+    }
+    public boolean isValid(){
+        int r = 0;
+        for (MCTSNode child : children) {
+            r+=child.rollouts;
+        }
+        r+= isRoot() || isLeaf()? 0: creator.rolloutsPerNode;
+        return r==rollouts;
     }
     public boolean isRoot(){
         return parent == null;
     }
     public boolean equals(Object o){
-        return o instanceof MCTSNode && action.equals(((MCTSNode) o).action);
+        if(action==null){
+            return o instanceof MCTSNode && ((MCTSNode) o).depth==depth && ((MCTSNode) o).action==null;
+        }
+        return o instanceof MCTSNode && depth==((MCTSNode) o).depth && action.equals(((MCTSNode) o).action);
     }
     public int subtreeSize(){
         int subtreeSize = 0;
@@ -101,6 +114,28 @@ public class MCTSNode {
         }
         return node;
     }
+    public String toString(int maxDepth){
+        return toString(maxDepth, 1);
+    }
+    private String toString(int maxDepth, int depthTraversed){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Depth ").append(depth)
+                .append(". Action \"").append(action)
+                .append("\" has a score of ").append(wins)
+                .append("/").append(rollouts).append("\n");
+        if(depth==maxDepth){
+            return sb.toString();
+        }
+        for (int i = 0; i < children.size(); i++) {
+            for (int tabs = 0; tabs < depthTraversed; tabs++) {
+                sb.append("\t");
+            }
+            sb.append(i).append(". ").append(children.get(i).toString(maxDepth, depthTraversed+1));
+        }
+        return sb.toString();
+    }
+
+    // Setters
 
     public void backPropagate(){
         backPropagate(rollouts, wins);
@@ -112,9 +147,24 @@ public class MCTSNode {
             parent.backPropagate(rollouts, wins);
         }
     }
-
-    public String toString(){
-        return "Depth "+depth+". Action \"" + action + "\" has a score of " + wins + "/" + rollouts;
+    public boolean merge(MCTSNode o){
+        if(equals(o)){
+            boolean found = false;
+            for (int i = 0; i < o.children.size(); i++) {
+                for (int j = i; j < children.size(); j++) {
+                    if(children.get(j).merge(o.children.get(i))){
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found){
+                    children.add(o.children.get(i));
+                }
+            }
+            rollouts+= o.rollouts;
+            wins+= o.wins;
+            return true;
+        }
+        return false;
     }
-
 }

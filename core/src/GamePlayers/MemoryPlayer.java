@@ -7,8 +7,10 @@ import GameLogic.GameActions.PickAction;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
 import GameLogic.States.CardsInfo;
+import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -23,6 +25,7 @@ public abstract class MemoryPlayer extends GamePlayer {
     }
 
     // Game <=> Player interaction
+
     @Override
     public final Boolean knockOrContinue() {
         step = Step.KnockOrContinue;
@@ -41,8 +44,6 @@ public abstract class MemoryPlayer extends GamePlayer {
         return DiscardCard();
     }
     public abstract MyCard DiscardCard();
-
-    // Sync game info with player
     @Override
     public void newRound(MyCard topOfDiscard) {
         super.newRound(topOfDiscard);
@@ -59,8 +60,6 @@ public abstract class MemoryPlayer extends GamePlayer {
         cardsMemory = new CardsInfo(players, new Stack<MyCard>(),unknown,discard);
         round++;
     }
-
-    // Sync moves done with player knowledge
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
         boolean found = cardsMemory.players.get(discardAction.playerIndex).remove(discardAction.card);
@@ -98,5 +97,70 @@ public abstract class MemoryPlayer extends GamePlayer {
         } else if (action instanceof DiscardAction) {
             playerDiscarded((DiscardAction) action);
         }
+    }
+
+    // Getters
+
+    /**
+     * Returns a list of what cards the enemy might have using a heuristic
+     * -add all cards directly in the vicinity of what he picked 2x,
+     * -add all cards 2 away, 1x
+     * @param player index of player you want
+     * @return weighted list
+     */
+    protected List<MyCard> getWeightedList(int player){
+        HashMap<MyCard, Integer> vicinity = getVicinity(cardsMemory.getCards(player));
+        List<MyCard> keysToRemove = new ArrayList<>();
+        for (MyCard card : vicinity.keySet()) {
+            if(cardsMemory.unassigned.contains(card)){
+                continue;
+            }
+            keysToRemove.add(card);
+        }
+        for (MyCard key : keysToRemove) {
+            vicinity.remove(key);
+        }
+        List<MyCard> weightedList = new ArrayList<>(cardsMemory.unassigned);
+        for (MyCard key : vicinity.keySet()) {
+            weightedList.remove(key);
+            int weight = vicinity.get(key);
+            for (int i = 0; i < weight; i++) {
+                weightedList.add(key);
+            }
+        }
+        return weightedList;
+    }
+    private HashMap<MyCard, Integer> getVicinity(List<MyCard> c){
+        HashMap<MyCard, Integer> vicinity = new HashMap<>();
+        for (MyCard myCard : c) {
+            HashMap<MyCard, Integer> dirV = getVicinity(myCard);
+            for (MyCard dirVKey : dirV.keySet()) {
+                if(vicinity.containsKey(dirVKey)){
+                    vicinity.put(dirVKey, vicinity.get(dirVKey)+dirV.get(dirVKey));
+                }
+                else {
+                    vicinity.put(dirVKey, dirV.get(dirVKey));
+                }
+
+            }
+        }
+        return vicinity;
+    }
+    private HashMap<MyCard, Integer> getVicinity(MyCard c){
+        HashMap<MyCard, Integer> directVicinity = new HashMap<>();
+        for (MyCard.Suit suit : MyCard.Suit.values()) {
+            if(suit!=c.suit){
+                directVicinity.put(new MyCard(suit, c.rank), 2);
+            }
+        }
+        for (int i = -2; i <= 2; i++) {
+            if(i != 0) {
+                assert c.rank != null;
+                if (c.rank.index+i>=0 && c.rank.index+i < MyCard.Rank.values().length) {
+                    directVicinity.put(new MyCard(c.suit, MyCard.Rank.getRank(c.rank.index + i)), 3 - Math.abs(i));
+                }
+            }
+        }
+        return directVicinity;
     }
 }

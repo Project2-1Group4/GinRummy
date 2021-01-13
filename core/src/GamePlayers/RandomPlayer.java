@@ -5,27 +5,30 @@ import GameLogic.Entities.MyCard;
 import java.util.Random;
 
 public class RandomPlayer extends GamePlayer{
-    Random rd = new Random();
+    Random rd;
+
+    public RandomPlayer(Integer seed){
+        if(seed==null){
+            rd = new Random();
+        }
+        else{
+            rd = new Random(seed);
+        }
+    }
     public RandomPlayer(){
-
+        this(null);
     }
 
-    public RandomPlayer(int seed){
-        rd = new Random(seed);
-    }
+    // Game <=> Player interaction
+
     @Override
     public Boolean knockOrContinue() {
-        if(handLayout.deadwoodValue()<=10){
-            return true;
-        }
-        return false;
+        return handLayout.deadwoodValue() <= 10;
     }
-
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         return rd.nextBoolean();
     }
-
     @Override
     public MyCard discardCard() {
         return allCards.get(rd.nextInt(allCards.size()));

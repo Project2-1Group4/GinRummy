@@ -33,6 +33,16 @@ public class MyCard {
     public boolean same(MyCard card) {
         return card.suit == this.suit && card.rank == this.rank;
     }
+    @Override
+    public boolean equals(Object o) {
+        MyCard card = (MyCard) o;
+        return (this.rank.index == card.rank.index && this.suit.index == card.suit.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Suit.values().length*rank.index+suit.index;
+    }
 
     public int ginValue() {
         return rank.ginValue;
@@ -44,8 +54,8 @@ public class MyCard {
 
     // EXTRA
     public enum Suit {
-        Clubs("clubs", 1),
         Spades("spades", 0),
+        Clubs("clubs", 1),
         Hearts("hearts", 2),
         Diamonds("diamonds", 3);
         public int index;
@@ -62,7 +72,7 @@ public class MyCard {
                     return suit;
                 }
             }
-            System.out.println("MyCard l65 Wrong index");
+            System.out.println("MyCard getSuit() Wrong index "+i);
             return null;
         }
     }
@@ -97,7 +107,7 @@ public class MyCard {
                     return rank;
                 }
             }
-            System.out.println("MyCard l99 Wrong index");
+            System.out.println("MyCard getRank() Wrong index "+i);
             return null;
         }
     }
@@ -161,11 +171,4 @@ public class MyCard {
         }
         return deck;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        MyCard card = (MyCard) o;
-        return (this.rank.index == card.rank.index && this.suit.index == card.suit.index);
-    }
-
 }

@@ -13,6 +13,8 @@ import Graphics.Style;
 import java.util.ArrayList;
 import java.util.List;
 
+// Used to combine multiple players. Adding order matters.
+// First added gets called first.
 public class CombinePlayer extends GamePlayer {
     private final List<GamePlayer> handlers;
 
@@ -23,13 +25,7 @@ public class CombinePlayer extends GamePlayer {
         addPlayer(player2);
     }
 
-    public void addPlayer(GamePlayer player) {
-        player.index = index;
-        handlers.add(player);
-        if (player.processor != null) {
-            ((InputMultiplexer) processor).addProcessor(player.processor);
-        }
-    }
+    // Game <=> Player interaction
 
     @Override
     public Boolean knockOrContinue() {
@@ -41,7 +37,6 @@ public class CombinePlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         for (GamePlayer handler : handlers) {
@@ -52,7 +47,6 @@ public class CombinePlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public MyCard discardCard() {
         for (GamePlayer handler : handlers) {
@@ -63,28 +57,24 @@ public class CombinePlayer extends GamePlayer {
         }
         return null;
     }
-
     @Override
     public void playerDiscarded(DiscardAction discardAction) {
         for (GamePlayer handler : handlers) {
             handler.playerDiscarded(discardAction);
         }
     }
-
     @Override
     public void playerPicked(PickAction pickAction) {
         for (GamePlayer handler : handlers) {
             handler.playerPicked(pickAction);
         }
     }
-
     @Override
     public void executed(Action action) {
         for (GamePlayer handler : handlers) {
             handler.executed(action);
         }
     }
-
     @Override
     public void update(List<MyCard> realLayout) {
         super.update(realLayout);
@@ -92,14 +82,12 @@ public class CombinePlayer extends GamePlayer {
             handler.update(realLayout);
         }
     }
-
     @Override
     public void render(SpriteBatch batch, Style renderStyle, PlayerRenderer renderer) {
         for (GamePlayer handler : handlers) {
             handler.render(batch, renderStyle, renderer);
         }
     }
-
     @Override
     public void newRound(MyCard topOfDiscard) {
         super.newRound(topOfDiscard);
@@ -107,6 +95,18 @@ public class CombinePlayer extends GamePlayer {
             handler.newRound(topOfDiscard);
         }
     }
+
+    // Setters
+
+    public void addPlayer(GamePlayer player) {
+        player.index = index;
+        handlers.add(player);
+        if (player.processor != null) {
+            ((InputMultiplexer) processor).addProcessor(player.processor);
+        }
+    }
+
+    // Static getter
 
     public static CombinePlayer getBaseCombinePlayer() {
         return new CombinePlayer(new KeyboardPlayer(), new MousePlayer());

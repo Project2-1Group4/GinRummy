@@ -23,37 +23,11 @@ public class MCTSv1 extends MCTS{
     @Override
     protected void monteCarloTreeSearch(MCTSNode root, CardsInfo knowledge){
         for (int i = 0; i < simulations; i++) {
-            if(print){
-                System.out.println("Simulation "+i);
-            }
             RoundState generated = completeUnknownInformation(knowledge, new Turn(step, index));
             MCTSNode generatedRoot = ExpandNode(new MCTSNode(null, null, this), generated);
             mcts(generatedRoot, generated);
-            merge(root, generatedRoot);
+            root.merge(generatedRoot);
         }
         //Can check what the best deck pick would be here.
     }
-
-    private void merge(MCTSNode main, MCTSNode secondary){
-        for (MCTSNode secondC : secondary.children) {
-            boolean found = false;
-            for (MCTSNode mainC : main.children) {
-                if(secondC.equals(mainC)){
-                    found = true;
-                    mainC.children.addAll(secondC.children);
-                    mainC.wins+=secondC.wins;
-                    mainC.rollouts+=secondC.rollouts;
-                    main.wins+=secondC.wins;
-                    main.rollouts+=secondC.rollouts;
-                    break;
-                }
-            }
-            if(!found){
-                main.children.add(secondC);
-                main.wins+=secondC.wins;
-                main.rollouts+=secondC.rollouts;
-            }
-        }
-    }
-
 }
