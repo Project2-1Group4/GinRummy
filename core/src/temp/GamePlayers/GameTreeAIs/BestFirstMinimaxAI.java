@@ -19,7 +19,7 @@ public class BestFirstMinimaxAI extends GamePlayer {
     public List<MyCard> hand;
     public List<MyCard> pile;
     public List<MyCard> unknownCards;
-    int maxDepthOfTree = 2;
+    int maxDepthOfTree = 5;
     private List<MyCard> backupHand;
     double[][] probMap = new double[4][13];
 
@@ -44,13 +44,11 @@ public class BestFirstMinimaxAI extends GamePlayer {
             return parents;
         }
         if (maxPlayer == true) {
-            //System.out.println("max turn!");
             List<Node> evaluationList = new ArrayList<>();
 
             for (Node child : parents.getChildren()) {
                 int eval = child.getHandValue();
                 if (eval >= beta.getHandValue()) {
-                    //System.out.println("eval and beta value: "+eval + " "+ beta.getHandValue());
                     return child;
                 }
 
@@ -59,6 +57,7 @@ public class BestFirstMinimaxAI extends GamePlayer {
 
             }
             Collections.sort(evaluationList);
+            //decreasing order
             Collections.reverse(evaluationList);
 
             if (evaluationList.size() == 1) {
@@ -66,31 +65,25 @@ public class BestFirstMinimaxAI extends GamePlayer {
             }
 
             if ((alpha.getHandValue() < evaluationList.get(0).getHandValue()) && (evaluationList.get(0).getHandValue() < beta.getHandValue())) {
-                //System.out.println("start loop of max");
 
-                //System.out.println("alpha before: "+alpha.getHandValue());
 
                 Node max = Node.getNodeMax(alpha,evaluationList.get(1));
                 alpha = max;
-                //System.out.println("alpha after: "+alpha.getHandValue());
                 Node maxNode = evaluationList.get(0);
 
                 evaluationList.remove(maxNode);
-
-                //System.out.println("switching to min search");
+                //search for the best next node
                 Node attempt = searching(maxNode, alpha, beta, false);
-                //System.out.println("starting for min search");
-                //System.out.println("alpha, attempt, beta value of max player: "+ alpha.getHandValue() +" "+attempt.getHandValue()+" "+beta.getHandValue());
 
                 evaluationList.add(attempt);
                 Collections.sort(evaluationList);
                 Collections.reverse(evaluationList);
 
             }
+            //return the first item of the list
             return evaluationList.get(0);
         }
         else {
-            //System.out.println("min turn");
             //increasing list
             List<Node> evaluationList = new ArrayList<>();
 
@@ -112,19 +105,14 @@ public class BestFirstMinimaxAI extends GamePlayer {
                 evaluationList.add(new Node(true));
             }
             if ((alpha.getHandValue() < evaluationList.get(0).getHandValue()) && (evaluationList.get(0).getHandValue() < beta.getHandValue())) {
-                //System.out.println("start loop of min");
-                //System.out.println("beta before: "+ beta.getHandValue());
+
                 Node min = Node.getNodeMin(beta, evaluationList.get(1));
                 beta = min;
-                //System.out.println("beta after: "+ beta.getHandValue());
 
                 Node minNode = evaluationList.get(0);
                 evaluationList.remove(minNode);
 
-                //System.out.println("switching to max search");
                 Node attempt = searching(minNode, alpha, beta, true);
-                //System.out.println("starting for max search");
-                //System.out.println("alpha, attempt, beta value of min player: "+ alpha.getHandValue() +" "+attempt.getHandValue()+" "+beta.getHandValue());
 
                 evaluationList.add(attempt);
                 Collections.sort(evaluationList);
@@ -137,16 +125,14 @@ public class BestFirstMinimaxAI extends GamePlayer {
         //create the tree
         Node parent = tree.getRootNode();
         List<MyCard> currentHand = parent.hand;
-
         Node pickNode = this.searching(parent, new Node(false), new Node(true), true);
-
         for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
                 pickNode.unknownCards.add(card);
             }
         }
         unknownCards = pickNode.unknownCards;
-        this.probMap = pickNode.getProbMap();
+        probMap = pickNode.getProbMap();
 
         List<MyCard> newHand = pickNode.hand;
         MyCard pickCard = null;
@@ -171,115 +157,7 @@ public class BestFirstMinimaxAI extends GamePlayer {
     }
 
 
-    /*public static void main(String[] args) {
 
-
-        /*
-        List<MyCard> deck = MyCard.getBasicDeck();
-        Collections.shuffle(deck);
-        List<MyCard> botHand = new ArrayList<>();
-        int i = 0;
-        while(i<10) {
-            botHand.add(deck.get(0));
-            deck.remove(0);
-            i++;
-        }
-        List<MyCard> pile = new ArrayList<>();
-        pile.add(deck.get(0));
-        deck.remove(0);
-        List<MyCard> unknownCards = GametreeAI.cloneMyCardList(deck);
-
-        double[][] probMap = new double[4][13];
-        for (int j = 0; j<probMap.length; j++) {
-            for (int k = 0; k < probMap[0].length; k++) {
-                probMap[j][k] = 1.0/41.0;
-            }
-        }
-
-        GametreeAI tree = new GametreeAI(pile, botHand, unknownCards, 4, probMap);
-        System.out.println("starting to create the first tree!!!...");
-        tree.createTree(true);
-        BestFirstMinimaxAI bot = new BestFirstMinimaxAI(tree);
-        Node t = bot.searching(tree.getRootNode(), new Node(false), new Node(true), true);
-        System.out.println("hand: "+botHand);
-        System.out.println("search result: "+t.hand);
-
-        List<MyCard> player = new ArrayList<MyCard>();
-        i = 0;
-        Collections.shuffle(deck);
-        while(i<10) {
-            player.add(deck.get(0));
-            deck.remove(0);
-            i++;
-        }
-        System.out.println("deck size: "+deck.size());
-        System.out.println("unknown: "+unknownCards.size());
-
-        while (Finder.findBestHandLayout(botHand).getDeadwood() > 10 && Finder.findBestHandLayout(player).getDeadwood() > 10) {
-            System.out.println("bot hand: "+ botHand);
-            System.out.println("bot deadwood: "+ Finder.findBestHandLayout(botHand).getDeadwood());
-            bot.game(player, deck);
-        }
-
-
-    }*/
-
-
-
-    public void game(List<MyCard> player, List<MyCard> deck) {
-        //bot play
-        this.AIPlay(getNodeReturn(), deck);
-        //human player
-        System.out.println("player turn: ");
-        System.out.println("choose card: ");
-        Scanner sc = new Scanner(System.in);
-        String choose = sc.nextLine();
-
-        List<MyCard> list = new ArrayList<>();
-        Node current = new Node(pile, hand, unknownCards, list, 0);
-        if (choose.equals("pile")) {
-            this.tree.simulationPickPile(current);
-            unknownCards = this.tree.cardsUnknown;
-            MyCard pick = pile.get(pile.size() - 1);
-            player.add(pick);
-            pile.remove(pick);
-            System.out.println("card pick: "+pick);
-        }
-        else{
-            this.tree.simulationPickDeck(current);
-            unknownCards = this.tree.cardsUnknown;
-            MyCard pick = deck.get(deck.size() - 1);
-            player.add(pick);
-        }
-        System.out.println("discard: ");
-        int discard = sc.nextInt();
-
-        MyCard card = player.get(discard);
-        this.tree.simulationDiscard(current, card);
-        this.pile.add(card);
-        this.unknownCards.remove(card);
-        System.out.println("card discard: "+card);
-        this.tree.createTree(false);
-    }
-
-    public void AIPlay(MyCard[] pick_discard, List<MyCard> deck) {
-        if (pick_discard[0] == null || !pick_discard[0].equals(pile.get(0))) {
-            MyCard pick = deck.get(deck.size() - 1);
-            this.hand.add(pick);
-            deck.remove(pick);
-            MyCard discard = GametreeAI.chooseCardToDiscard(this.hand);
-            this.hand.remove(discard);
-            pile.add(discard);
-            this.unknownCards.remove(pick);
-            System.out.println("actual pick and discard: "+pick+" "+discard);
-        }
-        else {
-            this.hand.add(pick_discard[0]);
-            this.hand.remove(pick_discard[1]);
-            this.pile.add(pick_discard[1]);
-            System.out.println("actual pick and discard: "+pick_discard[0]+" "+pick_discard[1]);
-        }
-    }
     /*
 If true then the player knocks and the round ends
 If false then the player doesn't knock
@@ -309,9 +187,8 @@ If false then the player doesn't knock
      */
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
-        System.out.println("move");
+        //System.out.println("move");
         createTree();
-        //tree simulations
         this.tree.createTree(false);
         MyCard[] pick_discard = this.getNodeReturn();
         backupHand = new ArrayList<>();
@@ -371,16 +248,16 @@ If false then the player doesn't knock
         The player chooses what to discard
         After the player has discarded a card (with the new 10 card hand)
      */
-
-    public void update(HandLayout realLayout) {
-        super.update(realLayout.cards());
+    @Override
+    public void update(List<MyCard> realLayout) {
+        super.update(realLayout);
     }
 
     public void createTree(){
         this.tree = new GametreeAI(this.discardedCards,this.allCards, this.unknownCards, this.maxDepthOfTree, this.probMap);
     }
 
-    public List<MyCard> findRemainingCards(List<MyCard> hand, List<MyCard> discardPile){
+    public static List<MyCard> findRemainingCards(List<MyCard> hand, List<MyCard> discardPile){
         List<MyCard> knownCards = new ArrayList<>(hand);
         knownCards.addAll(discardPile);
         List<MyCard> cardList = MyCard.getBasicDeck();
@@ -468,47 +345,6 @@ If false then the player doesn't knock
             this.probMap= this.tree.probMap;
         }
     }
-    /*
-    public double newEvaluation(Node nodeChecking) {
-        List<MyCard> attemptHand = nodeChecking.hand;
-        //get deadwood value from hand
-        double scoreHand = Finder.findBestHandLayout(attemptHand).getDeadwood();
 
-        //get possible new hand cards
-        MyCard[] pick_discard = this.pick_discard(nodeChecking.hand);
-        MyCard pickCard = pick_discard[0];
-
-        //get probability of each card
-        double cardPickedProb = this.probMap[pickCard.suit.index][pickCard.rank.index];
-
-        double finalValue = scoreHand + cardPickedProb*100;
-        if (finalValue == scoreHand)
-            return 100000;  //pick card prob = 0 => impossible move => wont be chosen
-        else
-            return finalValue;
-    }
-
-
-
-    public MyCard[] pick_discard(List<MyCard> newAttemptHand) {
-
-        //card pick
-        MyCard pickCard = null;
-        for (MyCard card : newAttemptHand) {
-            if (!this.hand.contains(card)) {
-                pickCard = card;
-            }
-        }
-        //card discard
-        MyCard discardCard = null;
-        for (MyCard card : this.hand) {
-            if (!newAttemptHand.contains(card)) {
-                discardCard = card;
-            }
-        }
-        return new MyCard[] {pickCard, discardCard};
-    }
-
-     */
 }
 
