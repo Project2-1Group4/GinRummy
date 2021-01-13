@@ -1,15 +1,15 @@
 package temp;
 
+import Extra.StringToGamePlayer;
+import GameLogic.Entities.MyCard;
+import GameLogic.Game;
+import GameLogic.GameActions.Action;
+import GameLogic.GameActions.EndSignal;
+import GameLogic.States.GameState;
+import GamePlayers.GamePlayer;
+import Graphics.Graphics;
 import com.badlogic.gdx.ScreenAdapter;
 import com.mygdx.game.GinRummy;
-import temp.Extra.StringToGamePlayer;
-import temp.GameLogic.Entities.MyCard;
-import temp.GameLogic.Game;
-import temp.GameLogic.GameActions.Action;
-import temp.GameLogic.GameActions.EndSignal;
-import temp.GameLogic.States.GameState;
-import temp.GamePlayers.GamePlayer;
-import temp.Graphics.Graphics;
 
 import java.util.ArrayList;
 import java.util.List;
