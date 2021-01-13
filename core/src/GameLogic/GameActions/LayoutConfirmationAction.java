@@ -14,32 +14,33 @@ public class LayoutConfirmationAction extends Action {
         this.layout = handLayout;
     }
 
-    public HandLayout viewLayout() {
-        return layout.deepCopy();
-    }
+    // Getters
 
+    public HandLayout layout() {
+        return layout.copy();
+    }
     @Override
     protected boolean specificSame(Object other) {
-        return layout.same(((LayoutConfirmationAction) other).layout);
+        return layout.equals(((LayoutConfirmationAction) other).layout);
     }
-
     @Override
     public boolean specificCanDo(RoundState state) {
         return layout.isValid();
     }
+    @Override
+    public String specificToString() {
+        return " confirmed layout:\n" + layout;
+    }
+
+    // Setters
 
     @Override
     protected void specificDo(RoundState state) {
         state.layouts()[playerIndex] = layout;
     }
-
     @Override
     protected void specificUndo(RoundState state) {
         state.layouts()[playerIndex] = null;
     }
 
-    @Override
-    public String specificToString() {
-        return " confirmed layout:\n" + layout;
-    }
 }

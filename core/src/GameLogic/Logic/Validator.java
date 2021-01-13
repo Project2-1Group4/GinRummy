@@ -55,7 +55,7 @@ public class Validator {
     public static boolean discardCard(MyCard cardToDiscard, List<MyCard> playerHand) {
         for (MyCard card : playerHand) {
             // If card in hand, valid move
-            if (cardToDiscard.same(card)) {
+            if (cardToDiscard.equals(card)) {
                 return true;
             }
         }
@@ -142,7 +142,7 @@ public class Validator {
         //Check if card to layoff is in player hand
         boolean cardFound = false;
         for (MyCard playerCard : playerCards) {
-            if (playerCard.same(layoff.card)) {
+            if (playerCard.equals(layoff.card)) {
                 cardFound = true;
                 break;
             }

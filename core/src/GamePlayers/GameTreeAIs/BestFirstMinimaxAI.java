@@ -208,7 +208,7 @@ If false then the player doesn't knock
         }
         else {
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).same(pick_discard[0])){
+                if(discardedCards.get(i).equals(pick_discard[0])){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }
@@ -328,7 +328,7 @@ If false then the player doesn't knock
             checkDoubles();
             MyCard pickedCard = pickAction.card();
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).same(pickedCard)){
+                if(discardedCards.get(i).equals(pickedCard)){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }

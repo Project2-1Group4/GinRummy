@@ -1,6 +1,7 @@
 package GameLogic.Entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -26,28 +27,22 @@ public class MyCard {
     }
 
     // GETTERS
-    /*public boolean equals(Object o){
-        return o instanceof MyCard && ((MyCard) o).suit == this.suit && ((MyCard) o).rank == this.rank;
-    }*/
 
-    public boolean same(MyCard card) {
-        return card.suit == this.suit && card.rank == this.rank;
-    }
     @Override
     public boolean equals(Object o) {
+        if(!(o instanceof MyCard)){
+            return false;
+        }
         MyCard card = (MyCard) o;
         return (this.rank.index == card.rank.index && this.suit.index == card.suit.index);
     }
-
     @Override
     public int hashCode() {
         return Suit.values().length*rank.index+suit.index;
     }
-
     public int ginValue() {
         return rank.ginValue;
     }
-
     public String toString() {
         return rank.name() + " Of " + suit.name();
     }
@@ -76,7 +71,6 @@ public class MyCard {
             return null;
         }
     }
-
     public enum Rank {
         Ace(0),
         Two(1),
@@ -112,51 +106,9 @@ public class MyCard {
         }
     }
 
-    public static boolean remove(List<MyCard> list, MyCard card){
-        for (int i = 0; i < list.size(); i++) {
-            if(card.same(list.get(i))){
-                list.remove(i);
-                return true;
-            }
-        }
-        return false;
+    public static <T> boolean listEqualsIgnoreOrder(List<T> list1, List<T> list2) {
+        return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
-
-    public static boolean has(List<MyCard> list, MyCard card){
-        for (MyCard myCard : list) {
-            if (card.same(myCard)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static List<MyCard> intraListDifference(List<MyCard> c1, List<MyCard> c2){
-        List<MyCard> cardDiff = new ArrayList<>();
-        for (MyCard card : c1) {
-            boolean found = false;
-            for (MyCard myCard : c2) {
-                if (card.same(myCard)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) cardDiff.add(card);
-        }
-        return cardDiff;
-    }
-
-    public static String toString(List<MyCard> cards) {
-        StringBuilder sb = new StringBuilder();
-        if (cards.size() != 0) {
-            sb.append(cards.get(0));
-            for (int i = 1; i < cards.size(); i++) {
-                sb.append(" ").append(cards.get(i));
-            }
-        }
-        return sb.toString();
-    }
-
     /**
      * Creates the basic game deck
      *

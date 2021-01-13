@@ -10,14 +10,19 @@ public class Layoff {
         this.meld = meld;
     }
 
+    // Getters
+
     public boolean isValid(){
         return meld.isValidWith(card);
     }
-
-    public boolean same(Layoff other){
-        return card.same(other.card) && meld.same(other.meld);
+    @Override
+    public boolean equals(Object other){
+        if(!(other instanceof Layoff)){
+            return false;
+        }
+        Layoff o = (Layoff) other;
+        return card.equals(o.card) && meld.equals(o.meld);
     }
-
     public String toString() {
         return card + " in " + meld;
     }

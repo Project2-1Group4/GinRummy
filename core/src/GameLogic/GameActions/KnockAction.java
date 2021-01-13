@@ -7,6 +7,7 @@ import GameLogic.States.RoundState;
 import temp.GameRules;
 
 // IMMUTABLE
+//TODO knockLayout not used, remove?
 public class KnockAction extends Action {
     public final boolean knock;
     private final HandLayout knockLayout;
@@ -17,9 +18,7 @@ public class KnockAction extends Action {
         this.knockLayout = knockLayout;
     }
 
-    public HandLayout viewLayout() {
-        return knockLayout.deepCopy();
-    }
+    // Getters
 
     @Override
     protected boolean specificSame(Object other) {
@@ -36,27 +35,13 @@ public class KnockAction extends Action {
         if(knockLayout==null || o.knockLayout==null){
             return false;
         }
-        return knockLayout.same(o.knockLayout);
+        return knockLayout.equals(o.knockLayout);
     }
-
     @Override
-    public boolean specificCanDo(RoundState state) {
+    protected boolean specificCanDo(RoundState state) {
         return !knock ||(state.cards(playerIndex).size() >= GameRules.baseCardsPerHand &&
                 Finder.findBestHandLayout(state.cards(playerIndex)).deadwoodValue()<= GameRules.minDeadwoodToKnock);
     }
-
-    @Override
-    protected void specificDo(RoundState state) {
-        if(knock) {
-            state.knocker(playerIndex);
-        }
-    }
-
-    @Override
-    protected void specificUndo(RoundState state) {
-        state.knocker(null);
-    }
-
     @Override
     public String specificToString() {
         if (!knock) {
@@ -65,4 +50,18 @@ public class KnockAction extends Action {
             return " knocked.";
         }
     }
+
+    // Setters
+
+    @Override
+    protected void specificDo(RoundState state) {
+        if(knock) {
+            state.knocker(playerIndex);
+        }
+    }
+    @Override
+    protected void specificUndo(RoundState state) {
+        state.knocker(null);
+    }
+
 }

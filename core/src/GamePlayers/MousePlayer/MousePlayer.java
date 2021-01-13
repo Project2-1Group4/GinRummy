@@ -27,7 +27,7 @@ public class MousePlayer extends GamePlayer {
             if (clicked.card == null) {
                 return true;
             }
-            if (clicked.card.same(topOfDiscard)) {
+            if (clicked.card.equals(topOfDiscard)) {
                 return false;
             }
         }

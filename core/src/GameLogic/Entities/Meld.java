@@ -15,56 +15,6 @@ public class Meld {
         meld = new ArrayList<>();
     }
 
-    // SETTERS
-
-    public void add(MyCard card) {
-        value += card.ginValue();
-        meld.add(card);
-    }
-    public boolean remove(MyCard card) {
-        for (int i = 0; i < meld.size(); i++) {
-            if (card.same(meld.get(i))) {
-                value -= meld.get(i).ginValue();
-                meld.remove(i);
-                return true;
-            }
-        }
-        return false;
-    }
-    public void setType() {
-        type = meld.get(0).suit == meld.get(1).suit ? MeldType.Run : MeldType.Set;
-    }
-
-    // USES INSERTION SORT
-    public void sort() {
-        sortByRank();
-        sortBySuit();
-    }
-    public void sortByRank() {
-        for (int i = 0; i < meld.size(); i++) {
-            for (int j = i; j > 0; j--) {
-                MyCard cardJ = meld.get(j);
-                MyCard cardJneg1 = meld.get(j - 1);
-                if (cardJ.rank.index < cardJneg1.rank.index) {
-                    meld.remove(cardJneg1);
-                    meld.add(j, cardJneg1);
-                }
-            }
-        }
-    }
-    public void sortBySuit() {
-        for (int i = 0; i < meld.size(); i++) {
-            for (int j = i; j > 0; j--) {
-                MyCard cardJ = meld.get(j);
-                MyCard cardJneg1 = meld.get(j - 1);
-                if (cardJ.suit.index < cardJneg1.suit.index) {
-                    meld.remove(cardJneg1);
-                    meld.add(j, cardJneg1);
-                }
-            }
-        }
-    }
-
     // GETTERS. Returns copies to keep state from being modified outside
 
     public int value() {
@@ -85,7 +35,7 @@ public class Meld {
     public boolean isValid() {
         setType();
         // If set
-        if (type == Meld.MeldType.Run) {
+        if (type == Meld.MeldType.Set) {
             for (int i = 1; i < meld.size() - 1; i++) {
                 if (meld.get(i).suit != meld.get(i + 1).suit) {
                     return false;
@@ -110,22 +60,11 @@ public class Meld {
         remove(card);
         return valid;
     }
-
-    public List<MyCard> viewMeld() {
-        return new ArrayList<>(meld);
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Meld && MyCard.listEqualsIgnoreOrder(meld, ((Meld) o).meld);
     }
-    public boolean same(Meld other) {
-        int found = 0;
-        for (MyCard card : meld) {
-            for (MyCard myCard : other.meld) {
-                if (card.same(myCard)) {
-                    found++;
-                }
-            }
-        }
-        return found == meld.size();
-    }
-    public Meld deepCopy() {
+    public Meld copy() {
         Meld m = new Meld();
         m.type = this.type;
         m.meld = new ArrayList<>(meld);
@@ -141,16 +80,47 @@ public class Meld {
         return sb.toString();
     }
 
+    // SETTERS
+
+    public void add(MyCard card) {
+        value += card.ginValue();
+        meld.add(card);
+    }
+    public boolean remove(MyCard card) {
+        if(meld.remove(card)){
+            value-= card.ginValue();
+            return true;
+        }
+        return false;
+    }
+    public void setType() {
+        // Very simple. Only accurate if meld is actually valid
+        type = meld.get(0).suit == meld.get(1).suit ? MeldType.Set : MeldType.Run;
+    }
+    public void sortByRank() {
+        // Insertion sort
+        for (int i = 0; i < meld.size(); i++) {
+            for (int j = i; j > 0; j--) {
+                MyCard cardJ = meld.get(j);
+                MyCard cardJneg1 = meld.get(j - 1);
+                if (cardJ.rank.index < cardJneg1.rank.index) {
+                    meld.remove(cardJneg1);
+                    meld.add(j, cardJneg1);
+                }
+            }
+        }
+    }
+
     // EXTRA
 
     public enum MeldType {
         Set,
         Run
     }
-    public static List<Meld> deepCopy(List<Meld> setOfMelds) {
+    public static List<Meld> copy(List<Meld> setOfMelds) {
         List<Meld> melds = new ArrayList<>();
         for (Meld setOfMeld : setOfMelds) {
-            melds.add(setOfMeld.deepCopy());
+            melds.add(setOfMeld.copy());
         }
         return melds;
     }

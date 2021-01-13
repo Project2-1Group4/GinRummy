@@ -113,17 +113,4 @@ public class CardsInfo {
 
         return new CardsInfo(p, deck, unassigned,discard);
     }
-    public static CardsInfo difference(CardsInfo kb1, CardsInfo kb2){
-
-        List<List<MyCard>> playerDiff = new ArrayList<>();
-        for (int i = 0; i < kb1.players.size(); i++) {
-            playerDiff.add(new ArrayList<>(MyCard.intraListDifference(kb1.players.get(i), kb2.players.get(i))));
-        }
-        List<MyCard> unknownDiff = new ArrayList<>(MyCard.intraListDifference(kb1.unassigned, kb2.unassigned));
-        Stack<MyCard> deckDiff = new Stack<>();
-        deckDiff.addAll(new ArrayList<>(MyCard.intraListDifference(kb1.deck, kb2.deck)));
-        Stack<MyCard> discardDiff = new Stack<>();
-        discardDiff.addAll(new ArrayList<>(MyCard.intraListDifference(kb1.discardPile, kb2.discardPile)));
-        return new CardsInfo(playerDiff, deckDiff, unknownDiff, discardDiff);
-    }
 }

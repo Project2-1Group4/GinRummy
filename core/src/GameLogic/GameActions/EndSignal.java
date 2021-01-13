@@ -9,28 +9,29 @@ public class EndSignal extends Action{
         this.endOfGame = endOfGame;
     }
 
+    // Getters
+
     @Override
     protected boolean specificSame(Object other) {
         return other instanceof EndSignal && ((EndSignal) other).endOfGame == endOfGame;
     }
-
     @Override
     protected boolean specificCanDo(RoundState state) {
         return true;
     }
+    @Override
+    protected String specificToString() {
+        return endOfGame? " End Of Game." : " End Of Round.";
+    }
+
+    // Setters
 
     @Override
     protected void specificDo(RoundState state) {
 
     }
-
     @Override
     protected void specificUndo(RoundState state) {
 
-    }
-
-    @Override
-    protected String specificToString() {
-        return endOfGame? " End Of Game." : " End Of Round.";
     }
 }

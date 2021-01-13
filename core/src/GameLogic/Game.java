@@ -19,7 +19,12 @@ import java.util.Random;
 
 //TODO evaluate() HandLayout
 //TODO add P0 Starting Deadwood, ..., Pi Starting Deadwood, P0-P1 Starting diff to endOfRounds()
-
+/*
+Create method that returns deadwood over turns when given a round state (use undo)
+Turns information: Game nb, Round nb, Turn nb, Start deadwood per player, End deadwood per player, Time taken per player
+Rounds information: Game nb, Round nb, Nb of turns,  Winner, Points won, Starting deadwoods, Ending deadwoods
+Game information: Game nb, Nb of rounds, Winner, Points
+ */
 //TODO stop getting best layout every GamePlayer.update call
 //TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
 public class Game {
@@ -139,10 +144,10 @@ public class Game {
                     round().lock();
                     if(printRounds){
                         System.out.println("Round "+ roundNumber()+" locked with points: "+ Arrays.toString(round().points()));
-                        for (int i = 0; i < round().layouts().length; i++) {
+                        /*for (int i = 0; i < round().layouts().length; i++) {
                             System.out.println("Player "+i+"\n"+ round().layouts()[i]);
                             System.out.println("Value: "+ round().layouts()[i].evaluate());
-                        }
+                        }*/
                         System.out.println("Current game points: "+ Arrays.toString(points())+"\n");
                     }
                 }

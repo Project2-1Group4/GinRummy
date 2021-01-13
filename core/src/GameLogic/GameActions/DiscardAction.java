@@ -13,15 +13,22 @@ public class DiscardAction extends Action {
         this.card = card;
     }
 
-    @Override
-    protected boolean specificSame(Object other) {
-        return card.same(((DiscardAction) other).card);
-    }
+    // Getters
 
     @Override
-    public boolean specificCanDo(RoundState state) {
+    protected boolean specificSame(Object other) {
+        return card.equals(((DiscardAction) other).card);
+    }
+    @Override
+    protected boolean specificCanDo(RoundState state) {
         return state.cards(playerIndex).contains(card) || state.unassigned().contains(card);
     }
+    @Override
+    public String specificToString() {
+        return " discarded " + card;
+    }
+
+    // Setters
 
     @Override
     protected void specificDo(RoundState state) {
@@ -30,14 +37,8 @@ public class DiscardAction extends Action {
             state.unassigned().remove(card);
         }
     }
-
     @Override
     protected void specificUndo(RoundState state) {
         state.cards(playerIndex).add(state.discardPile().pop());
-    }
-
-    @Override
-    public String specificToString() {
-        return " discarded " + card;
     }
 }

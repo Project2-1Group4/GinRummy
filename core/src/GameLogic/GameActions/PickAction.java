@@ -15,10 +15,11 @@ public class PickAction extends Action {
         this.card = card;
     }
 
+    // Getters
+
     public MyCard card(){
         return card;
     }
-
     @Override
     protected boolean specificSame(Object other) {
         if (deck != ((PickAction) other).deck) {
@@ -29,12 +30,11 @@ public class PickAction extends Action {
         }
         if(deck &&
                 ((card==null && ((PickAction) other).card==null)||
-                (card.same(((PickAction) other).card)))){
+                (card.equals(((PickAction) other).card)))){
             return true;
         }
-        return card.same(((PickAction) other).card);
+        return card.equals(((PickAction) other).card);
     }
-
     @Override
     public boolean specificCanDo(RoundState state) {
         if(deck){
@@ -42,12 +42,24 @@ public class PickAction extends Action {
                 if(state.deckSize()!=0){ return true; }
             }
             else {
-                if (state.deckSize() != 0 && state.peekDeck().same(card)) { return true; }
+                if (state.deckSize() != 0 && state.peekDeck().equals(card)) { return true; }
                 if (state.deckSize() == 0 && state.unassigned().contains(card)) { return true; }
             }
         }
-        return !deck && card != null && state.discardPile().size() != 0 && card.same(state.peekDiscard());
+        return !deck && card != null && state.discardPile().size() != 0 && card.equals(state.peekDiscard());
     }
+    @Override
+    public String specificToString() {
+        if (deck && card ==null) {
+            return " picked from deck.";
+        }else if(deck){
+            return " picked "+card+" from deck";
+        }else {
+            return " picked " + card + " from discard.";
+        }
+    }
+
+    // Setters
 
     @Override
     protected void specificDo(RoundState state) {
@@ -59,25 +71,13 @@ public class PickAction extends Action {
         if(deck) card = state.peekDeck();
         state.cards(playerIndex).add(deck? state.deck().pop():state.discardPile().pop());
     }
-
     @Override
     protected void specificUndo(RoundState state) {
-        MyCard.remove(state.cards(playerIndex),card);
+        state.cards(playerIndex).remove(card);
         if (deck) {
             state.deck().add(card);
         } else {
             state.discardPile().add(card);
-        }
-    }
-
-    @Override
-    public String specificToString() {
-        if (deck && card ==null) {
-            return " picked from deck.";
-        }else if(deck){
-            return " picked "+card+" from deck";
-        }else {
-            return " picked " + card + " from discard.";
         }
     }
 }

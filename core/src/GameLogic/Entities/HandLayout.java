@@ -68,13 +68,9 @@ public class HandLayout {
         value += card.ginValue();
     }
     public boolean removeUnusedCard(MyCard card) {
-        for (int i = 0; i < unusedCards.size(); i++) {
-
-            if (unusedCards.get(i).same(card)) {
-                deadwood -= unusedCards.get(i).ginValue();
-                unusedCards.remove(i);
-                return true;
-            }
+        if(unusedCards.remove(card)){
+            deadwood -= card.ginValue();
+            return true;
         }
         return false;
     }
@@ -104,66 +100,6 @@ public class HandLayout {
     public int meldValue() {
         return value;
     }
-    public boolean isValid() {
-        for (Meld setOfMeld : setOfMelds) {
-            if (!setOfMeld.isValid()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    public boolean same(HandLayout other) {
-        int found = 0;
-        for (MyCard unusedCard : unusedCards) {
-            for (MyCard card : other.unusedCards) {
-                if (unusedCard.same(card)) {
-                    found++;
-                }
-            }
-        }
-        if (found != unusedCards.size()) {
-            return false;
-        }
-        List<Meld> cpy = melds();
-        List<Meld> otherCpy = other.melds();
-        for (int i = 0; i < cpy.size(); i++) {
-            for (int j = 0; j < otherCpy.size(); j++) {
-                if (cpy.get(i).same(otherCpy.get(j))) {
-                    cpy.remove(i);
-                    i--;
-                    otherCpy.remove(j);
-                    break;
-                }
-            }
-        }
-        return cpy.size() == 0;
-    }
-    public List<MyCard> unused() {
-        return new ArrayList<>(unusedCards);
-    }
-    public List<MyCard> cards() {
-        List<MyCard> cards = new ArrayList<>(unusedCards);
-        for (Meld setOfMeld : setOfMelds) {
-            cards.addAll(new ArrayList<>(setOfMeld.cards()));
-        }
-        return cards;
-    }
-    public List<MyCard> meldCards(){
-        List<MyCard> temp = new ArrayList<>();
-
-        List<Meld> copyOfMelds = Meld.deepCopy(setOfMelds);
-
-        for (Meld aMeld : copyOfMelds){
-
-            for(MyCard card : aMeld.cards()){
-                temp.add(card);
-            }
-        }
-        return temp;
-    }
-    public List<Meld> melds() {
-        return Meld.deepCopy(setOfMelds);
-    }
     public double evaluate(){
         List<MyCard> notInHand = MyCard.getBasicDeck();
         notInHand.removeAll(cards());
@@ -180,10 +116,48 @@ public class HandLayout {
         }
         return val;
     }
-
-    public HandLayout deepCopy() {
+    public boolean isValid() {
+        for (Meld setOfMeld : setOfMelds) {
+            if (!setOfMeld.isValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    @Override
+    public boolean equals(Object other) {
+        if(!(other instanceof HandLayout)){
+            return false;
+        }
+        HandLayout o = (HandLayout) other;
+        if (!MyCard.listEqualsIgnoreOrder(unusedCards, o.unusedCards)) {
+            return false;
+        }
+        List<Meld> cpy = new ArrayList<>(setOfMelds);
+        cpy.removeAll(o.setOfMelds);
+        return cpy.size()==0;
+    }
+    public List<MyCard> unused() {
+        return new ArrayList<>(unusedCards);
+    }
+    public List<MyCard> cards() {
+        List<MyCard> cards = new ArrayList<>(unusedCards);
+        cards.addAll(meldCards());
+        return cards;
+    }
+    public List<MyCard> meldCards(){
+        List<MyCard> cards = new ArrayList<>();
+        for (Meld meld : setOfMelds) {
+            cards.addAll(meld.cards());
+        }
+        return cards;
+    }
+    public List<Meld> melds() {
+        return Meld.copy(setOfMelds);
+    }
+    public HandLayout copy() {
         HandLayout m = new HandLayout();
-        m.setOfMelds = Meld.deepCopy(setOfMelds);
+        m.setOfMelds = Meld.copy(setOfMelds);
         m.unusedCards = new ArrayList<>(unusedCards);
         m.deadwood = this.deadwood;
         m.value = this.value;

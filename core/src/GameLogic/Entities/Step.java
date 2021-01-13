@@ -13,13 +13,4 @@ public enum Step{
         this.index = index;
         this.question = question;
     }
-    public Step getNext(){
-        switch(this){
-            case Pick: return Discard;
-            case Discard: return KnockOrContinue;
-            case KnockOrContinue: return Pick;
-            case LayoutConfirmation: return Layoff;
-            default: return EndOfRound;
-        }
-    }
 }

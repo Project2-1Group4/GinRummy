@@ -81,18 +81,18 @@ public class Finder {
         List<MyCard> unusedCards = bestLayout.unused();
         for (MyCard card : cards) {
             for (int i = 0; i < unusedCards.size(); i++) {
-                if (card.same(unusedCards.get(i))) {
+                if (card.equals(unusedCards.get(i))) {
                     if (bestLayout.removeUnusedCard(unusedCards.get(i))) {
                         bestLayout.addUnusedCard(card);
                         unusedCards.remove(i);
                         break;
                     }
-                    System.out.println("Calculator.getBestMelds() ERROR ERROR ERROR");
+                    System.out.println("Calculator.findBestHandLayout() ERROR ERROR ERROR");
                     Gdx.app.exit();
                 }
             }
         }
-        return findLowestDeadwoodLayout(handLayouts);
+        return bestLayout;
     }
 
     /**
@@ -210,7 +210,7 @@ public class Finder {
     public static Integer findMeldIndexIn(Meld toFind, List<Meld> melds) {
 
         for (int i = 0; i < melds.size(); i++) {
-            if (melds.get(i).same(toFind)) {
+            if (melds.get(i).equals(toFind)) {
                 return i;
             }
         }

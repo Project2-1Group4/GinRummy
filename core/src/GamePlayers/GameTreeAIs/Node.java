@@ -203,7 +203,7 @@ public class Node implements Comparable {
         List<Meld>  melds = Finder.findBestHandLayout(currentHand).melds();
         List<MyCard> meldCards = new ArrayList<>();
         for (Meld setOfMeld : melds) {
-            meldCards.addAll(new ArrayList<>(setOfMeld.viewMeld()));
+            meldCards.addAll(new ArrayList<>(setOfMeld.cards()));
         }
         // look through deadwood card for possible almost meld
         for(int j = 0; j< deadwoodCards.size(); j++){

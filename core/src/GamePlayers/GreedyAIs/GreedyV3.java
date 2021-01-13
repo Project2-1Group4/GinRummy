@@ -98,7 +98,7 @@ public class GreedyV3 extends GamePlayer {
             List<MyCard> cardsInMelds = layout.meldCards();
 
             for(MyCard card : cardsInMelds){
-                if (card.same(topOfDiscard)){
+                if (card.equals(topOfDiscard)){
                     return true;
                 }
             }

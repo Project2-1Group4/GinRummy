@@ -31,7 +31,7 @@ public class GameCard {
 
     // OUTER GETTERS
     public boolean isSame(MyCard other) {
-        return card.same(other);
+        return card.equals(other);
     }
 
     public boolean isSame(GameCard other) {
@@ -41,7 +41,7 @@ public class GameCard {
         if (card == null || other.card == null) {
             return false;
         }
-        return card.same(other.card);
+        return card.equals(other.card);
     }
 
     public boolean isHovered(float x, float y) {

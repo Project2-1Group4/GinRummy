@@ -13,12 +13,12 @@ public abstract class Action {
         this.playerIndex = playerIndex;
     }
 
-    /*
-    Getters
-     */
+    //Getters
+
     public Step getStep(){
         return step;
     }
+    @Override
     public boolean equals(Object o) {
         if (this.getClass() == o.getClass()) {
             return specificSame(o);
@@ -28,7 +28,6 @@ public abstract class Action {
     public String toString() {
         return "Player " + playerIndex+ specificToString();
     }
-    //Do
     public boolean canDo(RoundState state, boolean respectCurrentTurn){
         return ((!respectCurrentTurn || (state.turn()!=null && state.turn().playerIndex == playerIndex && state.turn().step == step) || this instanceof EndSignal) && specificCanDo(state));
     }
@@ -44,7 +43,6 @@ public abstract class Action {
         }
         return false;
     }
-    //Undo
     public boolean canUndo(RoundState state){
         return state.actions.size()!=0 && state.actions.peek().equals(this);
     }
@@ -58,9 +56,8 @@ public abstract class Action {
         return false;
     }
 
-    /*
-    Subclass specific methods
-     */
+    //Subclass specific methods
+
     protected abstract boolean specificSame(Object other);
     protected abstract boolean specificCanDo(RoundState state);
     protected abstract void specificDo(RoundState state);
