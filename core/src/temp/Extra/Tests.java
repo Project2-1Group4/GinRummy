@@ -7,8 +7,8 @@ import temp.GameLogic.Entities.Turn;
 import temp.GameLogic.Game;
 import temp.GameLogic.Logic.Finder;
 import temp.GameLogic.States.GameState;
+import temp.GameLogic.States.RoundState;
 import temp.GamePlayers.GamePlayer;
-import temp.GamePlayers.GameTreeAIs.MinimaxPruningAI;
 import temp.GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import temp.GamePlayers.GreedyAIs.basicGreedyTest;
 
@@ -30,20 +30,39 @@ public class Tests {
     public static boolean saveIntraTurnInfo = false; // Between steps TODO doesnt work
 
     public static void main(String[] args) {
-        GamePlayer[] players = new GamePlayer[]{
-                //new basicGreedyTest(),
-                new MCTSv1(300, 1, 1.4,20, 0),
-                new basicGreedyTest()
-        };
-        String[] playerNames = new String[]{
-                "MCTSv1",
-                "basicGreedy"
-        };
-        String folder = "Results/meldBuildingVSRandom/";
-        int nbOfGames = 500; // Set nb of games * nb of players
+        int nbOfGames = 5; // Set nb of games * nb of players
         Integer seed = 0; // Set seed
+        //exploration 1.6 -> found with 10 sim, 250 rollouts per sim, 1 rollout per node
+        //rollout per node -> found with 10 sim, 100*(rollout per node) rollouts per sim, 1.6 exploration
 
-        start(folder ,players,playerNames,nbOfGames, seed);
+        int[] values = new int[]{
+                1, 2, 3, 5
+        };
+        String val = "rolloutsPerNode";
+        for (int value : values) {
+            MCTSv1 b = new MCTSv1(0);
+            b.set(10, null, 200*value, value, 1.6);
+            GamePlayer[] players = new GamePlayer[]{
+                    b,
+                    //new meldBuildingGreedy(),
+                    new basicGreedyTest()
+            };
+            String folder = "Results/MCTS "+val+"/MCTSv1"+""+val+""+value+" vs basicG/";
+            String[] playerNames = new String[]{
+                    "MCTSv1",
+                    "basicGreedy"
+            };
+            int[][] r = start(folder, players, playerNames, nbOfGames, seed);
+            int totalGames=0;
+            int totalRounds=0;
+            for (int i = 0; i < r[0].length; i++) {
+                totalGames+= r[0][i];
+                totalRounds+= r[1][i];
+            }
+            System.out.println("MCTSv1 with "+val+" at "+value);
+            System.out.println("Game wins: "+r[0][0]+" out of "+totalGames);
+            System.out.println("Round wins: "+r[1][0]+" out of "+totalRounds+" ("+(r[1][0]/(double)totalRounds)+"%)");
+        }
     }
 
     public static int[][] start(String folder, GamePlayer[] players, String[] playerNames, int numberOfGames, Integer seed){
