@@ -30,8 +30,9 @@ public class Tests {
     public static boolean saveIntraTurnInfo = false; // Between steps TODO doesnt work
 
     public static void main(String[] args) {
-        int nbOfGames = 5; // Set nb of games * nb of players
-        Integer seed = 0; // Set seed
+
+        int nbOfGames = 20; // Set nb of games * nb of players
+        Integer seed = 2; // Set seed
         //exploration 1.6 -> found with 10 sim, 250 rollouts per sim, 1 rollout per node
         //rollout per node -> found with 10 sim, 100*(rollout per node) rollouts per sim, 1.6 exploration
 
@@ -63,6 +64,7 @@ public class Tests {
             System.out.println("Game wins: "+r[0][0]+" out of "+totalGames);
             System.out.println("Round wins: "+r[1][0]+" out of "+totalRounds+" ("+(r[1][0]/(double)totalRounds)+"%)");
         }
+
     }
 
     public static int[][] start(String folder, GamePlayer[] players, String[] playerNames, int numberOfGames, Integer seed){
