@@ -30,7 +30,7 @@ public class Tests {
 
     public static void main(String[] args) {
 
-        int nbOfGames = 25; // Set nb of games * nb of players
+        int nbOfGames = 25; // will play nbOfGames*nbOfPlayers games (alternating who starts)
         Integer seed = 3; // Set seed
         //exploration 1.6 -> found with 10 sim, 250 rollouts per sim, 1 rollout per node
         //rollout per node -> found with 10 sim, 100*(rollout per node) rollouts per sim, 1.6 exploration
@@ -90,7 +90,7 @@ public class Tests {
             // Running games
             for(int gameNb=0; gameNb <numberOfGames; gameNb++){
                 if(printGames){
-                    System.out.println("Game "+(gameNb+iteration*nbOfPlayers));
+                    System.out.println("Game "+(gameNb+iteration*numberOfGames));
                 }
                 if(saveInterTurnInfo){ interTurnInfo.add(new ArrayList<List<double[][]>>()); }
                 if(saveIntraTurnInfo){ intraTurnInfo.add(new ArrayList<List<double[][][]>>());}
