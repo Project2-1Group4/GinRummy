@@ -1,4 +1,4 @@
-Test seed 3 every game is seeded with Random(8765).nextInt()
+Test seed 3 every game is seeded with Random(3).nextInt()
 MCTS seed 0
 25 games are played with MCTS as first, 25 games with basicGreedy as first
 
