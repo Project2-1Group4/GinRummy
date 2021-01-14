@@ -1,11 +1,11 @@
-package GamePlayers.GameTreeAIs;
+package temp.GamePlayers.GameTreeAIs;
 
 //import temp.Extra.GA.GameLogic;
 
-import GameLogic.Entities.MyCard;
-import GameLogic.GameActions.DiscardAction;
-import GameLogic.GameActions.PickAction;
-import GamePlayers.GamePlayer;
+import temp.GameLogic.Entities.MyCard;
+import temp.GameLogic.GameActions.DiscardAction;
+import temp.GameLogic.GameActions.PickAction;
+import temp.GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +17,15 @@ public class MinimaxPruningAI extends GamePlayer {
     public List<MyCard> hand;
     public List<MyCard> pile;
     public List<MyCard> unknownCards;
-    int maxDepthOfTree = 6;
+    int maxDepthOfTree = 2;
     private List<MyCard> backupHand;
     private double[][] probMap = new double[4][13];
     public List<MyCard> discardedCards = new ArrayList<>();
+
+    private boolean basic = true;
+    private boolean deepening = false;
+    private boolean nullMoveActive= false;// choose the method
+
     private boolean nullMove;
     //variable for null move heuristic
     private int R;
@@ -33,11 +38,6 @@ public class MinimaxPruningAI extends GamePlayer {
     }
     public MinimaxPruningAI(){
         super();
-    }
-
-    public MinimaxPruningAI(int value){
-        super();
-        this.maxDepthOfTree = value;
     }
 
     // look at the more likely hand to pick. Here we save the scoreHand of each possible handCards
@@ -115,6 +115,21 @@ public class MinimaxPruningAI extends GamePlayer {
         return alphaBetaPruning(root, new Node(false), new Node(true), true, maxDepthOfTree);
     }
 
+    public Node chooseMethod(Node parent,boolean basic, boolean nullActive,boolean deepening) {
+        Node pickNode = parent;
+        if (basic) {
+            pickNode = basicAlphaBeta(parent);
+            return pickNode;
+        }
+        else if (nullActive) {
+            pickNode = nullMove(parent);
+            return pickNode;
+        }
+        else if (deepening) {
+            pickNode = iterativeDeepening(parent);
+        }
+        return pickNode;
+    }
     // method to get the node that the alpha beta pruning found
     public MyCard[] getNodeReturn() {
         //create the tree
@@ -122,7 +137,7 @@ public class MinimaxPruningAI extends GamePlayer {
         List<MyCard> currentHand = GametreeAI.cloneMyCardList(parent.hand);
         // pick desired alpha beta method (basicAlphaBeta, iterativeDeepening, nullMove)
         nullMove = false;
-        Node pickNode = basicAlphaBeta(parent);
+        Node pickNode = chooseMethod(parent,basic,nullMoveActive,deepening);
         for(MyCard card : unknownCards){
             if(!pickNode.unknownCards.contains(card)){
                 pickNode.unknownCards.add(card);
@@ -215,7 +230,7 @@ public class MinimaxPruningAI extends GamePlayer {
         }
         else {
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).equals(pick_discard[0])){
+                if(discardedCards.get(i).same(pick_discard[0])){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }
@@ -335,7 +350,7 @@ public class MinimaxPruningAI extends GamePlayer {
             checkDoubles();
             MyCard pickedCard = pickAction.card();
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).equals(pickedCard)){
+                if(discardedCards.get(i).same(pickedCard)){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }
