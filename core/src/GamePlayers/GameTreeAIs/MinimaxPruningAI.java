@@ -1,11 +1,11 @@
-package temp.GamePlayers.GameTreeAIs;
+package GamePlayers.GameTreeAIs;
 
 //import temp.Extra.GA.GameLogic;
 
-import temp.GameLogic.Entities.MyCard;
-import temp.GameLogic.GameActions.DiscardAction;
-import temp.GameLogic.GameActions.PickAction;
-import temp.GamePlayers.GamePlayer;
+import GameLogic.Entities.MyCard;
+import GameLogic.GameActions.DiscardAction;
+import GameLogic.GameActions.PickAction;
+import GamePlayers.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +230,7 @@ public class MinimaxPruningAI extends GamePlayer {
         }
         else {
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).same(pick_discard[0])){
+                if(discardedCards.get(i).equals(pick_discard[0])){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }
@@ -350,7 +350,7 @@ public class MinimaxPruningAI extends GamePlayer {
             checkDoubles();
             MyCard pickedCard = pickAction.card();
             for(int i = 0; i<discardedCards.size();i++){
-                if(discardedCards.get(i).same(pickedCard)){
+                if(discardedCards.get(i).equals(pickedCard)){
                     this.discardedCards.remove(discardedCards.get(i));
                 }
             }

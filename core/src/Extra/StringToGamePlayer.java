@@ -4,7 +4,7 @@ import GamePlayers.CombinePlayer;
 import GamePlayers.GamePlayer;
 import GamePlayers.GameTreeAIs.BestFirstMinimaxAI;
 import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
-import GamePlayers.GameTreeAIs.MinimaxPruningAI;
+import GamePlayers.GameTreeAIs.*;
 import GamePlayers.GreedyAIs.basicGreedyTest;
 import GamePlayers.GreedyAIs.meldBuildingGreedy;
 import GamePlayers.KeyboardPlayer;
