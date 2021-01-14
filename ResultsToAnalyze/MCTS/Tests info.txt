@@ -1,0 +1,37 @@
+Test seed 3 every game is seeded with Random(8765).nextInt()
+MCTS seed 0
+25 games are played with MCTS as first, 25 games with basicGreedy as first
+
+BASE PARAM = (10, 200, 1, 1), total 2000 rollouts per turn and rollout with ForcePlayer
+
+Base values (10, 200, 1, 1):
+    -round wr = , game wr =
+
+Rollout with RandomPlayer (10, 200, 1, 1):
+    -round wr = , game wr =
+
+Rollout with basicGreedy (10, 200, 1, 1):
+    -round wr = , game wr =
+    
+Exploration param test (10, 200, 1, x):
+    -0: round wr = , game wr =
+    -0.3: round wr = , game wr =
+    -0.7: round wr = , game wr = 
+    -0.9: round wr = , game wr =
+    -1.2: round wr = , game wr =
+    -1.4: round wr = , game wr =
+    -1.6: round wr = , game wr =
+    -3: round wr = , game wr =
+
+ Simulations test (x, y, 1, 1):
+    -(5, 400): round wr = , game wr = 
+    -(10, 200): round wr = , game wr =
+    -(15, 133): round wr = , game wr =
+    -(20, 100): round wr = , game wr =
+    -(40, 50): round wr = , game wr =
+
+Rollouts per node test (10, 200, x, 1):
+    -1: round wr = , game wr =
+    -2: round wr = , game wr =
+    -3: round wr = , game wr =
+    -5: round wr = , game wr =
