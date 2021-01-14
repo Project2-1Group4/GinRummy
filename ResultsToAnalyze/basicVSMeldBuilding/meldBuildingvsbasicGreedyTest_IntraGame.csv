@@ -499,3 +499,5 @@ Game,Rounds,P0 Score,P1 Score,Winner
 497,8,78,119,1
 498,8,46,109,1
 499,7,9,120,1
+,,,basWins,314
+,,,meldWins,186
