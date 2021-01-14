@@ -18,15 +18,6 @@ import java.util.List;
 import java.util.Random;
 
 //TODO evaluate() HandLayout
-//TODO add P0 Starting Deadwood, ..., Pi Starting Deadwood, P0-P1 Starting diff to endOfRounds()
-/*
-Create method that returns deadwood over turns when given a round state (use undo)
-Turns information: Game nb, Round nb, Turn nb, Start deadwood per player, End deadwood per player, Time taken per player
-Rounds information: Game nb, Round nb, Nb of turns,  Winner, Points won, Starting deadwoods, Ending deadwoods
-Game information: Game nb, Nb of rounds, Winner, Points
- */
-//TODO stop getting best layout every GamePlayer.update call
-//TODO MAYBE integrate layout confirm+layoff steps in logic and remove HandLayout from knocker
 public class Game {
 
     private final static List<Game> currentGames = new ArrayList<>();
@@ -60,20 +51,6 @@ public class Game {
 
     }
 
-    public void init(){
-        if(gameState.getRoundNumber()==0) {
-            startNewRound();
-        }
-    }
-    public void printRound(){
-        System.out.println("Round "+ roundNumber()+" started with:");
-        gameState.round().setLayouts();
-        for (int i = 0; i < round().layouts().length; i++) {
-            System.out.println("Player "+i+"\n"+ round().layouts()[i]);
-            System.out.println("Value: "+ round().layouts()[i].evaluate());
-        }
-        System.out.println();
-    }
     // Game playing methods
 
     /**
@@ -144,10 +121,10 @@ public class Game {
                     round().lock();
                     if(printRounds){
                         System.out.println("Round "+ roundNumber()+" locked with points: "+ Arrays.toString(round().points()));
-                        /*for (int i = 0; i < round().layouts().length; i++) {
+                        for (int i = 0; i < round().layouts().length; i++) {
                             System.out.println("Player "+i+"\n"+ round().layouts()[i]);
                             System.out.println("Value: "+ round().layouts()[i].evaluate());
-                        }*/
+                        }
                         System.out.println("Current game points: "+ Arrays.toString(points())+"\n");
                     }
                 }
@@ -195,8 +172,9 @@ public class Game {
         return round().undoLastAction();
     }
 
-    // Setters
+    // Game <=> Player interaction
 
+    //Player information setters
     private void startNewRound(){
         gameState.createNewRound();
         if(printRounds){
@@ -212,10 +190,10 @@ public class Game {
         }
     }
     private void oncePerStep(RoundState state, List<GamePlayer> players){
-        notifyPlayers(state.getLastAction(), players);
-        players.get(state.getPlayerIndex()).update(new ArrayList<>(state.cards(state.getPlayerIndex())));
-        if(players.get(state.getPlayerIndex()) instanceof CombinePlayer || players.get(state.getPlayerIndex()).getProcessor()!=null) {
-            Gdx.input.setInputProcessor(players.get(state.getPlayerIndex()).getProcessor());
+        notifyPlayers(state.lastAction(), players);
+        players.get(state.curIndex()).update(new ArrayList<>(state.cards(state.curIndex())));
+        if(players.get(state.curIndex()) instanceof CombinePlayer || players.get(state.curIndex()).getProcessor()!=null) {
+            Gdx.input.setInputProcessor(players.get(state.curIndex()).getProcessor());
         }
     }
     private void notifyPlayers(Action a, List<GamePlayer> players){
@@ -232,16 +210,91 @@ public class Game {
             }
         }
     }
-    public void remove(){
-        currentGames.remove(this);
-    }
-    public void print(boolean pt, boolean pr, boolean pg){
-        printTurns = pt;
-        printRounds = pr;
-        printGame = pg;
-        if(printRounds){
-            printRound();
+    //Player action getters
+    private Action getPlayerAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state) {
+        switch(currentTurn.step){
+            case Pick: return pickAction(currentPlayer, currentTurn, state);
+            case Discard: return discardAction(currentPlayer, currentTurn, state);
+            case KnockOrContinue: return knockAction(currentPlayer, currentTurn, state);
+            case LayoutConfirmation: return layoutConfirmationAction(currentPlayer, currentTurn, state);
+            case Layoff: return layoffAction(currentPlayer, currentTurn, state);
+            case EndOfRound: return new EndSignal(false);
+            default: return null;
         }
+    }
+    private PickAction pickAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
+        Boolean deck = currentPlayer.pickDeckOrDiscard(state.deckSize(), state.peekDiscard());
+        return deck==null? null : new PickAction(currentTurn.playerIndex, deck, deck ? state.peekDeck() : state.peekDiscard());
+    }
+    private DiscardAction discardAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
+        MyCard cardToDiscard = currentPlayer.discardCard();
+        return cardToDiscard==null? null : new DiscardAction(currentTurn.playerIndex, cardToDiscard);
+    }
+    private KnockAction knockAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
+        Boolean knock = currentPlayer.knockOrContinue();
+        return knock==null? null : new KnockAction(currentTurn.playerIndex, knock, null);
+    }
+    private LayoutConfirmationAction layoutConfirmationAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
+        HandLayout layout = currentPlayer.confirmLayout();
+        return layout==null? null : new LayoutConfirmationAction(currentTurn.playerIndex, layout);
+    }
+    private LayoffAction layoffAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
+        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.cards(state.knocker())).melds());
+        return new LayoffAction(currentTurn.playerIndex, layoffs);
+    }
+    // Getters for GamePlayers
+    private static Integer[] indices(GamePlayer p){
+        Integer gameIndex= null;
+        Integer playerIndex = null;
+        for (int game = 0; game < currentGames.size(); game++) {
+            for (int player = 0; player < currentGames.get(game).players.size(); player++) {
+                if(currentGames.get(game).players.get(player) == p){
+                    gameIndex = game;
+                    playerIndex = player;
+                    break;
+                }
+            }
+            if(gameIndex!=null){
+                break;
+            }
+        }
+        return gameIndex==null? null : new Integer[]{gameIndex, playerIndex};
+    }
+    /**
+     * Returns all points in the game currently
+     * @param p asking player
+     * @return index 0 = asker, 1 = next, etc.. for every player
+     */
+    public static int[] points(GamePlayer p){
+        Integer[] indices = indices(p);
+        if(indices==null){
+            return null;
+        }
+        int[] points = currentGames.get(indices[0]).points();
+        int[] pointsUpdate = new int[points.length];
+        for (int i = 0; i < points.length; i++) {
+            pointsUpdate[i] = points[(indices[1]+i)%points.length];
+        }
+        return pointsUpdate;
+    }
+    /**
+     * Returns the player's playerCards
+     * @param p asking player
+     * @return current player playerCards
+     */
+    public static List<MyCard> getCards(GamePlayer p){
+        Integer[] indices = indices(p);
+        if(indices==null){
+            return null;
+        }
+        return new ArrayList<>(currentGames.get(indices[0]).round().cards(indices[1]));
+    }
+    public static int numberOfPlayers(GamePlayer p) {
+        Integer[] indices = indices(p);
+        if(indices==null){
+            return 0;
+        }
+        return currentGames.get(indices[0]).numberOfPlayers();
     }
 
     // Getters
@@ -308,8 +361,36 @@ public class Game {
         return round().cards(playerIndex);
     }
 
-    // Static Other
+    // Setters
 
+    public void init(){
+        if(gameState.getRoundNumber()==0) {
+            startNewRound();
+        }
+    }
+    public void remove(){
+        currentGames.remove(this);
+    }
+    public void print(boolean pt, boolean pr, boolean pg){
+        printTurns = pt;
+        printRounds = pr;
+        printGame = pg;
+        if(printRounds){
+            printRound();
+        }
+    }
+
+    // Misc
+
+    public void printRound(){
+        System.out.println("Round "+ roundNumber()+" started with:");
+        gameState.round().setLayouts();
+        for (int i = 0; i < round().layouts().length; i++) {
+            System.out.println("Player "+i+"\n"+ round().layouts()[i]);
+            System.out.println("Value: "+ round().layouts()[i].evaluate());
+        }
+        System.out.println();
+    }
     public static boolean roundStopCondition(RoundState roundState){
         return roundState.turn().step == Step.EndOfRound
                 || roundState.deckSize()<=GameRules.minCardsInDeck
@@ -343,95 +424,5 @@ public class Game {
             MyCard c =list.remove(rd.nextInt(list.size()));
             list.add(c);
         }
-    }
-
-    // Static player information
-
-    private static Integer[] indices(GamePlayer p){
-        Integer gameIndex= null;
-        Integer playerIndex = null;
-        for (int game = 0; game < currentGames.size(); game++) {
-            for (int player = 0; player < currentGames.get(game).players.size(); player++) {
-                if(currentGames.get(game).players.get(player) == p){
-                    gameIndex = game;
-                    playerIndex = player;
-                    break;
-                }
-            }
-            if(gameIndex!=null){
-                break;
-            }
-        }
-        return gameIndex==null? null : new Integer[]{gameIndex, playerIndex};
-    }
-    /**
-     * Returns all points in the game currently
-     * @param p asking player
-     * @return index 0 = asker, 1 = next, etc.. for every player
-     */
-    public static int[] points(GamePlayer p){
-        Integer[] indices = indices(p);
-        if(indices==null){
-            return null;
-        }
-        int[] points = currentGames.get(indices[0]).points();
-        int[] pointsUpdate = new int[points.length];
-        for (int i = 0; i < points.length; i++) {
-            pointsUpdate[i] = points[(indices[1]+i)%points.length];
-        }
-        return pointsUpdate;
-    }
-    /**
-     * Returns the player's game
-     * @param p asking player
-     * @return current player cards
-     */
-    public static List<MyCard> getCards(GamePlayer p){
-        Integer[] indices = indices(p);
-        if(indices==null){
-            return null;
-        }
-        return new ArrayList<>(currentGames.get(indices[0]).round().cards(indices[1]));
-    }
-    public static int numberOfPlayers(GamePlayer p) {
-        Integer[] indices = indices(p);
-        if(indices==null){
-            return 0;
-        }
-        return currentGames.get(indices[0]).numberOfPlayers();
-    }
-
-    // Action getters
-
-    private Action getPlayerAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state) {
-        switch(currentTurn.step){
-            case Pick: return pickAction(currentPlayer, currentTurn, state);
-            case Discard: return discardAction(currentPlayer, currentTurn, state);
-            case KnockOrContinue: return knockAction(currentPlayer, currentTurn, state);
-            case LayoutConfirmation: return layoutConfirmationAction(currentPlayer, currentTurn, state);
-            case Layoff: return layoffAction(currentPlayer, currentTurn, state);
-            case EndOfRound: return new EndSignal(false);
-            default: return null;
-        }
-    }
-    private PickAction pickAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        Boolean deck = currentPlayer.pickDeckOrDiscard(state.deckSize(), state.peekDiscard());
-        return deck==null? null : new PickAction(currentTurn.playerIndex, deck, deck ? state.peekDeck() : state.peekDiscard());
-    }
-    private DiscardAction discardAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        MyCard cardToDiscard = currentPlayer.discardCard();
-        return cardToDiscard==null? null : new DiscardAction(currentTurn.playerIndex, cardToDiscard);
-    }
-    private KnockAction knockAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        Boolean knock = currentPlayer.knockOrContinue();
-        return knock==null? null : new KnockAction(currentTurn.playerIndex, knock, null);
-    }
-    private LayoutConfirmationAction layoutConfirmationAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        HandLayout layout = currentPlayer.confirmLayout();
-        return layout==null? null : new LayoutConfirmationAction(currentTurn.playerIndex, layout);
-    }
-    private LayoffAction layoffAction(GamePlayer currentPlayer, Turn currentTurn, RoundState state){
-        List<Layoff> layoffs = currentPlayer.layOff(new HandLayout(state.cards(state.knocker())).melds());
-        return new LayoffAction(currentTurn.playerIndex, layoffs);
     }
 }

@@ -7,7 +7,6 @@ import GameLogic.GameActions.PickAction;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
 import GameLogic.States.CardsInfo;
-import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +108,7 @@ public abstract class MemoryPlayer extends GamePlayer {
      * @return weighted list
      */
     protected List<MyCard> getWeightedList(int player){
-        HashMap<MyCard, Integer> vicinity = getVicinity(cardsMemory.getCards(player));
+        HashMap<MyCard, Integer> vicinity = getVicinity(cardsMemory.playerCards(player));
         List<MyCard> keysToRemove = new ArrayList<>();
         for (MyCard card : vicinity.keySet()) {
             if(cardsMemory.unassigned.contains(card)){

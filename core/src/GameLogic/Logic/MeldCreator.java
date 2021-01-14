@@ -7,14 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-/**
- * Recursion is a nightmare.
- */
 class MeldCreator {
 
     /**
      * Finds all possible meld combinations of current hand. No overlapping melds.
-     *
      * @param usedMeld   current stack of melds
      * @param hand       current hand to be evaluated
      * @param savedMelds stack of melds saved (Only saved once no more melds left)
@@ -40,8 +36,7 @@ class MeldCreator {
     }
 
     /**
-     * Gets all possible melds. Includes overlapping.
-     *
+     * Gets all possible melds. Includes overlapping. Excludes different orders for same meld
      * @param hand wanted to be evaluated
      * @return list of all possible melds of given hand. Uses duplicates
      */
@@ -104,17 +99,15 @@ class MeldCreator {
     }
 
     /**
-     * Quality of life method because array is mutable.
+     * Quality of life method. Updates array to given value for every card that the meld has
      *
      * @param array to update
      * @param meld  used to update
      * @param val   to change array values to
-     * @return modified array
      */
-    private static int[][] setMeldTo(int[][] array, Meld meld, int val) {
+    private static void setMeldTo(int[][] array, Meld meld, int val) {
         for (MyCard myCard : meld.cards()) {
             array[myCard.suit.index][myCard.rank.index] = val;
         }
-        return array;
     }
 }

@@ -80,7 +80,7 @@ public class Turn {
             case Pick: return Discard;
             case Discard: return KnockOrContinue;
             case KnockOrContinue:
-                if(state.hasBeenKnocked()) return LayoutConfirmation;
+                if(state.knocked()) return LayoutConfirmation;
                 else return Pick;
             case LayoutConfirmation:
                 if(state.knocker().equals(nextIndex(state.numberOfPlayers()))) {
@@ -100,7 +100,7 @@ public class Turn {
             case Discard:
                 return playerIndex;
             case KnockOrContinue:
-                if(state.hasBeenKnocked()) return playerIndex;
+                if(state.knocked()) return playerIndex;
             default: return nextIndex(state.numberOfPlayers());
         }
     }

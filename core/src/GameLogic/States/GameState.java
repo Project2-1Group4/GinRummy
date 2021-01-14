@@ -40,20 +40,11 @@ public class GameState {
         nbOfPlayers = initRound.numberOfPlayers();
         points = new int[nbOfPlayers];
         gameDeck = new Stack<>();
-        gameDeck.addAll(initRound.getAllCards());
+        gameDeck.addAll(initRound.allCards());
     }
 
-    /* Getters */
+    // Getters
 
-    public RoundState round(){
-        return rounds.peek();
-    }
-    public RoundState round(int i){
-        if(i<0 || i>=rounds.size()){
-            return null;
-        }
-        return rounds.get(i);
-    }
     public int getRoundNumber() {
         return rounds.size();
     }
@@ -84,6 +75,15 @@ public class GameState {
     public boolean locked() {
         return locked;
     }
+    public RoundState round(){
+        return rounds.peek();
+    }
+    public RoundState round(int i){
+        if(i<0 || i>=rounds.size()){
+            return null;
+        }
+        return rounds.get(i);
+    }
     public List<Result> toResult() {
         List<Result> r = new ArrayList<>();
         for (RoundState round : rounds) {
@@ -101,7 +101,7 @@ public class GameState {
         return sb.toString();
     }
 
-    /* Setters */
+    // Setters
 
     public void addPoints(int[] toAdd){
         for (int i = 0; i < points.length; i++) {

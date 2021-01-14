@@ -1,8 +1,8 @@
 package GameLogic.States;
 
-import GameLogic.Game;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Turn;
+import GameLogic.Game;
 
 import java.util.ArrayList;
 import java.util.List;

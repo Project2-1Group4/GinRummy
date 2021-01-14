@@ -1,10 +1,10 @@
 package GameLogic.Logic;
 
-import com.badlogic.gdx.Gdx;
 import GameLogic.Entities.HandLayout;
 import GameLogic.Entities.Layoff;
 import GameLogic.Entities.Meld;
 import GameLogic.Entities.MyCard;
+import com.badlogic.gdx.Gdx;
 import temp.GameRules;
 
 import java.util.ArrayList;
@@ -15,6 +15,79 @@ import java.util.Stack;
  * Mainly (Only) handles the knocking/gin part
  */
 public class Finder {
+
+    /**
+     * Finds set of melds that has the lowest deadwood and highest value (if tie).
+     * Could be moved to GamePlayer
+     * @param cards list of playerCards to be considered
+     * @return list of melds that maximize players hand value
+     */
+    public static HandLayout findBestHandLayout(List<MyCard> cards) {
+
+        List<HandLayout> handLayouts = findAllLayouts(cards);
+        // To stop auto sorting of unused cards
+        HandLayout bestLayout = findLowestDeadwoodLayout(handLayouts);
+        List<MyCard> unusedCards = bestLayout.unused();
+        for (MyCard card : cards) {
+            for (int i = 0; i < unusedCards.size(); i++) {
+                if (card.equals(unusedCards.get(i))) {
+                    if (bestLayout.removeUnusedCard(unusedCards.get(i))) {
+                        bestLayout.addUnusedCard(card);
+                        unusedCards.remove(i);
+                        break;
+                    }
+                    System.out.println("Calculator.findBestHandLayout() ERROR ERROR ERROR");
+                    Gdx.app.exit();
+                }
+            }
+        }
+        return bestLayout;
+    }
+
+    /**
+     * Finds all possible layouts with a given list of playerCards
+     *
+     * @param cards list of playerCards to evaluate
+     * @return list of all possible layouts
+     */
+    public static List<HandLayout> findAllLayouts(List<MyCard> cards) {
+        int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
+        for (MyCard card : cards) {
+            hand[card.suit.index][card.rank.index] = 1;
+        }
+        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
+
+        List<HandLayout> handLayouts = new ArrayList<>();
+        for (Stack<Meld> meldCombination : meldCombinations) {
+            handLayouts.add(new HandLayout(copy(hand), meldCombination));
+        }
+        return handLayouts;
+    }
+
+    /**
+     * Helper for findBestHandLayout(). Takes lowest deadwood then  highest value if there's a tie.
+     *
+     * @param handLayoutValues all values of set of melds considered
+     * @return best hand found
+     */
+    private static HandLayout findLowestDeadwoodLayout(List<HandLayout> handLayoutValues) {
+        int index = 0;
+        int maxVal = 0;
+        int lowestDead = Integer.MAX_VALUE;
+        for (int i = 0; i < handLayoutValues.size(); i++) {
+            if (handLayoutValues.get(i).deadwoodValue() < lowestDead) {
+                index = i;
+                maxVal = handLayoutValues.get(i).meldValue();
+                lowestDead = handLayoutValues.get(i).deadwoodValue();
+            }
+            else if (handLayoutValues.get(i).deadwoodValue() == lowestDead && handLayoutValues.get(i).meldValue() >= maxVal) {
+                index = i;
+                maxVal = handLayoutValues.get(i).meldValue();
+                lowestDead = handLayoutValues.get(i).deadwoodValue();
+            }
+        }
+        return handLayoutValues.get(index);
+    }
 
     /**
      * Finds hand layout with lowest deadwood in the given list. If another player has the same deadwood as the knocker, knocker overpowers.
@@ -68,153 +141,23 @@ public class Finder {
     }
 
     /**
-     * Finds set of melds that has the lowest deadwood and highest value (if tie).
-     *
-     * @param cards list of cards to be considered
-     * @return list of melds that maximize players hand value
+     * Finds all possible layoffs that can be made, given a set of playerCards and a set of melds
+     * Could be moved to GamePlayer
+     * @param allCards playerCards to layoff
+     * @param knockerMelds melds to lay into
+     * @return list of possibilities
      */
-    public static HandLayout findBestHandLayout(List<MyCard> cards) {
-
-        List<HandLayout> handLayouts = findAllLayouts(cards);
-        // To stop auto sorting of unused cards
-        HandLayout bestLayout = findLowestDeadwoodLayout(handLayouts);
-        List<MyCard> unusedCards = bestLayout.unused();
-        for (MyCard card : cards) {
-            for (int i = 0; i < unusedCards.size(); i++) {
-                if (card.equals(unusedCards.get(i))) {
-                    if (bestLayout.removeUnusedCard(unusedCards.get(i))) {
-                        bestLayout.addUnusedCard(card);
-                        unusedCards.remove(i);
-                        break;
-                    }
-                    System.out.println("Calculator.findBestHandLayout() ERROR ERROR ERROR");
-                    Gdx.app.exit();
+    public static List<Layoff> findAllPossibleLayoffs(List<MyCard> allCards, List<Meld> knockerMelds) {
+        List<Layoff> layoffs = new ArrayList<>();
+        for (MyCard card : allCards) {
+            for (Meld meld : knockerMelds) {
+                if(meld.isValidWith(card)){
+                    layoffs.add(new Layoff(card, meld));
+                    break;
                 }
             }
         }
-        return bestLayout;
-    }
-
-    /**
-     * Finds all possible layouts with a given list of cards
-     *
-     * @param cards list of cards to evaluate
-     * @return list of all possible layouts
-     */
-    public static List<HandLayout> findAllLayouts(List<MyCard> cards) {
-        int[][] hand = new int[MyCard.Suit.values().length][MyCard.Rank.values().length];
-        for (MyCard card : cards) {
-            hand[card.suit.index][card.rank.index] = 1;
-        }
-        List<Stack<Meld>> meldCombinations = MeldCreator.recursiveMeld(new Stack<Meld>(), hand, new ArrayList<Stack<Meld>>());
-
-        List<HandLayout> handLayouts = new ArrayList<>();
-        for (Stack<Meld> meldCombination : meldCombinations) {
-            handLayouts.add(new HandLayout(copy(hand), meldCombination));
-        }
-        return handLayouts;
-    }
-
-    /**
-     * INGORE, HELPER FOR findBestHandLayout(). Takes lowest deadwood then  highest value if there's a tie.
-     *
-     * @param handLayoutValues all values of set of melds considered
-     * @return best hand found
-     */
-    private static HandLayout findLowestDeadwoodLayout(List<HandLayout> handLayoutValues) {
-        int index = 0;
-        int maxVal = 0;
-        int lowestDead = Integer.MAX_VALUE;
-        for (int i = 0; i < handLayoutValues.size(); i++) {
-            if (handLayoutValues.get(i).deadwoodValue() <= lowestDead) {
-                if (handLayoutValues.get(i).meldValue() >= maxVal) {
-                    index = i;
-                    maxVal = handLayoutValues.get(i).meldValue();
-                    lowestDead = handLayoutValues.get(i).deadwoodValue();
-                }
-            }
-        }
-        return handLayoutValues.get(index);
-    }
-
-    /**
-     * Returns the first found index that can be added to meld
-     *
-     * @param cards list of cards you want to pick from
-     * @param meld  you want to fit card in
-     * @return null if none, otherwise index
-     */
-    public static Integer findFirstIndexThatFitsInMeld(List<MyCard> cards, Meld meld) {
-        if (meld.type() == Meld.MeldType.Run) {
-            return findCardIndexRun(cards, meld);
-        } else {
-            return findCardIndexSet(cards, meld);
-        }
-    }
-
-    /**
-     * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for runs
-     *
-     * @param cards list of cards you want to pick from
-     * @param meld  you want to fit card in
-     * @return null if none, otherwise index
-     */
-    private static Integer findCardIndexRun(List<MyCard> cards, Meld meld) {
-        assert meld.type() == Meld.MeldType.Run;
-
-        MyCard.Suit runSuit = meld.cards().get(0).suit;
-        // For all cards in the meld
-        for (int j = 0; j < meld.cards().size(); j++) {
-            // For all unused cards
-            for (int i = 0; i < cards.size(); i++) {
-                // If the card is of the same suit
-                if (cards.get(i).suit == runSuit) {
-                    // If card is in the neighbourhood of the card
-                    if (Math.abs(cards.get(i).rank.value - meld.cards().get(j).rank.value) <= 1) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * IGNORE, HELPER FOR findFirstIndexThatFitsInMeld(). Only used for sets
-     *
-     * @param cards list of cards you want to pick from
-     * @param meld  you want to fit card in
-     * @return null if none, otherwise index
-     */
-    private static Integer findCardIndexSet(List<MyCard> cards, Meld meld) {
-        assert meld.type() == Meld.MeldType.Set;
-
-        MyCard.Rank setRank = meld.cards().get(0).rank;
-        // For all unused cards
-        for (int i = 0; i < cards.size(); i++) {
-            // If the card is of the same rank
-            if (cards.get(i).rank == setRank) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Finds meld that matches the toFind meld in the list given
-     *
-     * @param toFind meld to find
-     * @param melds  list to find meld in
-     * @return null if not found otherwise meld
-     */
-    public static Integer findMeldIndexIn(Meld toFind, List<Meld> melds) {
-
-        for (int i = 0; i < melds.size(); i++) {
-            if (melds.get(i).equals(toFind)) {
-                return i;
-            }
-        }
-        return null;
+        return layoffs;
     }
 
     /**
@@ -232,18 +175,5 @@ public class Finder {
             System.arraycopy(aMatrix, 0, myInt[i], 0, aLength);
         }
         return myInt;
-    }
-
-    public static List<Layoff> findAllPossibleLayoffs(List<MyCard> allCards, List<Meld> knockerMelds) {
-        List<Layoff> layoffs = new ArrayList<>();
-        for (MyCard card : allCards) {
-            for (Meld meld : knockerMelds) {
-                if(meld.isValidWith(card)){
-                    layoffs.add(new Layoff(card, meld));
-                    break;
-                }
-            }
-        }
-        return layoffs;
     }
 }
