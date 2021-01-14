@@ -19,7 +19,7 @@ public class EndOfRoundInfo {
         this.finalRound = finalRound;
         winner = state.winner();
         scores = state.points();
-        List<List<MyCard>> stateList = state.getAllPlayerCards();
+        List<List<MyCard>> stateList = state.allPlayerCards();
         deadwoodValues = new int[stateList.size()];
         numberOfCardsInDeadwood = new int[stateList.size()];
         for (int i = 0; i < state.layouts().length; i++) {

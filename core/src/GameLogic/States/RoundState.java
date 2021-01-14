@@ -1,13 +1,15 @@
 package GameLogic.States;
 
-import GameLogic.GameActions.Action;
-import GameLogic.Logic.Finder;
 import GameLogic.Entities.HandLayout;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
 import GameLogic.Entities.Turn;
+import GameLogic.GameActions.Action;
+import GameLogic.Logic.Finder;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 
 public class RoundState {
     private boolean locked;
@@ -62,7 +64,7 @@ public class RoundState {
     public int deckSize(){
         return cards.deckSize();
     }
-    public int getPlayerIndex() {
+    public int curIndex() {
         return turn().playerIndex;
     }
     public int[] points(){
@@ -82,7 +84,7 @@ public class RoundState {
     public Integer knocker(){
         return knocker;
     }
-    public boolean hasBeenKnocked(){
+    public boolean knocked(){
         return knocker!=null;
     }
     public boolean hasPerfectInformation(){
@@ -104,7 +106,7 @@ public class RoundState {
     public Turn turn(){
         return currentTurn;
     }
-    public Action getLastAction() {
+    public Action lastAction() {
         return actions.size()==0?null:actions.peek();
     }
     public MyCard peekDeck(){
@@ -114,13 +116,13 @@ public class RoundState {
         return cards.peekDiscard();
     }
     public List<MyCard> cards(int index){
-        return cards.getCards(index);
+        return cards.playerCards(index);
     }
-    public List<List<MyCard>> getAllPlayerCards(){
+    public List<List<MyCard>> allPlayerCards(){
         return cards.players;
     }
-    public List<MyCard> getAllCards(){
-        return cards.getAllCards();
+    public List<MyCard> allCards(){
+        return cards.allCards();
     }
     public Stack<MyCard> deck(){
         return cards.deck;

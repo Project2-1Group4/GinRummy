@@ -109,7 +109,7 @@ public abstract class MCTS extends MemoryPlayer{
     }
     /**
      * Generates a random world given the known information
-     * Fills the rest of the enemy's hand and adds the rest of the unknown cards to the deck.
+     * Fills the rest of the enemy's hand and adds the rest of the unknown playerCards to the deck.
      *
      * @param knowledge known information
      * @return new (different objects) perfect information world
@@ -219,45 +219,45 @@ public abstract class MCTS extends MemoryPlayer{
     private List<Action> getPickMoves(RoundState state){
         List<Action> pick = new ArrayList<>();
         if(state.deck().size()!=0){
-            pick.add(new PickAction(state.getPlayerIndex(), true, state.deck().get(state.deck().size()-1)));
+            pick.add(new PickAction(state.curIndex(), true, state.deck().get(state.deck().size()-1)));
         }
         else{
             for (MyCard card : state.unassigned()) {
-                pick.add(new PickAction(state.getPlayerIndex(), true, card));
+                pick.add(new PickAction(state.curIndex(), true, card));
             }
         }
         if(state.discardPile().size()!=0){
-            pick.add(new PickAction(state.getPlayerIndex(), false, state.discardPile().peek()));
+            pick.add(new PickAction(state.curIndex(), false, state.discardPile().peek()));
         }
         return pick;
     }
     private List<Action> getDiscardMoves(RoundState state){
         List<Action> discard = new ArrayList<>();
-        if(state.getPlayerIndex()==index){
-            for (MyCard card : state.cards(state.getPlayerIndex())) {
-                discard.add(new DiscardAction(state.getPlayerIndex(), card));
+        if(state.curIndex()==index){
+            for (MyCard card : state.cards(state.curIndex())) {
+                discard.add(new DiscardAction(state.curIndex(), card));
             }
         }
         else{
-            for (MyCard card : state.cards(state.getPlayerIndex())) {
-                discard.add(new DiscardAction(state.getPlayerIndex(), card));
+            for (MyCard card : state.cards(state.curIndex())) {
+                discard.add(new DiscardAction(state.curIndex(), card));
             }
             for (MyCard card : state.unassigned()) {
-                discard.add(new DiscardAction(state.getPlayerIndex(), card));
+                discard.add(new DiscardAction(state.curIndex(), card));
             }
         }
         return discard;
     }
     private List<Action> getKnockMoves(RoundState state){
         List<Action> knock = new ArrayList<>();
-        //Assume he can't knock unless you KNOW (know enough cards) he can
-        if(state.cards(state.getPlayerIndex()).size()>= GameRules.baseCardsPerHand) {
-            HandLayout handLayout = Finder.findBestHandLayout(state.cards(state.getPlayerIndex()));
+        //Assume he can't knock unless you KNOW (know enough playerCards) he can
+        if(state.cards(state.curIndex()).size()>= GameRules.baseCardsPerHand) {
+            HandLayout handLayout = Finder.findBestHandLayout(state.cards(state.curIndex()));
             if (handLayout.deadwoodValue() <= GameRules.minDeadwoodToKnock) {
-                knock.add(new KnockAction(state.getPlayerIndex(), true, handLayout));
+                knock.add(new KnockAction(state.curIndex(), true, handLayout));
             }
         }
-        knock.add(new KnockAction(state.getPlayerIndex(), false, null));
+        knock.add(new KnockAction(state.curIndex(), false, null));
         return knock;
     }
 
