@@ -19,8 +19,8 @@ import java.util.Random;
 public class Tests {
 
     public static boolean printTurns = false; // Print every action taken in cmd
-    public static boolean printRounds = true; // Print Start of round and end of rounds info in cmd
-    public static boolean printGames = false; // Print when game starts and end of game info in cmd
+    public static boolean printRounds = false; // Print Start of round and end of rounds info in cmd
+    public static boolean printGames = true; // Print when game starts and end of game info in cmd
     public static boolean printPerc = false;
 
     public static boolean saveInterGameInfo = true; // Between games
@@ -30,24 +30,25 @@ public class Tests {
 
     public static void main(String[] args) {
 
-        int nbOfGames = 20; // Set nb of games * nb of players
-        Integer seed = 2; // Set seed
+        int nbOfGames = 25; // Set nb of games * nb of players
+        Integer seed = 3; // Set seed
         //exploration 1.6 -> found with 10 sim, 250 rollouts per sim, 1 rollout per node
         //rollout per node -> found with 10 sim, 100*(rollout per node) rollouts per sim, 1.6 exploration
 
         int[] values = new int[]{
-                1, 2, 3, 5
+                1, 2, 3, 4, 5
         };
         String val = "rolloutsPerNode";
         for (int value : values) {
             MCTSv1 b = new MCTSv1(0);
-            b.set(10, null, 200*value, value, 1.6);
+            // Base values are 10, null, 200, 1, 1
+            b.set(10, null, 200, value, 1.6);
             GamePlayer[] players = new GamePlayer[]{
                     b,
                     //new meldBuildingGreedy(),
                     new basicGreedyTest()
             };
-            String folder = "Results/MCTS "+val+"/MCTSv1"+""+val+""+value+" vs basicG/";
+            String folder = "ResultsToAnalyze/MCTS "+val+"/MCTSv1"+""+val+""+value+" vs basicG/";
             String[] playerNames = new String[]{
                     "MCTSv1",
                     "basicGreedy"
