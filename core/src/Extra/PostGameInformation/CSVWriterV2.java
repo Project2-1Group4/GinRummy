@@ -104,7 +104,7 @@ public class CSVWriterV2 {
     private static String onlyEndOfRound(RoundState r){
         StringBuilder sb = new StringBuilder();
         StringBuilder deadwood = new StringBuilder();
-        sb.append(r.winner()).append(',').append(r.turnsPlayed());
+        sb.append(r.winner()==null? "":r.winner()).append(',').append(r.turnsPlayed());
         for (int i = 0; i < r.layouts().length; i++) {
             sb.append(',').append(r.points()[i]);
             deadwood.append(',').append(r.layouts()[i].deadwoodValue());
