@@ -42,7 +42,7 @@ public class Tests {
         for (int value : values) {
             MCTSv1 b = new MCTSv1(0);
             // Base values are 10, null, 200, 1, 1
-            b.set(10, null, 200, value, 1.6);
+            b.set(10, null, 200, value, 1);
             GamePlayer[] players = new GamePlayer[]{
                     b,
                     //new meldBuildingGreedy(),
