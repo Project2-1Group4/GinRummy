@@ -24,3 +24,5 @@ Game,Rounds,P0 Score,P1 Score,Winner
 22,10,14,147,1
 23,7,39,101,1
 24,10,85,116,1
+,,,,19
+,,,MCTSWin,6

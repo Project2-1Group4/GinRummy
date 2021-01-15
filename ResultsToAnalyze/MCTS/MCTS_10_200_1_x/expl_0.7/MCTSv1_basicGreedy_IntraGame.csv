@@ -189,3 +189,5 @@ Game,Round,P0 Score,P1 Score,Winner,Turns,P0 Win,P1 Win,P0 Deadwood,P1 Deadwood
 24,6,90,29,1,5,0,9,16,7
 24,7,90,72,1,2,0,43,50,7
 24,8,107,72,0,6,17,0,10,27
+,,,basic,89,,Total,190,,
+,,,MCTS,101,,,,,

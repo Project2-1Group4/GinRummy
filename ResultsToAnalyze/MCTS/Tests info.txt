@@ -5,7 +5,7 @@ MCTS seed 0
 BASE PARAM = (10, 200, 1, 1), total 2000 rollouts per turn and rollout with ForcePlayer
 
 Base values (10, 200, 1, 1):
-    -round wr = , game wr =
+    -round wr = 178/342, game wr = 24/50
 
 Rollout with RandomPlayer (10, 200, 1, 1):
     -round wr = , game wr =
@@ -14,24 +14,30 @@ Rollout with basicGreedy (10, 200, 1, 1):
     -round wr = , game wr =
     
 Exploration param test (10, 200, 1, x):
-    -0: round wr = , game wr =
-    -0.3: round wr = , game wr =
-    -0.7: round wr = , game wr = 
-    -0.9: round wr = , game wr =
-    -1.2: round wr = , game wr =
-    -1.4: round wr = , game wr =
-    -1.6: round wr = , game wr =
-    -3: round wr = , game wr =
+    -0: round wr = 132/307, game wr = 7/50
+    -0.3: round wr = 202/396, game wr = 22/50
+    -0.5: round wr = 186/367, game wr = 23/50
+    -0.7: round wr = 196/364, game wr = 26/50
+    -0.9: round wr = 201/378, game wr = 24/50
+    -1.2: round wr = 179/345, game wr = 26/50
 
- Simulations test (x, y, 1, 1):
-    -(5, 400): round wr = , game wr = 
-    -(10, 200): round wr = , game wr =
-    -(15, 133): round wr = , game wr =
-    -(20, 100): round wr = , game wr =
-    -(40, 50): round wr = , game wr =
+ Simulations test (x, 200, 1, 1):
+    -5 round wr = 182/356, game wr = 20/50
+    -10 round wr = 178/342, game wr = 24/50
+    -15 round wr = 183/353, game wr = 30/50
+    -20 round wr = 195/362, game wr = 25/50
+    -25 round wr = 211/362, game wr = 31/50
 
 Rollouts per node test (10, 200, x, 1):
-    -1: round wr = , game wr =
-    -2: round wr = , game wr =
-    -3: round wr = , game wr =
-    -5: round wr = , game wr =
+    -1: round wr = 178/342, game wr = 24/50
+    -2: round wr = 186/369, game wr = 20/50
+    -3: round wr = 196/372, game wr = 26/50
+	-4: round wr = 179/350, game wr = 25/50
+    -5: round wr = 196/386, game wr = 20/50
+	
+ rollouts per sim (10, y, 1, 1):
+    -50: round wr = 131/327, game wr = 10/50
+    -100: round wr = 162/346, game wr = 18/50
+    -150: round wr = 182/354, game wr = 23/50
+    -200: round wr = 178/342, game wr = 24/50
+    -250: round wr = 192/375, game wr = 22/50
