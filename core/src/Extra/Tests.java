@@ -10,6 +10,7 @@ import GameLogic.States.RoundState;
 import GamePlayers.GamePlayer;
 import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import GamePlayers.GreedyAIs.basicGreedyTest;
+import GamePlayers.RandomPlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,27 +33,26 @@ public class Tests {
 
         int nbOfGames = 25; // will play nbOfGames*nbOfPlayers games (alternating who starts)
         Integer seed = 3; // Set seed
-        //exploration 1.6 -> found with 10 sim, 250 rollouts per sim, 1 rollout per node
-        //rollout per node -> found with 10 sim, 100*(rollout per node) rollouts per sim, 1.6 exploration
 
+        // 1.4, 1.6, 3
         int[] values = new int[]{
-                1, 2, 3, 4, 5
+                1
         };
-        String val = "rolloutsPerNode";
+        String val = "ResultsToAnalyze/MCTS/greedy_rollout";
         for (int value : values) {
             MCTSv1 b = new MCTSv1(0);
             // Base values are 10, null, 200, 1, 1
-            b.set(10, null, 200, value, 1);
+            b.set(10, null, 200, 1, 1);
             GamePlayer[] players = new GamePlayer[]{
                     b,
-                    //new meldBuildingGreedy(),
                     new basicGreedyTest()
+                    //new RandomPlayer()
             };
-            String folder = "ResultsToAnalyze/MCTS "+val+"/MCTSv1"+""+val+""+value+" vs basicG/";
             String[] playerNames = new String[]{
                     "MCTSv1",
                     "basicGreedy"
             };
+            String folder = val+value+"/";
             int[][] r = start(folder, players, playerNames, nbOfGames, seed);
             int totalGames=0;
             int totalRounds=0;

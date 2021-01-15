@@ -1,25 +1,29 @@
-Test seed 3 every game is seeded with Random(3).nextInt()
+Test seed 8765 every game is seeded with Random(8765).nextInt()
 MCTS seed 0
-25 games are played with MCTS as first, 25 games with basicGreedy as first
+20 games are played with MCTS as first, 20 games with basicGreedy as first
 
 BASE PARAM = (10, 200, 1, 1), total 2000 rollouts per turn and rollout with ForcePlayer
 
 Base values (10, 200, 1, 1):
-    -round wr = 178/342, game wr = 24/50
+    -1: round wr = 178/342 (52.0%), game wr = 24/50
 
-Rollout with RandomPlayer (10, 200, 1, 1):
-    -round wr = , game wr =
 
-Rollout with basicGreedy (10, 200, 1, 1):
-    -round wr = , game wr =
-    
+Rollout with RandomPlayer (10, 200, 1, x):
+    -1: round wr = 58/221 (26.2%), game wr = 1/50
+
+Rollout with basicGreedy (10, 200, 1, x):
+    -1: round wr = 172/356 (48.3%), game wr = 18/50
+
 Exploration param test (10, 200, 1, x):
-    -0: round wr = 132/307, game wr = 7/50
-    -0.3: round wr = 202/396, game wr = 22/50
-    -0.5: round wr = 186/367, game wr = 23/50
-    -0.7: round wr = 196/364, game wr = 26/50
-    -0.9: round wr = 201/378, game wr = 24/50
-    -1.2: round wr = 179/345, game wr = 26/50
+    -0.0: round wr = 132/307 (42.9%), game wr = 7/50
+    -0.3: round wr = 202/396 (51.0%), game wr = 22/50
+    -0.5: round wr = 186/367 (50.7%), game wr 23/50 
+    -0.7: round wr = 196/364 (53.8%), game wr = 26/50
+    -0.9: round wr = 201/378 (53.1%), game wr = 24/50
+    -1.2: round wr = 179/345 (51.8%), game wr = 26/50
+    -1.4: round wr = 173/357 (48.4%), game wr = 24/50
+    -1.6: round wr = 199/387 (51.4%), game wr = 22/50
+    -3: round wr = 191/356 (53.6%), game wr = 23/50
 
  Simulations test (x, 200, 1, 1):
     -5 round wr = 182/356, game wr = 20/50
@@ -32,7 +36,7 @@ Rollouts per node test (10, 200, x, 1):
     -1: round wr = 178/342, game wr = 24/50
     -2: round wr = 186/369, game wr = 20/50
     -3: round wr = 196/372, game wr = 26/50
-	-4: round wr = 179/350, game wr = 25/50
+    -4: round wr = 179/350, game wr = 25/50
     -5: round wr = 196/386, game wr = 20/50
 	
  rollouts per sim (10, y, 1, 1):
@@ -41,3 +45,4 @@ Rollouts per node test (10, 200, x, 1):
     -150: round wr = 182/354, game wr = 23/50
     -200: round wr = 178/342, game wr = 24/50
     -250: round wr = 192/375, game wr = 22/50
+
