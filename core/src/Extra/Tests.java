@@ -9,8 +9,7 @@ import GameLogic.States.GameState;
 import GameLogic.States.RoundState;
 import GamePlayers.GamePlayer;
 import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
-import GamePlayers.GreedyAIs.basicGreedyTest;
-import GamePlayers.RandomPlayer;
+import GamePlayers.GameTreeAIs.MinimaxPruningAI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +34,25 @@ public class Tests {
         Integer seed = 3; // Set seed
 
         // 1.4, 1.6, 3
-        int[] values = new int[]{
+
+        String val = "ResultsToAnalyze/MCTSvsAlphaBeta";
+
+        MCTSv1 b = new MCTSv1(0);
+        // Base values are 25, null, 200, 1, 1
+        b.set(25, null, 200, 1, 0.7);
+        GamePlayer[] players = new GamePlayer[]{
+                b,
+                new MinimaxPruningAI(4)
+                //new RandomPlayer()
+        };
+        String[] playerNames = new String[]{
+                "MCTSv1",
+                "MinimaxPruning"
+        };
+        String folder = val+"/";
+        start(folder, players, playerNames, nbOfGames, seed);
+
+        /*int[] values = new int[]{
                 1
         };
         String val = "ResultsToAnalyze/MCTS/greedy_rollout";
@@ -63,39 +80,7 @@ public class Tests {
             System.out.println("MCTSv1 with "+val+" at "+value);
             System.out.println("Game wins: "+r[0][0]+" out of "+totalGames);
             System.out.println("Round wins: "+r[1][0]+" out of "+totalRounds+" ("+(r[1][0]/(double)totalRounds)+"%)");
-        }
-
-        values = new int[]{
-                50, 100, 150, 200, 250
-        };
-
-
-        val = "rolloutsPerSim";
-        for (int value : values) {
-            MCTSv1 b = new MCTSv1(0);
-            // Base values are 10, null, 200, 1, 1
-            b.set(10, null, value, 1, 1);
-            GamePlayer[] players = new GamePlayer[]{
-                    b,
-                    //new meldBuildingGreedy(),
-                    new basicGreedyTest()
-            };
-            String folder = "ResultsToAnalyze/MCTS "+val+"/MCTSv1"+""+val+""+value+" vs basicG/";
-            String[] playerNames = new String[]{
-                    "MCTSv1",
-                    "basicGreedy"
-            };
-            int[][] r = start(folder, players, playerNames, nbOfGames, seed);
-            int totalGames=0;
-            int totalRounds=0;
-            for (int i = 0; i < r[0].length; i++) {
-                totalGames+= r[0][i];
-                totalRounds+= r[1][i];
-            }
-            System.out.println("MCTSv1 with "+val+" at "+value);
-            System.out.println("Game wins: "+r[0][0]+" out of "+totalGames);
-            System.out.println("Round wins: "+r[1][0]+" out of "+totalRounds+" ("+(r[1][0]/(double)totalRounds)+"%)");
-        }
+        }*/
 
 
     }
