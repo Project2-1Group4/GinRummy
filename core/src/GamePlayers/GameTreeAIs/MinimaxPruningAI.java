@@ -36,6 +36,12 @@ public class MinimaxPruningAI extends GamePlayer {
         this.pile = tree.discardPile;
         this.unknownCards = tree.cardsUnknown;
     }
+
+    public MinimaxPruningAI(int maxDepthOfTree){
+        this();
+        this.maxDepthOfTree = maxDepthOfTree;
+    }
+
     public MinimaxPruningAI(){
         super();
     }
