@@ -1,13 +1,10 @@
 package GamePlayers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import GameLogic.GameActions.DiscardAction;
-import GameLogic.GameActions.PickAction;
-import GameLogic.Entities.HandLayout;
 import GameLogic.Entities.Meld;
 import GameLogic.Entities.MyCard;
 import GameLogic.Logic.Finder;
-import temp.GameRules;
+import Extra.GameRules;
 import Graphics.RenderingSpecifics.PlayerRenderer;
 import Graphics.Style;
 

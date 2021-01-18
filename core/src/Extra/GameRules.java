@@ -1,4 +1,4 @@
-package temp;
+package Extra;
 
 public class GameRules {
     // Score specs

@@ -10,7 +10,7 @@ import GamePlayers.CombinePlayer;
 import GamePlayers.ForcePlayer;
 import GamePlayers.GamePlayer;
 import com.badlogic.gdx.Gdx;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.ArrayList;
 import java.util.Arrays;

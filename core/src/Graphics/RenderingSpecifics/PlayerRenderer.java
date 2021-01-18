@@ -6,7 +6,7 @@ import GameLogic.Entities.HandLayout;
 import GameLogic.Entities.Meld;
 import GameLogic.Entities.MyCard;
 import GamePlayers.GamePlayer;
-import temp.GameRules;
+import Extra.GameRules;
 import Graphics.GameCard;
 import Graphics.GameMeld;
 import Graphics.Style;

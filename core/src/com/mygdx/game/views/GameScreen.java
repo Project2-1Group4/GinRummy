@@ -1,4 +1,4 @@
-package temp;
+package com.mygdx.game.views;
 
 import Extra.StringToGamePlayer;
 import GameLogic.Entities.MyCard;
@@ -14,14 +14,14 @@ import com.mygdx.game.GinRummy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Coordinator extends ScreenAdapter {
+public class GameScreen extends ScreenAdapter {
 
     private final Graphics graphics;
     private final Game game;
     private final GinRummy master;
 
 
-    public Coordinator(GinRummy master) {
+    public GameScreen(GinRummy master) {
         this.master = master;
         List<GamePlayer> players = new ArrayList<>();
         players.add(StringToGamePlayer.getPlayer(master.name1));

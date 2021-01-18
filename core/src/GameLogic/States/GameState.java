@@ -4,7 +4,7 @@ import Extra.PostGameInformation.Result;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
 import GameLogic.Entities.Turn;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.*;
 

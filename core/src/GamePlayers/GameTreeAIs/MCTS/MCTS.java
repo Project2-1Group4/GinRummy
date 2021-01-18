@@ -16,7 +16,7 @@ import GameLogic.States.RoundState;
 import GamePlayers.ForcePlayer;
 import GamePlayers.GamePlayer;
 import GamePlayers.MemoryPlayer;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.ArrayList;
 import java.util.Arrays;

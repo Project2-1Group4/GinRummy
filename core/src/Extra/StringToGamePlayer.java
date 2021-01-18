@@ -10,7 +10,6 @@ import GamePlayers.GreedyAIs.meldBuildingGreedy;
 import GamePlayers.KeyboardPlayer;
 import GamePlayers.MousePlayer.MousePlayer;
 import GamePlayers.RandomPlayer;
-import temp.GameRules;
 
 public class StringToGamePlayer {
 
