@@ -6,8 +6,7 @@ import GameLogic.Entities.HandLayout;
 import GameLogic.States.RoundState;
 import temp.GameRules;
 
-// IMMUTABLE
-//TODO knockLayout not used, remove?
+
 public class KnockAction extends Action {
     public final boolean knock;
     private final HandLayout knockLayout;

@@ -1,6 +1,5 @@
 package GameLogic.Entities;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
@@ -20,7 +19,6 @@ public class MyCard {
         this.rank = Rank.getRank(j);
     }
 
-    // TODO: Make sure that these deep copies are properly done
     public MyCard(MyCard aCard){
         this.suit = Suit.getSuit(aCard.suit.index);
         this.rank = Rank.getRank(aCard.rank.index);

@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -85,17 +84,17 @@ public class LoadingScreen implements Screen{
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
+
     }
 
     @Override

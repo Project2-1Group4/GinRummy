@@ -14,12 +14,6 @@ import java.util.List;
 
 public class meldBuildingGreedy extends GamePlayer {
 
-    /*
-    SO I just realized that with the general structure I want to implement a lot of this current code is garbage
-    The idea is still alright, but a lot of it can be improved as the cards in melds will be separated elsewhere
-    For now I'll leave in the garbage methods, but yeah this is how it's currently made
-    TODO: Fix up the inefficient methods to actually be fast
-     */
 
     public meldBuildingGreedy() {
         super();
@@ -108,7 +102,6 @@ public class meldBuildingGreedy extends GamePlayer {
     // I update the internal matrix by using the cloneResetMemMatrix
     // Which takes care of removing the previous cards in hand, and adding the new cards
     // Still feel kinda unsure about everything
-    // TODO: Check this part of the code out
     void updateMemoryMatrix(HandLayout newHand){
         this.memoryMatrix = cloneResetMemMatrix(this.memoryMatrix, newHand);
     }
@@ -178,7 +171,6 @@ public class meldBuildingGreedy extends GamePlayer {
      */
 
     // Method looks finished
-    // TODO: Bugtest
     double evaluateSet(int val, int[][] memoryMatrix) {
 
         int setCount = 0;
@@ -238,7 +230,6 @@ public class meldBuildingGreedy extends GamePlayer {
         // Forward running
         // Starting count at 1, cause I'll just assume that the given val and suit are in hand
         // Need to bug test to make sure that an array index out of bounds won't end up nullifying the changes to count
-        // TODO: Bugtest the index out of bounds exception
 
 
         /*
@@ -251,7 +242,6 @@ public class meldBuildingGreedy extends GamePlayer {
         int front = checkCardNearby(suit, val, 1, memoryMatrix);
 
         // I hate this garbage spaghetti code, can't think of any other way of doing it
-        // TODO: Bug test my spaghetti code to make it doesn't break down on me
         if ((prev >= 2) && (front >= 2)) {
             return heuristicForNever(val);
         } else if (prev >= 2) {
@@ -394,7 +384,6 @@ public class meldBuildingGreedy extends GamePlayer {
     void setTopDiscard(MyCard aCard) {
         this.topDiscard = aCard;
 
-        // TODO: Add a quick check to make sure I'm not deleting info about who discarded the card
         memoryMatrix[aCard.suit.index][aCard.rank.index] = 4;
 
     }
@@ -471,7 +460,7 @@ public class meldBuildingGreedy extends GamePlayer {
     }
 
 
-    // TODO: Implement this method
+
     @Override
     public Boolean pickDeckOrDiscard(int remainingCardsInDeck, MyCard topOfDiscard) {
         List<MyCard> temp = this.handLayout.cards();
@@ -487,7 +476,7 @@ public class meldBuildingGreedy extends GamePlayer {
 
     }
 
-    // TODO: Implement this method
+
     @Override
     public MyCard discardCard() {
         return this.findLeastValuableCard(this.allCards);
@@ -502,7 +491,6 @@ public class meldBuildingGreedy extends GamePlayer {
         this.updateMemoryMatrix(this.handLayout);
     }
 
-    // TODO: Update this method to update the internal matrix correctly
     // Always assume that it's when a new set of cards is given
     // As the update method is handled separately, and has already been implemented
     @Override
@@ -526,7 +514,6 @@ public class meldBuildingGreedy extends GamePlayer {
         this.memoryMatrix[DisCard.suit.index][DisCard.rank.index] = 3;
     }
 
-    // TODO: Go over this method to update what happens when the other player picks up a card
     @Override
     public void playerPicked(PickAction pickAction) {
         if(!pickAction.deck){

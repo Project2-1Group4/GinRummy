@@ -19,9 +19,9 @@ public class GA {
         int nbOfWinners = 2;
         float mutationChance = 0.05f;
         GA ga = new GA(seed,nbOfCompetitors,nbOfGamesPerPair,nbOfWinners,mutationChance);
-        ga.init(new basicGreedyTest()); //TODO create prototype(s)
+        ga.init(new basicGreedyTest());
         GamePlayer[] winners = ga.train();
-        //TODO use winners for something
+
     }
 
     /*

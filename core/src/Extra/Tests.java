@@ -26,7 +26,7 @@ public class Tests {
     public static boolean saveInterGameInfo = true; // Between games
     public static boolean saveIntraGameInfo = true; // Between rounds (within rounds)
     public static boolean saveInterTurnInfo = true; // Between turns
-    public static boolean saveIntraTurnInfo = false; // Between steps TODO doesnt work
+    public static boolean saveIntraTurnInfo = false; // Between steps
 
     public static void main(String[] args) {
 

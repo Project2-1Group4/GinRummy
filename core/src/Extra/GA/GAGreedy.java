@@ -57,7 +57,6 @@ public class GAGreedy {
     /////////////////////////////////METHODS TO UPDATE///////////////////////////////////////
     protected GAPlayer mutate(Random rd, GAPlayer[] winners, int index) {
         /**GamePlayer p = new TestPlayer();*/
-        // TODO Do modifications
         /**return new GAPlayer(index,p);*/
         return null;
     }
@@ -65,13 +64,11 @@ public class GAGreedy {
     protected void updateScores(Result result, int player1Index, int player2Index) {
         float player1 = 0;
         float player2 = 0;
-        // TODO Update scores
         /*competitors[player1Index].score += player1;
         competitors[player2Index].score += player2;*/
     }
 
     protected boolean stopCondition() {
-        // TODO Set up stop condition
         return iteration >= 500;
     }
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +162,6 @@ public class GAGreedy {
 
         for(int i = 0; i<this.players.length;i+=2){
             meldBuildingGreedy[] matchedPlayers = {this.players[i], this.players[i+1]};
-
-            //TODO fixit
             List<GameInfo> results = new ArrayList<>();//Tests.runGames(matchedPlayers, this.numberOfGames,null);
 
             int victoriesForP0 = 0;

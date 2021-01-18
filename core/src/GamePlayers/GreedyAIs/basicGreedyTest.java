@@ -107,7 +107,6 @@ public class basicGreedyTest extends GamePlayer {
         int lowestVal = 101;
 
         for (MyCard aCard : aHand) {
-            // TODO: Bug-test here to make sure the copies are deep copies and not shallow
             List<MyCard> aList = new ArrayList<>(aHand);
             aList.remove(aCard);
 

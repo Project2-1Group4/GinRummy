@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//TODO evaluate() HandLayout
 public class Game {
 
     private final static List<Game> currentGames = new ArrayList<>();
