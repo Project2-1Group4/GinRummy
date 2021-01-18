@@ -1,4 +1,4 @@
-package Extra.PostGameInformation;
+package Extra;
 
 import GameLogic.States.GameState;
 import GameLogic.States.RoundState;
@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class CSVWriterV2 {
+public class CSVWriter {
 
     public static void write(String s, String directory, String fileName) {
         File dir = new File(directory);
@@ -215,13 +215,5 @@ public class CSVWriterV2 {
             }
         }
         return sb.toString().trim();
-    }
-
-    // Game, Rounds, Turn,
-    // P0 Post-Pick Deadwood, P0 Post-Discard Deadwood, P0 Post-Knock Deadwood, ..., Pi Post-Pick Deadwood, Pi Post-Discard Deadwood, Pi Post-Knock Deadwood,
-    // P0 Pick Time, P0 Discard Time, P0 Knock Time, ..., Pi Pick Time, Pi Discard Time, Pi Knock Time
-
-    public static String endOfSteps(List<List<List<double[][][]>>> interTurnInfo) {
-        return "";
     }
 }

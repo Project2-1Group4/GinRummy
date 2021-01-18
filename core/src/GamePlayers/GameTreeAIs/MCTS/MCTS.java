@@ -1,6 +1,5 @@
 package GamePlayers.GameTreeAIs.MCTS;
 
-import Extra.PostGameInformation.Result;
 import GameLogic.Entities.HandLayout;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
@@ -380,9 +379,9 @@ public abstract class MCTS extends MemoryPlayer{
             System.out.println(state);
         }
         Game g= new Game(Arrays.asList(player1, player2), state, rd.nextInt());
-        Result result = g.playOutRound();
+        RoundState result = g.playOutRound();
         g.remove();
-        return getRoundValue(result.r);
+        return getRoundValue(result);
     }
     /**
      * Finds index of best action.

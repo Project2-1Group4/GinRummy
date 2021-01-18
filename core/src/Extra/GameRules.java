@@ -12,7 +12,7 @@ public class GameRules {
     public static int baseCardsPerHand = 10;
     public static int maxTurnsInARound = 500; //To avoid bots just picking from discard for infinity
 
-    // Game speed specs
+    // Game speed specs. Only applies to player in visuals!
     public static float gameSpeed = 1f;
     public static float KnockOrContinueTime = 50f;
     public static float DeckOrDiscardPileTime = 50f;

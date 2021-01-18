@@ -1,6 +1,5 @@
 package Extra;
 
-import Extra.PostGameInformation.CSVWriterV2;
 import GameLogic.Entities.Step;
 import GameLogic.Entities.Turn;
 import GameLogic.Game;
@@ -8,8 +7,6 @@ import GameLogic.Logic.Finder;
 import GameLogic.States.GameState;
 import GameLogic.States.RoundState;
 import GamePlayers.GamePlayer;
-import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
-import GamePlayers.GameTreeAIs.MinimaxPruningAI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,73 +17,43 @@ public class Tests {
 
     public static boolean printTurns = false; // Print every action taken in cmd
     public static boolean printRounds = false; // Print Start of round and end of rounds info in cmd
-    public static boolean printGames = true; // Print when game starts and end of game info in cmd
-    public static boolean printPerc = false;
+    public static boolean printGames = false; // Print when game starts and end of game info in cmd
+    public static boolean printPerc = false; // Print after every *nbOfGames* the win percentages
 
-    public static boolean saveInterGameInfo = true; // Between games
-    public static boolean saveIntraGameInfo = true; // Between rounds (within rounds)
-    public static boolean saveInterTurnInfo = true; // Between turns
-    public static boolean saveIntraTurnInfo = false; // Between steps
+    // If set to true, will write to given folder
+    public static boolean saveInterGameInfo = false; // Between games
+    public static boolean saveIntraGameInfo = false; // Between rounds (within games)
+    public static boolean saveInterTurnInfo = false; // Between turns
 
     public static void main(String[] args) {
-
-        int nbOfGames = 25; // will play nbOfGames*nbOfPlayers games (alternating who starts)
-        Integer seed = 3; // Set seed
-
-        // 1.4, 1.6, 3
-
-        String val = "ResultsToAnalyze/MCTSvsAlphaBeta";
-
-        MCTSv1 b = new MCTSv1(0);
-        // Base values are 25, null, 200, 1, 1
-        b.set(25, null, 200, 1, 0.7);
+        int nbOfGames = 1; // will play nbOfGames*nbOfPlayers games (alternating who starts)
+        Integer seed = null; // Set seed
         GamePlayer[] players = new GamePlayer[]{
-                b,
-                new MinimaxPruningAI(4)
-                //new RandomPlayer()
+                // Add AIs
         };
         String[] playerNames = new String[]{
-                "MCTSv1",
-                "MinimaxPruning"
+                // Set AI names (to id them separately)
         };
-        String folder = val+"/";
-        start(folder, players, playerNames, nbOfGames, seed);
+        String folder = "WrittenResults/"; // Set folder you want to write to (will write at least 2 files if you decide to save something)
+        int[][] wins = start(folder, players, playerNames, nbOfGames, seed);
 
-        /*int[] values = new int[]{
-                1
-        };
-        String val = "ResultsToAnalyze/MCTS/greedy_rollout";
-        for (int value : values) {
-            MCTSv1 b = new MCTSv1(0);
-            // Base values are 10, null, 200, 1, 1
-            b.set(10, null, 200, 1, 1);
-            GamePlayer[] players = new GamePlayer[]{
-                    b,
-                    new basicGreedyTest()
-                    //new RandomPlayer()
-            };
-            String[] playerNames = new String[]{
-                    "MCTSv1",
-                    "basicGreedy"
-            };
-            String folder = val+value+"/";
-            int[][] r = start(folder, players, playerNames, nbOfGames, seed);
-            int totalGames=0;
-            int totalRounds=0;
-            for (int i = 0; i < r[0].length; i++) {
-                totalGames+= r[0][i];
-                totalRounds+= r[1][i];
-            }
-            System.out.println("MCTSv1 with "+val+" at "+value);
-            System.out.println("Game wins: "+r[0][0]+" out of "+totalGames);
-            System.out.println("Round wins: "+r[1][0]+" out of "+totalRounds+" ("+(r[1][0]/(double)totalRounds)+"%)");
-        }*/
-
-
+        // Prints wins for every player over all the games
+        System.out.println("Game wins: "+Arrays.toString(wins[0]));
+        System.out.println("Round wins: "+Arrays.toString(wins[1])); // Excludes ties
     }
 
+    /**
+     * Will play numberOfGames*numberOfPlayers games letting each AI be the starting AI.
+     * If unseeded, this won't do much but if seeded, will allow to replay all rounds from the same point to allow unbiased testing.
+     *
+     * @param folder folder the CSV files will be written to
+     * @param players AIs that will play
+     * @param playerNames names of the AIs for if it saves the info to CSV files
+     * @param numberOfGames number of games it plays for every player as first
+     * @param seed to allow reproduction of results
+     * @return the wins (int[0][player index]=games and int[1][player index]=rounds) for every player
+     */
     public static int[][] start(String folder, GamePlayer[] players, String[] playerNames, int numberOfGames, Integer seed){
-        // wins[0] = games, wins[1] = rounds
         int[][] wins = new int[2][players.length];
         int nbOfPlayers = players.length;
         for (int iteration = 0; iteration < players.length; iteration++) {
@@ -99,11 +66,8 @@ public class Tests {
             // List init
             List<GameState> results = new ArrayList<>();
             List<List<List<double[][]>>> interTurnInfo;
-            List<List<List<double[][][]>>> intraTurnInfo;
             if(saveInterTurnInfo){ interTurnInfo = new ArrayList<>(); }
             else { interTurnInfo = null;}
-            if(saveIntraTurnInfo){ intraTurnInfo = new ArrayList<>();}
-            else { intraTurnInfo = null;}
 
             // Running games
             for(int gameNb=0; gameNb <numberOfGames; gameNb++){
@@ -111,9 +75,8 @@ public class Tests {
                     System.out.println("Game "+(gameNb+iteration*numberOfGames));
                 }
                 if(saveInterTurnInfo){ interTurnInfo.add(new ArrayList<List<double[][]>>()); }
-                if(saveIntraTurnInfo){ intraTurnInfo.add(new ArrayList<List<double[][][]>>());}
                 Game game = new Game(Arrays.asList(players), rd.nextInt());
-                runGame(game, saveInterTurnInfo? interTurnInfo.get(interTurnInfo.size()-1):null, saveIntraTurnInfo? intraTurnInfo.get(intraTurnInfo.size()-1):null);
+                runGame(game, saveInterTurnInfo? interTurnInfo.get(interTurnInfo.size()-1):null);
                 results.add(game.gameState);
                 for (RoundState round : game.gameState.rounds) {
                     if(round.winner()!=null) {
@@ -135,7 +98,7 @@ public class Tests {
             if(printPerc) {
                 printWinPercentage(gameWins, roundWins, playerNames);
             }
-            write(folder, playerNames, results, interTurnInfo, intraTurnInfo);
+            write(folder, playerNames, results, interTurnInfo);
             shuffleForward(players, playerNames);
         }
         return wins;
@@ -167,7 +130,7 @@ public class Tests {
         }
         System.out.println(sb.toString());
     }
-    private static void write(String folder, String[] playerNames, List<GameState> results, List<List<List<double[][]>>> interTurnInfo, List<List<List<double[][][]>>> intraTurnInfo){
+    private static void write(String folder, String[] playerNames, List<GameState> results, List<List<List<double[][]>>> interTurnInfo){
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < playerNames.length-1; i++) {
             sb.append(playerNames[i]).append("_");
@@ -175,20 +138,16 @@ public class Tests {
         sb.append(playerNames[playerNames.length-1]);
         String mainTitle = sb.toString();
         if(saveInterGameInfo){
-            CSVWriterV2.write(CSVWriterV2.endOfGames(results),folder, mainTitle+"_InterGame");
+            CSVWriter.write(CSVWriter.endOfGames(results),folder, mainTitle+"_InterGame");
         }
         if(saveIntraGameInfo){
-            CSVWriterV2.write(CSVWriterV2.endOfRounds(results),folder, mainTitle+"_IntraGame");
+            CSVWriter.write(CSVWriter.endOfRounds(results),folder, mainTitle+"_IntraGame");
         }
         if(saveInterTurnInfo){
-            CSVWriterV2.write(CSVWriterV2.endOfTurns(interTurnInfo),folder, mainTitle+"_InterTurn");
-        }
-        if(saveIntraTurnInfo){
-            CSVWriterV2.write(CSVWriterV2.endOfSteps(intraTurnInfo),folder, mainTitle+"_IntraTurn");
+            CSVWriter.write(CSVWriter.endOfTurns(interTurnInfo),folder, mainTitle+"_InterTurn");
         }
     }
-
-    public static void runGame(Game game, List<List<double[][]>> interTurnInfo, List<List<double[][][]>> intraTurnInfo ){
+    private static void runGame(Game game, List<List<double[][]>> interTurnInfo){
         game.print(printTurns, printRounds, printGames);
         Turn turn =  null;
         int roundIndex = 0;
@@ -198,39 +157,23 @@ public class Tests {
         long intraStart = 0;
         while(!game.gameEnded()){
             intraStart = System.nanoTime();
-            if(saveIntraTurnInfo || saveInterTurnInfo){
+            if(saveInterTurnInfo){
                 turn = game.turn();
                 roundIndex = game.roundNumber()-1;
                 turnIndex = game.turnNumber();
-                if(saveInterTurnInfo) {
-                    if(game.turn().step == Step.Pick){
-                        interStart = System.nanoTime();
-                    }
+                if(game.turn().step == Step.Pick) {
+                    interStart = System.nanoTime();
                 }
+
             }
             game.continueGame();
             double stepTime = (System.nanoTime() - intraStart) / (double) 1_000_000_000;
             if(printTurns){
                 System.out.println("Took "+stepTime+" seconds.");
             }
-            if(saveIntraTurnInfo || saveInterTurnInfo){
+            if(saveInterTurnInfo){
                 assert turn!=null;
                 deadwood = Finder.findBestHandLayout(game.round(roundIndex).cards(turn.playerIndex)).deadwoodValue();
-            }
-            if(saveIntraTurnInfo) {
-                if(turn.step == Step.Pick || turn.step == Step.Discard || turn.step == Step.KnockOrContinue) {
-                    if (intraTurnInfo.size() != roundIndex + 1) {
-                        intraTurnInfo.add(new ArrayList<double[][][]>());
-                    }
-                    if (intraTurnInfo.get(roundIndex).size() != turnIndex + 1) {
-                        intraTurnInfo.get(roundIndex).add(new double[game.numberOfPlayers()][3][2]);
-                    }
-
-                    //.get(round).get(turn) = double[][][]
-                    // where double[player][step][0] = time, double[player][step][1] = deadwood afterwards
-                    intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][0] = stepTime;
-                    intraTurnInfo.get(roundIndex).get(turnIndex)[turn.playerIndex][turn.step.index][1] = deadwood;
-                }
             }
             if(saveInterTurnInfo){
                 if(turn.step == Step.KnockOrContinue) {

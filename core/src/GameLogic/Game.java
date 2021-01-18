@@ -1,6 +1,5 @@
 package GameLogic;
 
-import Extra.PostGameInformation.Result;
 import GameLogic.Entities.*;
 import GameLogic.GameActions.*;
 import GameLogic.Logic.Finder;
@@ -140,7 +139,7 @@ public class Game {
      * Runs current round out and returns the results
      * @return returns the results of the played out round
      */
-    public Result playOutRound(){
+    public RoundState playOutRound(){
         updateAllPlayers();
         while(true){
             Action a = continueRound();
@@ -148,7 +147,7 @@ public class Game {
                 break;
             }
         }
-        return new Result(round());
+        return round();
     }
     /**
      * Runs game from current state to finish (point or round limit), saving the results of every round
