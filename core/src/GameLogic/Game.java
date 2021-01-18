@@ -36,7 +36,11 @@ public class Game {
         this.gameState = gameState;
         this.players = players;
         timeAllotted = new float[Step.values().length];
-        Arrays.fill(timeAllotted, GameRules.DeckOrDiscardPileTime);
+        timeAllotted[Step.Pick.index] = GameRules.DeckOrDiscardPileTime;
+        timeAllotted[Step.Discard.index] = GameRules.DiscardTime;
+        timeAllotted[Step.KnockOrContinue.index] = GameRules.KnockOrContinueTime;
+        timeAllotted[Step.Layoff.index] = GameRules.LayOffTime;
+        timeAllotted[Step.LayoutConfirmation.index] = GameRules.LayoutConfirmationTime;
         init();
     }
     public Game(List<GamePlayer> players, Integer seed){

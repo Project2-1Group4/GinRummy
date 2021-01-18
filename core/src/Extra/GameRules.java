@@ -20,18 +20,13 @@ public class GameRules {
     public static float LayoutConfirmationTime = 30f;
     public static float LayOffTime = 50f;
 
-    // Command printing specs
-    public static boolean print = false;
-    public static boolean printEndOfRound = false;
-    public static boolean minPrint = false;
-
     // Visual specs
     public static float cardMaxWidthPercentage = 0.8f;
     public static float cardMaxHeightPercentage = 0.2f;
     public static float percentageAwayFromBottom = 0.2f;
 
     //Bot names
-    public static String names_meldGreedy = "greedy meld greedy meldgreedy";
+    public static String names_meldGreedy = "meld meldgreedy";
     public static String names_basicGreedy = "basic greedy basicgreedy";
     public static String names_minimax = "depthminimax minimax alphabeta";
     public static String name_best_search = "best_first best bestminimax";
