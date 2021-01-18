@@ -19,18 +19,7 @@ public class GameMeld {
         }
     }
 
-    public void setSize(float[] dimensions) {
-        for (GameCard card : cards) {
-            card.size = dimensions;
-        }
-    }
-
-    public void setCenterPosition(float x, float y) {
-        for (GameCard card : cards) {
-            card.centerPosition.set(x, y);
-            y -= card.size[1] * 0.5f;
-        }
-    }
+    // Getters
 
     public boolean has(MyCard card) {
         for (GameCard gameCard : cards) {
@@ -40,7 +29,6 @@ public class GameMeld {
         }
         return false;
     }
-
     public GameCard get(MyCard card) {
         for (GameCard gameCard : cards) {
             if (gameCard.isSame(card)) {
@@ -49,12 +37,10 @@ public class GameMeld {
         }
         return new GameCard(card);
     }
-
     @Override
     public String toString() {
         return cards.toString();
     }
-
     public GameCard getHovered(float x, float y) {
         for (int i = cards.size() - 1; i >= 0; i--) {
             if (cards.get(i).isHovered(x, y)) {
@@ -62,5 +48,19 @@ public class GameMeld {
             }
         }
         return null;
+    }
+
+    // Setters
+
+    public void setSize(float[] dimensions) {
+        for (GameCard card : cards) {
+            card.size = dimensions;
+        }
+    }
+    public void setCenterPosition(float x, float y) {
+        for (GameCard card : cards) {
+            card.centerPosition.set(x, y);
+            y -= card.size[1] * 0.5f;
+        }
     }
 }

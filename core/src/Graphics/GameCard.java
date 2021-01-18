@@ -29,11 +29,11 @@ public class GameCard {
         s.draw(batch);
     }
 
-    // OUTER GETTERS
+    // Getters
+
     public boolean isSame(MyCard other) {
         return card.equals(other);
     }
-
     public boolean isSame(GameCard other) {
         if (card == null && other.card == null) {
             return true;
@@ -43,14 +43,10 @@ public class GameCard {
         }
         return card.equals(other.card);
     }
-
     public boolean isHovered(float x, float y) {
         float[][] corners = getExtremeCorners(getSize());
         return corners[0][0] < x && corners[1][0] > x && corners[0][1] < y && corners[1][1] > y;
     }
-
-    // INNER GETTERS
-
     /**
      * @return float[0] = size, float[1] = position
      */
@@ -61,7 +57,6 @@ public class GameCard {
                 getBottomLeft(currentSize)
         };
     }
-
     private float[] getSize() {
         final float hoveredSizeIncrease = 1.2f;
         if (hovered) {
@@ -76,7 +71,6 @@ public class GameCard {
             };
         }
     }
-
     private float[] getBottomLeft(float[] size) {
         final float[] hoveredPositionChange = new float[]{0, 0};
         if (hovered) {
@@ -91,7 +85,6 @@ public class GameCard {
             };
         }
     }
-
     /**
      * float[0] = BotLeft, float[1] = TopRight
      *
@@ -104,7 +97,6 @@ public class GameCard {
                 {centerPosition.x + size[0] / 2, centerPosition.y + size[1] / 2}
         };
     }
-
     public int dst2(GameCard other) {
         float[] size = getSize();
         float[][] corners = getExtremeCorners(size);
@@ -121,7 +113,6 @@ public class GameCard {
             return (int) new Vector2(corners[1][0], corners[1][1]).dst2(otherCorners[0][0], otherCorners[0][1]);
         }
     }
-
     @Override
     public String toString() {
         return card.toString();
