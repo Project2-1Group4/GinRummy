@@ -5,7 +5,7 @@ import GameLogic.Entities.Layoff;
 import GameLogic.Entities.Meld;
 import GameLogic.Entities.MyCard;
 import com.badlogic.gdx.Gdx;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;

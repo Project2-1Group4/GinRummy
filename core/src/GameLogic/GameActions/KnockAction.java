@@ -4,7 +4,7 @@ import GameLogic.Entities.Step;
 import GameLogic.Logic.Finder;
 import GameLogic.Entities.HandLayout;
 import GameLogic.States.RoundState;
-import temp.GameRules;
+import Extra.GameRules;
 
 
 public class KnockAction extends Action {

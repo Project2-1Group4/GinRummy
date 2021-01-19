@@ -28,26 +28,18 @@ public class StyleBuilder {
         this.background = bg;
         return this;
     }
-
     public StyleBuilder useAtlas(TextureAtlas atlas) {
         setTexturesUsingAtlas(atlas);
         return this;
     }
-
     public StyleBuilder setCardBack(Sprite sprite) {
         this.cardBack = sprite;
         return this;
     }
-
     public StyleBuilder setFont(BitmapFont font) {
         this.font = font;
         return this;
     }
-
-    public Style build() {
-        return new Style(background, cardFaces, cardBack, font, unknownSprite);
-    }
-
     private void setTexturesUsingAtlas(TextureAtlas atlas) {
         cardBack = atlas.createSprite("back", 1);
         for (MyCard.Suit suit : MyCard.Suit.values()) {
@@ -55,5 +47,8 @@ public class StyleBuilder {
                 cardFaces[suit.index][rank.index] = atlas.createSprite(suit.value, rank.value);
             }
         }
+    }
+    public Style build() {
+        return new Style(background, cardFaces, cardBack, font, unknownSprite);
     }
 }

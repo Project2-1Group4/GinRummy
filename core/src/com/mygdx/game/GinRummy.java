@@ -3,15 +3,15 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
 import com.mygdx.game.views.EndScreen;
+import com.mygdx.game.views.GameScreen;
 import com.mygdx.game.views.LoadingScreen;
 import com.mygdx.game.views.MenuScreen;
-import temp.Coordinator;
 
 public class GinRummy extends Game {
 
 	private LoadingScreen loadingScreen;
 	private MenuScreen menuScreen;
-	private Coordinator mainScreen;
+	private GameScreen mainScreen;
 	private EndScreen endScreen;
 
 	public final static int MENU = 0;
@@ -39,7 +39,7 @@ public class GinRummy extends Game {
 				this.setScreen(menuScreen);
 				break;
 			case APPLICATION:
-				mainScreen = new Coordinator(this);
+				mainScreen = new GameScreen(this);
 				this.setScreen(mainScreen);
 				break;
 			case END:

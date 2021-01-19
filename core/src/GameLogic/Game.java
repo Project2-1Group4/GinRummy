@@ -1,6 +1,5 @@
 package GameLogic;
 
-import Extra.PostGameInformation.Result;
 import GameLogic.Entities.*;
 import GameLogic.GameActions.*;
 import GameLogic.Logic.Finder;
@@ -10,7 +9,7 @@ import GamePlayers.CombinePlayer;
 import GamePlayers.ForcePlayer;
 import GamePlayers.GamePlayer;
 import com.badlogic.gdx.Gdx;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,11 @@ public class Game {
         this.gameState = gameState;
         this.players = players;
         timeAllotted = new float[Step.values().length];
-        Arrays.fill(timeAllotted, GameRules.DeckOrDiscardPileTime);
+        timeAllotted[Step.Pick.index] = GameRules.DeckOrDiscardPileTime;
+        timeAllotted[Step.Discard.index] = GameRules.DiscardTime;
+        timeAllotted[Step.KnockOrContinue.index] = GameRules.KnockOrContinueTime;
+        timeAllotted[Step.Layoff.index] = GameRules.LayOffTime;
+        timeAllotted[Step.LayoutConfirmation.index] = GameRules.LayoutConfirmationTime;
         init();
     }
     public Game(List<GamePlayer> players, Integer seed){
@@ -136,7 +139,7 @@ public class Game {
      * Runs current round out and returns the results
      * @return returns the results of the played out round
      */
-    public Result playOutRound(){
+    public RoundState playOutRound(){
         updateAllPlayers();
         while(true){
             Action a = continueRound();
@@ -144,7 +147,7 @@ public class Game {
                 break;
             }
         }
-        return new Result(round());
+        return round();
     }
     /**
      * Runs game from current state to finish (point or round limit), saving the results of every round

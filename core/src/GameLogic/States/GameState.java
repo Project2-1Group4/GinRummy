@@ -1,10 +1,9 @@
 package GameLogic.States;
 
-import Extra.PostGameInformation.Result;
 import GameLogic.Entities.MyCard;
 import GameLogic.Entities.Step;
 import GameLogic.Entities.Turn;
-import temp.GameRules;
+import Extra.GameRules;
 
 import java.util.*;
 
@@ -83,13 +82,6 @@ public class GameState {
             return null;
         }
         return rounds.get(i);
-    }
-    public List<Result> toResult() {
-        List<Result> r = new ArrayList<>();
-        for (RoundState round : rounds) {
-            r.add(new Result(round));
-        }
-        return r;
     }
     public String toString(){
         StringBuilder sb = new StringBuilder();

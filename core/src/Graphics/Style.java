@@ -23,20 +23,30 @@ public class Style {
         widthToHeightCard = cardBack.getWidth() / cardBack.getHeight();
     }
 
+    // Getters
+
     public Sprite getBackground() {
         if (background == null) {
             return unknownSprite;
         }
         return background;
     }
-
     public Sprite getCardBack() {
         if (cardBack == null) {
             return unknownSprite;
         }
         return cardBack;
     }
-
+    public Sprite getCardFace(MyCard card) {
+        Sprite s = cardFaces[card.suit.index][card.rank.index];
+        if (s == null) {
+            return unknownSprite;
+        }
+        return s;
+    }
+    public Sprite getUnknownSprite() {
+        return unknownSprite;
+    }
     public BitmapFont getFont() {
         if (font == null) {
             return new BitmapFont();
@@ -45,20 +55,7 @@ public class Style {
         font.getData().setScale(1);
         return font;
     }
-
     public float getWidthToHeightCard() {
         return widthToHeightCard;
-    }
-
-    public Sprite getCardFace(MyCard card) {
-        Sprite s = cardFaces[card.suit.index][card.rank.index];
-        if (s == null) {
-            return unknownSprite;
-        }
-        return s;
-    }
-
-    public Sprite getUnknownSprite() {
-        return unknownSprite;
     }
 }

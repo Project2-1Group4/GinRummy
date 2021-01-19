@@ -66,18 +66,11 @@ public class Graphics {
         batch.end();
     }
 
-    public void resize(int width, int height) {
-        camera.setToOrtho(false);
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
-        batch.setProjectionMatrix(camera.combined);
-        camera.update();
-    }
+    // Getters
 
     public PlayerRenderer getPlayerRenderer() {
         return playerRenderers.get(currentPlayer);
     }
-
     /**
      * Returns what is at the x,y coords on screen (Only takes deck,discard and player cards into account)
      *
@@ -89,12 +82,12 @@ public class Graphics {
         GameCard c = getPlayerRenderer().getHovered(x, y);
         return c != null ? c : ((CardRenderer) renderers.get("Card")).getHovered(x, y);
     }
-
-    public void move(GameCard card, float x, float y) {
-        getPlayerRenderer().move(card, x, y);
+    public static Graphics getInstance() {
+        if (instance == null) {
+            instance = new Graphics();
+        }
+        return instance;
     }
-
-    // NEED TO BE MOVED MAYBE
     public static float[] getSize(float[] dimension, float maxW, float maxH, float widthToHeight) {
         float[] max;
         if (dimension == null) {
@@ -115,7 +108,6 @@ public class Graphics {
         }
         return max;
     }
-
     public static float[] centerSpriteOn(Sprite sprite, float x, float y) {
         float w = sprite.getWidth();
         float h = sprite.getHeight();
@@ -125,10 +117,18 @@ public class Graphics {
         };
     }
 
-    public static Graphics getInstance() {
-        if (instance == null) {
-            instance = new Graphics();
-        }
-        return instance;
+    // Setters
+
+    public void resize(int width, int height) {
+        camera.setToOrtho(false);
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        batch.setProjectionMatrix(camera.combined);
+        camera.update();
     }
+    public void move(GameCard card, float x, float y) {
+        getPlayerRenderer().move(card, x, y);
+    }
+
+
 }
