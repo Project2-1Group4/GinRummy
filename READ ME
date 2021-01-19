@@ -12,11 +12,12 @@ Can also input 2 AIs to play against each other.
 To test AIs against each other without visuals for multiple games go src/Extra/Tests and modifiy the main
 AI classes are:
 -MinimaxPruningAI()
+-BestFirstMinimaxAI()
 -basicGreedyTest()
 -meldBuildingGreedy()
 -MCTSv1()
 
-Change depth of minimax tree in GamePlayer/GameTreeAIs/MinimaxPruningAI class,  instance field at the top
+Change depth of minimax tree in GamePlayer/GameTreeAIs/MinimaxPruningAI or GamePlayer/GameTreeAIs/BestFirstMinimaxAI() class,  instance field at the top
 Add move ordering in GamePlayer/GameTreeAIs/MinimaxPruningAI class, in method getNodeReturn()
 Changing hyper parameters of MCTS can be done with MCTSv1.set(nbOfSim, secPerSim, rolloutsPerSim, rolloutsPerNode, explorationParam).More info in comment of method.
 
