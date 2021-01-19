@@ -3,7 +3,7 @@ package Extra.GA;
 import Extra.PostGameInformation.Result;
 import GameLogic.Game;
 import GamePlayers.GamePlayer;
-import GamePlayers.GreedyAIs.basicGreedyTest;
+import GamePlayers.GreedyAIs.basicGreedy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class GA {
         int nbOfWinners = 2;
         float mutationChance = 0.05f;
         GA ga = new GA(seed,nbOfCompetitors,nbOfGamesPerPair,nbOfWinners,mutationChance);
-        ga.init(new basicGreedyTest());
+        ga.init(new basicGreedy());
         GamePlayer[] winners = ga.train();
 
     }

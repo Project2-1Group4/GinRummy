@@ -5,7 +5,7 @@ import GamePlayers.GamePlayer;
 import GamePlayers.GameTreeAIs.BestFirstMinimaxAI;
 import GamePlayers.GameTreeAIs.MCTS.MCTSv1;
 import GamePlayers.GameTreeAIs.*;
-import GamePlayers.GreedyAIs.basicGreedyTest;
+import GamePlayers.GreedyAIs.basicGreedy;
 import GamePlayers.GreedyAIs.meldBuildingGreedy;
 import GamePlayers.KeyboardPlayer;
 import GamePlayers.MousePlayer.MousePlayer;
@@ -20,7 +20,7 @@ public class StringToGamePlayer {
             return CombinePlayer.getBaseCombinePlayer();
         }
         else if(has(GameRules.names_basicGreedy,s)){
-            return new basicGreedyTest();
+            return new basicGreedy();
         }
         else if(has(GameRules.names_meldGreedy, s)) {
             return new meldBuildingGreedy();

@@ -11,13 +11,13 @@ import GamePlayers.GamePlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class basicGreedyTest extends GamePlayer {
+public class basicGreedy extends GamePlayer {
 
-    public basicGreedyTest() {
+    public basicGreedy() {
         super();
     }
 
-    public basicGreedyTest(boolean debug){
+    public basicGreedy(boolean debug){
         this();
         this.debugRun = debug;
     }
@@ -32,15 +32,6 @@ public class basicGreedyTest extends GamePlayer {
     int knockValue = 10;
 
     /*
-    Because the round resets when there's two cards,
-    It might be beneficial to pre-emptively knock
-    This sets how many cards should be left in the deck before the knock
-    Default value is three so that the player can have a 'safety margin' for knocking
-    */
-
-    int cardsInDeckLimit = 3;
-
-    /*
     So the gist of it is that the method will look at the card in the discard pile
     It'll then evaluate if it can create a new hand that has a lower score than it's current hand
 
@@ -52,9 +43,9 @@ public class basicGreedyTest extends GamePlayer {
     And if it returns false that means it should pick from the deck instead (as there's a chance something good is there)
     */
 
-    // If debugRun is true, then the thread sleeps will happen
+    // If debugRun is false, then the thread sleeps will happen
     // As a debug run is when we're testing out the code for how the AI plays and stuff
-    public boolean debugRun = true;
+    public static boolean debugRun = true;
 
     boolean evaluate(MyCard discardCard) {
         List<MyCard> current = new ArrayList<>(this.allCards);
@@ -77,11 +68,6 @@ public class basicGreedyTest extends GamePlayer {
         return chooseCardToDiscard(current) == discardCard;
 
     }
-
-    /*
-    public boolean ChooseDeckOrPile(Card aCard){
-    	return this.evaluate(aCard);        
-    }*/
 
 
     public MyCard chooseCardToDiscard(MyCard aCard) {
@@ -171,6 +157,6 @@ public class basicGreedyTest extends GamePlayer {
 
     @Override
     public String toString() {
-        return "basicGreedyTest";
+        return "basicGreedy";
     }
 }

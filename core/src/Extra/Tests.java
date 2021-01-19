@@ -62,7 +62,7 @@ public class Tests {
             b.set(10, null, 200, 1, 1);
             GamePlayer[] players = new GamePlayer[]{
                     b,
-                    new basicGreedyTest()
+                    new basicGreedy()
                     //new RandomPlayer()
             };
             String[] playerNames = new String[]{
